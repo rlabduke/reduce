@@ -1,0 +1,60 @@
+#
+#	On BSD machines, RANLIB should be 'ranlib'
+#
+#	On System V machines, RANLIB should be ':'
+#
+SHELL		= /bin/sh
+RANLIB		= ranlib
+
+CXX		= g++
+
+.SUFFIXES:	.C
+
+.C.o:
+	$(CXX) $(CFLAGS) -c $< -o $@
+
+OPT		= -O
+DEBUG		= $(CXXDEBUGFLAGS) 
+CFLAGS		= $(OPT) $(DEBUG) \
+                   -DCHARFUNCMACROS -DINCTEMPLATEDEFNS \
+		   -DBOOLPREDEFINED -DBRACKETOPERPARMS -DLISTFRIENDFIX
+
+LIBRARY		= toolclasses
+
+LIBARCH		= lib$(LIBRARY).a
+
+OBJS		= UseCount.o Point3d.o Stringclass.o Hash.o utility.o \
+		  column_sprintf.o column_sscanf.o DisjointSets.o
+
+all:		$(LIBARCH)
+
+install:	$(LIBARCH)
+		@echo ""
+
+$(LIBARCH):     $(OBJS)
+		@echo "Loading $(LIBARCH) ... "
+		@ar cru $(LIBARCH) $(OBJS)
+		@$(RANLIB) $(LIBARCH)
+		@echo "done"
+
+clean:;		@rm -f $(OBJS)
+
+spotless:;	@rm -f $(OBJS) $(LIBARCH)
+
+# DO NOT DELETE THIS LINE -- make depend uses it
+Dict.o: Dict.C Dict.h Hash.h utility.h
+DisjointSets.o: DisjointSets.C DisjointSets.h
+Hash.o: Hash.C Hash.h
+Hdl.o: Hdl.C Hdl.h UseCount.h
+List.o: List.C List.h
+ListIter.o: Iter.h List.h ListIter.C ListIter.h
+MultiDict.o: Hash.h MultiDict.C MultiDict.h Seq.h utility.h
+Point3d.o: Point3d.C Point3d.h
+Seq.o: Seq.C Seq.h
+Stringclass.o: Stringclass.C Stringclass.h
+UseCount.o: UseCount.C UseCount.h
+Vector.o: Vector.C Vector.h utility.h
+column_sprintf.o: column_sprintf.C
+column_sscanf.o: column_sscanf.C
+utility.o: utility.C
+# DO NOT DELETE THIS 2nd LINE -- make depend uses it
