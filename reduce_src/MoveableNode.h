@@ -42,6 +42,7 @@ class NetworkStateVector;		//The planned interface between the Richardson's code
 class MoveableNode;				//Class representing nodes in the interaction graph
 class EdgeBetweenMoveableNodes;	//Class representing edges in the interaction graph
 class Degree3Hyperedge;
+class Degree4Hyperedge;
 class NodeAndEdgeManager;		//Singleton entity meant to serve as the main interface for this algorithm and code that uses it
 class QueueOfToBeContractedNodes;//Singleton queue of nodes that have been marked as ready to be contracted
 class DummyNetworkDescriptorClass; //Testing class used to describe some arbitrary network to the NodeAndEdgeManager
@@ -94,6 +95,31 @@ private:
 	int					_2ndNodeMaxStates;
 
 };
+
+class OptimizedNodeStateMatrix3
+{
+public:
+	OptimizedNodeStateMatrix3();
+	OptimizedNodeStateMatrix3(NodeState firstNodeMaxStates, NodeState secondNodeMaxStates, NodeState thirdNodeMaxStates);
+	OptimizedNodeStateMatrix3(int firstNodeIndex, int secondNodeIndex, int thirdNodeIndex, NodeState firstNodeMaxStates, NodeState secondNodeMaxStates, NodeState thirdNodeMaxStates);
+	~OptimizedNodeStateMatrix3();
+
+	NodeState getOptimumNodeState(NodeState firstNodeState, NodeState secondNodeState, NodeState thirdNodeState);
+	void setOptimumNodeState(NodeState firstNodeState, NodeState secondNodeState, NodeState thirdNodeState, NodeState ownerNodeState);
+
+private:
+	void				deallocateMatrix();
+
+	NodeState***		_theNSMatrix;
+	int					_1stNodeIndex;
+	int					_2ndNodeIndex;
+	int					_3rdNodeIndex;
+	int					_1stNodeMaxStates;
+	int					_2ndNodeMaxStates;
+	int					_3rdNodeMaxStates;
+
+};
+
 
 class NodeScoreVector
 {
@@ -161,6 +187,7 @@ public:
 	void 				eliminate();
 	void 				eliminateThroughTreeReduction();
 	void 				eliminateThroughCycleReduction();
+	void				eliminateThroughS3Reduction();
 	void				eliminateSingleton();
 	void 				beNotifiedDependencyEliminated(int i);
 	NodeState			getNumberOfPossibleStates();
@@ -177,15 +204,29 @@ public:
 	std::list<EdgeBetweenMoveableNodes* >*  getEdgeList();
 
 	bool getHasAnyDegree3Hyperedges() const;
+	bool hasD3Edge( int fn, int sn, int tn );
+	Degree3Hyperedge * getD3Edge( int fn, int sn, int tn );
+	bool getHasAnyDegree4Hyperedges() const;
 	bool getHasAnyHighOrderOverlap() const { return _hasAnyHighOrderOverlap;}
 	std::list< Degree3Hyperedge * > &  getDegree3HyperedgeList();
-
+	std::list< Degree4Hyperedge * > &  getDegree4HyperedgeList();
+	
 	void addDegree3Hyperedge( Degree3Hyperedge * edge );
+	void addDegree4Hyperedge( Degree4Hyperedge * edge );
 	void deleteDegreeThreeHyperedge( Degree3Hyperedge * edge );
+	void deleteDegreeFourHyperedge( Degree4Hyperedge * edge );
 	void setMover( Mover* mover ) {_mover = mover;}
 	Mover* getMover() {return _mover;}
-	void setAtomsInHighOrderOverlap( std::list< AtomDescr > const & atsInHOO ){ _hasAnyHighOrderOverlap = true; _atomsInHighOrderOverlap = atsInHOO;}
-std::list< AtomDescr > getAtomsInHighOrderOverlap() {return _atomsInHighOrderOverlap;}
+	
+	void setAtomsInHighOrderOverlap( 
+		std::vector< std::pair< AtomDescr, DotsForAtom * > > const & atsInHOO
+	)
+	{ 	
+		_hasAnyHighOrderOverlap = true; 
+		_atomsInHighOrderOverlap = atsInHOO;
+	}
+   
+   std::vector< std::pair< AtomDescr, DotsForAtom * > > getAtomsInHighOrderOverlap() {return _atomsInHighOrderOverlap;}
 private:
 	
 	int									_index;
@@ -193,7 +234,7 @@ private:
 	std::list<EdgeBetweenMoveableNodes* >	_edgeList;
 	NodeScoreVector*					_theNodeScoreVect;	
 	bool								_isEliminated;
-	int									_eliminationOrder;	//0 = not eliminated, 1 = tree reduction elimination, 2 = cycle reduction elimination, 3 = singleton elimination
+	int									_eliminationOrder;	//0 = not eliminated, 1 = s_1 elimination, 2 = s_2 elimination, 3 = singleton elimination, 4 = s_3 elimination
 	OptimizedNodeStateVector*			_optimalStateVector;
 	NodeState _optimalState; //for singleton elimination
 	double _optimalScore;
@@ -202,12 +243,18 @@ private:
 	OptimizedNodeStateMatrix*			_optimalStateMatrix;
 	int									_firstNodeIndexDetStateFromCycleReduction;
 	int									_secondNodeIndexDetStateFromCycleReduction;
+	
+	OptimizedNodeStateMatrix3* _optimalStateMatrix3;
+	int _nodesDeterminingOptimalState[ 3 ];
 
 	bool	_hasAnyDegree3Hyperedges;
 	std::list< Degree3Hyperedge * > _degree3hyperedges;
 
+	bool	_hasAnyDegree4Hyperedges;
+	std::list< Degree4Hyperedge * > _degree4hyperedges;
+
 	bool _hasAnyHighOrderOverlap;
-	std::list< AtomDescr > _atomsInHighOrderOverlap;
+	std::vector< std::pair< AtomDescr, DotsForAtom * > > _atomsInHighOrderOverlap;
 	Mover* _mover;
 };
 
@@ -249,13 +296,14 @@ public:
 	Degree3Hyperedge( int vertex1, int vertex2, int vertex3);
 	~Degree3Hyperedge();
 		
+	bool sameEdge(int fn, int sn, int tn ) const;
 	int getVertexIndex( int ind );
 	void setScore( int state1, int state2, int state3, float energy);
 	void setVertexOrder( int vert1, int vert2, int vert3); 
 	void setNaturalVertexOrder() const;
 	float getScore( int state1, int state2, int state3) const;
 	float getScoreGivenSetVertexOrdering( int state_vert1, int state_vert2, int state_vert3) const;
-
+	void addToScoreGivenSetVertexOrdering( int state_vert1, int state_vert2, int state_vert3, float score); 
 private:
 	int getIndex( int state1, int state2, int state3) const;
 
@@ -272,6 +320,37 @@ private:
 
 };
 
+class Degree4Hyperedge
+{
+public:
+	
+	Degree4Hyperedge( int vertex1, int vertex2, int vertex3,int vertex4);
+	~Degree4Hyperedge();
+		
+	int getVertexIndex( int ind );
+	void setScore( int state1, int state2, int state3, int state4, float energy);
+	void setVertexOrder( int vert1, int vert2, int vert3, int vert4); 
+	void setNaturalVertexOrder() const;
+	float getScore( int state1, int state2, int state3, int state4) const;
+	float getScoreGivenSetVertexOrdering( int state_vert1, int state_vert2, int state_vert3, int state_vert4) const;
+
+private:
+	int getIndex( int state1, int state2, int state3, int state4) const;
+
+	int _nodeIndices[ 4 ];
+	MoveableNode * _moveableNode[ 4 ];
+	int _numStates[ 4 ];
+	int _total_state_combos;
+	mutable int _indexMultipliers [ 4 ];
+	mutable bool _inNaturalVertexOrder;
+	float * _scores;
+
+	Degree4Hyperedge();
+	Degree4Hyperedge( Degree4Hyperedge const & rhs );
+
+};
+
+
 
 //Initialize the NodeAndEdgeManager with a clique
 //Tell it to determine the optimal network configuration
@@ -285,8 +364,14 @@ private:
 	static bool							_instanceFlag;
 	static NodeAndEdgeManager*			_theNaEManager;
 
+	void eliminateQueuedNodes();
 	void initiateTreeReduction();		//Trees are reduced, the disappearing nodes and edges in a tree being contracted are said to be eliminated
-	void initiateCycleReduction();			
+	void initiateCycleReduction();	
+	void initiateSafeS3Reduction();
+	void initiateUnsafeS3Reduction(); //better than brute force
+	
+	bool matchesAP86_CPrime( int node, int neighbors[3] );
+	bool matchesAP86_CDoublePrime( int node, int neighbors[3] );
 	
 	bool bruteForceIrreducibleSubgraph();
 	void computeOptimalNetworkConfigurationAfterOptimization();
@@ -306,6 +391,8 @@ private:
 
 	int _numUnEliminatedNodes;	//Initialized to _numNodes
 	bool _cycleReductionBegun;	//Don't add nodes to the cycleReduction queue until all initial tree reduction has been done - not because this is necessary, but because it is expedient
+	bool _safeS3ReductionBegun;
+	bool _unsafeS3ReductionBegun;
 	bool _optimalSolutionFound;  //Keep track of whether work needs to be done first to report the optimal network state
 	std::vector<NodeState > _optimalNetworkStateVector;  //Compute this once and keep it if needed more than once
 	double _optimalNetworkScore;  
@@ -317,6 +404,9 @@ private:
 	
 	bool _timeLimitExists;
 	double _timeLimit;
+	
+	bool** _connectivity;
+	std::vector< int > _vertexDegrees;
 
 public:
 	~NodeAndEdgeManager();
@@ -329,11 +419,16 @@ public:
 	void InitializeNetwork(GraphToHoldScores & gths);
 	void setTimeLimit( double time_limit_in_seconds );
 	void clear();																			
-	bool cycleReductionHasBegun();
+	bool cycleReductionHasBegun() const;
+	bool safeS3ReductionHasBegun() const;
+	bool considerNodeForSafeS3Reduction( int node );
 	bool existsEdgeBetween(int firstNodeIndex, int secondNodeIndex);
 	EdgeBetweenMoveableNodes* getEdgeBetweenMoveableNodes(int firstNodeIndex, int secondNodeIndex);
 	EdgeBetweenMoveableNodes* addNewEdge(int firstNodeIndex, int secondNodeIndex);
 	void haveReportedOptimalNetworkScoreForSingleton(double optScore);
+	bool d3edgeExistsBetween( int fn, int sn, int tn );
+	Degree3Hyperedge * getD3Edge( int fn, int sn, int tn );
+	
 	void bruteForceOriginalGraph();
 	std::vector<NodeState> const & getOptimalNetworkState(){return _optimalNetworkStateVector;};	
 	int getNumStatesForNode( int node ) const;
@@ -347,6 +442,8 @@ public:
 	~QueueOfToBeEliminatedNodes();
 	void addNodeIndexForTreeReduction(int nodeIndex);
 	void addNodeIndexForCycleReduction(int nodeIndex);
+	void addNodeIndexForSafeS3Reduction( int nodeIndex );
+	void addNodeIndexForUnsafeS3Reduction( int nodeIndex );
 	bool isEmpty();
 	int  nextNodeForReduction();
 
@@ -356,6 +453,8 @@ private:
 	static QueueOfToBeEliminatedNodes*	_theQueue;
 	std::list<int>						_QForTreeRed;
 	std::list<int>						_QForCycleRed;
+	std::list<int>						_QForSafeS3Red;
+	std::list<int>						_QForUnsafeS3Red;
 };
 
 class DummyNetworkDescriptorClass

@@ -717,7 +717,7 @@ int AtomPositions::orientClique(const std::list<MoverPtr>& clique, int limit) {
 			_os << ": " << std::endl << "permutations: " << ncombo << endl;
 		}
 		else {
-			_os << ": "<< mantis <<"E" << poweroften << " permutations." << endl;
+			_os << ": "<< std::endl << mantis <<"E" << poweroften << " permutations." << endl;
 		}
 	}
 	
@@ -798,18 +798,20 @@ int AtomPositions::SearchClique(std::list<MoverPtr> clique, int limit)
 	if ( ! initializeCliqueMovers( clique, item, numItems ) ) return 0;
 	std::vector< int > num_states( numItems, 0 ); 
 	
-	if ( _outputNotice )
-	{
-		for (i=0; i<numItems;i++){
-			std::cerr << "ITEM DESCR: " << item[i]->descr();
-		}
-	}
+	//if ( _outputNotice )
+	//{
+	//	for (i=0; i<numItems;i++){
+	//		std::cerr << "ITEM DESCR: " << item[i]->descr();
+	//	}
+	//}
 
    //int  countCliqAtoms = 0;
    
 	setNumStatesForNodes( item, numItems, num_states, penalties );
 
-	GraphToHoldScores gths( this, num_states, item ); //all low-order (3-way overlap and lower) scoring is done 
+	GraphToHoldScores gths( this, & _dotBucket, num_states, item ); 
+	//all low-order (4-way overlap and lower) scoring is done in constructor
+
 	gths.getPenalties( penalties, allPenalties );
 	
 	int numFlipableNodes = 0;
@@ -895,7 +897,7 @@ int AtomPositions::SearchClique(std::list<MoverPtr> clique, int limit)
 			//std::cerr << "optimal enabled state for " << ii << " : " << optimal_state_enabled[ ii ] << " --> original : " << optimal_state_original[ ii ] << std::endl;
 		}
 		
-		//std::cerr << "Score According to gths: " << gths.getScoreForStateAssignment( optimal_state_original ) << std::endl;
+		std::cerr << "Score According to gths: " << gths.getScoreForStateAssignment( optimal_state_original ) << std::endl;
 		
 		float actualPenalty = 0;
 		for (int ii = 0; ii < numItems; ++ii)
@@ -1013,6 +1015,8 @@ int AtomPositions::SearchClique(std::list<MoverPtr> clique, int limit)
 			}
 		}
 	
+		std::cerr << "Score According to gths: " << gths.getScoreForStateAssignment( optimal_state_original ) << std::endl;
+		
 		bool badBumpBool;
 		currScore[ii] = item[ii]->determineScore(*this,
 	   	_dotBucket, _nBondCutoff, _probeRadius,
@@ -1367,7 +1371,7 @@ void AtomPositions::generateWaterPhantomHs(std::list<PDBrec*>& waters) {
 
 float AtomPositions::determineScoreForMover(
   	Mover* mover,
-  	std::vector< std::pair< AtomDescr, std::vector< AtomDescr > > > & atoms_to_score,
+  	std::vector< std::pair< AtomDescr, DotsForAtom * > > & atoms_to_score,
 	double & penalty
 )
 {
@@ -1383,26 +1387,6 @@ float AtomPositions::determineScoreForMover(
    
 	scoreAtomsAndDotsInAtomsToScoreVector_ = false;
 	atoms_to_score_ptr_ = 0;
-	return score;
-}
-
-float AtomPositions::scoreMoverInHighOrderOverlap(
-	std::list< AtomDescr > & atomsInHighOrderOverlap,
-	Mover * mover )
-{
-	atoms_in_high_order_overlap_ptr_ = & atomsInHighOrderOverlap;
-	scoreAtomsInAtomsInHighOrderOverlapList_ = true;
-	bool tempbool;
-	double penalty;
-	float bump, hbond;
-	
-	float score = mover->determineScore(*this,
-		_dotBucket, _nBondCutoff, _probeRadius,
-		_pmag, penalty, bump,
-		hbond, tempbool);
-   
-	scoreAtomsInAtomsInHighOrderOverlapList_ = false;
-	atoms_in_high_order_overlap_ptr_ = 0;
 	return score;
 }
 
@@ -1425,7 +1409,7 @@ double AtomPositions::atomScore(const PDBrec& a, const Point3d& p,
 		return 0.0;
 	}
 
-	std::vector< AtomDescr > * dotsToCount = 0;
+	DotsForAtom * dotsToCount = 0;
 	
 	if ( scoreAtomsAndDotsInAtomsToScoreVector_ || scoreAtomsInAtomsInHighOrderOverlapList_ )
 	{	
@@ -1447,7 +1431,7 @@ double AtomPositions::atomScore(const PDBrec& a, const Point3d& p,
 				if ( atomBeingScored == (*atoms_to_score_ptr_)[ ii ].first )
 				{
 					//std::cerr << "Found it!" << std::endl;
-					dotsToCount = & ((*atoms_to_score_ptr_)[ ii ].second );
+					dotsToCount = ((*atoms_to_score_ptr_)[ ii ].second );
 					//for (std::vector< AtomDescr >::iterator iter = dotsToCount->begin(); 
 					//	iter != dotsToCount->end(); ++iter)
 					//{
@@ -1493,35 +1477,44 @@ double AtomPositions::atomScore(const PDBrec& a, const Point3d& p,
 	
 		
 	std::vector< PDBrec* > bumping( bumping_list.size(), NULL );
-	std::copy( bumping_list.begin(), bumping_list.end(), bumping.begin() );
-	std::vector< bool > accept_bumping( bumping.size(), true );
-	
+	//std::copy( bumping_list.begin(), bumping_list.end(), bumping.begin() );	
 	//for (int ii = 0; ii < bumping.size(); ++ii )
 	//{
 	//	std::cerr << "bumping: " << ii << " " << bumping[ ii ] << std::endl;
 	//}
-	
-	
+		
 	//if (false)
-	if ( scoreAtomsAndDotsInAtomsToScoreVector_ )
-	{
-		bool found_any_atoms_to_score = false;
-		for (int ii = 0; ii < bumping.size(); ++ii)
-		{
-			AtomDescr bumping_descr = bumping[ ii ]->getAtomDescr();
-			if (std::find(dotsToCount->begin(), dotsToCount->end(), bumping_descr) == dotsToCount->end() )
-			{
-				accept_bumping[ ii ] = false;
-			}
-			else
-			{
-				found_any_atoms_to_score = true;
-			}
-		}
-		
-		if (! found_any_atoms_to_score ) return 0.0;
-		
-	}
+	//int count_atoms_to_score = bumping.size();
+	//if ( scoreAtomsAndDotsInAtomsToScoreVector_ )
+	//{
+	//	count_atoms_to_score = 0;
+	//	int first = 0;
+	//	int last = bumping.size() - 1;
+	//	
+	//	for (std::list< PDBrec*>::iterator iter = bumping_list.begin(); iter != bumping_list.end(); ++iter)
+	//	{
+	//		AtomDescr bumping_descr = (*iter)->getAtomDescr();
+	//		if (std::find(dotsToCount->begin(), dotsToCount->end(), bumping_descr) == dotsToCount->end() )
+	//		{
+	//			bumping[ last ] = *iter;
+	//			accept_bumping[ last ] = false;
+	//			--last;
+	//		}
+	//		else
+	//		{
+	//			bumping[ first ] = *iter;
+	//			++count_atoms_to_score;
+	//			++first;
+	//		}
+	//	}
+	//	
+	//	if ( count_atoms_to_score == 0 ) return 0.0;
+	//	
+	//}
+	//else
+	//{
+	std::copy( bumping_list.begin(), bumping_list.end(), bumping.begin() );
+	//}
 	
 	
 	int HBmask = 0;
@@ -1530,7 +1523,9 @@ double AtomPositions::atomScore(const PDBrec& a, const Point3d& p,
 	
 	const int ndots = dots.count();
 	double s = 0.0;
-	for (int i=0; i < ndots; i++) {  // then we inspect each dots interactions
+	for (int i=0; i < ndots; i++) // then we inspect each dots interactions
+	{  
+		if ( dotsToCount && ! dotsToCount->dotOn( i ) ) { continue; }
 		const Point3d q = p + dots[i];
 		const Point3d probeLoc = (pRad > 0.0)
 			? p + dots[i].scaled(dots.radius()+pRad)
@@ -1591,12 +1586,7 @@ double AtomPositions::atomScore(const PDBrec& a, const Point3d& p,
 					mingap = gap;
 				}
 			}
-		}
-		//apl quit if the closest dot is not inside an accepted atom
-		if (keepDot && ! accept_bumping[ closest_bumping ] )
-		{
-			keepDot = false;
-		}
+		}		
 		
 		if (keepDot) { // remove dots inside a connected atom
 			PDBrec* x = NULL;

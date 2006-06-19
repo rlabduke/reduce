@@ -1,7 +1,9 @@
 #include "GraphToHoldScores.h"
 #include "AtomPositions.h"
+#include "DotSph.h"
 #include "Mover.h"
 #include "PDBrec.h"
+#include "Point3d.h"
 
 void sort_three(int a, int b, int c, int & x, int & y, int & z)
 {
@@ -51,6 +53,28 @@ void sort_three(int a, int b, int c, int & x, int & y, int & z)
 			}
 		}
 	}
+}
+
+
+void sort_four( int a, int b, int c, int d, int & w, int & x, int & y, int & z)
+{
+	int four_ints[ 4 ];
+	int three_ints[ 3 ];
+	sort_three( a, b, c, three_ints[ 0 ], three_ints[ 1 ], three_ints[ 2 ]);
+	int offset = 0;
+	for (int ii = 0; ii < 3; ++ii)
+	{
+		if ( offset == 0 && d < three_ints[ ii ] )
+		{
+			four_ints[ ii ] = d;
+			offset = 1;
+		}
+		four_ints[ ii + offset ] = three_ints[ ii ];
+	}
+	w = four_ints[ 0 ];
+	x = four_ints[ 1 ];
+	y = four_ints[ 2 ];
+	z = four_ints[ 3 ];
 }
 
 
@@ -151,6 +175,309 @@ void set_difference_apl(
 	}
 }
 
+template < class T >
+void set_merge_apl(
+	std::list< T > & sortedList1,
+	std::list< T > const & sortedList2 
+)
+{
+	//std::cerr << "Begin set merge" << std::endl;
+	typename std::list< T >::iterator list1iter = sortedList1.begin();
+	typename std::list< T >::const_iterator list2iter = sortedList2.begin();
+	while( list1iter != sortedList1.end() && list2iter != sortedList2.end()  )
+	{
+		//std::cerr << "set merge: iter1: " << *list1iter << " iter2: " << *list2iter << std::endl;
+
+		if ( *list1iter == *list2iter )
+		{
+			//std::cerr << "merge equal: " << *list1iter << std::endl;			
+			++list1iter;
+			++list2iter;
+		}
+		else if ( *list1iter < *list2iter )
+		{
+			++list1iter;
+		}
+		else {
+			//std::cerr << "merge insert: " << *list2iter << std::endl;			
+			sortedList1.insert( list1iter, *list2iter );
+			++list2iter;
+		}
+	}
+	while ( list2iter != sortedList2.end() )
+	{
+		//std::cerr << "merge tail insert: " << *list2iter << std::endl;
+		sortedList1.insert( list1iter, *list2iter );
+		++list2iter;
+	}
+	//std::cerr << "end set merge" << std::endl;
+
+}
+
+DotsForAtom::DotsForAtom() : 
+	theAtom_(),
+	dotSphereManager_( 0 ),
+	dotsOn_( 0 ),
+	indsOfDotsOn_( 0 ),
+	indsCurrent_( false ),
+	numDots_( 0 ),
+	numDotsOn_( 0 )
+{}
+
+DotsForAtom::~DotsForAtom()
+{
+	delete [] dotsOn_;
+	delete [] indsOfDotsOn_;
+}
+
+DotsForAtom::DotsForAtom( DotsForAtom const & rhs ) :
+	theAtom_( rhs.theAtom_ ),
+	dotSphereManager_( rhs.dotSphereManager_  ),
+	dotsOn_( new bool[ rhs.numDots_ ]  ),
+	indsOfDotsOn_( new int[ rhs.numDots_ ] ),
+	indsCurrent_( rhs.indsCurrent_ ),
+	numDots_( rhs.numDots_  ),
+	numDotsOn_( rhs.numDotsOn_ )
+{
+	for (int ii = 0; ii < numDots_; ++ii)
+	{
+		dotsOn_[ ii ] = rhs.dotsOn_[ ii ];
+		indsOfDotsOn_[ ii ] = rhs.indsOfDotsOn_[ ii ];
+	}
+}
+
+DotsForAtom const & 
+DotsForAtom::operator = ( DotsForAtom const & rhs )
+{
+	theAtom_ = rhs.theAtom_;
+	dotSphereManager_ = rhs.dotSphereManager_;
+	delete [] dotsOn_; dotsOn_ = new bool[ rhs.numDots_ ];
+	delete [] indsOfDotsOn_; indsOfDotsOn_ = new int[ rhs.numDots_ ];
+	indsCurrent_ = rhs.indsCurrent_;
+	numDots_ = rhs.numDots_;
+	numDotsOn_ = rhs.numDotsOn_;
+
+	for (int ii = 0; ii < numDots_; ++ii)
+	{
+		dotsOn_[ ii ] = rhs.dotsOn_[ ii ];
+		indsOfDotsOn_[ ii ] = rhs.indsOfDotsOn_[ ii ];
+	}
+	return *this;
+}
+	
+void DotsForAtom::setDotManager( DotSphManager * dotSphereManager )
+{
+	assert( dotSphereManager_ == 0 );
+	dotSphereManager_ = dotSphereManager;
+}
+
+void DotsForAtom::setAtom( AtomDescr theAtom )
+{
+	theAtom_ = theAtom;
+	DotSph const & dotSphere = dotSphereManager_->fetch( theAtom_.getAtRadius() );
+	numDots_ = dotSphere.count();
+	delete [] dotsOn_; dotsOn_ = new bool[ numDots_ ];
+	delete [] indsOfDotsOn_; indsOfDotsOn_ = new int[ numDots_ ];
+	for (int ii = 0; ii < numDots_; ++ii )
+	{
+		dotsOn_[ ii ] = false;
+		indsOfDotsOn_[ ii ] = -1;
+	}
+	indsCurrent_ = true;
+	numDotsOn_ = 0;
+}
+
+void DotsForAtom::turnOnAllDots()
+{
+	for (int ii = 0; ii < numDots_; ++ii)
+	{
+		dotsOn_[ ii ] = true;
+		indsOfDotsOn_[ ii ] = ii;
+	}
+	indsCurrent_ = true;
+	numDotsOn_ = numDots_;
+}
+
+void DotsForAtom::turnOffAllDots()
+{
+	if ( numDotsOn_ == 0 ) return;
+	indsCurrent_ = true;
+	if (numDotsOn_ == 0 ) return;
+	for (int ii = 0; ii < numDots_; ++ii)
+	{
+		dotsOn_[ ii ] = false;
+		indsOfDotsOn_[ ii ] = -1;
+	}
+	numDotsOn_ = 0;
+}
+
+void DotsForAtom::findContained( std::list< AtomDescr > const & atoms )
+{
+	//std::cerr << "Entering findContained" << std::endl;
+	turnOffAllDots();
+	DotSph const & dotSphere = dotSphereManager_->fetch( theAtom_.getAtRadius() );
+	for (int ii = 0; ii < numDots_; ++ii)
+	{
+		Point3d const p = theAtom_.getAtomPos() + dotSphere[ ii ];
+		for (std::list< AtomDescr >::const_iterator iter = atoms.begin(); 
+			iter != atoms.end(); ++iter )
+		{
+			if ( iter->containsPoint( p ) )
+			{
+				dotsOn_[ ii ] = true;
+				indsOfDotsOn_[ numDotsOn_ ] = ii;
+				++numDotsOn_;
+				break;
+			}
+		}
+	}
+	//std::cerr << "Leaving findContained" << std::endl;
+}
+
+
+bool DotsForAtom::dotOn( int dot ) const
+{
+	return dotsOn_[ dot ];
+}
+
+int DotsForAtom::numDotsOn() const
+{
+	return numDotsOn_;
+}
+
+bool DotsForAtom::anyDotsShared( DotsForAtom const & other ) const
+{
+	assert( numDots_ == other.numDots_ );
+	if ( numDotsOn_ == 0 || other.numDotsOn_ == 0 ) return false;
+
+	updateIndsOfDotsOn();
+	other.updateIndsOfDotsOn();
+		
+	int iter_this = 0;
+	int iter_other = 0;
+	while ( iter_this != numDotsOn_ && iter_other != other.numDotsOn_ )
+	{
+		//assert( 0 <= indsOfDotsOn_[ iter_this ] && indsOfDotsOn_[ iter_this ] < numDots_ );
+		//assert( 0 <= other.indsOfDotsOn_[ iter_other ] && other.indsOfDotsOn_[ iter_other ] < numDots_ );
+		if ( indsOfDotsOn_[ iter_this ] == other.indsOfDotsOn_[ iter_other ])
+		{
+			return true;
+		}
+		else if (indsOfDotsOn_[ iter_this ] < other.indsOfDotsOn_[ iter_other ])
+		{
+			++iter_this;
+		}
+		else
+		{
+			++iter_other;
+		}
+	}
+	return false;
+}
+
+void DotsForAtom::intersect( DotsForAtom const & other, DotsForAtom & intersection ) const
+{
+	assert( numDots_ == other.numDots_ && numDots_ == intersection.numDots_ );
+	
+	if ( numDotsOn_ == 0 || other.numDotsOn_ == 0 ) return;
+
+	updateIndsOfDotsOn();
+	other.updateIndsOfDotsOn();
+	intersection.turnOffAllDots();
+		
+	int iter_this = 0;
+	int iter_other = 0;
+	while ( iter_this != numDotsOn_ && iter_other != other.numDotsOn_ )
+	{
+		//assert( 0 <= indsOfDotsOn_[ iter_this ] && indsOfDotsOn_[ iter_this ] < numDots_ );
+		//assert( 0 <= other.indsOfDotsOn_[ iter_other ] && other.indsOfDotsOn_[ iter_other ] < numDots_ );
+
+		if ( indsOfDotsOn_[ iter_this ] == other.indsOfDotsOn_[ iter_other ])
+		{
+			intersection.dotsOn_[ indsOfDotsOn_[ iter_this] ] = true;
+			intersection.indsOfDotsOn_[ intersection.numDotsOn_ ] = indsOfDotsOn_[ iter_this ];
+			++intersection.numDotsOn_;
+			++iter_this;
+			++iter_other;
+		}
+		else if (indsOfDotsOn_[ iter_this ] < other.indsOfDotsOn_[ iter_other ])
+		{
+			++iter_this;
+		}
+		else
+		{
+			++iter_other;
+		}
+	}
+}
+
+void DotsForAtom::subtractDotsOn( DotsForAtom const & other )
+{
+	assert( numDots_ == other.numDots_ );
+	other.updateIndsOfDotsOn();
+	for (int ii = 0; ii < other.numDotsOn_; ++ii)
+	{
+		if ( dotsOn_[ other.indsOfDotsOn_[ ii] ] )
+		{
+			dotsOn_[ other.indsOfDotsOn_[ ii] ] = false;
+			--numDotsOn_;
+			indsCurrent_ = false;
+		}
+	}
+}
+
+void DotsForAtom::addDots( DotsForAtom const & other )
+{
+	assert( numDots_ == other.numDots_ );
+	other.updateIndsOfDotsOn();
+	for (int ii = 0; ii < other.numDotsOn_; ++ii)
+	{
+		if ( ! dotsOn_[ other.indsOfDotsOn_[ ii] ] )
+		{
+			dotsOn_[ other.indsOfDotsOn_[ ii] ] = true;
+			++numDotsOn_;
+			indsCurrent_ = false;
+		}
+	}
+}
+
+std::ostream & 
+operator << (std::ostream & os, DotsForAtom const & dots )
+{
+	dots.print( os );
+	return os;
+}
+
+void
+DotsForAtom::print( std::ostream & os ) const
+{
+	updateIndsOfDotsOn();
+	os << "Dots: " << std::endl;
+	for (int ii = 0; ii < numDotsOn_; ++ii )
+	{
+		os << indsOfDotsOn_[ ii ] << " ";
+		if ( ii % 20 == 19 )
+		{
+			os << std::endl;
+		}
+	}
+}
+
+void DotsForAtom::updateIndsOfDotsOn() const
+{
+	if ( indsCurrent_ ) return;
+	int countOnDotsSeen = 0;
+	for (int ii = 0; ii < numDots_; ++ii)
+	{
+		if ( dotsOn_[ ii ] )
+		{
+			indsOfDotsOn_[ countOnDotsSeen ] = ii;
+			++countOnDotsSeen;
+		}
+	}
+	indsCurrent_ = true;
+}
+
 //----------------------------------------------------------------------------//
 //------------------------------ Vertex Class --------------------------------//
 //----------------------------------------------------------------------------//
@@ -159,12 +486,14 @@ void set_difference_apl(
 Vertex_ths::Vertex_ths(
 	GraphToHoldScores * owner,
 	AtomPositions * xyz,
+	DotSphManager * dotSphereManager,
 	int index,
 	int num_states 
 )
 :
 	owner_( owner ),
 	xyz_( xyz ),
+	dotSphereManager_( dotSphereManager ),
 	index_( index ),
 	mover_( 0 ),
 	//num_atoms_( -1 ),
@@ -201,12 +530,19 @@ Vertex_ths::obtainAtomsFromMover()
 	atoms.sort();
 	atoms.unique();
   	atoms_.resize( atoms.size() );
+  	//std::cerr << "Mover " << index_ << " with " << atoms_.size() << " atoms" << std::endl;
   	std::copy( atoms.begin(), atoms.end(), atoms_.begin() );
+	dotsForAtom_.resize( atoms_.size() );
+	for (int ii = 0; ii < atoms_.size(); ++ii)
+	{
+		dotsForAtom_[ ii ].setDotManager( dotSphereManager_ );
+		dotsForAtom_[ ii ].setAtom( atoms_[ ii ] );
+		dotsForAtom_[ ii ].turnOnAllDots();
+	}
 	
-	bg_ats_overlapping_.resize( getNumAtoms() );
-	bg_ats_scoring_overlapping_.resize( getNumAtoms() );
 	atom_in_high_order_overlap_.resize( getNumAtoms() );
-	std::fill( atom_in_high_order_overlap_.begin(), atom_in_high_order_overlap_.end(), false );	
+	std::fill( atom_in_high_order_overlap_.begin(), atom_in_high_order_overlap_.end(), false );
+	dotsInHOO_.resize( getNumAtoms() );
 }
 
 int Vertex_ths::getNumStates() const
@@ -223,99 +559,6 @@ void Vertex_ths::getAtoms( std::vector< AtomDescr > & atoms ) const
 {
 	assert( atoms_.size() == atoms.size() );
 	std::copy( atoms_.begin(), atoms_.end(), atoms.begin() );
-}
-
-
-void
-Vertex_ths::getOverlappingBackgroundAtoms()
-{
-	for( int ii = 0; ii < getNumAtoms(); ++ii )
-	{	
-		//std::cerr << "getOverlappingBackgroundAtoms[ " << index_ << "]:  find bumping for atom: " << atoms_[ ii ]<< std::endl;
-		std::list<PDBrec*> all_bumping;
-		xyz_->CollectBumping( atoms_[ ii ], all_bumping);
-		
-		//for( std::list< PDBrec* >::iterator iter = all_bumping.begin(); iter != all_bumping.end(); ++iter)
-		//{
-		//	std::cerr << atoms_[ ii ] << " bumping ALL atoms: " << (*iter)->getAtomDescr() << std::endl;
-		//}
-		
-		std::list<PDBrec*> unboundBumping = all_bumping; //copy
-		//mover_->dropBondedFromBumpingListForPDBrec( unboundBumping, atoms_[ ii ].getOriginalAtomPtr(), xyz_->getNBondCutoff() );
-		 
-		// for( std::list< PDBrec* >::iterator iter = unboundBumping.begin(); iter != unboundBumping.end(); ++iter)
-		// {
-		// 	std::cerr << atoms_[ ii ] << " bumping unbound atoms: " << (*iter)->getAtomDescr() << std::endl;
-		// }
-		
-		for (std::list< PDBrec* >::iterator iter = all_bumping.begin();
-			iter != all_bumping.end(); ++iter)
-		{
-			bg_ats_overlapping_[ ii ].push_back( (*iter)->getAtomDescr() );
-		}
-		bg_ats_overlapping_[ ii ].sort();
-		bg_ats_overlapping_[ ii ].unique();
-		
-		
-		for (std::list< PDBrec* >::iterator iter = unboundBumping.begin();
-			iter != unboundBumping.end(); ++iter)
-		{
-			bg_ats_scoring_overlapping_[ ii ].push_back( (*iter)->getAtomDescr() );
-		}
-		bg_ats_scoring_overlapping_[ ii ].sort();
-		bg_ats_scoring_overlapping_[ ii ].unique();
-		
-		//remove clique atoms from bumping list
-		set_difference_apl( bg_ats_overlapping_[ ii ], atoms_ );
-		set_difference_apl( bg_ats_scoring_overlapping_[ ii ], atoms_ );
-
-		/*
-		for( std::list< AtomDescr >::iterator iter = bg_ats_overlapping_[ ii ].begin(); 
-			iter != bg_ats_overlapping_[ ii ].end(); ++iter)
-		{
-			std::cerr << atoms_[ ii ] << " bumping ALL atoms: " << *iter << std::endl;
-		}		
-		for( std::list< AtomDescr >::iterator iter = bg_ats_scoring_overlapping_[ ii ].begin(); 
-			iter != bg_ats_scoring_overlapping_[ ii ].end(); ++iter)
-		{
-			std::cerr << atoms_[ ii ] << " bumping Scoring atoms: " << *iter << std::endl;
-		}
-		/**/
-		
-	}
-}
-
-void
-Vertex_ths::dropMoverAtomsFromBackgroundAtomLists( Vertex_ths * other )
-{
-	for (int ii = 0; ii < getNumAtoms(); ++ii)
-	{
-		set_difference_apl( bg_ats_overlapping_[ ii ], other->atoms_ );
-		set_difference_apl( bg_ats_scoring_overlapping_[ ii ], other->atoms_ );
-	}
-	for (int ii = 0; ii < other->getNumAtoms(); ++ii)
-	{
-		set_difference_apl( other->bg_ats_overlapping_[ ii ], atoms_ );
-		set_difference_apl( other->bg_ats_scoring_overlapping_[ ii ], atoms_ );
-	}
-	//std::cerr << "After set differences: " << index_ << " and " << other->index_ << std::endl;
-	//for( int ii = 0; ii < getNumAtoms(); ++ii )
-	//{	
-	//	for ( std::list< AtomDescr >::iterator iter = bg_ats_scoring_overlapping_[ ii ].begin();
-	//		iter != bg_ats_scoring_overlapping_[ ii ].end(); ++iter )
-	//	{
-	//		std::cerr << atoms_[ ii ] << " bumping: " << *iter << std::endl;
-	//	}
-	//}
-	//for (int ii = 0; ii < other->getNumAtoms(); ++ii)
-	//{
-	//	for ( std::list< AtomDescr >::iterator iter = other->bg_ats_scoring_overlapping_[ ii ].begin();
-	//		iter != other->bg_ats_scoring_overlapping_[ ii ].end(); ++iter )
-	//	{
-	//		std::cerr << other->atoms_[ ii ] << " bumping: " << *iter << std::endl;
-	//	}
-	//}
-	
 }
 
 bool
@@ -335,60 +578,16 @@ Vertex_ths::anyMoverOverlap( Vertex_ths * other ) const
 }
 
 void
-Vertex_ths::detectBackgroundAtomsInThreeWayOverlap()
-{
-	std::vector< std::list< AtomDescr > > backgroundAtomsToScoreOnDeg2Edges( getNumAtoms() );
-	for (std::list< DegreeTwoEdge_ths* >::iterator iter = deg2edges_.begin();
-		iter != deg2edges_.end(); ++iter )
-	{
-		for ( int ii = 0; ii < getNumAtoms(); ++ii )
-		{
-			std::list< AtomDescr > temp = (*iter)->getScoringBackgroundAtomsOverlappingAtom( index_, ii );
-			backgroundAtomsToScoreOnDeg2Edges[ ii ].splice(
-				backgroundAtomsToScoreOnDeg2Edges[ ii ].end(),
-				temp );
-		}
-	}
-	
-	for ( int ii = 0; ii < getNumAtoms(); ++ii )
-	{
-		backgroundAtomsToScoreOnDeg2Edges[ ii ].sort();
-	}
-	
-	for (int ii = 0; ii < getNumAtoms(); ++ii )
-	{
-
-		std::list< AtomDescr >::iterator iter = backgroundAtomsToScoreOnDeg2Edges[ ii ].begin();
-		while( iter != backgroundAtomsToScoreOnDeg2Edges[ ii ].end() )
-		{
-			//std::cerr << "detectBackgroundAtomsInThreeWayOverlap: " << index_ << " atom " << atoms_[ ii ] << " " << *iter << std::endl;
-
-			std::list< AtomDescr >::iterator iternext = iter;
-			++iternext;
-			if ( iternext != backgroundAtomsToScoreOnDeg2Edges[ ii ].end() && *iter == *iternext )
-			{
-				++iternext;
-				if (*iter == *iternext )
-				{
-					boot( ii );
-				}
-				else
-				{
-					//std::cerr << "Atom in psuedo 3-way overlap -- mover: " << index_ << " " << atoms_[ ii ] << " bg: " << *iter << std::endl;
-					noteBackgroundAtomInPsuedo3WOForAtom( ii, *iter );
-				}
-			}
-			++iter;
-		}
-	}
-}
-
-void
 Vertex_ths::detectThreeWayOverlap( Vertex_ths * other1, Vertex_ths * other2 )
 {
 	assert( index_ < other1->index_ && other1->index_ < other2->index_ );
+	//std::cerr << "Entering Vertex_ths::detectThreeWayOverlap with: " << index_;
+	//std::cerr << " " << other1->index_;
+	//std::cerr << " " << other2->index_ << std::endl;
+
 	for (int ii = 0; ii < getNumAtoms(); ++ii)
 	{
+
 		for (int jj = 0; jj < other1->getNumAtoms(); ++jj )
 		{
 			if ( atoms_[ ii ].intersects( other1->atoms_[ jj ] ) )
@@ -398,53 +597,45 @@ Vertex_ths::detectThreeWayOverlap( Vertex_ths * other1, Vertex_ths * other2 )
 					if ( ! atoms_[ ii ].intersects( other2->atoms_[ kk ] ) ) continue;
 					if ( ! other1->atoms_[ jj ].intersects( other2->atoms_[ kk ] ) ) continue;
 					
+					//std::cerr << "3-way mover overlap: ";
+					//std::cerr << index_ << " ";
+					//std::cerr << other1->index_ << " ";
+					//std::cerr << other2->index_ << " ";
+					//std::cerr << atoms_[ ii ] << " ";
+					//std::cerr << other1->atoms_[ jj ] << " ";
+					//std::cerr << other2->atoms_[ kk ] << std::endl;
+					
 					DegreeThreeEdge_ths * d3e = owner_->getDegree3Edge( index_, other1->index_, other2->index_ );
-					d3e->addMoverAtomsToScoreForAtom( index_, ii, other1->atoms_[ jj ] );
-					d3e->addMoverAtomsToScoreForAtom( index_, ii, other2->atoms_[ kk ] );
-					d3e->addMoverAtomsToScoreForAtom( other1->index_, jj, atoms_[ ii ] );
-					d3e->addMoverAtomsToScoreForAtom( other1->index_, jj, other2->atoms_[ kk ] );
-					d3e->addMoverAtomsToScoreForAtom( other2->index_, kk, atoms_[ ii ] );
-					d3e->addMoverAtomsToScoreForAtom( other2->index_, kk, other1->atoms_[ jj ] );
-					
-					DegreeTwoEdge_ths * d2e = owner_->getDegree2Edge( index_, other1->index_ );
-					d2e->addOverlappingBackgroundAtomsForPairToD3E( ii, jj, other2->atoms_[ kk ], d3e );
-					
-					d2e = owner_->getDegree2Edge( index_, other2->index_ );
-					d2e->addOverlappingBackgroundAtomsForPairToD3E( ii, kk, other1->atoms_[ jj ], d3e );
-					
-					d2e = owner_->getDegree2Edge( other1->index_, other2->index_ );
-					d2e->addOverlappingBackgroundAtomsForPairToD3E( jj, kk, atoms_[ ii ], d3e );
+					d3e->setMoverAtomHas3Way( index_, ii );
+					d3e->setMoverAtomHas3Way( other1->index_, jj );
+					d3e->setMoverAtomHas3Way( other2->index_, kk );
+
 				}
 			}
 		}
 	}
+	//std::cerr << "Leaving Vertex_ths::detectThreeWayOverlap with: " << index_;
+	//std::cerr << " " << other1->index_;
+	//std::cerr << " " << other2->index_ << std::endl;
+		
 }
 
 //atom in high order overlap -- either with other movers or with a background atom 
 void
 Vertex_ths::boot(
-	int atom
+	int atom,
+	DotsForAtom const & dotsToBoot,
+	std::list< int > const & moversInHOO
 )
 {
-	
-	//if (! any_high_order_overlap_ ) std::cerr << "Detected high order overlap for vertex " << index_ << std::endl;	
+	if (! any_high_order_overlap_ ) std::cerr << "Detected high order overlap for vertex " << index_ << std::endl;	
 	any_high_order_overlap_ = true;
 	
 	//return; //short circuit for debugging / testing how neccessary high order overlap is.
 	
 	atom_in_high_order_overlap_[ atom ] = true;
-	std::list< int > movers_to_force_in_clique;
-	for (std::list< DegreeTwoEdge_ths * >::iterator iter = deg2edges_.begin();
-		iter != deg2edges_.end(); ++iter )
-	{
-		if ( (*iter)->atomHasOverlap( index_, atom ) )
-		{
-			movers_to_force_in_clique.push_back( (*iter)->getOtherNodeIndex( index_ ) );
-		}
-	}
-	movers_to_force_in_clique.push_back( index_ );
-	movers_to_force_in_clique.sort();
-	owner_->forceClique( movers_to_force_in_clique );
+	dotsForAtom_[ atom ].addDots( dotsToBoot );
+	owner_->forceClique( moversInHOO );
 }
 
 std::list< DegreeTwoEdge_ths * >::iterator 
@@ -461,6 +652,14 @@ Vertex_ths::addEdge( DegreeThreeEdge_ths * edge)
 	return deg3edges_.begin();
 }
 
+std::list< DegreeFourEdge_ths * >::iterator 
+Vertex_ths::addEdge( DegreeFourEdge_ths * edge )
+{
+	deg4edges_.push_front( edge );
+	return deg4edges_.begin();
+}
+
+
 void Vertex_ths::dropEdge( std::list< DegreeTwoEdge_ths * >::iterator iter )
 {
 	deg2edges_.erase( iter );
@@ -471,69 +670,56 @@ void Vertex_ths::dropEdge( std::list< DegreeThreeEdge_ths * >::iterator iter )
 	deg3edges_.erase( iter );
 }
 
-std::list< AtomDescr >
-Vertex_ths::getAtomsOverlappingBothMoverAndBGAtom
-(
-	AtomDescr mover_atom,
-	AtomDescr bg_atom
-) const
+void Vertex_ths::dropEdge( std::list< DegreeFourEdge_ths * >::iterator iter )
 {
-	std::list< AtomDescr > overlaps_both;
-	for (int ii = 0; ii < getNumAtoms(); ++ii )
-	{
-		if ( atoms_[ ii ].intersects( mover_atom ) && atoms_[ii].intersects( bg_atom ) )
-		{
-			overlaps_both.push_back( atoms_[ ii ] );
-		}
-	}
-	return overlaps_both;
+	deg4edges_.erase( iter );
 }
-
-std::list< AtomDescr > const & 
-Vertex_ths::getAllBumpingBackgroundAtoms( int atom ) const
-{
-	return bg_ats_overlapping_[ atom ];
-}
-
-std::list< AtomDescr > const &
-Vertex_ths::getBumpingScoringBackgroundAtoms( int atom ) const
-{
-	return bg_ats_scoring_overlapping_[ atom ];
-}
-
 
 void Vertex_ths::informIncidentEdgesAboutBootedAtoms()
 {
 	if (! any_high_order_overlap_ ) return;
+	
+	for (int ii = 0; ii < getNumAtoms(); ++ii)
+	{
+		if ( atom_in_high_order_overlap_[ ii ] )
+		{
+			dotsForAtom_[ ii ].subtractDotsOn( dotsInHOO_[ ii ] );
+		}
+	}
+	
 	for (std::list< DegreeTwoEdge_ths * >::iterator iter = deg2edges_.begin(); 
 		iter != deg2edges_.end(); ++iter)
 	{
-		(*iter)->noteBootedAtoms( index_, atom_in_high_order_overlap_ );
+		(*iter)->noteBootedAtoms( index_, atom_in_high_order_overlap_, dotsInHOO_);
 	}
 	for (std::list< DegreeThreeEdge_ths * >::iterator iter = deg3edges_.begin(); 
 		iter != deg3edges_.end(); ++iter)
 	{
-		(*iter)->noteBootedAtoms( index_, atom_in_high_order_overlap_ );
+		(*iter)->noteBootedAtoms( index_, atom_in_high_order_overlap_, dotsInHOO_ );
+	}
+	for (std::list< DegreeFourEdge_ths * >::iterator iter = deg4edges_.begin(); 
+		iter != deg4edges_.end(); ++iter)
+	{
+		(*iter)->noteBootedAtoms( index_, atom_in_high_order_overlap_, dotsInHOO_ );
 	}
 }
 
-void Vertex_ths::removeBGAtomsForAtom(
+void Vertex_ths::removeDotsScoredOnD2Edge(
 	int atom,
-	std::list< AtomDescr > const & bg_atoms_scored_on_edge
-)
+	DotsForAtom const & dots_scored_on_edge )
 {
-	set_difference_apl( bg_ats_scoring_overlapping_[ atom ], bg_atoms_scored_on_edge );
+	dotsForAtom_[ atom ].subtractDotsOn( dots_scored_on_edge );
 }
 
 void Vertex_ths::finalizeScoreVectors()
 {
 	//std::cerr << "entering vertex_ths::finalizeScoreVectors for " << index_ << " with # atoms: " << getNumAtoms() << std::endl;
+
 	int count_atoms_to_score = 0;
 	std::vector< bool > score_atom( getNumAtoms(), false );
 	for (int ii = 0; ii < getNumAtoms(); ++ii )
 	{
-		if ( ! atom_in_high_order_overlap_[ ii ]
-			&& ! bg_ats_scoring_overlapping_[ ii ].empty() )
+		if ( dotsForAtom_[ ii ].numDotsOn() != 0  )
 		{
 			//std::cerr << "Score atom " << ii << " on "  << index_ << std::endl;
 			score_atom[ ii ] = true;
@@ -544,35 +730,42 @@ void Vertex_ths::finalizeScoreVectors()
 			//std::cerr << "Do not score atom " << ii << " on "  << index_ << std::endl;
 		}
 	}
-	atoms_to_score_as_vertex_.resize( count_atoms_to_score );
+	dotsToScoreOnAtoms_.resize( count_atoms_to_score );
 	int count = 0;
 	for (int ii = 0; ii < getNumAtoms(); ++ii)
 	{
 		if ( ! score_atom[ ii ] )
 		{
-			bg_ats_scoring_overlapping_[ ii ].clear(); 
 			continue;
 		}
-
-		/*
-		std::cerr << "Atoms to score on vertex " << index_ << " for atom " << atoms_[ ii ] << std::endl;
-		for( std::list< AtomDescr >::iterator iter = bg_ats_scoring_overlapping_[ ii ].begin(); 
-			iter != bg_ats_scoring_overlapping_[ ii ].end(); ++iter )
-		{
-			std::cerr << "Atom: " << *iter << std::endl;
-		}/**/
 				
-		atoms_to_score_as_vertex_[ count ].first = atoms_[ ii ];
-		atoms_to_score_as_vertex_[ count ].second.resize( bg_ats_scoring_overlapping_[ ii ].size() );
-		std::copy(
-			bg_ats_scoring_overlapping_[ ii ].begin(),
-			bg_ats_scoring_overlapping_[ ii ].end(),
-			atoms_to_score_as_vertex_[ count ].second.begin() );
+		dotsToScoreOnAtoms_[ count ].first = atoms_[ ii ];
+		dotsToScoreOnAtoms_[ count ].second = & dotsForAtom_[ ii ];
 		
-		bg_ats_scoring_overlapping_[ ii ].clear();
+		//std::cerr << "Score: " << atoms_[ ii ] << " " << dotsForAtom_[ ii ] << std::endl;
 		++count;
 	}
-
+	
+	if ( ! any_high_order_overlap_ ) return;
+	int numAtomsInHOO = 0;
+	for (int ii = 0; ii < getNumAtoms(); ++ii )
+	{
+		if ( atom_in_high_order_overlap_[ ii ] )
+		{
+			++numAtomsInHOO;
+		}
+	}
+	dotsToScoreInHOO_.resize( numAtomsInHOO );
+	numAtomsInHOO = 0;
+	for (int ii = 0; ii < getNumAtoms(); ++ii )
+	{
+		if ( atom_in_high_order_overlap_[ ii ] )
+		{
+			dotsToScoreInHOO_[ numAtomsInHOO ].first = atoms_[ ii ];
+			dotsToScoreInHOO_[ numAtomsInHOO ].second = & ( dotsInHOO_[ ii ] );
+			++numAtomsInHOO;
+		}
+	}
 }
 
 void
@@ -583,7 +776,7 @@ Vertex_ths::score()
 	double penalty;
 	for( int ii = 0; ii < num_states_; ++ii )
 	{
-		scores_[ ii ] = xyz_->determineScoreForMover( mover_, atoms_to_score_as_vertex_, penalty );
+		scores_[ ii ] = xyz_->determineScoreForMover( mover_, dotsToScoreOnAtoms_, penalty );
 		penalties_[ ii ] = penalty;
 		//std::cerr << ii << " " << scores_[ ii ]<< std::endl;
 		mover_->nextOrientation( *xyz_ );
@@ -651,20 +844,12 @@ Mover* Vertex_ths::getMover() const
 bool Vertex_ths::getHasAnyHighOrderOverlap() const
 {
   return any_high_order_overlap_;
-  //return false;
 }
 
-std::list< AtomDescr > Vertex_ths::getAtomsInHighOrderOverlap() const
+std::vector< std::pair< AtomDescr, DotsForAtom * > >
+Vertex_ths::getAtomsInHighOrderOverlap() const
 {
-	std::list< AtomDescr > highOrderOverlapAtoms;
-	for (int ii = 0; ii < getNumAtoms(); ++ii)
-	{
-		if ( atom_in_high_order_overlap_[ ii ])
-		{
-			highOrderOverlapAtoms.push_back( atoms_[ ii ] );
-		}
-	}
-	return highOrderOverlapAtoms;
+	return dotsToScoreInHOO_;
 }
 
 void
@@ -689,47 +874,6 @@ int Vertex_ths::getAssignedState() const
 	return assignedState_;
 }
 
-void
-Vertex_ths::noteBackgroundAtomInPsuedo3WOForAtom( int mover_atom, AtomDescr bgatom )
-{
-	int fn_other = -1;
-	int sn_other = -1;
-	//std::list< AtomDescr > other_overlapping_atoms[ 2 ];
-	for (std::list< DegreeTwoEdge_ths * >::iterator iter = deg2edges_.begin(); iter != deg2edges_.end(); ++iter )
-	{
-		if ( (*iter)->bgAtomOverlapsMovingAtomOnEdge( index_, mover_atom, bgatom ) )
-		{
-			Vertex_ths * other = (*iter)->getOtherNode( index_ );
-			if ( fn_other == -1)
-			{
-				fn_other = (*iter)->getOtherNodeIndex( index_ );
-				//other_overlapping_atoms[ 0 ] = other->getAtomsOverlappingBothMoverAndBGAtom( atoms_[ mover_atom ], bgatom );
-			}
-			else
-			{
-				sn_other = (*iter)->getOtherNodeIndex( index_ );
-				//other_overlapping_atoms[ 1 ] = other->getAtomsOverlappingBothMoverAndBGAtom( atoms_[ mover_atom ], bgatom );
-				break;
-			}
-		}
-	}
-	assert( sn_other != -1 );
-	
-	int fn( -1 ), sn( -1 ), tn( -1 );
-	sort_three( index_, fn_other, sn_other, fn, sn, tn );
-
-	DegreeThreeEdge_ths * d3e = owner_->getDegree3Edge( fn, sn, tn );
-	d3e->addBackgroundAtomToScoreForMoverAtom( index_, mover_atom, bgatom );
-	//for (int ii = 0; ii < 2; ++ii)
-	//{
-	//	for (std::list< AtomDescr >::iterator iter = other_overlapping_atoms[ ii ].begin();
-	//		iter != other_overlapping_atoms[ ii ].end(); ++iter)
-	//	{
-	//		d3e->addMoverAtomsToScoreForAtom( index_, mover_atom, *iter );
-	//	}
-	//}
-}
-
 //----------------------------------------------------------------------------//
 //----------------------------- Degree Two Edge ------------------------------//
 //----------------------------------------------------------------------------//
@@ -738,15 +882,18 @@ Vertex_ths::noteBackgroundAtomInPsuedo3WOForAtom( int mover_atom, AtomDescr bgat
 DegreeTwoEdge_ths::DegreeTwoEdge_ths(
 	GraphToHoldScores * owner,
 	AtomPositions * xyz,
+	DotSphManager * dotSphereManager,
 	int vertex1,
 	int vertex2
 )
 :
 	owner_( owner ),
-	xyz_( xyz )
+	xyz_( xyz ),
+	dotSphereManager_( dotSphereManager )
 {
 	vertex_indices_[ 0 ] = vertex1;
 	vertex_indices_[ 1 ] = vertex2;
+	//std::cerr << "Creating degree-2 edge: " << vertex1 << " " << vertex2 << std::endl;
 	for (int ii = 0; ii < 2; ++ii)
 	{
 		vertex_ptrs_[ ii ] = owner_->getVertexPtr( vertex_indices_[ ii ] );
@@ -754,12 +901,17 @@ DegreeTwoEdge_ths::DegreeTwoEdge_ths(
 		num_states_[ ii ] = vertex_ptrs_[ ii ]->getNumStates();
 		num_atoms_[ ii ] = vertex_ptrs_[ ii ]->getNumAtoms();
 		movers_[ ii ] = vertex_ptrs_[ ii ]->getMover();
-		bg_ats_scoring_for_atom_[ ii ].resize( num_atoms_[ ii ] );
-		bg_ats_all_for_atom_[ ii ].resize( num_atoms_[ ii ] );
 		mover_atoms_atom_overlaps_[ ii ].resize( num_atoms_[ ii ] );
-		bg_atoms_overlapping_pair_[ ii ].resize( num_atoms_[ ii ] );
 		atoms_[ ii ].resize( num_atoms_[ ii ] );
 		vertex_ptrs_[ ii ]->getAtoms( atoms_[ ii ] );
+		dotsForAtom_[ ii ].resize( atoms_[ ii ].size() );
+		//std::cerr << ii << " with " << atoms_[ ii ].size() << " atoms " << std::endl;
+		for (int jj = 0; jj < atoms_[ ii ].size(); ++jj)
+		{
+			dotsForAtom_[ ii ][ jj ].setDotManager( dotSphereManager_ );
+			dotsForAtom_[ ii ][ jj ].setAtom( atoms_[ ii ][ jj ] );
+		}
+
 	}
 	scores_ = new float * [ num_states_[ 0 ] ];
 	for (int ii = 0; ii < num_states_[ 0 ]; ++ii )
@@ -823,13 +975,13 @@ int DegreeTwoEdge_ths::getOtherNodeIndex( int vertex_index ) const
 
 bool DegreeTwoEdge_ths::incidentUpon( int vertex_index ) const
 {
-	return vertex_indices_[ 0 ] == vertex_index || vertex_indices_[ 1 ] == vertex_index;
+	return (vertex_indices_[ 0 ] == vertex_index || vertex_indices_[ 1 ] == vertex_index );
 }
 
 void
-DegreeTwoEdge_ths::detectBackgroundAtomsToScoreForEdge()
+DegreeTwoEdge_ths::detectDotsToScoreOnEdge()
 {
-	//std::cerr << "detectBackgroundAtomsToScoreForEdge(); " << vertex_indices_[ 0 ] << " " << vertex_indices_[ 1 ] << std::endl;
+	//std::cerr << "detectDotsToScoreOnEdge(); " << vertex_indices_[ 0 ] << " " << vertex_indices_[ 1 ] << std::endl;
 	//std::cerr << num_atoms_[ 0 ] << " and " << num_atoms_[ 1 ] << " atoms" << std::endl;
 	//std::cerr << atoms_[0].size() << " and " << atoms_[1].size() << std::endl;
 	for (int ii = 0; ii < num_atoms_[ 0 ]; ++ii )
@@ -843,76 +995,7 @@ DegreeTwoEdge_ths::detectBackgroundAtomsToScoreForEdge()
 			{
 				//std::cerr << "overlap!" << std::endl;
 				mover_atoms_atom_overlaps_[ 0 ][ ii ].push_back( atoms_[ 1 ][ jj ]);
-				mover_atoms_atom_overlaps_[ 1 ][ jj ].push_back( atoms_[ 0 ][ ii ]);
-				
-				std::list< AtomDescr > const & ii_overlapping_bg = vertex_ptrs_[ 0 ]->getAllBumpingBackgroundAtoms( ii );
-				std::list< AtomDescr > const & jj_overlapping_bg = vertex_ptrs_[ 1 ]->getAllBumpingBackgroundAtoms( jj );
-
-				// for (std::list< AtomDescr >::const_iterator iter = ii_overlapping_bg.begin();
-				// 	iter != ii_overlapping_bg.end(); ++iter )
-				// {
-				// 	std::cerr << "ii_overlapping_bg: " << *iter << " for " << ii << " and " << jj << std::endl;
-				// }
-				// for (std::list< AtomDescr >::const_iterator iter = jj_overlapping_bg.begin();
-				// 	iter != jj_overlapping_bg.end(); ++iter )
-				// {
-				// 	std::cerr << "jj_overlapping_bg: " << *iter << " for " << ii << " and " << jj << std::endl;
-				// }
-
-				//std::cerr << "about to call set_intersect_apl" << std::endl;				
-				std::list< AtomDescr > bg_intersecting_both;	
-				set_intersect_apl( ii_overlapping_bg, jj_overlapping_bg, bg_intersecting_both );
-				
-				// for (std::list< AtomDescr >::iterator iter = bg_intersecting_both.begin();
-				// 	iter != bg_intersecting_both.end(); ++iter )
-				// {
-				// 	std::cerr << "bg_intersecting_both: " << *iter << " for " << ii << " and " << jj << std::endl;
-				// }
-								
-				//bg_atoms_overlapping_pair_[ 0 ][ ii ].push_back( bg_intersecting_both );
-				//bg_atoms_overlapping_pair_[ 1 ][ jj ].push_back( bg_intersecting_both );
-
-				std::list< AtomDescr > const & ii_scoring_overlapping_bg = vertex_ptrs_[ 0 ]->getBumpingScoringBackgroundAtoms( ii );
-
-				std::list< AtomDescr > ii_bg_score_on_edge;
-				set_intersect_apl( ii_scoring_overlapping_bg, bg_intersecting_both, ii_bg_score_on_edge );
-				bg_atoms_overlapping_pair_[ 0 ][ ii ].push_back( ii_bg_score_on_edge );
-				//std::cerr << "push back 1 " << std::endl;
-				for (std::list< AtomDescr >::iterator iter = ii_bg_score_on_edge.begin();
-					iter != ii_bg_score_on_edge.end(); ++iter )
-				{
-					bg_ats_scoring_for_atom_[ 0 ][ ii ].push_back( *iter );
-				}
-				for (std::list< AtomDescr >::iterator iter = bg_intersecting_both.begin();
-					iter != bg_intersecting_both.end(); ++iter )
-				{
-					bg_ats_all_for_atom_[ 0 ][ ii ].push_back( *iter );
-				}
-
-				// for (std::list< AtomDescr >::iterator iter = bg_intersecting_both.begin();
-				// 	iter != bg_intersecting_both.end(); ++iter )
-				// {
-				// 	std::cerr << "bg_intersecting_both: " << *iter << " for " << ii << " and " << jj << std::endl;
-				// }
-				//std::cerr << "push back 2 " << std::endl;
-				
-				std::list< AtomDescr > const & jj_scoring_overlapping_bg = vertex_ptrs_[ 1 ]->getBumpingScoringBackgroundAtoms( jj );
-				std::list< AtomDescr > jj_bg_score_on_edge;
-				set_intersect_apl( jj_scoring_overlapping_bg, bg_intersecting_both, jj_bg_score_on_edge );
-				bg_atoms_overlapping_pair_[ 1 ][ jj ].push_back( jj_bg_score_on_edge );
-
-				for (std::list< AtomDescr >::iterator iter = jj_bg_score_on_edge.begin();
-					iter != jj_bg_score_on_edge.end(); ++iter )
-				{
-					bg_ats_scoring_for_atom_[ 1 ][ jj ].push_back( *iter );
-				}
-				for (std::list< AtomDescr >::iterator iter = bg_intersecting_both.begin();
-					iter != bg_intersecting_both.end(); ++iter )
-				{
-					bg_ats_all_for_atom_[ 1 ][ jj ].push_back( *iter );
-				}
-
-				//std::cerr << "going to next iteration" << std::endl;
+				mover_atoms_atom_overlaps_[ 1 ][ jj ].push_back( atoms_[ 0 ][ ii ]);			
 			}
 		}
 	}
@@ -921,101 +1004,23 @@ DegreeTwoEdge_ths::detectBackgroundAtomsToScoreForEdge()
 	{
 		for (int jj = 0; jj < num_atoms_[ ii ]; ++jj )
 		{
-			bg_ats_scoring_for_atom_[ ii ][ jj ].sort();
-			bg_ats_scoring_for_atom_[ ii ][ jj ].unique();
-			bg_ats_all_for_atom_[ ii ][ jj ].sort();
-			bg_ats_all_for_atom_[ ii ][ jj ].unique();
-			//for (std::list< AtomDescr >::iterator iter = bg_ats_scoring_for_atom_[ ii ][ jj ].begin();
-			//	iter != bg_ats_scoring_for_atom_[ ii ][ jj ].end(); ++iter )
-			//{
-			//	std::cerr << "bg_ats_scoring_for_atom_[ ii ][ jj ]: " << *iter << " for mover " << vertex_indices_[ ii ] << " atom " << atoms_[ii][jj] << std::endl;
-			//}
-			//for (std::list< AtomDescr >::iterator iter = mover_atoms_atom_overlaps_[ ii ][ jj ].begin();
-			//	iter != mover_atoms_atom_overlaps_[ ii ][ jj ].end(); ++iter )
-			//{
-			//	std::cerr << "mover_atom_atom_overlaps_[ ii ][ jj ]: " << *iter << " for mover " << vertex_indices_[ ii ]  << " atom " << atoms_[ii][jj] << std::endl;
-			//}
+			//std::cerr << "FindContained: " << ii << " " << jj << std::endl;
+			dotsForAtom_[ ii ][ jj ].findContained( mover_atoms_atom_overlaps_[ ii ][ jj ] );
 		}
 	}
 }
 
-void
-DegreeTwoEdge_ths::addOverlappingBackgroundAtomsForPairToD3E(
-	int atom_on_vertex1,
-	int atom_on_vertex2,
-	AtomDescr atom_on_vertex3,
-	DegreeThreeEdge_ths * d3e
-)
+DotsForAtom const & 
+DegreeTwoEdge_ths::getDotsForAtom( int vertex, int atom )
 {
-	std::list< std::list< AtomDescr > >::iterator bg_list_iter1 =
-		bg_atoms_overlapping_pair_[ 0 ][ atom_on_vertex1 ].begin();
-		
-	for (std::list< AtomDescr >::iterator iter = mover_atoms_atom_overlaps_[ 0 ][ atom_on_vertex1 ].begin();
-		iter != 	mover_atoms_atom_overlaps_[ 0 ][ atom_on_vertex1 ].end(); ++iter )
-	{
-		if ( *iter == atoms_[ 1 ][ atom_on_vertex2 ] )
-		{
-			for( std::list< AtomDescr >::iterator bg_atom_iter = bg_list_iter1->begin();
-				bg_atom_iter != bg_list_iter1->end(); ++bg_atom_iter )
-			{
-				if ( atom_on_vertex3.intersects( *bg_atom_iter ) )
-				{
-					d3e->addBackgroundAtomToScoreForMoverAtom( vertex_indices_[ 0 ], atom_on_vertex1, *bg_atom_iter );
-				}
-				//d3e->addBackgroundAtomToScoreForMoverAtom( vertex_indices_[ 1 ], atom_on_vertex2, *bg_atom_iter );
-			}
-			break;
-		}
-		++bg_list_iter1;
-	}
-	
-	std::list< std::list< AtomDescr > >::iterator bg_list_iter2 =
-	bg_atoms_overlapping_pair_[ 1 ][ atom_on_vertex2 ].begin();
-		
-	for (std::list< AtomDescr >::iterator iter = mover_atoms_atom_overlaps_[ 1 ][ atom_on_vertex2 ].begin();
-		iter != 	mover_atoms_atom_overlaps_[ 1 ][ atom_on_vertex2 ].end(); ++iter )
-	{
-		if ( *iter == atoms_[ 0 ][ atom_on_vertex1 ] )
-		{
-			for( std::list< AtomDescr >::iterator bg_atom_iter = bg_list_iter2->begin();
-				bg_atom_iter != bg_list_iter2->end(); ++bg_atom_iter )
-			{
-				if ( atom_on_vertex3.intersects( *bg_atom_iter ) )
-				{ 
-					d3e->addBackgroundAtomToScoreForMoverAtom( vertex_indices_[ 1 ], atom_on_vertex2, *bg_atom_iter );
-				}
-			}
-			break;
-		}
-		++bg_list_iter2;
-	}
-}
-
-std::list< AtomDescr >
-DegreeTwoEdge_ths::getScoringBackgroundAtomsOverlappingAtom( int vertex_index, int atom )
-{
-	return bg_ats_scoring_for_atom_[ whichVertex( vertex_index ) ][ atom ];
-}
-
-bool
-DegreeTwoEdge_ths::bgAtomOverlapsMovingAtomOnEdge( int vertex_index, int atom, AtomDescr bgatom ) const
-{
-	return ( std::find( bg_ats_all_for_atom_[ whichVertex( vertex_index ) ][ atom ].begin(),
-		bg_ats_all_for_atom_[ whichVertex( vertex_index ) ][ atom ].end(),
-		bgatom)  != bg_ats_all_for_atom_[ whichVertex( vertex_index ) ][ atom ].end() );
-}
-
-bool
-DegreeTwoEdge_ths::atomHasOverlap( int vertex_index, int atom ) const
-{
-	return ( ! bg_ats_scoring_for_atom_[ whichVertex( vertex_index ) ][ atom ].empty() 
-		|| ! mover_atoms_atom_overlaps_[ whichVertex( vertex_index ) ][ atom ].empty() );
+	return dotsForAtom_[ whichVertex( vertex ) ][ atom ];
 }
 
 void
 DegreeTwoEdge_ths::noteBootedAtoms(
 	int vertex_index,
-	std::vector< bool  > const & booted_atoms
+	std::vector< bool  > const & booted_atoms,
+	std::vector< DotsForAtom > const & dotsInHOO
 )
 {
 	int whichvertex = whichVertex( vertex_index );
@@ -1023,105 +1028,56 @@ DegreeTwoEdge_ths::noteBootedAtoms(
 	{
 		if ( booted_atoms[ ii ] )
 		{
-			bg_ats_scoring_for_atom_[ whichvertex ][ ii ].clear();
-			bg_ats_all_for_atom_[ whichvertex ][ ii ].clear();
-			mover_atoms_atom_overlaps_[ whichvertex ][ ii ].clear();
+			dotsForAtom_[ whichvertex ][ ii ].subtractDotsOn( dotsInHOO[ ii ] );
 		}
 	}
 }
 
-void DegreeTwoEdge_ths::tellVerticesToNotScoreBGAtomsScoredOnD2Edge() const
+void DegreeTwoEdge_ths::tellVerticesToNotScoreDotsScoredOnD2Edge() const
 {
 	for (int ii = 0; ii < 2; ++ii)
 	{
 		for (int jj = 0; jj < num_atoms_[ ii ]; ++jj )
 		{
-			//std::cerr << "BG Atoms scored on edge for node " << vertex_indices_[ ii ] << " for atom " << atoms_[ ii ][ jj ] << std::endl;
-			//for ( std::list< AtomDescr >::const_iterator iter = bg_ats_scoring_for_atom_[ ii ][ jj ].begin();
-			//	iter != bg_ats_scoring_for_atom_[ ii ][ jj ].end(); ++iter)
-			//{
-			//	std::cerr << "atom: " << *iter << std::endl;
-			//}
-			vertex_ptrs_[ ii ]->removeBGAtomsForAtom( jj, bg_ats_scoring_for_atom_[ ii ][ jj ]);
+			vertex_ptrs_[ ii ]->removeDotsScoredOnD2Edge( jj, dotsForAtom_[ ii ][ jj ]);
 		}
 	}
 }
 
-void
-DegreeTwoEdge_ths::dropBGAtomsOverlappingAtom(
-	int vertex_index,
+void DegreeTwoEdge_ths::dropDotsScoredOnD3Edge(
+	int vertex,
 	int atom,
-	std::list< AtomDescr > const & bgats
-)
+	DotsForAtom const & dots )
 {
-	set_difference_apl( 
-		bg_ats_scoring_for_atom_[ whichVertex( vertex_index ) ][ atom ],
-		bgats
-	);	
+	dotsForAtom_[ whichVertex( vertex )][ atom ].subtractDotsOn( dots );
 }
 
-void
-DegreeTwoEdge_ths::dropMoverAtomsOverlappingAtom(
-	int vertex_index,
-	int atom,
-	std::list< AtomDescr > const & moverats
-)
-{
-	set_difference_apl( 
-		mover_atoms_atom_overlaps_[ whichVertex( vertex_index ) ][ atom ],
-		moverats
-	);	
-}
 
 void DegreeTwoEdge_ths::finalizeScoreVectors()
 {
+	//std::cerr << "Entering D2Edge::finalizeScoreVectors() for " << vertex_indices_[ 0 ] << " " << vertex_indices_[ 1 ] << std::endl;
 	for (int ii = 0; ii < 2; ++ii )
 	{
 		int count_atoms_to_score = 0;
 		std::vector< bool > score_atom( num_atoms_[ ii ], false );
 		for (int jj = 0; jj < num_atoms_[ ii ]; ++jj )
 		{
-			if ( ! bg_ats_scoring_for_atom_[ ii ][ jj ].empty()
-				|| ! mover_atoms_atom_overlaps_[ ii ][ jj ].empty() )
+			if ( dotsForAtom_[ ii ][ jj ].numDotsOn() != 0)
 			{
 				score_atom[ jj ] = true;
 				++count_atoms_to_score;
 			}
 		}
 	
-		atoms_to_score_[ ii ].resize( count_atoms_to_score );
+		dotsToScoreOnAtoms_[ ii ].resize( count_atoms_to_score );
 		int count = 0;
 		for (int jj = 0; jj < num_atoms_[ ii ]; ++jj)
 		{
 			if ( ! score_atom[ jj ] ) continue;
-			std::list< AtomDescr > all_atoms_to_score;
-			all_atoms_to_score.splice(
-				all_atoms_to_score.end(),
-				bg_ats_scoring_for_atom_[ ii ][ jj ] );
-			all_atoms_to_score.splice(
-				all_atoms_to_score.end(),
-				mover_atoms_atom_overlaps_[ ii ][ jj ]
-			);
-			all_atoms_to_score.sort();
-			
-			/*
-			std::cerr << "Atoms To score on edge (" << vertex_indices_[ 0 ] << ", " << vertex_indices_[ 1 ];
-			std::cerr << " for v: " << vertex_indices_[ ii ] << " for at: " << atoms_[ ii ][ jj ] << std::endl;
-			for ( std::list< AtomDescr >::iterator iter = all_atoms_to_score.begin();
-				iter != all_atoms_to_score.end(); ++iter)
-			{
-				std::cerr << "atom: " << *iter << std::endl;
-			}
-			/**/
-				
-			atoms_to_score_[ ii ][ count ].first = atoms_[ ii ][ jj ];
-			atoms_to_score_[ ii ][ count ].second.resize( all_atoms_to_score.size() );
-			std::copy(
-				all_atoms_to_score.begin(),
-				all_atoms_to_score.end(),
-				atoms_to_score_[ ii ][ count ].second.begin() );
-
+			dotsToScoreOnAtoms_[ ii ][ count ].first = atoms_[ ii ][ jj ];
+			dotsToScoreOnAtoms_[ ii ][ count ].second = & dotsForAtom_[ ii ][ jj ];
 			++count;
+			//std::cerr << "Score: " << atoms_[ ii ][ jj ] << " " << dotsForAtom_[ ii ][ jj ] << std::endl;
 		}
 	}
 }
@@ -1143,7 +1099,7 @@ DegreeTwoEdge_ths::score()
 			for (int kk = 0; kk < 2; ++kk )
 			{
 				if ( nothingToScore( kk ) ) continue;
-				scores_[ ii ][ jj ] += xyz_->determineScoreForMover( movers_[ kk ], atoms_to_score_[ kk ], temp );
+				scores_[ ii ][ jj ] += xyz_->determineScoreForMover( movers_[ kk ], dotsToScoreOnAtoms_[ kk ], temp );
 			}
 			//std::cerr << ii << " " << jj << " " << scores_[ ii ][ jj ] << std::endl;
 			movers_[ 1 ]->nextOrientation( *xyz_ );
@@ -1183,7 +1139,7 @@ DegreeTwoEdge_ths::whichVertex( int vertex_index ) const
 			return ii;
 		}
 	}
-	std::cerr << "CRITICAL ERROR IN whichVertex( " << vertex_index << ") called on edge [" <<
+	std::cerr << "CRITICAL ERROR IN whichVertex(" << vertex_index << ") called on edge [" <<
 	std::cerr << vertex_indices_[ 0 ] << ", " << vertex_indices_[ 1 ] << "]" << std::endl;
 	assert(false);
 	exit(1);
@@ -1194,7 +1150,7 @@ bool DegreeTwoEdge_ths::nothingToScore() const
 	//std::cerr << "nothingToScore?" << std::endl;
 	for (int ii = 0; ii < 2; ++ii )
 	{
-		if ( ! atoms_to_score_[ ii ].empty() ) return false;
+		if ( ! dotsToScoreOnAtoms_[ ii ].empty() ) return false;
 	}
 	//std::cerr << "Indeed, nothing to score" << std::endl;
 	return true;
@@ -1202,7 +1158,7 @@ bool DegreeTwoEdge_ths::nothingToScore() const
 
 bool DegreeTwoEdge_ths::nothingToScore( int vertex ) const
 {
-	return atoms_to_score_[ vertex ].empty();
+	return dotsToScoreOnAtoms_[ vertex ].empty();
 }
 
 //----------------------------------------------------------------------------//
@@ -1212,18 +1168,20 @@ bool DegreeTwoEdge_ths::nothingToScore( int vertex ) const
 DegreeThreeEdge_ths::DegreeThreeEdge_ths(
 	GraphToHoldScores * owner,
 	AtomPositions * xyz,
+	DotSphManager * dotSphereManager,
 	int vertex1,
 	int vertex2,
 	int vertex3
 )
 :
 	owner_( owner ),
-	xyz_( xyz )
+	xyz_( xyz ),
+	dotSphereManager_( dotSphereManager )
 {
 	vertex_indices_[ 0 ] = vertex1;
 	vertex_indices_[ 1 ] = vertex2;
 	vertex_indices_[ 2 ] = vertex3;
-	//std::cerr << "Creating degree three edge";
+	//std::cerr << "Creating degree-3 edge";
 	//for (int ii = 0; ii < 3; ++ii)
 	//{
 	//	std::cerr << " " << vertex_indices_[ ii ];
@@ -1236,11 +1194,18 @@ DegreeThreeEdge_ths::DegreeThreeEdge_ths(
 		pos_in_verts_edge_list_[ ii ] = vertex_ptrs_[ ii ]->addEdge( this );
 		num_states_[ ii ] = vertex_ptrs_[ ii ]->getNumStates();
 		num_atoms_[ ii ] = vertex_ptrs_[ ii ]->getNumAtoms();
-		bg_ats_for_atom_[ ii ].resize( num_atoms_[ ii ] );
-		mover_atoms_atom_overlaps_[ ii ].resize( num_atoms_[ ii ] );
 		movers_[ ii ] = vertex_ptrs_[ ii ]->getMover();
 		atoms_[ ii ].resize( num_atoms_[ ii ] );
 		vertex_ptrs_[ ii ]->getAtoms( atoms_[ ii ] );
+		atomHasThreeWay_[ ii ].resize( num_atoms_[ ii ]);
+		std::fill( atomHasThreeWay_[ ii ].begin(), atomHasThreeWay_[ ii ].end(), false );
+
+		dotsForAtom_[ ii ].resize( atoms_[ ii ].size() );
+		for (int jj = 0; jj < atoms_[ ii ].size(); ++jj)
+		{
+			dotsForAtom_[ ii ][ jj ].setDotManager( dotSphereManager_ );
+			dotsForAtom_[ ii ][ jj ].setAtom( atoms_[ ii ][ jj ] );
+		}
 	}
 	d2e_[ 0 ] = owner_->getDegree2Edge( vertex1, vertex2 );
 	d2e_[ 1 ] = owner_->getDegree2Edge( vertex1, vertex3 );
@@ -1308,179 +1273,101 @@ int DegreeThreeEdge_ths::getThirdNodeIndex() const
 	return vertex_indices_[ 2 ];
 }
 
+DotsForAtom const & 
+DegreeThreeEdge_ths::getDotsForAtom( int vertex, int atom )
+{
+	return dotsForAtom_[ whichVertex( vertex ) ][ atom ];
+}
 
 void
-DegreeThreeEdge_ths::addBackgroundAtomToScoreForMoverAtom(
+DegreeThreeEdge_ths::setMoverAtomHas3Way(
 	int vertex,
-	int atom,
-	AtomDescr atom_overlapping
+	int atom
 )
 {
-	int which_of_three = whichVertex( vertex );
-	bg_ats_for_atom_[ which_of_three ][ atom ].push_back( atom_overlapping );
-	bg_ats_for_atom_[ which_of_three ][ atom ].sort();
-	bg_ats_for_atom_[ which_of_three ][ atom ].unique();
+	atomHasThreeWay_[ whichVertex( vertex ) ][ atom ] = true;
 }
 
 void
-DegreeThreeEdge_ths::addMoverAtomsToScoreForAtom(
-	int vertex,
-	int atom,
-	AtomDescr atom_overlapping
-)
+DegreeThreeEdge_ths::detectDotsToScoreOnEdge()
 {
-	int which_of_three = whichVertex( vertex );
-	mover_atoms_atom_overlaps_[ which_of_three ][ atom ].push_back( atom_overlapping );
-	mover_atoms_atom_overlaps_[ which_of_three ][ atom ].sort();
-	mover_atoms_atom_overlaps_[ which_of_three ][ atom ].unique();
-}
-
-bool
-DegreeThreeEdge_ths::sharesTwoVertices( DegreeThreeEdge_ths const * other ) const
-{
-	if ( vertex_indices_[ 0 ] == other->vertex_indices_[ 0 ] )
-	{
-		if (vertex_indices_[ 1 ] == other->vertex_indices_[ 1 ] ||
-			vertex_indices_[ 1 ] == other->vertex_indices_[ 2 ] ||
-			vertex_indices_[ 2 ] == other->vertex_indices_[ 2 ] ||
-			vertex_indices_[ 2 ] == other->vertex_indices_[ 1 ])
-		{
-			return true;
-		}
-	}
-	else if (vertex_indices_[ 0 ] == other->vertex_indices_[ 1 ] )
-	{
-		if ( vertex_indices_[ 1 ] == other->vertex_indices_[ 2 ] ||
-			vertex_indices_[ 2 ] == other->vertex_indices_[ 2 ] )
-		{
-			return true;
-		}
-	}
-	else if (vertex_indices_[ 1 ] == other->vertex_indices_[ 1 ]  &&
-		vertex_indices_[ 2 ] == other->vertex_indices_[ 2 ] )
-	{
-		return true;
-	}
-	
-	return false;
-	
-}
-
-void
-DegreeThreeEdge_ths::detect_shared_atom_pair( DegreeThreeEdge_ths * other ) const
-{
-	if ( ! sharesTwoVertices( other ) ) return;
-	int this_fn_shared = -1;
-	int this_sn_shared = -1;
-	int other_fn_shared = -1;
-	int other_sn_shared = -1;
-	
-	//std::cerr << "detect_shared_atom_pair comparing";
-	//for (int ii = 0; ii < 3; ++ii)
-	//{
-	//	std::cerr << " " << vertex_indices_[ ii ];
-	//}
-	//std::cerr << " and";
-	//for (int ii = 0; ii < 3; ++ii)
-	//{
-	//	std::cerr << " " << other->vertex_indices_[ ii ];
-	//}
-	//std::cerr << std::endl;
-	
-	if ( vertex_indices_[ 0 ] == other->vertex_indices_[ 0 ] )
-	{
-		this_fn_shared = 0;
-		other_fn_shared = 0;
-		if (vertex_indices_[ 1 ] == other->vertex_indices_[ 1 ] )
-		{
-			this_sn_shared = 1;
-			other_sn_shared = 1;
-		}
-		else if ( vertex_indices_[ 1 ] == other->vertex_indices_[ 2 ] )
-		{
-			this_sn_shared = 1;
-			other_sn_shared = 2;
-		}
-		else if ( vertex_indices_[ 2 ] == other->vertex_indices_[ 2 ] ) 
-		{
-			this_sn_shared = 2;
-			other_sn_shared = 2;
-		}
-		else if ( vertex_indices_[ 2 ] == other->vertex_indices_[ 1 ] )
-		{
-			this_sn_shared = 2;
-			other_sn_shared = 1;
-		}
-	}
-	else if (vertex_indices_[ 0 ] == other->vertex_indices_[ 1 ] )
-	{
-		this_fn_shared = 0;
-		other_fn_shared = 1;
-		if ( vertex_indices_[ 1 ] == other->vertex_indices_[ 2 ] )
-		{
-			this_sn_shared = 1;
-			other_sn_shared = 2;
-		}
-		else if (vertex_indices_[ 2 ] == other->vertex_indices_[ 2 ] )
-		{
-			this_sn_shared = 2;
-			other_sn_shared = 2;
-		}
-	}
-	else if (vertex_indices_[ 1 ] == other->vertex_indices_[ 1 ] &&
-		vertex_indices_[ 2 ] == other->vertex_indices_[ 2 ] )
-	{
-		this_fn_shared = 1; 
-		other_fn_shared = 1;
-		this_sn_shared = 2;
-		other_sn_shared = 2;
-	}
-	else
-	{
-		std::cerr << "CRITICAL ERROR IN detect_shared_atom_pair: between edges [" << 
-		std::cerr << vertex_indices_[ 0 ] << ", ";
-		std::cerr << vertex_indices_[ 1 ] << ", ";
-		std::cerr << vertex_indices_[ 2 ] << "] and [";
-		std::cerr << other->vertex_indices_[ 0 ] << ", ";
-		std::cerr << other->vertex_indices_[ 1 ] << ", ";
-		std::cerr << other->vertex_indices_[ 2 ] << "]" << std::endl;
-	}
-	// std::cerr << "found:";
-	// std::cerr << " this_fn_shared " << this_fn_shared;
-	// std::cerr << " this_sn_shared " << this_sn_shared;
-	// std::cerr << " other_fn_shared " << other_fn_shared;
-	// std::cerr << " other_sn_shared " << other_sn_shared << std::endl;
-	
-	compareSharedAtomPairs( other, this_fn_shared, other_fn_shared );
-	compareSharedAtomPairs( other, this_sn_shared, other_sn_shared );
-}
-
-void DegreeThreeEdge_ths::detectBackgroundAtomScoredTwiceForAtom
-( 
-	DegreeThreeEdge_ths const * other
-) const
-{
+	//std::cerr << "Entering D3Edge::detectDotsToScoreOnEdge: ";
+	//std::cerr << vertex_indices_[ 0 ] << " ";
+	//std::cerr << vertex_indices_[ 1 ] << " ";
+	//std::cerr << vertex_indices_[ 2 ] << std::endl;
 	for (int ii = 0; ii < 3; ++ii )
 	{
+		//std::cerr << "ii: " << ii << std::endl;
+		DegreeTwoEdge_ths * d2edgesIncidentOnII[ 2 ] = {0,0};
+		int count = 0;
 		for (int jj = 0; jj < 3; ++jj )
 		{
-			if ( vertex_indices_[ ii ] == other->vertex_indices_[ jj ] )
+			if ( d2e_[ jj ]->incidentUpon( vertex_indices_[ ii ] ))
 			{
-				compareSharedBackgroundAtoms( other, ii, jj );
+				d2edgesIncidentOnII[ count ] = d2e_[ jj ];
+				++count;
+			}
+		}
+		assert( count == 2 );
+		for (int jj = 0; jj < num_atoms_[ ii ]; ++jj)
+		{
+			//std::cerr << "jj: " << jj << std::endl;
+			if ( ! atomHasThreeWay_[ ii ][ jj ] )
+			{
+				continue;
+			}
+			
+			//std::cerr << "ThreeWay jj: " << jj << std::endl;
+			d2edgesIncidentOnII[ 0 ]->getDotsForAtom( vertex_indices_[ ii ], jj ).intersect( 
+				d2edgesIncidentOnII[ 1 ]->getDotsForAtom( vertex_indices_[ ii ], jj ),
+				dotsForAtom_[ ii ][ jj ] );
+		}
+	}
+	//std::cerr << "Leaving D3Edge::detectDotsToScoreOnEdge: ";
+	//std::cerr << vertex_indices_[ 0 ] << " ";
+	//std::cerr << vertex_indices_[ 1 ] << " ";
+	//std::cerr << vertex_indices_[ 2 ] << std::endl;
+
+}
+
+
+void
+DegreeThreeEdge_ths::detectDotsDoublyCounted( DegreeThreeEdge_ths const * other ) const
+{
+	int countSharedVertices = 0;
+	for (int ii = 0; ii < 3; ++ii)
+	{
+		for (int jj = 0; jj < 3; ++jj)
+		{
+			if ( vertex_indices_[ ii ] == vertex_indices_[ jj ] )	
+			{
+				++countSharedVertices;
 			}
 		}
 	}
 	
+	if ( countSharedVertices != 2 ) return;
+	
+	for (int ii = 0; ii < 3; ++ii)
+	{
+		for (int jj = 0; jj < 3; ++jj)
+		{
+			if ( vertex_indices_[ ii ] == vertex_indices_[ jj ] )	
+			{
+				lookForSharedDots( other, ii, jj );
+			}
+		}
+	}
 }
 
 void 
-DegreeThreeEdge_ths::tellD2EdgesToNotScoreBGandMoverAtomsScoredOnD3Edge() const
+DegreeThreeEdge_ths::tellD2EdgesToNotScoreDotsScoredOnD3Edge() const
 {
 	for (int ii = 0; ii < 3; ++ii )
 	{
 		for (int jj = 0; jj < num_atoms_[ ii ]; ++jj )
 		{
-			if ( bg_ats_for_atom_[ ii ][ jj ].empty() && mover_atoms_atom_overlaps_[ ii ][ jj ].empty() )
+			if ( dotsForAtom_[ ii ][ jj ].numDotsOn() == 0 )
 			{
 				continue;
 			}
@@ -1490,25 +1377,31 @@ DegreeThreeEdge_ths::tellD2EdgesToNotScoreBGandMoverAtomsScoredOnD3Edge() const
 				{ 
 					continue;
 				}
-				d2e_[ kk ]->dropBGAtomsOverlappingAtom(
+				d2e_[ kk ]->dropDotsScoredOnD3Edge(
 					vertex_indices_[ ii ],
 					jj,
-					bg_ats_for_atom_[ ii ][ jj ]
-				);
-				d2e_[ kk ]->dropMoverAtomsOverlappingAtom(
-					vertex_indices_[ ii ],
-					jj,
-					mover_atoms_atom_overlaps_[ ii ][ jj ]
+					dotsForAtom_[ ii ][ jj ]
 				);
 			}
 		}
 	}
 }
 
+void 
+DegreeThreeEdge_ths::dropDotsScoredOnD4Edge(
+	int vertex_index,
+	int atom,
+	DotsForAtom const & dotsOnD4Edge
+)
+{
+	dotsForAtom_[ whichVertex( vertex_index )][ atom ].subtractDotsOn( dotsOnD4Edge );
+}
+
 void
 DegreeThreeEdge_ths::noteBootedAtoms(
 	int vertex_index,
-	std::vector< bool  > const & booted_atoms
+	std::vector< bool  > const & booted_atoms,
+	std::vector< DotsForAtom > const & dotsInHOO
 )
 {
 	int whichvertex = whichVertex( vertex_index );
@@ -1516,77 +1409,64 @@ DegreeThreeEdge_ths::noteBootedAtoms(
 	{
 		if ( booted_atoms[ ii ] )
 		{
-			bg_ats_for_atom_[ whichvertex ][ ii ].clear();
-			mover_atoms_atom_overlaps_[ whichvertex ][ ii ].clear();
+			dotsForAtom_[ whichvertex ][ ii ].subtractDotsOn( dotsInHOO[ ii ] );
 		}
 	}
 }
 
 void DegreeThreeEdge_ths::finalizeScoreVectors()
 {
+	//std::cerr << "Entering D3Edge::finalizeScoreVectors() for " << vertex_indices_[ 0 ] << " " << vertex_indices_[ 1 ] << " " << vertex_indices_[ 2 ] << std::endl;
 	for (int ii = 0; ii < 3; ++ii )
 	{
+		//std::cerr << "ii: " << ii << std::endl;
 		int count_atoms_to_score = 0;
 		std::vector< bool > score_atom( num_atoms_[ ii ], false );
 		for (int jj = 0; jj < num_atoms_[ ii ]; ++jj )
 		{
-			if ( ! bg_ats_for_atom_[ ii ][ jj ].empty()
-				|| ! mover_atoms_atom_overlaps_[ ii ][ jj ].empty() )
+			//std::cerr << "jj: " << jj << std::endl;
+			if ( dotsForAtom_[ ii ][ jj ].numDotsOn() != 0  )
 			{
 				score_atom[ jj ] = true;
 				++count_atoms_to_score;
 			}
 		}
 	
-		atoms_to_score_[ ii ].resize( count_atoms_to_score );
+		//std::cerr << "count_atoms_to_score " << count_atoms_to_score  << std::endl;
+		if (count_atoms_to_score == 0) continue;
+		
+		
+		dotsToScoreOnAtoms_[ ii ].resize( count_atoms_to_score );
 		int count = 0;
 		for (int jj = 0; jj < num_atoms_[ ii ]; ++jj)
 		{
+			//std::cerr << "jj: " << jj << std::endl;
 			if ( ! score_atom[ jj ] ) continue;
-			std::list< AtomDescr > all_atoms_to_score;
-			all_atoms_to_score.splice(
-				all_atoms_to_score.end(),
-				bg_ats_for_atom_[ ii ][ jj ] );
-			all_atoms_to_score.splice(
-				all_atoms_to_score.end(),
-				mover_atoms_atom_overlaps_[ ii ][ jj ]
-			);
-			all_atoms_to_score.sort();
-				
-			atoms_to_score_[ ii ][ count ].first = atoms_[ ii ][ jj ];
-			atoms_to_score_[ ii ][ count ].second.resize( all_atoms_to_score.size() );
-			std::copy(
-				all_atoms_to_score.begin(),
-				all_atoms_to_score.end(),
-				atoms_to_score_[ ii ][ count ].second.begin() );
+			//std::cerr << "Score jj: " << jj << " count=" << count << " count_atoms_to_score "<< count_atoms_to_score << std::endl;
 			
-			/*
-			for ( int kk = 0; kk < atoms_to_score_[ ii ][ count ].second.size(); ++kk)
-			{
-				std::cerr << "ats2score: v" << vertex_indices_[ ii ] << " on d3e";
-				for (int ll = 0; ll < 3; ++ll)
-				{
-					std::cerr << " " << vertex_indices_[ ll ];
-				}
-				std::cerr << " atom " << atoms_to_score_[ ii ][ count ].first;
-				std::cerr << " with " <<  (atoms_to_score_[ ii ][ count ].second)[ kk ] << std::endl;
-			}
-			/**/
-
-
+			dotsToScoreOnAtoms_[ ii ][ count ].first = atoms_[ ii ][ jj ];
+			dotsToScoreOnAtoms_[ ii ][ count ].second = &( dotsForAtom_[ ii ][ jj ] );
+			//std::cerr << "Score: " << atoms_[ ii ][ jj ] << " " << dotsForAtom_[ ii ][ jj ] << std::endl;
 			++count;
 		}
 	}
-
+	//std::cerr << "Leaving D3Edge::finalizeScoreVectors() for " << vertex_indices_[ 0 ] << " " << vertex_indices_[ 1 ] << " " << vertex_indices_[ 2 ] << std::endl;
+	
 }
 
 void
 DegreeThreeEdge_ths::score()
 {
-	if ( nothingToScore() ) return;
+
 	//std::cerr << "Scoring degree 3 hyperedge: " << vertex_indices_[ 0 ] << " ";
 	//std::cerr << vertex_indices_[ 1 ] << " ";
-	//std::cerr << vertex_indices_[ 2 ] << std::endl;
+	//std::cerr << vertex_indices_[ 2 ] << " with num states: ";
+	//std::cerr << num_states_[ 0 ] << " ";
+	//std::cerr << num_states_[ 1 ] << " ";
+	//std::cerr << num_states_[ 2 ] << std::endl;
+
+	if ( nothingToScore() ) return;
+
 	movers_[ 0 ]->initOrientation( *xyz_ );
 	double temp;
 	for( int ii = 0; ii < num_states_[ 0 ]; ++ii )
@@ -1600,7 +1480,11 @@ DegreeThreeEdge_ths::score()
 				for (int ll = 0; ll < 3; ++ll )
 				{
 					if ( nothingToScore( ll ) ) continue;
-					scores_table_[ ii ][ jj ][ kk ] += xyz_->determineScoreForMover( movers_[ ll ], atoms_to_score_[ ll ], temp );
+					scores_table_[ ii ][ jj ][ kk ] += 
+						xyz_->determineScoreForMover(
+						movers_[ ll ], 
+						dotsToScoreOnAtoms_[ ll ],
+						temp );
 				}
 				//std::cerr << "d3e score: " << ii << " " << jj << " " << kk << " = " << scores_table_[ ii ][ jj ][ kk ] << std::endl;
 				movers_[ 2 ]->nextOrientation( *xyz_ );
@@ -1615,7 +1499,8 @@ float
 DegreeThreeEdge_ths::getScoreForEnabledStates(
 	int enabled_state1,
 	int enabled_state2,
-	int enabled_state3) const
+	int enabled_state3
+) const
 {
 	int states[] = {enabled_state1, enabled_state2, enabled_state3};
 	int original_states[3];
@@ -1647,73 +1532,506 @@ DegreeThreeEdge_ths::whichVertex( int vertex ) const
 }
 
 void
-DegreeThreeEdge_ths::compareSharedAtomPairs(
-	DegreeThreeEdge_ths const  *  other,
+DegreeThreeEdge_ths::lookForSharedDots( 
+	DegreeThreeEdge_ths const * other,
 	int vertex_this,
 	int vertex_other
 ) const
 {
-	//std::cerr << "compareSharedAtomPairs: " << mover_atoms_atom_overlaps_[ vertex_this ].size() <<  " ";
-	//std::cerr << other->mover_atoms_atom_overlaps_[ vertex_other ].size() << std::endl;
-	//std::cerr << "comparing vertices: " << vertex_indices_[ vertex_this ]  << " and ";
-	//std::cerr << other->vertex_indices_[ vertex_other ] << std::endl;
-	for (int ii = 0; ii < num_atoms_[ vertex_this ]; ++ii )
+	std::list< int > verts;
+	for (int jj = 0; jj < 3; ++jj)
 	{
+		verts.push_back( vertex_indices_[ jj ] );
+		verts.push_back( other->vertex_indices_[ jj ] );
+	}
+	verts.sort();
+	verts.unique();
+	assert( verts.size() == 4 );
 	
-		std::list< AtomDescr > atomsScoredOnBothEdges;
-		set_intersect_apl( mover_atoms_atom_overlaps_[ vertex_this ][ ii ],
-			other->mover_atoms_atom_overlaps_[ vertex_other ][ ii ],
-			atomsScoredOnBothEdges );
-		if ( ! atomsScoredOnBothEdges.empty() )
+	int v[ 4 ];
+	int count = 0;
+	for (std::list< int >::iterator iter = verts.begin(); iter != verts.end(); ++iter )
+	{
+		v[ count ] = *iter;
+		++count;
+	}
+	
+	for ( int ii = 0; ii < num_atoms_[ vertex_this ]; ++ii )
+	{
+		if ( dotsForAtom_[ vertex_this ][ ii ].anyDotsShared(
+			other->dotsForAtom_[ vertex_other ][ ii ] ) )
 		{
-			//Discovered atoms that would be doubly counted
-			vertex_ptrs_[ vertex_this ]->boot( ii );
+			DegreeFourEdge_ths * d4e = owner_->getDegree4Edge( v[ 0 ], v[ 1 ], v[ 2 ], v[ 3 ] );
+			d4e->setAtomHas4WayOverlap( vertex_indices_[ vertex_this ], ii );
 		}
 	}
-}
-
-void
-DegreeThreeEdge_ths::compareSharedBackgroundAtoms
-(
-	DegreeThreeEdge_ths const  *  other,
-	int vertex_this,
-	int vertex_other
-) const
-{
-	for (int ii = 0; ii < num_atoms_[ vertex_this ]; ++ii )
-	{
-		std::list< AtomDescr > bgatomsScoredOnBothEdges;
-		set_intersect_apl( bg_ats_for_atom_[ vertex_this ][ ii ],
-			other->bg_ats_for_atom_[ vertex_other ][ ii ],
-			bgatomsScoredOnBothEdges );
-		if ( ! bgatomsScoredOnBothEdges.empty() )
-		{
-			//Discovered atom / bg atom pair that would be doubly counted
-			vertex_ptrs_[ vertex_this ]->boot( ii );
-		}
-	}	
 }
 
 bool DegreeThreeEdge_ths::nothingToScore() const
 {
 	for (int ii = 0; ii < 3; ++ii )
 	{
-		if ( ! atoms_to_score_[ ii ].empty() ) return false;
+		if ( ! dotsToScoreOnAtoms_[ ii ].empty() ) return false;
 	}
 	return true;
 }
 
 bool DegreeThreeEdge_ths::nothingToScore( int vertex ) const
 {
-	return atoms_to_score_[ vertex ].empty();
+	return dotsToScoreOnAtoms_[ vertex ].empty();
 }
+
+//----------------------------------------------------------------------------//
+//------------------------- Degree Four Edge Class --------------------------//
+//----------------------------------------------------------------------------//
+
+DegreeFourEdge_ths::DegreeFourEdge_ths(
+	GraphToHoldScores * owner,
+	AtomPositions * xyz,
+	DotSphManager * dotSphereManager,
+	int vertex1,
+	int vertex2,
+	int vertex3,
+	int vertex4
+)
+:
+	owner_( owner ),
+	xyz_( xyz ),
+	dotSphereManager_( dotSphereManager )
+{
+	vertex_indices_[ 0 ] = vertex1;
+	vertex_indices_[ 1 ] = vertex2;
+	vertex_indices_[ 2 ] = vertex3;
+	vertex_indices_[ 3 ] = vertex4;
+	std::cerr << "Creating degree four edge";
+	for (int ii = 0; ii < 4; ++ii)
+	{
+		std::cerr << " " << vertex_indices_[ ii ];
+	}
+	std::cerr << std::endl;
+	
+	for (int ii = 0; ii < 4; ++ii)
+	{
+		vertex_ptrs_[ ii ] = owner_->getVertexPtr( vertex_indices_[ ii ] );
+		pos_in_verts_edge_list_[ ii ] = vertex_ptrs_[ ii ]->addEdge( this );
+		num_states_[ ii ] = vertex_ptrs_[ ii ]->getNumStates();
+		num_atoms_[ ii ] = vertex_ptrs_[ ii ]->getNumAtoms();
+		movers_[ ii ] = vertex_ptrs_[ ii ]->getMover();
+		atoms_[ ii ].resize( num_atoms_[ ii ] );
+		vertex_ptrs_[ ii ]->getAtoms( atoms_[ ii ] );
+		atomHasFourWay_[ ii ].resize( num_atoms_[ ii ]);
+		std::fill( atomHasFourWay_[ ii ].begin(), atomHasFourWay_[ ii ].end(), false );
+		
+		dotsForAtom_[ ii ].resize( atoms_[ ii ].size() );
+		for (int jj = 0; jj < atoms_[ ii ].size(); ++jj)
+		{
+			dotsForAtom_[ ii ][ jj ].setDotManager( dotSphereManager_ );
+			dotsForAtom_[ ii ][ jj ].setAtom( atoms_[ ii ][ jj ] );
+		}
+	}
+	
+	scores_table_ = new float***[ num_states_[ 0 ] ];	
+	for (int ii = 0; ii < num_states_[ 0 ]; ++ii)
+	{
+		scores_table_[ ii ] = new float**[ num_states_[ 1 ] ];
+		for (int jj = 0; jj < num_states_[ 1 ]; ++jj )
+		{
+			scores_table_[ ii ][ jj ] = new float* [ num_states_[ 2 ] ];
+			for (int kk = 0; kk < num_states_[ 2 ]; ++kk )
+			{
+				scores_table_[ ii ][ jj ][ kk ] = new float[ num_states_[ 3 ]];
+				for (int ll = 0; ll < num_states_[ 3 ]; ++ll )
+				{
+					scores_table_[ ii ][ jj ][ kk ][ ll ] = 0;
+				}
+			}
+		}
+	}
+}	
+
+DegreeFourEdge_ths::~DegreeFourEdge_ths()
+{
+	if (scores_table_ != 0 ) 
+	{	
+		for (int ii = 0; ii < num_states_[ 0 ]; ++ii)
+		{
+			if ( scores_table_[ ii ] == 0 ) continue;
+			for (int jj = 0; jj < num_states_[ 1 ]; ++jj )
+			{
+				for (int kk = 0; kk < num_states_[ 2 ]; ++kk)
+				{
+					delete [] scores_table_[ ii ][ jj ][ kk ]; scores_table_[ ii ][ jj ][ kk ] = 0;
+				}
+				delete [] scores_table_[ ii ][ jj ];scores_table_[ ii ][ jj ] = 0;
+			}
+			delete [] scores_table_[ ii ];scores_table_[ ii ] = 0;
+		}
+		delete [] scores_table_;scores_table_ = 0;
+	}
+	for (int ii = 0; ii < 4; ++ii)
+	{
+		vertex_ptrs_[ ii ]->dropEdge( pos_in_verts_edge_list_[ ii ] );
+	}
+	owner_->dropEdge( pos_in_owners_edge_list_ );
+}
+
+void
+DegreeFourEdge_ths::setPosInOwnersEdgeList( std::list< DegreeFourEdge_ths * >::iterator iter )
+{
+	pos_in_owners_edge_list_ = iter;
+}
+
+bool DegreeFourEdge_ths::sameEdge( int vertex1, int vertex2, int vertex3, int vertex4 ) const
+{
+	return ( vertex1 == vertex_indices_[ 0 ] 
+		&& vertex2 == vertex_indices_[ 1 ] 
+		&& vertex3 == vertex_indices_[ 2 ] 
+		&& vertex4 == vertex_indices_[ 3 ]);
+}
+
+int DegreeFourEdge_ths::getFirstNodeIndex() const
+{
+	return vertex_indices_[ 0 ];
+}
+
+int DegreeFourEdge_ths::getSecondNodeIndex() const
+{
+	return vertex_indices_[ 1 ];
+}
+
+int DegreeFourEdge_ths::getThirdNodeIndex() const
+{
+	return vertex_indices_[ 2 ];
+}
+
+int DegreeFourEdge_ths::getFourthNodeIndex() const
+{
+	return vertex_indices_[ 3 ];
+}
+
+void DegreeFourEdge_ths::setAtomHas4WayOverlap(
+	int vertex,
+	int atom
+)
+{
+	atomHasFourWay_[ whichVertex( vertex )][ atom ] = true;
+}
+
+void DegreeFourEdge_ths::detectDotsToScoreOnEdge()
+{
+	for (int ii = 0; ii < 4; ++ii)
+	{
+		int others[ 3 ];
+		int count = 0;
+		for (int jj = 0; jj < 4; ++jj)
+		{
+			if (ii == jj ) continue;
+			others[ count ] = jj;
+			++count;
+		}
+		
+		int groupOfThreeA[ 3 ] = { -1, -1, -1};
+		int groupOfThreeB[ 3 ] = { -1, -1, -1};
+		
+		int offsetA = 0;
+		for (int jj = 0; jj < 2; ++jj)
+		{
+			if ( ii < others[ jj ] )
+			{
+				groupOfThreeA[ jj ] = ii;
+				offsetA = 1;
+			}
+			groupOfThreeA[ jj + offsetA ] = others[ jj ];
+		}
+		int offsetB = 0;
+		for (int jj = 1; jj < 3; ++jj)
+		{
+			if ( ii < others[ jj ] )
+			{
+				groupOfThreeB[ jj - 1 ] = ii;
+				offsetB = 1;
+			}
+			groupOfThreeB[ jj - 1 + offsetB ] = others[ jj ];
+		}
+		std::cerr << "D4E: ii: " << ii << " groupA: " << groupOfThreeA[ 0 ] << " " << groupOfThreeA[ 1 ] << " " << groupOfThreeA[ 2 ] << std::endl;
+		std::cerr << "D4E: ii: " << ii << " groupB: " << groupOfThreeB[ 0 ] << " " << groupOfThreeB[ 1 ] << " " << groupOfThreeB[ 2 ] << std::endl;
+		
+		DegreeThreeEdge_ths * d3eA = owner_->getDegree3Edge( groupOfThreeA[ 0 ], groupOfThreeA[ 1 ], groupOfThreeA[ 2 ]);
+		DegreeThreeEdge_ths * d3eB = owner_->getDegree3Edge( groupOfThreeB[ 0 ], groupOfThreeB[ 1 ], groupOfThreeB[ 2 ]);
+
+		for (int jj = 0; jj < num_atoms_[ ii ]; ++jj)
+		{
+			if ( ! atomHasFourWay_[ ii ][ jj ] ) continue;
+			{
+				d3eA->getDotsForAtom( vertex_indices_[ ii ], jj ).intersect(
+					d3eB->getDotsForAtom( vertex_indices_[ ii ], jj ),
+					dotsForAtom_[ ii ][ jj ] );
+			}
+		}
+	}	
+}
+
+void
+DegreeFourEdge_ths::detectDotsDoublyCounted( DegreeFourEdge_ths const * other ) const
+{
+	int countSharedVertices = 0;
+	for (int ii = 0; ii < 4; ++ii)
+	{
+		for (int jj = 0; jj < 4; ++jj)
+		{
+			if ( vertex_indices_[ ii ] == vertex_indices_[ jj ] )	
+			{
+				++countSharedVertices;
+			}
+		}
+	}
+	
+	if ( countSharedVertices != 3 ) return;
+	
+	for (int ii = 0; ii < 4; ++ii)
+	{
+		for (int jj = 0; jj < 4; ++jj)
+		{
+			if ( vertex_indices_[ ii ] == vertex_indices_[ jj ] )	
+			{
+				lookForSharedDots( other, ii, jj );
+			}
+		}
+	}
+}
+
+
+void 
+DegreeFourEdge_ths::tellD3EdgesToNotScoreDotsScoredOnD4Edge() const
+{
+	//std::cerr << "tellD3EdgesToNotScoreBGandMoverAtomsScoredOnD4Edge: [";
+	//for (int nn = 0; nn < 4; ++nn)
+	//{
+	//	std::cerr<< " " << vertex_indices_[ nn ];
+	//}
+	//std::cerr << std::endl;
+
+	for (int ii = 0; ii < 4; ++ii )
+	{
+		int subset[ 3 ];
+		int count = 0;
+		for (int jj = 0; jj < 4; ++jj)
+		{
+			if (ii == jj ) continue;
+			subset[ count ] = jj;
+			++count;
+		}
+		
+		DegreeThreeEdge_ths * d3e = owner_->getDegree3Edge( 
+			vertex_indices_[ subset[ 0 ]],
+			vertex_indices_[ subset[ 1 ]],
+			vertex_indices_[ subset[ 2 ]]);
+		
+		for (int jj = 0; jj < 3; ++jj)
+		{
+			for (int kk = 0; kk < num_atoms_[ subset[ jj ] ]; ++kk)
+			{
+				if ( ! atomHasFourWay_[ subset[ jj ]][ kk ] ) continue;
+				d3e->dropDotsScoredOnD4Edge(
+					vertex_indices_[ subset[ jj ] ],
+					kk,
+					dotsForAtom_[ subset[ jj ]][ kk ] );
+			}
+		}
+	}		
+}			
+
+void
+DegreeFourEdge_ths::noteBootedAtoms(
+	int vertex_index,
+	std::vector< bool  > const & booted_atoms,
+	std::vector< DotsForAtom > const & dotsInHOO
+)
+{
+	int whichvertex = whichVertex( vertex_index );
+	for ( int ii = 0; ii < num_atoms_[ whichvertex ]; ++ii )
+	{
+		if ( booted_atoms[ ii ] )
+		{
+			dotsForAtom_[ whichvertex ][ ii ].subtractDotsOn( dotsInHOO[ ii ] );
+		}
+	}
+}
+
+void DegreeFourEdge_ths::finalizeScoreVectors()
+{
+	//std::cerr << "Entering D2Edge::finalizeScoreVectors() for " << vertex_indices_[ 0 ] << " " << vertex_indices_[ 1 ]<< " " << vertex_indices_[ 2 ]<< " " << vertex_indices_[ 3 ] << std::endl;
+	for (int ii = 0; ii < 4; ++ii )
+	{
+		int count_atoms_to_score = 0;
+		std::vector< bool > score_atom( num_atoms_[ ii ], false );
+		for (int jj = 0; jj < num_atoms_[ ii ]; ++jj )
+		{
+			if ( dotsForAtom_[ ii ][ jj ].numDotsOn() != 0 )
+			{
+				score_atom[ jj ] = true;
+				++count_atoms_to_score;
+			}
+		}
+	
+		atoms_to_score_[ ii ].resize( count_atoms_to_score );
+		int count = 0;
+		for (int jj = 0; jj < num_atoms_[ ii ]; ++jj)
+		{
+			if ( ! score_atom[ jj ] ) continue;
+			dotsToScoreOnAtoms_[ ii ][ count ].first = atoms_[ ii ][ jj ];
+			dotsToScoreOnAtoms_[ ii ][ count ].second = &( dotsForAtom_[ ii ][ jj ] );
+			++count;
+		}
+	}
+	
+}
+
+void
+DegreeFourEdge_ths::score()
+{
+	if ( nothingToScore() ) return;
+	//std::cerr << "Scoring degree 4 hyperedge: " << vertex_indices_[ 0 ] << " ";
+	//std::cerr << vertex_indices_[ 1 ] << " ";
+	//std::cerr << vertex_indices_[ 2 ] << " ";
+	//std::cerr << vertex_indices_[ 3 ] << std::endl;
+	movers_[ 0 ]->initOrientation( *xyz_ );
+	double temp;
+	for( int ii = 0; ii < num_states_[ 0 ]; ++ii )
+	{
+		movers_[ 1 ]->initOrientation( *xyz_ );
+		for (int jj = 0; jj < num_states_[ 1 ]; ++jj )
+		{
+			movers_[ 2 ]->initOrientation( *xyz_ );
+			for (int kk = 0; kk < num_states_[ 2 ]; ++kk )
+			{
+				for (int ll = 0; ll < num_states_[ 3 ]; ++ll )
+				{
+					movers_[ 3 ]->initOrientation( *xyz_ );
+					for ( int mm = 0; mm < 4; ++mm)
+					{
+						if ( nothingToScore( mm ) ) continue;
+						scores_table_[ ii ][ jj ][ kk ][ ll ] += 
+							xyz_->determineScoreForMover(
+							movers_[ mm ], 
+							dotsToScoreOnAtoms_[ mm ],
+							temp );
+
+					}
+					//std::cerr << "d4e score: " << ii << " " << jj << " " << kk << " " << ll;
+					//std::cerr<< " = " << scores_table_[ ii ][ jj ][ kk ][ ll ] << std::endl;
+
+					movers_[ 3 ]->nextOrientation( *xyz_ );
+				}
+				movers_[ 2 ]->nextOrientation( *xyz_ );
+			}
+			movers_[ 1 ]->nextOrientation( *xyz_ );
+		}
+		movers_[ 0 ]->nextOrientation( *xyz_ );
+	}
+}
+
+float
+DegreeFourEdge_ths::getScoreForEnabledStates(
+	int enabled_state1,
+	int enabled_state2,
+	int enabled_state3,
+	int enabled_state4) const
+{
+	int states[] = {enabled_state1, enabled_state2, enabled_state3, enabled_state4};
+	int original_states[4];
+	for (int ii = 0; ii < 4; ++ii)
+	{
+		original_states[ ii ] = vertex_ptrs_[ ii ]->convertEnabledStateToRegularState( states[ ii ] );
+	}
+	return scores_table_[ original_states[ 0 ]][ original_states[ 1 ] ][ original_states[ 2 ]][ original_states[ 3 ]];
+}
+
+
+float DegreeFourEdge_ths::getScoreForAssignedState() const
+{
+	return scores_table_[ vertex_ptrs_[ 0 ]->getAssignedState() ]
+		[ vertex_ptrs_[ 1 ]->getAssignedState() ]
+		[ vertex_ptrs_[ 2 ]->getAssignedState() ]
+		[ vertex_ptrs_[ 3 ]->getAssignedState() ];
+}
+
+int
+DegreeFourEdge_ths::whichVertex( int vertex ) const
+{
+	for (int ii = 0; ii < 4; ++ii)
+	{
+		if ( vertex_indices_[ ii ] == vertex ) return ii;
+	}
+	std::cerr << "DegreeFourEdge_ths: CRITICAL ERROR. Did not find sought vertex: " << vertex << " out of [ ";
+	std::cerr << vertex_indices_[ 0 ] << ", " << vertex_indices_[ 1 ] << ", ";
+	std::cerr << vertex_indices_[ 2 ] << ", " << vertex_indices_[ 3 ];
+	std::cerr << "]" << std::endl;
+	assert( false );
+	exit(1);
+}
+
+void
+DegreeFourEdge_ths::lookForSharedDots( 
+	DegreeFourEdge_ths const * other,
+	int vertex_this,
+	int vertex_other
+) const
+{
+	std::list< int > verts;
+	for (int jj = 0; jj < 4; ++jj)
+	{
+		verts.push_back( vertex_indices_[ jj ] );
+		verts.push_back( other->vertex_indices_[ jj ] );
+	}
+	verts.sort();
+	verts.unique();
+		
+	for ( int ii = 0; ii < num_atoms_[ vertex_this ]; ++ii )
+	{
+		if ( dotsForAtom_[ vertex_this ][ ii ].anyDotsShared(
+			other->dotsForAtom_[ vertex_other ][ ii ] ) )
+		{
+			DotsForAtom dotsInHOO;
+			dotsInHOO.setDotManager( dotSphereManager_ );
+			dotsInHOO.setAtom( atoms_[ vertex_this ][ ii ] );
+
+			dotsForAtom_[ vertex_this ][ ii ].intersect(
+				other->dotsForAtom_[ vertex_other ][ ii ],
+				dotsInHOO );
+			
+			vertex_ptrs_[ vertex_this ]->boot( ii, dotsInHOO, verts );
+		}
+	}
+}
+
+bool DegreeFourEdge_ths::nothingToScore() const
+{
+	for (int ii = 0; ii < 4; ++ii )
+	{
+		if ( ! dotsToScoreOnAtoms_[ ii ].empty() ) return false;
+	}
+	return true;
+}
+
+bool DegreeFourEdge_ths::nothingToScore( int vertex ) const
+{
+	return dotsToScoreOnAtoms_[ vertex ].empty();
+}
+
+//----------------------------------------------------------------------------//
+//------------------------------ Graph Class --------------------------------//
+//----------------------------------------------------------------------------//
+
 
 GraphToHoldScores::GraphToHoldScores( 
 	AtomPositions * xyz,
+	DotSphManager * dotSphereManager,
 	std::vector< int > const & num_states,
 	std::vector< Mover * > const & movers )
 :
 	xyz_( xyz ),
+	dotSphereManager_( dotSphereManager ),
 	num_vertices_( movers.size() ),
 	num_deg2edges_( 0 ),
 	num_deg3edges_( 0 ),
@@ -1725,18 +2043,14 @@ GraphToHoldScores::GraphToHoldScores(
 	instantiateVertices( num_states, movers );
 	//std::cerr << "obtainAtomsFromMovers();" << std::endl;
 	obtainAtomsFromMovers();
-	//std::cerr << "getOverlappingBackgroundAtoms();" << std::endl;
-	getOverlappingBackgroundAtoms();
-	//std::cerr << "dropMoverAtomsFromBackgroundAtomLists();" << std::endl;
-	dropMoverAtomsFromBackgroundAtomLists();
 	//std::cerr << "addDegreeTwoEdges();" << std::endl;
 	addDegreeTwoEdges();
-	//std::cerr << "promoteBackgroundAtomsToDegreeTwoEdges();" << std::endl;
-	promoteBackgroundAtomsToDegreeTwoEdges();
 	//std::cerr << "addDegreeThreeEdges();" << std::endl;
 	addDegreeThreeEdges();
-	///std::cerr << "detectFourWayInteractions();" << std::endl;
+	//std::cerr << "detectFourWayInteractions();" << std::endl;
 	detectFourWayInteractions();
+	//std::cerr << "detectFiveWayInteractions();" << std::endl;
+	detectFiveWayInteractions();
 	//std::cerr << "cascadeScoringInfo();" << std::endl;
 	cascadeScoringInfo();
 	//std::cerr << "finalizeScoreVectors();" << std::endl;
@@ -1773,6 +2087,15 @@ GraphToHoldScores::~GraphToHoldScores()
 		delete (*iter3);
 		iter3 = nextiter3;
 	}
+	std::list< DegreeFourEdge_ths * >::iterator iter4 = deg4edges_.begin();
+	while ( iter4 != deg4edges_.end() )
+	{
+		std::list< DegreeFourEdge_ths  * >::iterator nextiter4 = iter4;
+		++nextiter4;
+		delete (*iter4);
+		iter4 = nextiter4;
+	}
+	
 	for (int ii = 0; ii < num_vertices_; ++ii )
 	{
 		delete vertices_[ ii ];
@@ -1815,6 +2138,28 @@ GraphToHoldScores::getDegree3Edge( int fn, int sn, int tn )
 	return edge;
 }
 
+DegreeFourEdge_ths* 
+GraphToHoldScores::getDegree4Edge( int fn, int sn, int tn, int fthn )
+{
+	nodeInRange( fn );
+	nodeInRange( sn );
+	nodeInRange( tn );
+	nodeInRange( fthn );
+	assert( fn < sn && sn < tn && tn < fthn );
+	DegreeFourEdge_ths * edge = findDeg4Edge(fn, sn, tn, fthn );
+	if (edge == 0 ) edge = addDegree4Edge( fn, sn, tn, fthn );
+	return edge;
+}
+	
+bool GraphToHoldScores::degree2EdgeExists( int fn, int sn ) const
+{	return (findDeg2Edge( fn, sn ) != 0 ); }
+
+bool GraphToHoldScores::degree3EdgeExists( int fn, int sn, int tn ) const
+{	return (findDeg3Edge( fn, sn, tn ) != 0 ); }
+
+bool GraphToHoldScores::degree4EdgeExists( int fn, int sn, int tn, int fthn ) const
+{	return ( findDeg4Edge( fn, sn, tn, fthn ) != 0 ); }
+
 void GraphToHoldScores::forceClique( std::list< int > const & movers_in_clique )
 {
 	std::list< int >::const_iterator iter_outer = movers_in_clique.begin();
@@ -1843,6 +2188,12 @@ void GraphToHoldScores::dropEdge( std::list< DegreeThreeEdge_ths * >::iterator i
 {
 	deg3edges_.erase( iter );
 	--num_deg3edges_;
+}
+
+void GraphToHoldScores::dropEdge( std::list< DegreeFourEdge_ths * >::iterator iter )
+{
+	deg4edges_.erase( iter );
+	--num_deg4edges_;
 }
 
 void GraphToHoldScores::getPenalties(
@@ -1924,7 +2275,8 @@ bool GraphToHoldScores::getNodeHasAnyHighOrderOverlap( int vertex_id ) const
 	return vertices_[ vertex_id ]->getHasAnyHighOrderOverlap();
 }
 
-std::list< AtomDescr > GraphToHoldScores::getAtomsInHighOrderOverlapForNode( int vertex_id ) const
+std::vector< std::pair< AtomDescr, DotsForAtom * > > 
+GraphToHoldScores::getAtomsInHighOrderOverlapForNode( int vertex_id ) const
 {
 	nodeInRange( vertex_id );
 	return vertices_[ vertex_id ]->getAtomsInHighOrderOverlap();
@@ -1981,6 +2333,21 @@ bool GraphToHoldScores::getD3EIteratorAtEnd() const
 	return d3eiter_ == deg3edges_.end();
 }
 
+void GraphToHoldScores::setD4EIteratorAtBegining()
+{
+	d4eiter_ = deg4edges_.begin();
+}
+
+void GraphToHoldScores::incrementD4EIterator()
+{
+	++d4eiter_;
+}
+
+bool GraphToHoldScores::getD4EIteratorAtEnd() const
+{
+	return d4eiter_ == deg4edges_.end();
+}
+
 int GraphToHoldScores::getFirstIndexFocusedD3E() const
 {
 	return (*d3eiter_)->getFirstNodeIndex();
@@ -2000,6 +2367,32 @@ float
 GraphToHoldScores::getScoreForFocusedD3E( int state1, int state2, int state3) const
 {
 	return (*d3eiter_)->getScoreForEnabledStates( state1, state2, state3 );
+}
+
+int GraphToHoldScores::getFirstIndexFocusedD4E() const
+{
+	return (*d4eiter_)->getFirstNodeIndex();
+}
+
+int GraphToHoldScores::getSecondIndexFocusedD4E() const
+{
+	return (*d4eiter_)->getSecondNodeIndex();
+}
+
+int GraphToHoldScores::getThirdIndexFocusedD4E() const
+{
+	return (*d4eiter_)->getThirdNodeIndex();
+}
+
+int GraphToHoldScores::getFourthIndexFocusedD4E() const
+{
+	return (*d4eiter_)->getFourthNodeIndex();
+}
+
+float
+GraphToHoldScores::getScoreForFocusedD4E( int state1, int state2, int state3, int state4) const
+{
+	return (*d4eiter_)->getScoreForEnabledStates( state1, state2, state3, state4 );
 }
 
 
@@ -2025,6 +2418,11 @@ GraphToHoldScores::getScoreForStateAssignment(
 	}
 	for (std::list< DegreeThreeEdge_ths* >::const_iterator iter = deg3edges_.begin();
 		iter != deg3edges_.end(); ++iter)
+	{
+		score += (*iter)->getScoreForAssignedState();
+	}
+	for (std::list< DegreeFourEdge_ths* >::const_iterator iter = deg4edges_.begin();
+		iter != deg4edges_.end(); ++iter)
 	{
 		score += (*iter)->getScoreForAssignedState();
 	}
@@ -2055,7 +2453,9 @@ GraphToHoldScores::instantiateVertices
 {
 	for (int ii = 0; ii < num_vertices_; ++ii )
 	{
-		vertices_[ ii ] = new Vertex_ths( this, xyz_, ii, num_states[ ii ]);
+		vertices_[ ii ] = new Vertex_ths( 
+			this, xyz_,  dotSphereManager_,
+			ii, num_states[ ii ]);
 		vertices_[ ii ]->setMover( movers[ ii ] );
 	}
 }
@@ -2066,27 +2466,6 @@ GraphToHoldScores::obtainAtomsFromMovers()
 	for (int ii = 0; ii < getNumNodes(); ++ii)
 	{
 		vertices_[ ii ]->obtainAtomsFromMover();
-	}
-}
-
-void
-GraphToHoldScores::getOverlappingBackgroundAtoms()
-{
-	for (int ii = 0; ii < getNumNodes(); ++ii)
-	{
-		vertices_[ ii ]->getOverlappingBackgroundAtoms();
-	}
-}
-
-void
-GraphToHoldScores::dropMoverAtomsFromBackgroundAtomLists()
-{
-	for (int ii = 0; ii < getNumNodes(); ++ii)
-	{
-		for (int jj = ii+1; jj < getNumNodes(); ++jj)
-		{
-			vertices_[ ii ]->dropMoverAtomsFromBackgroundAtomLists( vertices_[ jj ] );
-		}
 	}
 }
 
@@ -2102,26 +2481,17 @@ GraphToHoldScores::addDegreeTwoEdges()
 				addDegree2Edge( ii, jj );
 			}
 		}
-	}	
-}
-
-void
-GraphToHoldScores::promoteBackgroundAtomsToDegreeTwoEdges()
-{
-	for ( std::list< DegreeTwoEdge_ths * >::iterator iter = deg2edges_.begin();
-		iter != deg2edges_.end(); ++iter )
+	}
+	
+	for (std::list< DegreeTwoEdge_ths* >::iterator iter = deg2edges_.begin();
+		iter != deg2edges_.end(); ++iter)
 	{
-		(*iter)->detectBackgroundAtomsToScoreForEdge();
+		(*iter)->detectDotsToScoreOnEdge();
 	}
 }
-
 void
 GraphToHoldScores::addDegreeThreeEdges()
 {
-	for (int ii = 0; ii < getNumNodes(); ++ii)
-	{
-		vertices_[ ii ]->detectBackgroundAtomsInThreeWayOverlap();
-	}
 
 	if ( getNumNodes() < 3 ) return;
 	for (int ii = 0; ii < getNumNodes(); ++ii)
@@ -2138,6 +2508,12 @@ GraphToHoldScores::addDegreeThreeEdges()
 			}
 		}
 	}
+	
+	for (std::list< DegreeThreeEdge_ths * >::iterator iter = deg3edges_.begin();
+		iter != deg3edges_.end(); ++iter )
+	{
+		(*iter)->detectDotsToScoreOnEdge();
+	}
 }
 
 void
@@ -2151,8 +2527,30 @@ GraphToHoldScores::detectFourWayInteractions()
 		++iter_inner;
 		while ( iter_inner != deg3edges_.end() )
 		{
-			(*iter_outer)->detect_shared_atom_pair( *iter_inner );
-			(*iter_outer)->detectBackgroundAtomScoredTwiceForAtom( *iter_inner );
+			(*iter_outer)->detectDotsDoublyCounted( *iter_inner );
+			++iter_inner;
+		}
+		++iter_outer;
+	}
+
+	for (std::list< DegreeFourEdge_ths * >::iterator iter = deg4edges_.begin();
+		iter != deg4edges_.end(); ++iter )
+	{
+		(*iter)->detectDotsToScoreOnEdge();
+	}
+}
+
+void GraphToHoldScores::detectFiveWayInteractions()
+{
+	//compare all degree4 hyperedges
+	std::list< DegreeFourEdge_ths * >::iterator iter_outer = deg4edges_.begin();
+	while ( iter_outer != deg4edges_.end() )
+	{
+		std::list< DegreeFourEdge_ths * >::iterator iter_inner = iter_outer;
+		++iter_inner;
+		while ( iter_inner != deg4edges_.end() )
+		{
+			(*iter_outer)->detectDotsDoublyCounted( *iter_inner );
 			++iter_inner;
 		}
 		++iter_outer;
@@ -2170,13 +2568,19 @@ GraphToHoldScores::cascadeScoringInfo()
 	for( std::list< DegreeTwoEdge_ths * >::iterator iter = deg2edges_.begin();
 		iter != deg2edges_.end(); ++iter )
 	{
-		(*iter)->tellVerticesToNotScoreBGAtomsScoredOnD2Edge();
+		(*iter)->tellVerticesToNotScoreDotsScoredOnD2Edge();
 	}
 	
 	for( std::list< DegreeThreeEdge_ths * >::iterator iter = deg3edges_.begin();
 		iter != deg3edges_.end(); ++iter )
 	{
-		(*iter)->tellD2EdgesToNotScoreBGandMoverAtomsScoredOnD3Edge();
+		(*iter)->tellD2EdgesToNotScoreDotsScoredOnD3Edge();
+	}
+
+	for( std::list< DegreeFourEdge_ths * >::iterator iter = deg4edges_.begin();
+		iter != deg4edges_.end(); ++iter )
+	{
+		(*iter)->tellD3EdgesToNotScoreDotsScoredOnD4Edge();
 	}
 
 }
@@ -2202,6 +2606,12 @@ GraphToHoldScores::finalizeScoreVectors()
 		(*iter)->finalizeScoreVectors();
 	}
 	
+	for( std::list< DegreeFourEdge_ths * >::iterator iter = deg4edges_.begin();
+		iter != deg4edges_.end(); ++iter )
+	{
+		(*iter)->finalizeScoreVectors();
+	}
+	//std::cerr << "Leaving finalize score vectors" << std::endl;
 }
 
 void
@@ -2223,6 +2633,13 @@ GraphToHoldScores::score()
 	{
 		(*iter)->score();
 	}
+
+	for( std::list< DegreeFourEdge_ths * >::iterator iter = deg4edges_.begin();
+		iter != deg4edges_.end(); ++iter )
+	{
+		(*iter)->score();
+	}
+
 }
 
 void
@@ -2247,7 +2664,7 @@ GraphToHoldScores::addDegree2Edge( int node1, int node2 )
 	nodeInRange( node1 );
 	nodeInRange( node2 );
 	
-	DegreeTwoEdge_ths * new_edge = new DegreeTwoEdge_ths( this, xyz_, node1, node2 );
+	DegreeTwoEdge_ths * new_edge = new DegreeTwoEdge_ths( this, xyz_,  dotSphereManager_, node1, node2 );
 	deg2edges_.push_front( new_edge );
 	new_edge->setPosInOwnersEdgeList( deg2edges_.begin() );
 	
@@ -2274,10 +2691,38 @@ DegreeThreeEdge_ths*
 GraphToHoldScores::addDegree3Edge( int fn, int sn, int tn )
 {
 	//std::cerr << "Adding degree 3 edge: " << fn << ", " << sn << ", " << tn << std::endl;
-	DegreeThreeEdge_ths * new_edge = new DegreeThreeEdge_ths( this, xyz_, fn, sn, tn );
+	DegreeThreeEdge_ths * new_edge = new DegreeThreeEdge_ths( 
+		this, xyz_,  dotSphereManager_,
+		fn, sn, tn );
+	
 	deg3edges_.push_front( new_edge );
 	new_edge->setPosInOwnersEdgeList( deg3edges_.begin() );
 	++num_deg3edges_;
 	return new_edge;
 }
 
+DegreeFourEdge_ths*
+GraphToHoldScores::findDeg4Edge( int fn, int sn, int tn, int fthn ) const
+{
+	for (std::list< DegreeFourEdge_ths * >::const_iterator iter = deg4edges_.begin();
+		iter != deg4edges_.end(); ++iter )
+	{
+		if ( (*iter)->sameEdge( fn, sn, tn, fthn ) )
+			return *iter;
+	}
+	return 0;
+}
+
+DegreeFourEdge_ths*
+GraphToHoldScores::addDegree4Edge( int fn, int sn, int tn, int fthn )
+{
+	//std::cerr << "Adding degree 4 edge: " << fn << ", " << sn << ", " << tn << ", " << fthn << std::endl;
+	DegreeFourEdge_ths * new_edge = new DegreeFourEdge_ths( 
+		this, xyz_, dotSphereManager_,
+		fn, sn, tn, fthn );
+	
+	deg4edges_.push_front( new_edge );
+	new_edge->setPosInOwnersEdgeList( deg4edges_.begin() );
+	++num_deg4edges_;
+	return new_edge;
+}

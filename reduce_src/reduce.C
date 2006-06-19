@@ -93,15 +93,20 @@
 //                         disabling hydrogen atom numbering and skipInfo. removing
 //                         PDBrecNAMEout as in v2.999. Disabling hydrogen bonds to his
 //                         aromatic carbon atoms.
+//  6/19/06 - apl -v3.1 - decomposing the scoring function in terms of which dots should
+//                        be scored with which hyperedges.  Incorporating S3 reduction rules
+//                        into dynamic programming.  Incorporating code to handle 4-way overlap
+//                        (but not five way overlap) though I have not observed any 4-way
+//                        overlap using the new scheme (it would show up in the previous scheme).
 
 #pragma warning(disable:4786) 
 #pragma warning(disable:4305) 
 #pragma warning(disable:4800) 
 
 static const char *versionString =
-     "reduce: version 3.0  6/15/06, Copyright 1997-2003, J. Michael Word";
+     "reduce: version 3.1  6/15/06, Copyright 1997-2003, J. Michael Word";
 
-static const char *shortVersion    = "reduceV3.0";
+static const char *shortVersion    = "reduceV3.1";
 static const char *referenceString =
                        "Word, et. al. (1999) J. Mol. Biol. 285, 1735-1747.";
 static const char *electronicReference = "http://kinemage.biochem.duke.edu";

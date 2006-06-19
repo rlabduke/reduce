@@ -107,10 +107,10 @@ public:
 		const DotSph& dots, float prRadius, bool onlyBumps,
 		float &bumpSubScore, float &hbSubScore, bool &hasBadBump);
 
-	double determineScoreForMoverIn3WayOverlap( 
-		std::list< AtomDescr > * atomsIn3WayOverlap,
-		Mover* mover
-	);
+	//double determineScoreForMoverIn3WayOverlap( 
+	//	std::list< AtomDescr > * atomsIn3WayOverlap,
+	//	Mover* mover
+	//);
 
 	void CollectBumping(const AtomDescr& ad, std::list<PDBrec*>& bumping);
    float & getMaxFoundVDWRad() { return _maxVDWFound;}
@@ -118,13 +118,13 @@ public:
    
    float determineScoreForMover(
    	Mover* mover,
-   	std::vector< std::pair< AtomDescr, std::vector< AtomDescr > > > & atoms_to_score,
+   	std::vector< std::pair< AtomDescr, DotsForAtom * > >  & atoms_to_score,
    	double & penalty
    );
    
-   float scoreMoverInHighOrderOverlap(
-		std::list< AtomDescr > & atomsInHighOrderOverlap,
-		Mover * mover );
+   //float scoreMoverInHighOrderOverlap(
+	//	std::list< AtomDescr > & atomsInHighOrderOverlap,
+	//	Mover * mover );
    
 	bool outputNotice() const {return _outputNotice;}
 	
@@ -172,7 +172,7 @@ private:
 	
 	bool scoreAtomsAndDotsInAtomsToScoreVector_;
 	bool scoreAtomsInAtomsInHighOrderOverlapList_;
-	std::vector< std::pair< AtomDescr, std::vector< AtomDescr > > >* atoms_to_score_ptr_;
+	std::vector< std::pair< AtomDescr, DotsForAtom * > > * atoms_to_score_ptr_;
 	std::list< AtomDescr > * atoms_in_high_order_overlap_ptr_;
 	
 	int  _clqDots;				//ANDREW: for keeping track of how many dots go into the score for a network
