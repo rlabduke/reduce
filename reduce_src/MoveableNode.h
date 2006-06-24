@@ -147,6 +147,7 @@ public:
 
 	double getEdgeScore(NodeState firstNodeState, NodeState secondNodeState);
 	void   setEdgeScore(NodeState firstNodeState, NodeState secondNodeState, double theScore);
+	void   addEdgeScore(NodeState firstNodeState, NodeState secondNodeState, double theScore);
 
 private:
 	void				deallocateMatrix();
@@ -185,10 +186,6 @@ public:
 	void				setNodeStateScore(NodeState theNodeState, double theScore);
 	double				getNodeStateScore(NodeState theNodeState); 
 	void 				eliminate();
-	void 				eliminateThroughTreeReduction();
-	void 				eliminateThroughCycleReduction();
-	void				eliminateThroughS3Reduction();
-	void				eliminateSingleton();
 	void 				beNotifiedDependencyEliminated(int i);
 	NodeState			getNumberOfPossibleStates();
 	void 				setNumberOfPossibleStates(NodeState maxStates);
@@ -228,6 +225,11 @@ public:
    
    std::vector< std::pair< AtomDescr, DotsForAtom * > > getAtomsInHighOrderOverlap() {return _atomsInHighOrderOverlap;}
 private:
+	void 				eliminateThroughTreeReduction();
+	void 				eliminateThroughCycleReduction();
+	void				eliminateThroughS3Reduction();
+	void				eliminateSingleton();
+	void				eliminateOneStateVertex();
 	
 	int									_index;
 	NodeState							_maxNodeStates;
@@ -266,6 +268,7 @@ public:
 	//EdgeBetweenMoveableNodes(const EdgeBetweenMoveableNodes& rhs);	//Shallow copy is desired if any copy is called at all
 	
 	void   setEdgeScore(NodeState firstNodeState, NodeState secondNodeState, double theScore);
+	void   addEdgeScore( NodeState firstNodeState, NodeState secondNodeState, double theScore);
 	double getEdgeScore(NodeState firstNodeState, NodeState secondNodeState);
 	double getEdgeScore(int Node1sIndex, NodeState Node1sState, int Node2sIndex, NodeState Node2sState);
 	void   setFirstNodePtr(MoveableNode* firstNode);

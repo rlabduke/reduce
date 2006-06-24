@@ -479,6 +479,20 @@ void   EdgeScoreMatrix::setEdgeScore(NodeState firstNodeState, NodeState secondN
 		cerr << "EdgeScoreMatrix: First node index negative or exceeding firstNodeMaxStates: " << firstNodeState << endl;
 	return;
 }
+
+void   EdgeScoreMatrix::addEdgeScore(NodeState firstNodeState, NodeState secondNodeState, double theScore)
+{
+	if (((int) firstNodeState >= 0) && (firstNodeState < _1stNodeMaxStates))
+		if (((int) secondNodeState >= 0) && (secondNodeState < _2ndNodeMaxStates))
+			_theEScrMatrix[(int) firstNodeState][(int) secondNodeState] += theScore;
+		else
+			cerr << "EdgeScoreMatrix: Second node index negative or exceeding secondNodeMaxStates: " << secondNodeState << endl;
+	else
+		cerr << "EdgeScoreMatrix: First node index negative or exceeding firstNodeMaxStates: " << firstNodeState << endl;
+	return;
+}
+
+
 void EdgeScoreMatrix::deallocateMatrix()
 {
 	if (_theEScrMatrix != NULL)
@@ -594,55 +608,26 @@ void 				MoveableNode::eliminate()
 	//cerr << "Begining Elimination of Node: " << _index << endl;
 
 	NodeAndEdgeManager* theNaEManager = NodeAndEdgeManager::getInstance();
-	MoveableNode* otherNodePtr;
 
-	if (_edgeList.size() == 1)
+	if ( _maxNodeStates == 1 )
+	{
+		eliminateOneStateVertex();
+		_eliminationOrder = 3; //same as singleton elimination
+	}
+	else if (_edgeList.size() == 1)
 	{
 		eliminateThroughTreeReduction();
-		theNaEManager->BeNotifiedOfEliminatedNode(_index);
-		std::list<EdgeBetweenMoveableNodes*>::iterator iter = _edgeList.begin();
-		(*iter)->setIsEliminated(true);
-		otherNodePtr = (*iter)->getPointerToOtherNode(_index);
-//		iter.drop();
-		_edgeList.pop_front();
-		otherNodePtr->beNotifiedDependencyEliminated(_index);
-		_isEliminated = true;
 		_eliminationOrder = 1;
 	}
 	else if (_edgeList.size() == 2)
 	{
 		eliminateThroughCycleReduction();
-		theNaEManager->BeNotifiedOfEliminatedNode(_index);
-		for (std::list<EdgeBetweenMoveableNodes*>::iterator iter = _edgeList.begin();
-			iter != _edgeList.end(); ++iter)
-		{
-		
-			(*iter)->setIsEliminated(true);
-			otherNodePtr = (*iter)->getPointerToOtherNode(_index);
-			otherNodePtr->beNotifiedDependencyEliminated(_index);
-		}
-		_edgeList.pop_front();
-		_edgeList.pop_front();
-		_isEliminated = true;
 		_eliminationOrder = 2;
 
 	}
 	else if (_edgeList.size() == 3)
 	{
 		eliminateThroughS3Reduction();
-		theNaEManager->BeNotifiedOfEliminatedNode(_index);
-		for (std::list<EdgeBetweenMoveableNodes*>::iterator iter = _edgeList.begin();
-			iter != _edgeList.end(); ++iter)
-		{
-		
-			(*iter)->setIsEliminated(true);
-			otherNodePtr = (*iter)->getPointerToOtherNode(_index);
-			otherNodePtr->beNotifiedDependencyEliminated(_index);
-		}
-		_edgeList.pop_front();
-		_edgeList.pop_front();
-		_edgeList.pop_front();
-		_isEliminated = true;
 		_eliminationOrder = 4;
 	}
 	else if (_edgeList.size() == 0)
@@ -658,8 +643,26 @@ void 				MoveableNode::eliminate()
 		//cerr << "Last Node in reduced graph being eliminated " << endl;
 
 		eliminateSingleton();
+		_eliminationOrder = 3; 
+	}
+	else {
+		return;
 	}
 
+	
+	for (std::list<EdgeBetweenMoveableNodes*>::iterator iter = _edgeList.begin();
+		iter != _edgeList.end(); ++iter)
+	{
+	
+		(*iter)->setIsEliminated(true);
+		MoveableNode* otherNodePtr = (*iter)->getPointerToOtherNode(_index);
+		otherNodePtr->beNotifiedDependencyEliminated(_index);
+	}
+	_edgeList.clear();
+	_isEliminated = true;
+	theNaEManager->BeNotifiedOfEliminatedNode(_index);
+
+	//cerr << "Finished Elimination of Node: " << _index << endl;
 	return;
 
 }
@@ -910,12 +913,15 @@ MoveableNode::eliminateThroughS3Reduction()
 		theNaEManager->getD3Edge( nodes_sorted[ 0 ], nodes_sorted[ 1 ], nodes_sorted[ 2 ] ) :
 		new Degree3Hyperedge( nodes_sorted[ 0 ], nodes_sorted[ 1 ], nodes_sorted[ 2 ] );
 
-	int numStates[ 3 ];
+	int numStates[ 3 ] = {-1, -1, -1 };
 	for (int ii = 0; ii < 3; ++ii)
 	{
 		numStates[ ii ] = theNaEManager->getMoveableNode( nodes_sorted[ ii ] )->getNumberOfPossibleStates();
 	}
 	theNaEManager->noteEffort( numStates[ 0 ] * numStates[1] * numStates[2] * _maxNodeStates );
+	
+	//std::cerr << "numStates:  " << numStates[ 0 ] << " " << numStates[1] << " " <<  numStates[2] << std::endl;
+	
 	//collect info for single degree-4 edge
 	Degree4Hyperedge* degree4hyperedge (0);
 	if ( ! _degree4hyperedges.empty() )
@@ -945,13 +951,21 @@ MoveableNode::eliminateThroughS3Reduction()
 		{
 			if ( (*iter)->getVertexIndex( ii ) != _index )
 			{
+				int whichOfThreeNeighbors = -1;
+				for (int jj = 0; jj < 3; ++jj)
+				{
+					if ((*iter)->getVertexIndex( ii ) == nodes_sorted[ jj ]  )
+					{
+						whichOfThreeNeighbors = jj;
+					}
+				}
 				if (count2 == 0 )
 				{
-					d3whichVert[ count ].first = ii;
+					d3whichVert[ count ].first = whichOfThreeNeighbors;
 				}
 				else
 				{
-					d3whichVert[ count ].second = ii;
+					d3whichVert[ count ].second = whichOfThreeNeighbors;
 				}
 				nodes[ count2 ] = (*iter)->getVertexIndex( ii );
 				++count2;
@@ -1045,6 +1059,137 @@ MoveableNode::eliminateThroughS3Reduction()
 	//	delete edges[ii];
 	//}
 				
+}
+
+void
+MoveableNode::eliminateSingleton()
+{
+	//Find the optimal state for this node
+	
+	//std::cerr << "Entering Eliminate Singelton" << std::endl;
+
+	_eliminationOrder = 3;
+	NodeAndEdgeManager* theNaEManager = NodeAndEdgeManager::getInstance();
+	_optimalState = (NodeState) 0;
+	_optimalScore = _theNodeScoreVect->getNodeScore(_optimalState);
+	for (NodeState nsindex = (NodeState) 1; nsindex < _maxNodeStates; nsindex++)
+	{
+		if (NodeAndEdgeManager::betterThan(_theNodeScoreVect->getNodeScore(nsindex), _optimalScore))
+		{
+			_optimalState = nsindex;
+			_optimalScore = _theNodeScoreVect->getNodeScore(nsindex);
+		}
+	}
+
+	theNaEManager->haveReportedOptimalNetworkScoreForSingleton(_optimalScore);
+	theNaEManager->noteEffort( _maxNodeStates );
+	//std::cerr << "Exiting Eliminate Singelton" << std::endl;
+}
+
+void
+MoveableNode::eliminateOneStateVertex()
+{
+	assert( _maxNodeStates == 1 );
+	NodeAndEdgeManager* theNaEManager = NodeAndEdgeManager::getInstance();
+
+	for (std::list< EdgeBetweenMoveableNodes* >::iterator iter = _edgeList.begin();
+		iter != _edgeList.end(); ++iter)
+	{
+		MoveableNode* other = (*iter)->getPointerToOtherNode( _index );
+		//std::cerr << "Eliminate one state vertes -- d2edge: other: " << other->_index << std::endl;
+		for (int ii = 0; ii < other->_maxNodeStates; ++ii)
+		{
+			
+			other->_theNodeScoreVect->addToNodeScore( ii, (*iter)->getEdgeScore( _index, 0, other->_index, ii ));
+		}
+		theNaEManager->noteEffort( other->_maxNodeStates );
+	}
+	
+	for (std::list< Degree3Hyperedge* >::iterator iter = _degree3hyperedges.begin();
+		iter != _degree3hyperedges.end(); ++iter )
+	{
+		int otherIndices[ 2 ] = {-1, -1};
+		int countSeen = 0;
+		for (int ii = 0; ii < 3; ++ii)
+		{
+			if ( (*iter)->getVertexIndex( ii ) != _index )
+			{
+				otherIndices[ countSeen ] = (*iter)->getVertexIndex( ii );
+				++countSeen;
+			}
+		}
+		//std::cerr << "Eliminate one state vertes -- d3edge: others " << otherIndices[ 0 ] << " " << otherIndices[ 1 ] << std::endl;
+		EdgeBetweenMoveableNodes* edge = theNaEManager->getEdgeBetweenMoveableNodes( otherIndices[ 0 ], otherIndices[ 1 ]);
+		int otherNumStates[ 2 ];
+		for (int ii = 0; ii < 2; ++ii)
+		{
+			otherNumStates[ ii ] = theNaEManager->getNumStatesForNode( otherIndices[ ii ] );
+		}
+		(*iter)->setVertexOrder( otherIndices[ 0 ], otherIndices[ 1 ], _index );
+		for (int ii = 0; ii < otherNumStates[ 0 ]; ++ii)
+		{
+			for (int jj = 0; jj < otherNumStates[ 1 ]; ++jj )
+			{
+				edge->addEdgeScore( ii, jj, (*iter)->getScoreGivenSetVertexOrdering( ii, jj, 0 ) );
+			}
+		}
+		theNaEManager->noteEffort( otherNumStates[ 0 ] * otherNumStates[ 1 ] );
+	}
+	
+	for (std::list< Degree4Hyperedge* >::iterator iter = _degree4hyperedges.begin();
+		iter != _degree4hyperedges.end(); ++iter )
+	{
+		int otherIndices[ 3 ] = {-1, -1, -1};
+		int countSeen = 0;
+		for (int ii = 0; ii < 4; ++ii)
+		{
+			if ( (*iter)->getVertexIndex( ii ) != _index )
+			{
+				otherIndices[ countSeen ] = (*iter)->getVertexIndex( ii );
+				++countSeen;
+			}
+		}
+		//std::cerr << "Eliminate one state vertes -- d4edge: others " << otherIndices[ 0 ] << " " << otherIndices[ 1 ] << " " << otherIndices[ 2 ] << std::endl;
+		Degree3Hyperedge * edge = theNaEManager->getD3Edge( otherIndices[ 0 ], otherIndices[ 1 ], otherIndices[ 2 ]);
+		edge->setNaturalVertexOrder();
+		int otherNumStates[ 3 ];
+		for (int ii = 0; ii < 3; ++ii)
+		{
+			otherNumStates[ ii ] = theNaEManager->getNumStatesForNode( otherIndices[ ii ] );
+		}
+		(*iter)->setVertexOrder( otherIndices[ 0 ], otherIndices[ 1 ], otherIndices[ 2 ], _index );
+		for (int ii = 0; ii < otherNumStates[ 0 ]; ++ii)
+		{
+			for (int jj = 0; jj < otherNumStates[ 1 ]; ++jj )
+			{
+				for (int kk = 0; kk < otherNumStates[ 2 ]; ++kk)
+				{
+					edge->addToScoreGivenSetVertexOrdering( ii, jj, kk, (*iter)->getScoreGivenSetVertexOrdering( ii, jj, kk,  0 ) );
+				}
+			}
+		}
+		theNaEManager->noteEffort( otherNumStates[ 0 ] * otherNumStates[ 1 ] * otherNumStates[ 2 ]);
+	}
+	
+	for (std::list< Degree3Hyperedge* >::iterator iter = _degree3hyperedges.begin();
+		iter != _degree3hyperedges.end(); )
+	{
+		std::list< Degree3Hyperedge* >::iterator nextiter = iter;
+		++nextiter;
+		delete *iter; iter = nextiter;
+	}
+	for (std::list< Degree4Hyperedge* >::iterator iter = _degree4hyperedges.begin();
+		iter != _degree4hyperedges.end(); )
+	{
+		std::list< Degree4Hyperedge* >::iterator nextiter = iter;
+		++nextiter;
+		delete *iter; iter = nextiter;
+	}
+
+	_optimalState = 0;
+	_optimalScore = _theNodeScoreVect->getNodeScore( 0 );
+	theNaEManager->haveReportedOptimalNetworkScoreForSingleton( _optimalScore );
+	//std::cerr << "Exiting Eliminate One State Vertex" << std::endl;
 }
 
 
@@ -1167,34 +1312,6 @@ NodeState			MoveableNode::getNodeStateInOptimalNetworkConf(std::vector<NodeState
 	}
 }
 
-void
-MoveableNode::eliminateSingleton()
-{
-	//Find the optimal state for this node
-	
-	//std::cerr << "Entering Eliminate Singelton" << std::endl;
-
-	_eliminationOrder = 3;
-	NodeAndEdgeManager* theNaEManager = NodeAndEdgeManager::getInstance();
-	_optimalState = (NodeState) 0;
-	_optimalScore = _theNodeScoreVect->getNodeScore(_optimalState);
-	for (NodeState nsindex = (NodeState) 1; nsindex < _maxNodeStates; nsindex++)
-	{
-		if (NodeAndEdgeManager::betterThan(_theNodeScoreVect->getNodeScore(nsindex), _optimalScore))
-		{
-			_optimalState = nsindex;
-			_optimalScore = _theNodeScoreVect->getNodeScore(nsindex);
-		}
-	}
-	_isEliminated = true;
-	theNaEManager->BeNotifiedOfEliminatedNode(_index);
-	_eliminationOrder = 3;
-
-	theNaEManager->haveReportedOptimalNetworkScoreForSingleton(_optimalScore);
-        theNaEManager->noteEffort( _maxNodeStates );
-	//std::cerr << "Exiting Eliminate Singelton" << std::endl;
-
-}
 
 int					MoveableNode::getNumberOfEdges() {return _edgeList.size();}
 
@@ -1305,7 +1422,28 @@ _firstNode(NULL), _secondNode(NULL)
 };
 EdgeBetweenMoveableNodes::~EdgeBetweenMoveableNodes() { delete _theEdgeScoreMatrix; _theEdgeScoreMatrix = NULL;}
 	
-void   EdgeBetweenMoveableNodes::setEdgeScore(NodeState firstNodeState, NodeState secondNodeState, double theScore) {_theEdgeScoreMatrix->setEdgeScore(firstNodeState, secondNodeState, theScore); return;}
+void
+EdgeBetweenMoveableNodes::setEdgeScore(
+	NodeState firstNodeState,
+	NodeState secondNodeState,
+	double theScore
+)
+{
+	_theEdgeScoreMatrix->setEdgeScore(firstNodeState, secondNodeState, theScore);
+	return;
+}
+
+void
+EdgeBetweenMoveableNodes::addEdgeScore(
+	NodeState firstNodeState,
+	NodeState secondNodeState,
+	double theScore
+)
+{
+	_theEdgeScoreMatrix->addEdgeScore(firstNodeState, secondNodeState, theScore); 
+	return;
+}
+
 double EdgeBetweenMoveableNodes::getEdgeScore(NodeState firstNodeState, NodeState secondNodeState) {return _theEdgeScoreMatrix->getEdgeScore(firstNodeState,secondNodeState);}
 double EdgeBetweenMoveableNodes::getEdgeScore(int Node1sIndex, NodeState Node1sState, int Node2sIndex, NodeState Node2sState)
 {
@@ -1361,6 +1499,8 @@ Degree3Hyperedge::Degree3Hyperedge( int vert1, int vert2, int vert3 )
 	: 
 	_inNaturalVertexOrder( false )
 {
+	//std::cerr << "Creating degree 3 hyperedge: " << vert1 << " " << vert2 << " " << vert3 << std::endl;
+
 	_nodeIndices[ 0 ] = vert1;
 	_nodeIndices[ 1 ] = vert2;
 	_nodeIndices[ 2 ] = vert3;
@@ -1370,16 +1510,19 @@ Degree3Hyperedge::Degree3Hyperedge( int vert1, int vert2, int vert3 )
 		_moveableNode[ ii ] = theNaEM->getMoveableNode( _nodeIndices[ ii ] );
 		_moveableNode[ ii ]->addDegree3Hyperedge( this );
 		_numStates[ ii ] = _moveableNode[ ii ]->getNumberOfPossibleStates( );
+		//std::cerr << _numStates[ ii ] << " ";
 	}
+	//std::cerr << std::endl;
 	setNaturalVertexOrder();
 	_total_state_combos = _indexMultipliers[ 0 ] * _numStates[ 0 ];
+	//std::cerr << "_total_state_combos " << _total_state_combos << std::endl;
 	_scores = new float[ _total_state_combos ];
 	for (int ii = 0; ii < _total_state_combos; ++ii )
 	{
 		_scores[ ii ] = 0;
 	}
 	
-	//std::cerr << "Creating degree 3 hyperedge!" << std::endl;	
+		
 }
 
 Degree3Hyperedge::~Degree3Hyperedge()
@@ -1413,7 +1556,8 @@ void Degree3Hyperedge::setScore( int state1, int state2, int state3, float energ
 void Degree3Hyperedge::setVertexOrder( int vert1, int vert2, int vert3)
 {
 	_inNaturalVertexOrder = true;
-
+	//std::cerr << "D3HE: " << _nodeIndices[ 0 ] << " " << _nodeIndices[ 1 ] << " " << _nodeIndices[ 2 ] << std::endl;
+	//std::cerr << "setVertexOrder: " << vert1 << " " << vert2 << " " << vert3 << " _total_state_combos= " << _total_state_combos << std::endl;
 	int threeVerts[] = {vert1, vert2, vert3};
 	for (int ii = 0; ii < 3; ++ii )
 	{
@@ -1422,6 +1566,7 @@ void Degree3Hyperedge::setVertexOrder( int vert1, int vert2, int vert3)
 		{
 			if ( threeVerts[ ii ] != _nodeIndices[ jj ] )
 			{
+				//std::cerr << "Degree3Hyperedge::setVertexOrder _indexMultipliers[ "<< ii <<" ] *= _numStates[ "<< jj << "]; _total_state_combos=" << _total_state_combos << std::endl;
 				_indexMultipliers[ ii ] *= _numStates[ jj ];
 			}
 			else
@@ -1603,12 +1748,21 @@ void NodeAndEdgeManager::initiateTreeReduction()
 	QueueOfToBeEliminatedNodes* the2BElimQ = QueueOfToBeEliminatedNodes::getInstance();
 	for (int i=0; i<_numNodes; i++)
 	{
+		if (_theMNVector[i]->getNumberOfPossibleStates() == 1)
+		{
+			_theMNVector[i]->eliminate();
+		}
+	}
+	for (int i=0; i<_numNodes; i++)
+	{
 		if (_theMNVector[i]->getNumberOfEdges() == 0)
 		{
-			_theMNVector[i]->eliminateSingleton();
+			_theMNVector[i]->eliminate();
 		}
-		if (_theMNVector[i]->getNumberOfEdges() == 1)
+		else if (_theMNVector[i]->getNumberOfEdges() == 1)
+		{
 			the2BElimQ->addNodeIndexForTreeReduction(i);
+		}
 	}
 
 	return;
@@ -2167,6 +2321,7 @@ void NodeAndEdgeManager::BeNotifiedOfEliminatedNode(int indexContractedNode)
 {
 	_PartialOrderStateDeterminationStack.push_front(indexContractedNode);
 	_numUnEliminatedNodes--;
+	_vertexDegrees[ indexContractedNode ] = 0;
 	for (int ii = 0; ii < _numNodes; ++ii )
 	{
 		if ( _connectivity[ indexContractedNode ][ ii ] )

@@ -111,6 +111,10 @@
 // 6/24/06 - apl - v3.2 - incorporating the additions to v2.23 that deal with multiple NMR models
 //                        in a single file.  Altering output from dp to be less intrusive and a
 //                        little more informative.
+//                        Adding new reduction rule for vertices with exactly 1 state (i.e. no
+//                        real options) which speeds up dynamic programming for the second-round
+//                        of optimizations that calculate the optimal network states for sub-optimal
+//                        flip states.  GLN and ASN will have 1 state in these optimizations.
 
 #pragma warning(disable:4786) 
 #pragma warning(disable:4305) 
