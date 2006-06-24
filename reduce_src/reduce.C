@@ -86,6 +86,16 @@
 //  6/ 4/03 - jmw -v2.21 - added out for OLD_STD_HDRS for sgi plus other sgi polishing
 // 11/ 7/03 - jmw -v2.22 - fixed bug with creating hydrogens at the end of a triple bond
 //                         and supressed the warnings about connecting nucleic acid bases
+//
+// 040509dcr reduce.C ln 455: NO renumber, 1459: NO RXR msg
+//
+// 041113dcr reduce.C reconstructed main to loop over any NMR models in the file
+//           a specific model can still be specified.
+//
+//changes
+//
+// 050314 dcr incorporated Mike's version of 030703, to wit:
+//
 //  6/15/06 - apl -v3.0  - incorporated decomposition of scoring function into interactions of
 //                         atom singles, atom pairs, atom tripples and all other
 //                         higher-order atom interactions.  incorporated
@@ -98,15 +108,18 @@
 //                        into dynamic programming.  Incorporating code to handle 4-way overlap
 //                        (but not five way overlap) though I have not observed any 4-way
 //                        overlap using the new scheme (it would show up in the previous scheme).
+// 6/24/06 - apl - v3.2 - incorporating the additions to v2.23 that deal with multiple NMR models
+//                        in a single file.  Altering output from dp to be less intrusive and a
+//                        little more informative.
 
 #pragma warning(disable:4786) 
 #pragma warning(disable:4305) 
 #pragma warning(disable:4800) 
 
 static const char *versionString =
-     "reduce: version 3.1  6/15/06, Copyright 1997-2003, J. Michael Word";
+     "reduce: version 3.2  6/24/06, Copyright 1997-2006, J. Michael Word";
 
-static const char *shortVersion    = "reduceV3.1";
+static const char *shortVersion    = "reduceV3.2";
 static const char *referenceString =
                        "Word, et. al. (1999) J. Mol. Biol. 285, 1735-1747.";
 static const char *electronicReference = "http://kinemage.biochem.duke.edu";
@@ -173,7 +186,11 @@ bool ShowCliqueTicks          = TRUE;
 bool ShowOrientScore          = FALSE;
 
 int MinNTermResNo     = 1;   // how high can a resno be for n-term?
-int ModelToProcess    = 1;   // which model to work on
+int ModelToProcess    = 1;   // which model to work on, 
+                             // >0 is a model to work on  041113
+int ModelSpecified    = 0;   // commandline model specified  041113
+int ModelNext         = 0;   // next model to process  041113
+int ModelActive       = 0;   // found the next model and working on it  041113
 int NBondCutoff       = 3;   // how many bonds away do we drop?
 int ExhaustiveLimit   = 600;  //time limit, in seconds, to spend in brute force enumeration for a single clique
 float ProbeRadius     = 0.0; // how big is the probe in VDW calculations?
@@ -270,18 +287,33 @@ int main() {
 }
 #else
 int main(int argc, char **argv) {
-	clock_t start = ::clock();
 
    char *pdbFile = parseCommandLine(argc, argv);
 
-   if (pdbFile) { ifstream theinputstream(pdbFile);
-                  processPDBfile(theinputstream, pdbFile, cout); }
-   else         { processPDBfile(cin,            pdbFile, cout); }
-
-	clock_t finish = ::clock();
-	double duration = (double)(finish - start) / CLOCKS_PER_SEC;
-	//cerr << "Executing time: " << duration << "s" << endl;
-
+   if(pdbFile)
+   {/*can do multiple passes by rewinding input file*/
+      //ifstream theinputstream(pdbFile); //would need rewind
+      while(ModelToProcess) /* 041113 */
+      {
+         ifstream theinputstream(pdbFile); //declare each time, avoid rewind
+         processPDBfile(theinputstream, pdbFile, cout); 
+         if(ModelSpecified) {ModelToProcess = 0;} /* did it, so quit */
+         else if(ModelNext > 0) 
+         { 
+            ModelToProcess = ModelNext;
+            ModelNext = 0; /*perhaps to be rediscovered in PDB file*/
+            //theinputstream::rewind; /*theinputstream undeclared*/
+//cerr<<"about to rewind"<<endl;
+//            rewind(theinputstream); /*gives warnings*/
+//cerr<<"just did rewind"<<endl;
+         }
+         else {ModelToProcess = 0;} /*ModelNext==0, time to quit*/
+      }
+   }
+   else
+   {/*presume stdin for pdb file info*/
+      processPDBfile(cin,            pdbFile, cout); 
+   }
    return ReturnCodeGlobal;
 }
 #endif
@@ -708,10 +740,11 @@ char* parseCommandLine(int argc, char **argv) {
    return pdbfile;
 }
 
-void reduceHelp(bool showAll) {
+void reduceHelp(bool showAll) { /*help*/
    cerr << versionString << endl;
    cerr << "arguments: [-flags] filename or -" << endl;
    cerr << "040509 reduce.C ln 455: NO renumber, 1459: NO RXR msg" << endl;
+   cerr << "041113 rework main to do first and loop over other NMR models if model# not specified."<< endl;
    cerr << "Adds hydrogens to a PDB format file and writes to standard output." << endl;
    cerr << "(note: By default, HIS sidechain NH protons are not added. See -BUILD)" << endl;
    cerr << endl;
@@ -771,7 +804,7 @@ void reduceHelp(bool showAll) {
    cerr << endl;
    cerr << "-Quiet            do not write extra info to the console" << endl;
    cerr << "-REFerence        display citation reference" << endl;
-   cerr << "-Help             more extensive description of command line arguments" << endl;
+   cerr << "-Help             the more extensive description of command line arguments" << endl;
    exit(1);
 }
 
@@ -797,6 +830,7 @@ ostream& outputRecords(ostream& os, const std::list<PDBrec*>& l) {
 istream& inputRecords(istream& is, std::list<PDBrec*>& records) {
 	PDB inputbuffer;
 	bool active = TRUE;
+	bool modelactive = FALSE;  //041113
 
 	while ((is >> inputbuffer).gcount() > 0) {
 		PDBrec* rec = new PDBrec(inputbuffer);
@@ -806,10 +840,26 @@ istream& inputRecords(istream& is, std::list<PDBrec*>& records) {
 		case PDB::MODEL:
 			if (ModelToProcess == rec->modelNum()) {
 				active = TRUE;
+				modelactive = TRUE; //041113 
 			}
-			else { active = FALSE;
-			if (Verbose) {
-				cerr << "NOTE: skipping model " << rec->modelNum() << endl;
+			else {
+				active = FALSE;
+				if(modelactive) //041113
+            	{
+        	       modelactive = FALSE;
+    	           if(ModelSpecified > 0) {ModelNext = 0;} /*only do one*/
+	               else {ModelNext = rec->modelNum();} /*next after one just done*/
+	            }
+				if (Verbose) {
+					//cerr << "NOTE: skipping model " << rec->modelNum() << endl;
+					if(ModelSpecified > 0)
+					{
+						cerr << "Model " << ModelToProcess << " specified, skipping model " << rec->modelNum() << endl; //041113
+					}
+					else
+					{
+						cerr << "Processing Model " << ModelToProcess << ", for now skipping model " << rec->modelNum() << endl; //041113
+					}
 			}
 		}
 		break;

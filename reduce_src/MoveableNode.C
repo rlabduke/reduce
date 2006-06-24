@@ -66,7 +66,7 @@ NodeState OptimizedNodeStateVector::getOptimumNodeState(NodeState dependentNodeS
 	}
 	else
 	{
-		cerr << "Error Accessing Negative or Out of Bounds Index for OptimizedNodeStateVector. -1 returned: " << dependentNodeState << endl;
+		std::cerr << "Error Accessing Negative or Out of Bounds Index for OptimizedNodeStateVector. -1 returned: " << dependentNodeState << endl;
 		return -1;
 	}
 }
@@ -79,7 +79,7 @@ void OptimizedNodeStateVector::setOptimizedNodeState(NodeState dependentNodeStat
 	}
 	else
 	{
-		cerr << "Error in Assigning with Negative or Out of Bounds Index for OptimizedNodeStateVector. No assignment Performed: " << dependentNodeState << endl;
+		std::cerr << "Error in Assigning with Negative or Out of Bounds Index for OptimizedNodeStateVector. No assignment Performed: " << dependentNodeState << endl;
 		return;
 	}
 }
@@ -697,6 +697,9 @@ void 				MoveableNode::eliminateThroughTreeReduction()
 	_optimalStateVector = new OptimizedNodeStateVector( numStatesOtherNode);
 	_nodeIndexDetStateFromTreeReduction = otherNodeIndex;
 
+	NodeAndEdgeManager* theNaEManager = NodeAndEdgeManager::getInstance();
+	theNaEManager->noteEffort( numStatesOtherNode * _maxNodeStates );
+
 	double bestScore, holdScore;
 	NodeState bestState;
 	for (NodeState nsIndOther = (NodeState) 0; nsIndOther < numStatesOtherNode; nsIndOther++)
@@ -869,7 +872,7 @@ void 				MoveableNode::eliminateThroughCycleReduction()
 			}
 		}
 	}
-
+	theNaEManager->noteEffort( numStatesFirstOther * numStatesSecondOther * _maxNodeStates );
 	return;
 }
 
@@ -889,7 +892,7 @@ MoveableNode::eliminateThroughS3Reduction()
 	}
 	
 	sort_three( nodes[ 0 ], nodes[ 1 ], nodes[ 2 ], nodes_sorted[ 0 ], nodes_sorted[ 1 ], nodes_sorted[ 2 ]);
-	std::cerr << "Neigbors: " << nodes_sorted[ 0 ] << " " << nodes_sorted[ 1 ] << " " <<  nodes_sorted[ 2 ] << std::endl;
+	//std::cerr << "Neigbors: " << nodes_sorted[ 0 ] << " " << nodes_sorted[ 1 ] << " " <<  nodes_sorted[ 2 ] << std::endl;
 	NodeAndEdgeManager* theNaEManager = NodeAndEdgeManager::getInstance();
 	for (int ii = 0; ii < 3; ++ii)
 	{
@@ -912,12 +915,12 @@ MoveableNode::eliminateThroughS3Reduction()
 	{
 		numStates[ ii ] = theNaEManager->getMoveableNode( nodes_sorted[ ii ] )->getNumberOfPossibleStates();
 	}
-	
+	theNaEManager->noteEffort( numStates[ 0 ] * numStates[1] * numStates[2] * _maxNodeStates );
 	//collect info for single degree-4 edge
 	Degree4Hyperedge* degree4hyperedge (0);
 	if ( ! _degree4hyperedges.empty() )
 	{
-		std::cerr << "Degree-4 Hyperedge present in reduction" << std::endl;
+		//std::cerr << "Degree-4 Hyperedge present in reduction" << std::endl;
 		assert(_degree4hyperedges.size() == 1);
 		std::list< Degree4Hyperedge * >::iterator iter = _degree4hyperedges.begin();
 		degree4hyperedge = *iter;
@@ -1130,7 +1133,7 @@ NodeState			MoveableNode::getNodeStateInOptimalNetworkConf(std::vector<NodeState
 
 	if (_eliminationOrder == 0)
 	{
-		cerr << "Node not eliminated, internal error in calling of getNodeStateInOptimalNetworkConf.  Node index: " << _index << endl;
+		std::cerr << "Node not eliminated, internal error in calling of getNodeStateInOptimalNetworkConf.  Node index: " << _index << endl;
 		return (NodeState) -1;
 	}
 	else if (_eliminationOrder == 1)
@@ -1159,7 +1162,7 @@ NodeState			MoveableNode::getNodeStateInOptimalNetworkConf(std::vector<NodeState
 	}
 	else 
 	{
-		cerr << "Unrecognized elimination order in getNodeStateInOptimalNetworkConf: " << _eliminationOrder << endl;
+		std::cerr << "CRITICAL ERROR: Unrecognized elimination order in getNodeStateInOptimalNetworkConf: " << _eliminationOrder << endl;
 		return -1;
 	}
 }
@@ -1188,6 +1191,7 @@ MoveableNode::eliminateSingleton()
 	_eliminationOrder = 3;
 
 	theNaEManager->haveReportedOptimalNetworkScoreForSingleton(_optimalScore);
+        theNaEManager->noteEffort( _maxNodeStates );
 	//std::cerr << "Exiting Eliminate Singelton" << std::endl;
 
 }
@@ -1333,7 +1337,7 @@ int	   EdgeBetweenMoveableNodes::getIndexOfOtherNode(int indexOfOneNode)
 		return _firstNodeIndex;
 	else
 	{
-		cerr << "getIndexOfOtherNode() called on edge(" << _firstNodeIndex << ", " << _secondNodeIndex << ") lacking the calling node: " << indexOfOneNode << endl;
+		std::cerr << "getIndexOfOtherNode() called on edge(" << _firstNodeIndex << ", " << _secondNodeIndex << ") lacking the calling node: " << indexOfOneNode << endl;
 		return -1;
 	}
 }
@@ -1346,7 +1350,7 @@ MoveableNode* EdgeBetweenMoveableNodes::getPointerToOtherNode(int indexOfOneNode
 		return _firstNode;
 	else
 	{
-		cerr << "getPointerToOtherNode() called on edge(" << _firstNodeIndex << ", " << _secondNodeIndex << ") lacking the calling node:" << indexOfOneNode << endl;
+		std::cerr << "getPointerToOtherNode() called on edge(" << _firstNodeIndex << ", " << _secondNodeIndex << ") lacking the calling node:" << indexOfOneNode << endl;
 		return NULL;
 	}
 };
@@ -1490,7 +1494,7 @@ Degree4Hyperedge::Degree4Hyperedge( int vert1, int vert2, int vert3, int vert4 )
 		_scores[ ii ] = 0;
 	}
 	
-	std::cerr << "Creating degree 4 hyperedge!" << std::endl;	
+	//std::cerr << "Creating degree 4 hyperedge!" << std::endl;	
 }
 
 Degree4Hyperedge::~Degree4Hyperedge()
@@ -1583,7 +1587,7 @@ NodeAndEdgeManager::NodeAndEdgeManager()
 	_cycleReductionBegun(false), _optimalSolutionFound(false), _optimalNetworkScore(0),
 	_indFirstNodeLastEdgeLookup(-1), _indSecondNodeLastEdgeLookup(-1), 
 	_ptrToEdgeOfLastEdgeLookup(NULL), _xyz( 0 ), _timeLimitExists( false ),
-	_timeLimit( -1 ), _connectivity( 0 )
+	_timeLimit( -1 ), _connectivity( 0 ), _effortCounter( 0 )
 	
 { 
 	//TEST
@@ -1784,7 +1788,7 @@ bool NodeAndEdgeManager::bruteForceIrreducibleSubgraph()
 	//TEST
 	if (_xyz->outputNotice() ) 
 	{
-		std::cerr << "Beginning begining brute force enumeration on graph with ";
+		std::cerr << " Beginning begining brute force enumeration on graph with ";
 		std::cerr << _numUnEliminatedNodes << " nodes" << endl;
 	}
 
@@ -1805,7 +1809,9 @@ bool NodeAndEdgeManager::bruteForceIrreducibleSubgraph()
 		if (!_theMNVector[i]->getIsEliminated())
 		{
 			if (countUnEliminated >= _numUnEliminatedNodes)
-				cerr << "Error in counting numUnEliminatedNodes - iterated past end of remaining nodes vector. " << endl;
+			{
+				std::cerr << "Error in counting numUnEliminatedNodes - iterated past end of remaining nodes vector. " << endl;
+			}
 			else
 			{
 				remainingNodesNewInd[i] = countUnEliminated;
@@ -1816,8 +1822,10 @@ bool NodeAndEdgeManager::bruteForceIrreducibleSubgraph()
 
 		}
 	}
-	if (countUnEliminated != _numUnEliminatedNodes) 
-		cerr << "Error in counting numUnEliminatedNodes - found " << countUnEliminated << " while expecting " << _numUnEliminatedNodes << "." << endl;
+	if (countUnEliminated != _numUnEliminatedNodes)
+	{
+		std::cerr << "Error in counting numUnEliminatedNodes - found " << countUnEliminated << " while expecting " << _numUnEliminatedNodes << "." << endl;
+	}
 
 	std::list<EdgeBetweenMoveableNodes*>::iterator edgePtrIter = _theEBMNList.begin();
 	int firstNodeInd, secondNodeInd;
@@ -1841,11 +1849,12 @@ bool NodeAndEdgeManager::bruteForceIrreducibleSubgraph()
 		remNodeMaxStates[i] = _theMNVector[remainingNodesOldInd[i]]->getNumberOfPossibleStates();
 		runningProduct *= remNodeMaxStates[i];
 	}
+	noteEffort( runningProduct );
 
 	if (_xyz->outputNotice() ) 
 	{
-		std::cerr << "Brute Force Enumeration: ";
-		std::cerr << runningProduct << " network states requiring examination." << endl;
+		std::cerr << " Brute Force Enumeration: ";
+		std::cerr << runningProduct << " network states requiring examination." << std::endl;
 	}
 
 	int one_percent_complete = static_cast< int > (runningProduct / 100 );
@@ -2078,7 +2087,7 @@ bool NodeAndEdgeManager::bruteForceIrreducibleSubgraph()
 				
 				if ( _xyz->outputNotice() )
 				{
-					std::cerr << "Projected time remaining for this single optimization: " << hours_remaining << "h ";
+					std::cerr << " Projected time remaining for this single optimization: " << hours_remaining << "h ";
 					std::cerr << minutes_remaining << "m " << seconds_remaining << "s" << std::endl;
 				}
 
@@ -2113,7 +2122,7 @@ bool NodeAndEdgeManager::bruteForceIrreducibleSubgraph()
 				int seconds_remaining = static_cast< int > ( time_remaining ) - 60 * minutes_remaining - 3600 * hours_remaining;
 				if ( _xyz->outputNotice() )
 				{
-					std::cerr << "Brute force: percent complete= " << percent_complete << "; time remaining= " << hours_remaining << "h ";
+					std::cerr << " Brute force: percent complete= " << percent_complete << "; time remaining= " << hours_remaining << "h ";
 					std::cerr << minutes_remaining << "m " << seconds_remaining << "s" << std::endl;
 				}
 			}
@@ -2121,11 +2130,10 @@ bool NodeAndEdgeManager::bruteForceIrreducibleSubgraph()
 		}
 	} // end while
 
-	//TETS
-	if ( _xyz->outputNotice() ) std::cerr << "Exhaustive search ended. bestScore = " << bestScore << std::endl;
-
 	//Now save what you've found
 	_optimalNetworkScore += bestScore;
+	if ( _xyz->outputNotice() ) std::cerr << " Exhaustive search ended. best network score = " << _optimalNetworkScore << std::endl;
+
 	for (i=0; i < _numUnEliminatedNodes; i++)
 	{
 		//TEST
@@ -2192,6 +2200,8 @@ bool NodeAndEdgeManager::computeOptimalNetworkConfiguration()
 	//If that hasn't finished off the network, then brute force the remaining subgraph.
 	//Finally, determine the states of all nodes in the network.
 
+	if ( _xyz->outputNotice() ) std::cerr << " Beginning Optimization" << endl;
+
 	initiateTreeReduction();
 	eliminateQueuedNodes();
 	
@@ -2207,7 +2217,7 @@ bool NodeAndEdgeManager::computeOptimalNetworkConfiguration()
 	if (_numUnEliminatedNodes == 0)
 	{
 		//TEST
-		if ( _xyz->outputNotice() ) std::cerr << "Dynamic programming succeeded to fully optimize hypergraph" << endl;
+		if ( _xyz->outputNotice() ) std::cerr << " Dynamic programming succeeded to fully optimize hypergraph" << endl;
 		_optimalSolutionFound = true;
 		computeOptimalNetworkConfigurationAfterOptimization();
 	}
@@ -2218,6 +2228,8 @@ bool NodeAndEdgeManager::computeOptimalNetworkConfiguration()
 		
 		computeOptimalNetworkConfigurationAfterOptimization();
 	}
+
+	//std::cerr << "Optimal network state computed with effort of " << _effortCounter << std::endl;
 
 	//writeOutOptimalNetworkState();
 	return false;
@@ -2327,7 +2339,7 @@ void NodeAndEdgeManager::InitializeNetwork(GraphToHoldScores & gths)
 		gths.incrementD2EIterator();
 	}
 
-	//cerr << "Add Degree-3 Hyperedges?  How many: " << gths.getNumHyperedges() << endl;
+	//std::cerr << "Add Degree-3 Hyperedges?  How many: " << gths.getNumHyperedges() << endl;
 	_xyz = gths.getAtomPositionsPointer();
 	gths.setD3EIteratorAtBegining();
 	while ( ! gths.getD3EIteratorAtEnd() )
@@ -2382,7 +2394,7 @@ void NodeAndEdgeManager::InitializeNetwork(GraphToHoldScores & gths)
 
 
 	//TEST
-	//cerr << "Network Initialized From GraphToHoldScores" << endl;
+	//std::cerr << "Network Initialized From GraphToHoldScores" << endl;
 	
 	return;
 }
@@ -2409,7 +2421,7 @@ void NodeAndEdgeManager::clear()
 	//Deallocate everything.
 
 	//TEST
-	//cerr << "Entering Clear().  _numNodes = " << _numNodes << endl;
+	//std::cerr << "Entering Clear().  _numNodes = " << _numNodes << endl;
 
 	for (int ii = 0; ii < _theMNVector.size(); ++ii)
 	{
@@ -2454,6 +2466,7 @@ void NodeAndEdgeManager::clear()
 	_optimalNetworkScore = 0;
 	_timeLimitExists = false;
 	_timeLimit = -1.0;
+	_effortCounter = 0;
 
 	//TEST
 	//cerr << "Leaving Clear()" << endl;
@@ -2608,12 +2621,18 @@ NodeAndEdgeManager::getNumStatesForNode( int node ) const
 
 void NodeAndEdgeManager::writeOutOptimalNetworkState()
 {
-	cerr << "_________________________________________" << endl;
-	cerr << "Outputting optimal network configuration:" << endl;
+	std::cerr << "_________________________________________" << std::endl;
+	std::cerr << "Outputting optimal network configuration:" << std::endl;
 	for (int i = 0; i < _numNodes; i++)
-		cerr << "Node Index: " << i << "; Node State: " << (int) _optimalNetworkStateVector[i] << endl;
-	cerr << "Optimal network score: " << _optimalNetworkScore << endl;
-	cerr << "_________________________________________" << endl;
+		std::cerr << "Node Index: " << i << "; Node State: " << (int) _optimalNetworkStateVector[i] << std::endl;
+	std::cerr << "Optimal network score: " << _optimalNetworkScore << std::endl;
+	std::cerr << "_________________________________________" << std::endl;
+}
+
+void NodeAndEdgeManager::noteEffort( double effort )
+{
+  //std::cerr << "Noting effort: " << effort << " to add to running tally: " << _effortCounter << std::endl;
+  _effortCounter += effort;
 }
 
 //---------------------------------------------------------------------------------------------------------------

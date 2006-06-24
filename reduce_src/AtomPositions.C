@@ -701,7 +701,7 @@ int AtomPositions::orientClique(const std::list<MoverPtr>& clique, int limit) {
 	double log10ncombo = 0.0;
 	int i = 0, rc = 0;
 	
-	if (_outputNotice) { _os << " Processing set"; }
+	if (_outputNotice) { _os << "\n Processing set"; }
 	for(std::list<MoverPtr>::const_iterator s = clique.begin(); s != clique.end(); ++s) {
 		const int no = (*s)->numOrientations();
 		log10ncombo += log10(double(no));
@@ -714,10 +714,10 @@ int AtomPositions::orientClique(const std::list<MoverPtr>& clique, int limit) {
 	if(_outputNotice){
 		if (log10ncombo < log10(double(1000000))) { //smallish numbers as integers
 			const long ncombo = (long)floor(pow(double(10.0), log10ncombo)+0.5);
-			_os << ": " << std::endl << "permutations: " << ncombo << endl;
+			_os << std::endl << " permutations: " << ncombo << endl;
 		}
 		else {
-			_os << ": "<< std::endl << mantis <<"E" << poweroften << " permutations." << endl;
+			_os << std::endl << " permutations: " << mantis <<"E" << poweroften << endl;
 		}
 	}
 	
@@ -840,7 +840,7 @@ int AtomPositions::SearchClique(std::list<MoverPtr> clique, int limit)
 	
 	if (_outputNotice) 
 	{
-		std::cerr << "Num optimizations problems to be solved for this clique: ";
+		std::cerr << " Num optimizations problems to be solved for this clique: ";
 		std::cerr << numOptimizationProblemsToSolve << std::endl;
 	}
 	double timeLimit = limit / numOptimizationProblemsToSolve;
@@ -880,7 +880,7 @@ int AtomPositions::SearchClique(std::list<MoverPtr> clique, int limit)
 		if ( abandonedOptimization ) {
 			if (_outputNotice )
 			{
-				std::cerr << "Abandoned Optimization.  Projected that " << numOptimizationProblemsToSolve;
+				std::cerr << " Abandoned Optimization.  Projected that " << numOptimizationProblemsToSolve;
 				std::cerr << " optimizations would take more than " << limit << " seconds." << std::endl;
 				std::cerr << "Increase time LIMIT to optimize this clique" << std::endl;
 			}
@@ -897,7 +897,7 @@ int AtomPositions::SearchClique(std::list<MoverPtr> clique, int limit)
 			//std::cerr << "optimal enabled state for " << ii << " : " << optimal_state_enabled[ ii ] << " --> original : " << optimal_state_original[ ii ] << std::endl;
 		}
 		
-		std::cerr << "Score According to gths: " << gths.getScoreForStateAssignment( optimal_state_original ) << std::endl;
+		//std::cerr << "Score According to gths: " << gths.getScoreForStateAssignment( optimal_state_original ) << std::endl;
 		
 		float actualPenalty = 0;
 		for (int ii = 0; ii < numItems; ++ii)
@@ -931,7 +931,7 @@ int AtomPositions::SearchClique(std::list<MoverPtr> clique, int limit)
 	//	std::cerr<<(optimal_state[i]+1)<<" ";
 	//}
 	//std::cerr<< "score: " << best_score_wo_penalty << std::endl;
-	if ( _outputNotice ) { std::cerr << std::endl << "low res optimal score: " << best_score_wo_penalty << std::endl;}
+	if ( _outputNotice ) { std::cerr << " Optimal score following low resolution optimization: " << best_score_wo_penalty << std::endl;}
 
   double bestOScore = best_score_wo_penalty;											
 
@@ -1015,7 +1015,7 @@ int AtomPositions::SearchClique(std::list<MoverPtr> clique, int limit)
 			}
 		}
 	
-		std::cerr << "Score According to gths: " << gths.getScoreForStateAssignment( optimal_state_original ) << std::endl;
+		//std::cerr << "Score According to gths: " << gths.getScoreForStateAssignment( optimal_state_original ) << std::endl;
 		
 		bool badBumpBool;
 		currScore[ii] = item[ii]->determineScore(*this,
@@ -1044,10 +1044,12 @@ int AtomPositions::SearchClique(std::list<MoverPtr> clique, int limit)
  // ---------------------------------------------------------------
   // optimization of any hires movers and get total score
   
+  bool anyHighRes = false;
   int numInNonDefaultOrientations = 0;
   int cursor = 0;
   for (cursor = 0; cursor < numItems; cursor++) {
 		if (item[cursor]->hasHires()) {
+		anyHighRes = true;
       const int numHiResO = item[cursor]->numOrientations(Mover::HIGH_RES);
       // try each high-res orientation
       for (int ho = 0; ho < numHiResO; ho++) {
@@ -1139,9 +1141,10 @@ int AtomPositions::SearchClique(std::list<MoverPtr> clique, int limit)
       }
     }
   }
+  if (anyHighRes && _outputNotice ) { _os << std::endl;}
   // ---------------------------------------------------------------
   // tally the results
-  if ( _outputNotice ) { _os << endl << " Total score for set: " << bestOScore << endl;}
+  if ( _outputNotice ) { _os << " Optimal score following high resolution, local optimization: " << bestOScore << endl;}
   
   return numInNonDefaultOrientations;
 }
@@ -1190,8 +1193,6 @@ AtomPositions::setNumStatesForNodes(
 	   penalties[ i ].resize( n_states );
 	   std::fill( penalties[ i ].begin(), penalties[ i ].end(), 0.0 );
    }
-
-	if ( _outputNotice ) std::cerr << "Size Of State Space: " << stateSpaceSize << std::endl;
 }
 
 // ---------------------------------------------------------------

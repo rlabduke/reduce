@@ -407,7 +407,7 @@ private:
 	
 	bool** _connectivity;
 	std::vector< int > _vertexDegrees;
-
+	double _effortCounter;
 public:
 	~NodeAndEdgeManager();
 	static NodeAndEdgeManager* getInstance();
@@ -433,6 +433,7 @@ public:
 	std::vector<NodeState> const & getOptimalNetworkState(){return _optimalNetworkStateVector;};	
 	int getNumStatesForNode( int node ) const;
 	MoveableNode* getMoveableNode( int node ) const { return _theMNVector[ node ]; }
+	void noteEffort( double effort );
 };
 
 class QueueOfToBeEliminatedNodes

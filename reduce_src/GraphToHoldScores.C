@@ -628,7 +628,10 @@ Vertex_ths::boot(
 	std::list< int > const & moversInHOO
 )
 {
-	if (! any_high_order_overlap_ ) std::cerr << "Detected high order overlap for vertex " << index_ << std::endl;	
+	if (! any_high_order_overlap_ && xyz_->outputNotice() )
+	{
+		std::cerr << "Detected high order overlap for vertex " << index_ << std::endl;	
+	}
 	any_high_order_overlap_ = true;
 	
 	//return; //short circuit for debugging / testing how neccessary high order overlap is.
@@ -1603,12 +1606,16 @@ DegreeFourEdge_ths::DegreeFourEdge_ths(
 	vertex_indices_[ 1 ] = vertex2;
 	vertex_indices_[ 2 ] = vertex3;
 	vertex_indices_[ 3 ] = vertex4;
-	std::cerr << "Creating degree four edge";
-	for (int ii = 0; ii < 4; ++ii)
-	{
-		std::cerr << " " << vertex_indices_[ ii ];
-	}
-	std::cerr << std::endl;
+	
+	//if ( xyz_->outputNotice() ) 
+	//{
+	//	std::cerr << "Creating degree four edge";
+	//	for (int ii = 0; ii < 4; ++ii)
+	//	{
+	//		std::cerr << " " << vertex_indices_[ ii ];
+	//	}
+	//	std::cerr << std::endl;
+	//}
 	
 	for (int ii = 0; ii < 4; ++ii)
 	{
@@ -1753,8 +1760,8 @@ void DegreeFourEdge_ths::detectDotsToScoreOnEdge()
 			}
 			groupOfThreeB[ jj - 1 + offsetB ] = others[ jj ];
 		}
-		std::cerr << "D4E: ii: " << ii << " groupA: " << groupOfThreeA[ 0 ] << " " << groupOfThreeA[ 1 ] << " " << groupOfThreeA[ 2 ] << std::endl;
-		std::cerr << "D4E: ii: " << ii << " groupB: " << groupOfThreeB[ 0 ] << " " << groupOfThreeB[ 1 ] << " " << groupOfThreeB[ 2 ] << std::endl;
+		//std::cerr << "D4E: ii: " << ii << " groupA: " << groupOfThreeA[ 0 ] << " " << groupOfThreeA[ 1 ] << " " << groupOfThreeA[ 2 ] << std::endl;
+		//std::cerr << "D4E: ii: " << ii << " groupB: " << groupOfThreeB[ 0 ] << " " << groupOfThreeB[ 1 ] << " " << groupOfThreeB[ 2 ] << std::endl;
 		
 		DegreeThreeEdge_ths * d3eA = owner_->getDegree3Edge( groupOfThreeA[ 0 ], groupOfThreeA[ 1 ], groupOfThreeA[ 2 ]);
 		DegreeThreeEdge_ths * d3eB = owner_->getDegree3Edge( groupOfThreeB[ 0 ], groupOfThreeB[ 1 ], groupOfThreeB[ 2 ]);
@@ -2055,7 +2062,7 @@ GraphToHoldScores::GraphToHoldScores(
 	cascadeScoringInfo();
 	//std::cerr << "finalizeScoreVectors();" << std::endl;
 	finalizeScoreVectors();
-	if (xyz_->outputNotice() ) std::cerr << "score hypergraph" << std::endl;
+	if (xyz_->outputNotice() ) std::cerr << " Computing dot scores" << std::endl;
 	score();
 };
 
