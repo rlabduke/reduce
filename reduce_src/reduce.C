@@ -103,12 +103,12 @@
 //                         disabling hydrogen atom numbering and skipInfo. removing
 //                         PDBrecNAMEout as in v2.999. Disabling hydrogen bonds to his
 //                         aromatic carbon atoms.
-//  6/19/06 - apl -v3.1 - decomposing the scoring function in terms of which dots should
+//  6/19/06 - apl -v3.01- decomposing the scoring function in terms of which dots should
 //                        be scored with which hyperedges.  Incorporating S3 reduction rules
 //                        into dynamic programming.  Incorporating code to handle 4-way overlap
 //                        (but not five way overlap) though I have not observed any 4-way
 //                        overlap using the new scheme (it would show up in the previous scheme).
-// 6/24/06 - apl - v3.2 - incorporating the additions to v2.23 that deal with multiple NMR models
+//  6/24/06 - apl -v3.02- incorporating the additions to v2.23 that deal with multiple NMR models
 //                        in a single file.  Altering output from dp to be less intrusive and a
 //                        little more informative.
 //                        Adding new reduction rule for vertices with exactly 1 state (i.e. no
@@ -121,9 +121,9 @@
 #pragma warning(disable:4800) 
 
 static const char *versionString =
-     "reduce: version 3.2  6/24/06, Copyright 1997-2006, J. Michael Word";
+     "reduce: version 3.02  6/24/06, Copyright 1997-2006, J. Michael Word";
 
-static const char *shortVersion    = "reduceV3.2";
+static const char *shortVersion    = "reduce.3.02.060624";
 static const char *referenceString =
                        "Word, et. al. (1999) J. Mol. Biol. 285, 1735-1747.";
 static const char *electronicReference = "http://kinemage.biochem.duke.edu";
