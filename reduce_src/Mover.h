@@ -33,6 +33,7 @@
 #include "neighbors.h"
 #include "utility.h"
 
+
 class AtomPositions;
 class Mover;
 typedef Mover* MoverPtr;
@@ -199,9 +200,12 @@ bool annularDots(const Point3d& dot, const PDBrec& src, const PDBrec& targ, floa
 double dot2srcCenter(const Point3d& dot, const PDBrec& src, const PDBrec& targ);
 double kissEdge2bullsEye(float ra, float rb, float rp);
 
-//struct mpLess : public binary_function<MoverPtr, MoverPtr, bool> {
-//	bool operator()(MoverPtr x, MoverPtr y) { return x->descr() < y->descr(); }
-//};
+struct mpLess { 
+	bool operator()(MoverPtr x, MoverPtr y) { 
+		return x->descr() < y->descr();
+	}
+};
+
 //bool mpLess (const MoverPtr& p1, const MoverPtr& p2);
 //std::list<MoverPtr> mpSeqSort(const std::list<MoverPtr>& x);
 //std::list<MoverPtr> mpSeqMerge(const std::list<MoverPtr>& x_list, const std::list<MoverPtr>& y_list);

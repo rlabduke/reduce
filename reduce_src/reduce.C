@@ -107,7 +107,7 @@
 //                        be scored with which hyperedges.  Incorporating S3 reduction rules
 //                        into dynamic programming.  Incorporating code to handle 4-way overlap
 //                        (but not five way overlap) though I have not observed any 4-way
-//                        overlap using the new scheme (it would show up in the previous scheme).
+//                        overlap using the new decomposition scheme (it would show up in the previous scheme).
 //  6/24/06 - apl -v3.02- incorporating the additions to v2.23 that deal with multiple NMR models
 //                        in a single file.  Altering output from dp to be less intrusive and a
 //                        little more informative.
@@ -115,15 +115,19 @@
 //                        real options) which speeds up dynamic programming for the second-round
 //                        of optimizations that calculate the optimal network states for sub-optimal
 //                        flip states.  GLN and ASN will have 1 state in these optimizations.
+// 7/03/06 - apl -      - Fixing USER MOD Set ordering in output PDB.  Fixing "flip" records in columns
+//                        82 to 85 for the atoms on flipped residues.  Fixing atom placement plan bug
+//                        in genHydrogens() that manifested itself as aberant behavior when presented
+//                        with several (3 or more) alternate conformations.
 
 #pragma warning(disable:4786) 
 #pragma warning(disable:4305) 
 #pragma warning(disable:4800) 
 
 static const char *versionString =
-     "reduce: version 3.02  6/24/06, Copyright 1997-2006, J. Michael Word";
+     "reduce: version 3.02  7/03/06, Copyright 1997-2006, J. Michael Word";
 
-static const char *shortVersion    = "reduce.3.02.060624";
+static const char *shortVersion    = "reduce.3.02.060703";
 static const char *referenceString =
                        "Word, et. al. (1999) J. Mol. Biol. 285, 1735-1747.";
 static const char *electronicReference = "http://kinemage.biochem.duke.edu";
@@ -275,21 +279,22 @@ void recordSkipInfo(bool skipH, std::vector<std::string>& fixNotes,
    const PDBrec& theHatom, const PDBrec& heavyAtom,
    std::list<PDBrec*>& nearr, const char * msg);
 
-#ifdef MACAPPL
-   char *getOptionsOnTheMac();
+//#ifdef MACAPPL
+//   char *getOptionsOnTheMac();
 
-int main() {
-   Verbose = FALSE;
-   ShowCliqueTicks = FALSE;
+//int main() {
+//   Verbose = FALSE;
+//   ShowCliqueTicks = FALSE;
+//
+//   char *pdbFile = getOptionsOnTheMac();
+//
+//   ifstream theinputstream(pdbFile);
+//   processPDBfile(theinputstream, pdbFile, ofstream("dump.out"));
+//
+//   return ReturnCodeGlobal; // one pass and then we quit
+//}
+//#else
 
-   char *pdbFile = getOptionsOnTheMac();
-
-   ifstream theinputstream(pdbFile);
-   processPDBfile(theinputstream, pdbFile, ofstream("dump.out"));
-
-   return ReturnCodeGlobal; // one pass and then we quit
-}
-#else
 int main(int argc, char **argv) {
 
    char *pdbFile = parseCommandLine(argc, argv);
@@ -320,7 +325,7 @@ int main(int argc, char **argv) {
    }
    return ReturnCodeGlobal;
 }
-#endif
+//#endif
 
 void processPDBfile(istream& ifs, char *pdbFile, ostream& ofs) {
    if (Verbose) {
@@ -468,7 +473,7 @@ void processPDBfile(istream& ifs, char *pdbFile, ostream& ofs) {
 	 for (std::list< std::list<MoverPtr> >::iterator cc = cc_list.begin(); cc != cc_list.end(); ++cc) {
 		//cerr << "start2" << endl;
 	    int nscnt = xyz.orientClique(*cc, ExhaustiveLimit);
-	    if (nscnt > 0) { Tally._num_adj += nscnt; }
+		if (nscnt > 0) { Tally._num_adj += nscnt; }
 	    else { // too many permutations, make note
 	      ReturnCodeGlobal = ABANDONED_RC;
 	    }
@@ -1199,8 +1204,10 @@ void analyzeRes(CTab& hetdatabase, ResBlk* pb, ResBlk* cb, ResBlk* nb,
 
 	// first look in the standard H table...
 
+	//std::cerr << "resname: " << resname << std::endl;
 	StdResH *srh = StdResH::HydPlanTbl().get(resname);
 	if (srh) {
+		//std::cerr << "Found srh for " << resname << std::endl;
 		std::list<atomPlacementPlan*> temp = srh->plans();
 		app.splice(app.end(), temp);
 	}
@@ -1375,8 +1382,7 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 			// the logic to determine alt conf codes does not handle the case were the chain
 			// of atoms switches codes
 			
-			std::vector<Point3d> loc;
-			loc.reserve(numConnAtoms);
+			std::vector<Point3d> loc(numConnAtoms);
 			for(j=0; success && j < maxalt; j++) { // for each alternate conformation...
 
 				char altId = ' ';
@@ -1384,8 +1390,7 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 
 				for(i=0; i < numConnAtoms; i++) {
 					const PDBrec* cnr = rvv[i][min(j, nconf[i]-1)];
-					loc.push_back(cnr->loc());
-					//	       loc[i] = cnr.loc(); // get the location for each connected atom
+					loc[i] = cnr->loc(); //apl 7/3/06 -- FIXING PUSH_BACK BUG
 
 					if (j <= nconf[i]-1) {
 						char abc = cnr->alt();   // get the alt loc char to use

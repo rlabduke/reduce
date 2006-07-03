@@ -97,6 +97,9 @@ bool atomPlacementPlan::placeH(const std::vector<Point3d>& loc, Point3d& hpos) c
       }
       break;
    }
+	
+	//if (!rc) std::cerr << "Failed to place hydrogen: " << _type << " " << loc.size() << std::endl;
+	
    return rc;
 }
 

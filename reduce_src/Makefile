@@ -13,7 +13,8 @@ PROG_FLGS   = -DAROMATICS_ACCEPT_HBONDS \
 #              -DMINPREDEFINED -DMAXPREDEFINED\
 
 CFLAGS = $(OPT) $(DEBUG) $(PROG_FLGS) $(DICT_LOC)\
-         -I$(PDBHOME) -I$(TOOLHOME) -Wall
+         -I$(PDBHOME) -I$(TOOLHOME) 
+#         -Wall
 
 LFLAGS = -L$(PDBHOME) -lpdb++ -L$(TOOLHOME) -ltoolclasses -lm
 

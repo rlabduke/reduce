@@ -103,7 +103,7 @@ void CliqueList::formatClique(std::vector<std::string>& cliqueNotes, int c) cons
 	if (c >= 0 && _cliques.size() > c) {
 		i = 0;
 		for(std::list< std::list<MoverPtr> >::const_iterator ss = _cliques.begin(); ss != _cliques.end(); ++ss) {
-			if (i++ == c) { s_list = *ss; break; }
+			if (i++ == c) { s_list = *ss; s_list.sort( mpLess() ); break; } //apl adding sort before output begins
 		}
 	}
 	if (s_list.size() > 0) {

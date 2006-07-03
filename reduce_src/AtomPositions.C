@@ -316,7 +316,7 @@ std::list<char> AtomPositions::insertFlip(const ResBlk& rblk) {
 	std::list<char> resAlts;
 	FlipMemo::altCodes(rblk, _useXplorNames, resAlts);
 	std::multimap<std::string, PDBrec*> pdb = rblk.atomIt();
-	std::string key, descr;
+	std::string key, descriptor;
 	char descrbuf[30];
 
 	for(std::list<char>::iterator alts = resAlts.begin(); alts != resAlts.end(); ++alts) {
@@ -330,26 +330,30 @@ std::list<char> AtomPositions::insertFlip(const ResBlk& rblk) {
 				atsq = pdbit->second;
 				if ( visableAltConf(*atsq, _onlyA)
 					&&  (atsq->alt() == ' ' || atsq->alt() == *alts) ) {
-
+  
 					::sprintf(descrbuf, "%c%4d%c%-3.3s%-4.4s%c",
 						atsq->chain(), atsq->resno(), atsq->insCode(),
 						atsq->resname(), "", (*alts));
-					descr = descrbuf;
+					descriptor = descrbuf;
 
-					std::map<std::string, Mover*>::const_iterator iter = _motionDesc.find(descr);
+					std::map<std::string, Mover*>::const_iterator iter = _motionDesc.find(descriptor);
 					Mover *m = NULL;
 					if (iter != _motionDesc.end())
 						m = iter->second;
 
 					if (m == NULL) {
+					   
 						m = new FlipMemo(atsq->resname(), _useXplorNames);
-						_motionDesc.insert(std::make_pair(descr, m));
+						m->descr( descriptor );
+						_motionDesc.insert(std::make_pair(descriptor, m));
+						//std::cerr << "FlipMemo constructed: " << descriptor << " " << m << std::endl;
 					}
 					else if (m->type() != Mover::FLIP){
 						cerr<<"*error* insertFlip(rblk, "<< m->type() <<")"<<endl;
 						return std::list<char>();
 					}
 					((FlipMemo*)m)->insertAtom(atsq);
+					 
 				}
 			}
 		}
@@ -393,12 +397,17 @@ void AtomPositions::insertFlip(PDBrec* hr, std::list<char> alts_list) {
 // ---------------------------------------------------------------
 void AtomPositions::finalizeMovers() {
 	std::map<std::string, Mover*>::const_iterator it = _motionDesc.begin();
+	int rn=0;
 	while (it != _motionDesc.end()) {
 		Mover *m = it->second;
 		if (m != NULL) {
+			
 			m->descr(it->first);
+			//_os << "FinalizeMovers: #res " << rn << " is " << m->descr() << endl;
 			m->finalize(_nBondCutoff, _useXplorNames, *this, _dotBucket);
+			//_os << "FinalizeMovers: #res " << rn << " is " << m->descr() << endl;
 		}
+		++rn;
 		++it;
 	}
 }
@@ -419,12 +428,11 @@ CliqueList AtomPositions::findCliques() const {
 	int rn=0, an=0;
 	while (it != _motionDesc.end()) {
 		Mover   *mx = it->second;
+		//_os << "find cliques " << mx->descr() << " valid: " << mx->valid() << " complete: " << mx->isComplete() << endl;
 		if (mx != NULL && mx->valid() && mx->isComplete()
 			&& rn < mdsz) {
 			memo.push_back(mx);
-#ifdef DEBUGCLIQUE
-			_os << "#res " << rn << " is " << mx->descr() << endl;
-#endif
+			//_os << "#res " << rn << " is " << mx->descr() << endl;
 			an += mx->makebumpers(bumpbins, rn, maxVDWrad);
 			++rn;
 		}
@@ -967,6 +975,10 @@ int AtomPositions::SearchClique(std::list<MoverPtr> clique, int limit)
 			item[i]->trackFlipMaxScore(item[i]->flipState(),
 				best_score_wo_penalty, currBadBump[i]);
 			optimalFlipState[ i ] = item[i]->flipState();
+			if (item[i]->flipState() != 0)
+			{
+				item[i]->markFlipAtoms();
+			}
 			//std::cerr << "optimal flip state: " << i << " " << optimalFlipState[ i ] << std::endl;
 		}
 	}

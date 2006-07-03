@@ -85,7 +85,9 @@ void resetMarks(std::list<PDBrec*>& lst) {
 
 bool visableAltConf(const PDBrec& a, bool onlyA) {
    const char aalt = a.alt();
-   return (aalt == ' ' || aalt == 'A' || aalt == 'a' || !onlyA);
+   bool returnvalue = (aalt == ' ' || aalt == 'A' || aalt == 'a' || !onlyA);
+	//std::cerr << "visiableAltConf: " << a.recName() << " "  << returnvalue;
+	return returnvalue;
 }
 
 bool interactingConfs(const PDBrec& a, const PDBrec& b, bool onlyA) {
