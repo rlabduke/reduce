@@ -5,6 +5,12 @@
 #include "PDBrec.h"
 #include "Point3d.h"
 
+#ifdef OLD_STD_HDRS
+#include <assert.h>
+#else
+#include <cassert>
+#endif
+
 void sort_three(int a, int b, int c, int & x, int & y, int & z)
 {
 	if ( a < b )

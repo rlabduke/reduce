@@ -25,6 +25,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <algorithm.h>
+#include <assert.h>
 #else
 #include <cstdio>
 #include <iostream>
@@ -33,6 +34,7 @@
 #include <cstdlib>
 #include <cctype>
 #include <algorithm>
+#include <cassert>
 using std::ifstream;
 using std::cout;
 using std::cerr;
