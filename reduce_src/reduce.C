@@ -120,6 +120,7 @@
 //                        in genHydrogens() that manifested itself as aberant behavior when presented
 //                        with several (3 or more) alternate conformations.
 // 7/09/06 - apl -      - Adding #include <cassert> for gcc3.3.4 builds
+// 7/11/06 - apl -      - Fixing "node with 0 states" bug.
 
 #pragma warning(disable:4786) 
 #pragma warning(disable:4305) 

@@ -875,6 +875,12 @@ int AtomPositions::SearchClique(std::list<MoverPtr> clique, int limit)
 		gths.setStateDisablingCompleteForNow();
 		//std::cerr << "state disabling complete" << std::endl;
 		
+		if ( gths.anyNodeWithAllStatesDisabled() )
+		{
+			std::cerr << " Skipping iteration; node with all states disabled" << std::endl;
+			continue;
+		}
+		
 		NodeAndEdgeManager* theNaEManager = NodeAndEdgeManager::getInstance();
 		theNaEManager->InitializeNetwork(gths);
 		if ( firstOptimization )
@@ -1003,6 +1009,11 @@ int AtomPositions::SearchClique(std::list<MoverPtr> clique, int limit)
 		}
 		gths.setStateDisablingCompleteForNow();
 		//std::cerr << "state disabling complete" << std::endl;
+		if ( gths.anyNodeWithAllStatesDisabled() )
+		{
+			std::cerr << " Skipping iteration; node with all states disabled" << std::endl;
+			continue;
+		}
 		
 		NodeAndEdgeManager* theNaEManager = NodeAndEdgeManager::getInstance();
 		theNaEManager->InitializeNetwork(gths);

@@ -441,6 +441,7 @@ public:
 	void setAllStatesEnabled();
 	void disableStateOnNode( int vertex, int state );
 	void setStateDisablingCompleteForNow();
+	bool anyNodeWithAllStatesDisabled() const;
 	int convertEnabledState2OriginalStateEnumerationOnNode( int vertex, int enabled_state ) const;
 
 	//Methods for initializing interaction graph

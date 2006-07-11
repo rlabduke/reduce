@@ -2249,6 +2249,19 @@ void GraphToHoldScores::setStateDisablingCompleteForNow()
 	}
 }
 
+bool GraphToHoldScores::anyNodeWithAllStatesDisabled() const
+{
+
+	for (int ii = 0; ii < getNumNodes(); ++ii )
+	{
+		if ( vertices_[ ii ]->getNumEnabledStates() == 0 )
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
 int 
 GraphToHoldScores::convertEnabledState2OriginalStateEnumerationOnNode( 
 	int vertex, 
