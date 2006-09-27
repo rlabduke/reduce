@@ -290,7 +290,7 @@ private:
 	int whichVertex( int vertex ) const;
 	
 	void
-	DegreeThreeEdge_ths::lookForSharedDots( 
+	lookForSharedDots( 
 		DegreeThreeEdge_ths const * other,
 		int vertex_this,
 		int vertex_other
