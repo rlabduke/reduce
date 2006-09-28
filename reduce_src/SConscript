@@ -1,0 +1,40 @@
+import libtbx.load_env
+Import("reduce_scons_env")
+
+env = reduce_scons_env.Copy()
+env.Append(
+  CXXFLAGS=[
+    "-DAROMATICS_ACCEPT_HBONDS",
+    "-DCHARFUNCMACROS",
+    "-DBOOLPREDEFINED",
+    "-DBRACKETOPERPARMS",
+    "-DLEFT_JUSTIFY_NUC_RES_OK",
+    "-DLISTFRIENDFIX",
+    "-DINCTEMPLATEDEFNS",
+    """-DHET_DICTIONARY='"/usr/local/reduce_het_dict.txt"'"""])
+env.Append(CPPPATH=["#reduce/toolclasses", "#reduce/libpdb"])
+env.Append(LIBPATH=["#reduce/lib"])
+env.Append(LIBS=["toolclasses", "pdb++"])
+exe = env.Program(
+  target=["#exe/reduce"],
+  source=[
+    "GraphToHoldScores.C",
+    "reduce.C",
+    "CTab.C",
+    "ElementInfo.C",
+    "StdResH.C",
+    "ResBlk.C",
+    "AtomConn.C",
+    "AtomPositions.C",
+    "DotSph.C",
+    "Mover.C",
+    "RotMethyl.C",
+    "RotDonor.C",
+    "FlipMemo.C",
+    "CliqueList.C",
+    "AtomDescr.C",
+    "PDBrec.C",
+    "MoveableNode.C"])
+libtbx.env.write_dispatcher_in_bin(
+  source_file=exe[0].get_abspath(),
+  target_file="reduce")
