@@ -1,4 +1,3 @@
-import libtbx.load_env
 Import("reduce_scons_env")
 
 env = reduce_scons_env.Copy()
@@ -16,7 +15,7 @@ env.Append(CPPPATH=["#reduce/toolclasses", "#reduce/libpdb"])
 env.Append(LIBPATH=["#reduce/lib"])
 env.Append(LIBS=["toolclasses", "pdb++"])
 exe = env.Program(
-  target=["#exe/reduce"],
+  target=["#reduce/exe/reduce"],
   source=[
     "GraphToHoldScores.C",
     "reduce.C",
@@ -35,6 +34,3 @@ exe = env.Program(
     "AtomDescr.C",
     "PDBrec.C",
     "MoveableNode.C"])
-libtbx.env.write_dispatcher_in_bin(
-  source_file=exe[0].get_abspath(),
-  target_file="reduce")
