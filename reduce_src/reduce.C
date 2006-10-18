@@ -127,9 +127,9 @@
 #pragma warning(disable:4800) 
 
 static const char *versionString =
-     "reduce: version 3.02  7/09/06, Copyright 1997-2006, J. Michael Word";
+     "reduce: version 3.02  7/11/06, Copyright 1997-2006, J. Michael Word";
 
-static const char *shortVersion    = "reduce.3.02.060709";
+static const char *shortVersion    = "reduce.3.02.060711";
 static const char *referenceString =
                        "Word, et. al. (1999) J. Mol. Biol. 285, 1735-1747.";
 static const char *electronicReference = "http://kinemage.biochem.duke.edu";
