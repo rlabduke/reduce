@@ -416,10 +416,11 @@ bool FlipMemo::setOrientation(int oi, AtomPositions &xyz, SearchStrategy ss) {
 	 }
 #ifdef AROMATICS_ACCEPT_HBONDS
 	 else if (_wrkAtom[ai].elem().atno() == 6) {
-	    if (_atomDAflags[oi+offO][ai] < 0) {
-	       _wrkAtom[ai].elem(*eCacc);
-	    }
-	    else { _wrkAtom[ai].elem(*eC); }
+		_wrkAtom[ai].elem(*eC); // apl - 10/19/2006 - His carbons no longer aromatic
+	    //if (_atomDAflags[oi+offO][ai] < 0) {
+	    //  _wrkAtom[ai].elem(*eCacc);
+	    //}
+	    //else { _wrkAtom[ai].elem(*eC); }
 	 }
 #endif
       }

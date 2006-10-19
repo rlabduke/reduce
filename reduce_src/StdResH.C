@@ -877,9 +877,9 @@ StdResXtraInfo::StdResXtraInfo() {
    //_atomAttributes.insert(std::make_pair(makeKey("HIS", " CD2"), HBACCEPTORFLAG|AROMATICFLAG));
    //_atomAttributes.insert(std::make_pair(makeKey("HIS", " CE1"), HBACCEPTORFLAG|AROMATICFLAG));
    //_atomAttributes.insert(std::make_pair(makeKey("HIS", " CG"),  HBACCEPTORFLAG|AROMATICFLAG));
-   _atomAttributes.insert(std::make_pair(makeKey("HIS", " CD2"), AROMATICFLAG));
-   _atomAttributes.insert(std::make_pair(makeKey("HIS", " CE1"), AROMATICFLAG));
-   _atomAttributes.insert(std::make_pair(makeKey("HIS", " CG"),  AROMATICFLAG));
+   _atomAttributes.insert(std::make_pair(makeKey("HIS", " CD2"), 0));
+   _atomAttributes.insert(std::make_pair(makeKey("HIS", " CE1"), 0));
+   _atomAttributes.insert(std::make_pair(makeKey("HIS", " CG"),  0));
 
    _atomAttributes.insert(std::make_pair(makeKey("TRP", " CH2"), HBACCEPTORFLAG|AROMATICFLAG));
    _atomAttributes.insert(std::make_pair(makeKey("TRP", " CZ3"), HBACCEPTORFLAG|AROMATICFLAG));
