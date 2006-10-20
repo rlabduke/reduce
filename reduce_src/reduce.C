@@ -121,15 +121,16 @@
 //                        with several (3 or more) alternate conformations.
 // 7/09/06 - apl -      - Adding #include <cassert> for gcc3.3.4 builds
 // 7/11/06 - apl -      - Fixing "node with 0 states" bug.
+// 7/19/06 - apl - v3.03- changing HIS carbons to regular carbons and not arromatic carbons
 
 #pragma warning(disable:4786) 
 #pragma warning(disable:4305) 
 #pragma warning(disable:4800) 
 
 static const char *versionString =
-     "reduce: version 3.02  7/11/06, Copyright 1997-2006, J. Michael Word";
+     "reduce: version 3.03  7/19/06, Copyright 1997-2006, J. Michael Word";
 
-static const char *shortVersion    = "reduce.3.02.060711";
+static const char *shortVersion    = "reduce.3.03.060719";
 static const char *referenceString =
                        "Word, et. al. (1999) J. Mol. Biol. 285, 1735-1747.";
 static const char *electronicReference = "http://kinemage.biochem.duke.edu";
