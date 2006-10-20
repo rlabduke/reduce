@@ -886,7 +886,6 @@ int AtomPositions::SearchClique(std::list<MoverPtr> clique, int limit)
 		if ( firstOptimization )
 		{
 			theNaEManager->setTimeLimit( timeLimit );
-			firstOptimization = false;
 		}
 		abandonedOptimization = theNaEManager->computeOptimalNetworkConfiguration();
 		//theNaEManager->bruteForceOriginalGraph();
@@ -928,13 +927,14 @@ int AtomPositions::SearchClique(std::list<MoverPtr> clique, int limit)
 		//std::cerr << score_without_penalty << ", pen: " << actualPenalty << ", sum: ";
 		//std::cerr << score_including_penalty << std::endl;
 		
-		if ( penalty_iterator == allPenalties.begin() || score_including_penalty > best_score_including_penalty )
+		if (  firstOptimization || score_including_penalty > best_score_including_penalty )
 		{
 			best_score_wo_penalty = score_without_penalty;
 			best_score_including_penalty = score_including_penalty;
 			std::copy( optimal_state_original.begin(), optimal_state_original.end(), optimal_state.begin()); 
 		}
 		theNaEManager->clear();
+		firstOptimization = false;
 	}
 	gths.setAllStatesEnabled();
 
@@ -1434,10 +1434,12 @@ double AtomPositions::atomScore(const PDBrec& a, const Point3d& p,
 	}
 
 	DotsForAtom * dotsToCount = 0;
+	//bool output = false;
 	
+	//if (output) std::cerr << "Scoring atom: " << a.loc() << " " << a.recName() << std::endl;
 	if ( scoreAtomsAndDotsInAtomsToScoreVector_ || scoreAtomsInAtomsInHighOrderOverlapList_ )
 	{	
-		//std::cerr << "Scoring atom: " << a.loc() << " " << a.recName() << std::endl;
+		
 		AtomDescr atomBeingScored = a.getAtomDescr();
 		
 		//for ( std::list< AtomDescr >::iterator threeWayIter = _atomsIn3WayOverlap->begin();
@@ -1501,10 +1503,10 @@ double AtomPositions::atomScore(const PDBrec& a, const Point3d& p,
 	
 		
 	std::vector< PDBrec* > bumping( bumping_list.size(), NULL );
-	//std::copy( bumping_list.begin(), bumping_list.end(), bumping.begin() );	
+	std::copy( bumping_list.begin(), bumping_list.end(), bumping.begin() );	
 	//for (int ii = 0; ii < bumping.size(); ++ii )
 	//{
-	//	std::cerr << "bumping: " << ii << " " << bumping[ ii ] << std::endl;
+	//	if (output) std::cerr << "bumping: " << ii << " " << bumping[ ii ] << std::endl;
 	//}
 		
 	//if (false)
@@ -1537,7 +1539,7 @@ double AtomPositions::atomScore(const PDBrec& a, const Point3d& p,
 	//}
 	//else
 	//{
-	std::copy( bumping_list.begin(), bumping_list.end(), bumping.begin() );
+	//std::copy( bumping_list.begin(), bumping_list.end(), bumping.begin() );
 	//}
 	
 	
@@ -1679,7 +1681,7 @@ double AtomPositions::atomScore(const PDBrec& a, const Point3d& p,
       }
 
   	 	//if ( scoreAtomsAndDotsInAtomsToScoreVector_ && dotscore != 0)
-   	//	cerr << "Cause " << cause.recName->() << " v:" << cause->valid() << " on surface of " << a.recName() << " score: " << dotscore << " hb?" << isaHB << " tooclose?" << tooCloseHB << endl;
+   	//if (output && dotscore != 0 ) cerr << "Cause " << cause->recName() << " v:" << cause->valid() << " on surface of " << a.recName() << " score: " << dotscore << " hb?" << isaHB << " tooclose?" << tooCloseHB << endl;
 
    }
    bumpSubScore /= dots.density();
