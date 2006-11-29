@@ -53,12 +53,11 @@ public:
 	_clqOfInt( false ) {}
 
   ~AtomPositions() {
-/*	  for (std::map<std::string, Mover*>::const_iterator i = _motionDesc.begin(); i != _motionDesc.end(); ++i)
+	  for (std::map<std::string, Mover*>::const_iterator i = _motionDesc.begin(); i != _motionDesc.end(); ++i)
 		   delete i->second;
 	   std::for_each(_excludePoints.begin(), _excludePoints.end(), DeleteObject());
 	  for (std::multimap<LocBlk, PDBrec*>::const_iterator it = _xyzBlocks.begin(); it != _xyzBlocks.end(); ++it)
 		   delete it->second;
-*/
   }
 
   int forceOrientations(const std::string& ofilename, std::vector<std::string>& notes);

@@ -104,6 +104,12 @@ DotSphManager& DotSphManager::operator=(const DotSphManager& m) {
    return *this;
 }
 
+DotSphManager::~DotSphManager()
+{
+   std::for_each(_list.begin(), _list.end(), DeleteObject());
+}
+
+
 // return a DotSph with a given radius & the default density
 DotSph& DotSphManager::fetch(float rad) {
 	DotSph *r;

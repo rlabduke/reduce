@@ -14,7 +14,7 @@
 // **************************************************************
 
 #include <stdio.h>
-#include <string.h>
+#include <string>
 #include <ctype.h>
 #include <stdlib.h>
 #include "utility.h"
@@ -185,7 +185,8 @@ double parseReal(const char *str, int start, int len) {
    return value*scale*expscale;
 }
 
-const char* toUppercase(const char* a) {
+std::string
+toUppercase(const char* a) {
 	int i = 0;
 	while (a[i++] != '\0')
 		;
@@ -199,5 +200,7 @@ const char* toUppercase(const char* a) {
 #endif
 	}
 	buf[i] = '\0';
-	return buf;
+	std::string retval( buf );
+	delete [] buf;
+	return retval;
 }

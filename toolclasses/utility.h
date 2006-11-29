@@ -16,6 +16,8 @@
 #ifndef UTILITY_H
 #define UTILITY_H 1
 
+#include <string>
+
 #ifndef BOOLPREDEFINED
 typedef int bool;
 #endif
@@ -103,7 +105,7 @@ double parseReal(const char *str, int start, int len);
 int column_sscanf(const char *, const char *, ...);
 int column_sprintf(char *, const char *, ...);
 
-const char* toUppercase(const char* a);
+std::string toUppercase(const char* a);
 
 struct DeleteObject {
 	template<class T>

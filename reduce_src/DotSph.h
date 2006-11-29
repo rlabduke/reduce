@@ -65,14 +65,19 @@ public:
 	DotSph() { _rep = NULL; }
 	DotSph(float rad, float dens) { build(rad, dens); }
    ~DotSph() {
-	   if (!_rep)
-		   delete _rep;
+	   delete _rep; //delete 0 is fine
    }
 
-   DotSph(const DotSph& s) { _rep = s._rep; }
-   DotSph& operator=(const DotSph& s) {
-      _rep = s._rep; return *this;
-   }
+private:
+	//apl private and unimplemented since deleting rep without looking at a 
+	//apl counter (as is done in class PDB with the int* PDB::_i ) makes
+	//apl dangling references likely
+   DotSph(const DotSph& s); //{ _rep = s._rep; }
+   DotSph& operator=(const DotSph& s);
+	//{
+   //   _rep = s._rep; return *this;
+   //}
+public:
 
    // strict comparisons
    bool operator==(const DotSph& s) { return *(_rep) == *(s._rep); }
@@ -102,10 +107,8 @@ class DotSphManager {
 public:
    DotSphManager(): _dens(16.0), _radFuzz(0.001), _densFuzz(0.1) {}
    DotSphManager(float d): _dens(d), _radFuzz(0.001), _densFuzz(0.1) {}
-   ~DotSphManager() {
-	   std::for_each(_list.begin(), _list.end(), DeleteObject());
-   }
-   
+   ~DotSphManager();
+	   
    DotSphManager(const DotSphManager& m);
    DotSphManager& operator=(const DotSphManager& m);
 

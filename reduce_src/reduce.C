@@ -893,8 +893,14 @@ istream& inputRecords(istream& is, std::list<PDBrec*>& records) {
 		default:
 			break;
 		}
-		if (active && !drop) {
+		
+		if (active && !drop)
+		{
 			records.push_back(rec);
+		}
+		else
+		{
+			delete rec; rec = 0;
 		}
 	}
 	return is;
