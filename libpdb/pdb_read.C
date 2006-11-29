@@ -58,6 +58,8 @@ static char const * const pdbrun6[PDB::NUM_USER] = {
 #include <stdio.h>
 PDB::PDB(const char *buf)
 {
+	initialize_everything();
+
 	const char	*fmt;
 	Sheet		*sh;
 	Residue		*sha0, *sha1;

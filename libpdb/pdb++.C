@@ -27,6 +27,24 @@ extern "C" {
 #endif
 }
 
+PDB::PDB()
+{
+	initialize_everything();
+	type(UNKNOWN);
+}
+
+PDB::PDB(RecordType t)
+{
+	initialize_everything();
+	type(t);
+}
+
+void
+PDB::initialize_everything()
+{
+	memset(this, 0, sizeof *this);
+}
+
 void
 PDB::type(RecordType t)
 {

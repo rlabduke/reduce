@@ -423,6 +423,8 @@ private:
 	RecordType	rType;
 	static int	pdbrunInputVersion, pdbrunOutputVersion;
 	static int	byteCmp(const PDB &l, const PDB &r);
+	
+	void initialize_everything();
 public:
 	union {
 		Unknown	unknown;
@@ -503,9 +505,10 @@ public:
 	};
 	char endOfLineInfo[9]; // added to keep identifying info
 
-			PDB() { type(UNKNOWN); }
-			PDB(RecordType t) { type(t); }
-			PDB(const char *buf);
+	PDB();
+	PDB(RecordType t);
+	PDB(const char *buf);
+	
 	RecordType	type() const { return rType; }
 	void		type(RecordType t);
 	const char	*chars() const;
