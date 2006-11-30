@@ -39,7 +39,7 @@
 
 RotDonor::RotDonor(const Point3d& a, const Point3d& b,
                    const double ang, const PDBrec& heavyAtom)
-				   : _p1(a), _p2(b), _angle(ang), _heavyAtom(heavyAtom), _nori(0) {
+				   : _p1(a), _p2(b), _heavyAtom(heavyAtom), _angle(ang), _nori(0) {
 	validateMemo();
 }
 

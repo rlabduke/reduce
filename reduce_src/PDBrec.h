@@ -13,7 +13,9 @@
 // Copyright (C) 1999 J. Michael Word
 // **************************************************************
 
+#if defined(_MSC_VER)
 #pragma warning(disable:4800) 
+#endif
 
 #ifndef PDBREC_H
 #define PDBREC_H 1

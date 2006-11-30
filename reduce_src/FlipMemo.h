@@ -13,7 +13,9 @@
 // Copyright (C) 1999 J. Michael Word
 // **************************************************************
 
+#if defined(_MSC_VER)
 #pragma warning(disable:4786) 
+#endif
 
 #ifndef FLIPMEMO_H
 #define FLIPMEMO_H 1

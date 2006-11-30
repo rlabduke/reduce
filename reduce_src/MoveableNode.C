@@ -12,7 +12,9 @@
 //               ** Absolutely no Warranty **
 // Copyright (C) 1999 J. Michael Word
 // **************************************************************
+#if defined(_MSC_VER)
 #pragma warning(disable:4786) 
+#endif
 
 #include "Mover.h"
 #include "AtomPositions.h"
@@ -106,7 +108,7 @@ OptimizedNodeStateMatrix::OptimizedNodeStateMatrix(NodeState firstNodeMaxStates,
 		}
 	}
 }
-OptimizedNodeStateMatrix::OptimizedNodeStateMatrix(int firstNodeIndex, int secondNodeIndex, NodeState firstNodeMaxStates, NodeState secondNodeMaxStates) :  _1stNodeMaxStates(firstNodeMaxStates), _2ndNodeMaxStates(secondNodeMaxStates), _1stNodeIndex(firstNodeIndex), _2ndNodeIndex(secondNodeIndex) 
+OptimizedNodeStateMatrix::OptimizedNodeStateMatrix(int firstNodeIndex, int secondNodeIndex, NodeState firstNodeMaxStates, NodeState secondNodeMaxStates) : _1stNodeIndex(firstNodeIndex), _2ndNodeIndex(secondNodeIndex), _1stNodeMaxStates(firstNodeMaxStates), _2ndNodeMaxStates(secondNodeMaxStates)
 {
 	_theNSMatrix = NULL;
 	if ((_1stNodeMaxStates > 0) && (_2ndNodeMaxStates > 0))
@@ -242,12 +244,12 @@ OptimizedNodeStateMatrix3::OptimizedNodeStateMatrix3(
 	NodeState thirdNodeMaxStates
 )
 	: 
-	_1stNodeMaxStates(firstNodeMaxStates), 
-	_2ndNodeMaxStates(secondNodeMaxStates),
-	_3rdNodeMaxStates(thirdNodeMaxStates),
 	_1stNodeIndex(firstNodeIndex),
 	_2ndNodeIndex(secondNodeIndex),
-	_3rdNodeIndex(thirdNodeIndex)
+	_3rdNodeIndex(thirdNodeIndex),
+	_1stNodeMaxStates(firstNodeMaxStates), 
+	_2ndNodeMaxStates(secondNodeMaxStates),
+	_3rdNodeMaxStates(thirdNodeMaxStates)
 {
 	_theNSMatrix = NULL;
 	if ((_1stNodeMaxStates > 0) && (_2ndNodeMaxStates > 0) && (_3rdNodeMaxStates > 0))
@@ -571,12 +573,14 @@ MoveableNode::~MoveableNode()
 
 //MoveableNode::MoveableNode(const MoveableNode& rhs);
 MoveableNode::MoveableNode(NodeState maxStates) : 
-	_index(-1), _theNodeScoreVect(NULL),
+	_index(-1),
+	_maxNodeStates(maxStates),
+        _theNodeScoreVect(NULL),
 	_isEliminated(false), _eliminationOrder(0), _optimalStateVector(NULL),
 	_nodeIndexDetStateFromTreeReduction(-1),
 	_optimalStateMatrix(NULL), _firstNodeIndexDetStateFromCycleReduction(-1),
 	_secondNodeIndexDetStateFromCycleReduction(-1),
-	_maxNodeStates(maxStates),_hasAnyDegree3Hyperedges(false),_hasAnyDegree4Hyperedges(false),
+        _hasAnyDegree3Hyperedges(false),_hasAnyDegree4Hyperedges(false),
 	_hasAnyHighOrderOverlap( false ), _mover( NULL )
 {
 	_theNodeScoreVect = new NodeScoreVector(_maxNodeStates);
@@ -769,7 +773,7 @@ void 				MoveableNode::eliminateThroughCycleReduction()
 		secondEdgePtr        = tempEdgePtr;
 	}
 
-	int nodeIndices[ 3 ] = { indexFirstOtherNode, indexSecondOtherNode, _index };
+	//int nodeIndices[ 3 ] = { indexFirstOtherNode, indexSecondOtherNode, _index };
 
 	MoveableNode* firstOtherNodePtr  = firstEdgePtr->getPointerToOtherNode(_index);
 	MoveableNode* secondOtherNodePtr = secondEdgePtr->getPointerToOtherNode(_index);
@@ -2040,7 +2044,7 @@ bool NodeAndEdgeManager::bruteForceIrreducibleSubgraph()
 		nodesCorrespondingMover[ ii ] = remNodePtrVect[ ii ]->getMover();
 		if ( remNodePtrVect[ ii ]->getHasAnyHighOrderOverlap() )
 		{
-			int ii_node_index = remainingNodesOldInd[ ii ];
+			//int ii_node_index = remainingNodesOldInd[ ii ];
 			//std::cerr << "Node " << ii_node_index << " has high order overlap" << std::endl;
 		
 			anyHighOrderOverlap = true;
@@ -2123,7 +2127,7 @@ bool NodeAndEdgeManager::bruteForceIrreducibleSubgraph()
 	bool firstNetworkState = true;
 
 	double runningScore;
-	double bestScore;
+	double bestScore = -1;
 	//std::cerr << "Beginning enumeration..." << std::endl;
 	int smallestIncremented = -1;
 	double penalty;
@@ -2416,7 +2420,7 @@ void NodeAndEdgeManager::InitializeNetwork(GraphToHoldScores & gths)
 	//cerr << "Entering InitializeNetwork(gths)" << endl;
 
 	//Go ahead and make sure that things within the gths are legit to the extent allowable.
-	int i, numNodes, numEdges, numDegree3Edges, firstNodeIndex, secondNodeIndex;
+	int i, numNodes, firstNodeIndex, secondNodeIndex;
 	NodeState j, k, firstNodeMaxStates, secondNodeMaxStates;
 	numNodes = gths.getNumNodes();	
 

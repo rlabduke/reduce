@@ -39,7 +39,7 @@ unsigned long hash(const char *key, unsigned long M) {
 
    for (int i = 0; key[i] != '\0'; i++) {
       h = (h<<4) + key[i];
-      if (g = h & 0xf0000000) {
+      if ((g = h & 0xf0000000)) {
 	 h ^= g >> 24;
 	 h ^= g;
       }

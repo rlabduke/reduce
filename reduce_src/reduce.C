@@ -125,9 +125,11 @@
 //10/20/06 - apl -      - fixing bug in optimization code that failed to keep optimal network states
 //                        when a network was forced to incur a penalty.
 
+#if defined(_MSC_VER)
 #pragma warning(disable:4786) 
 #pragma warning(disable:4305) 
 #pragma warning(disable:4800) 
+#endif
 
 static const char *versionString =
      "reduce: version 3.03 10/20/06, Copyright 1997-2006, J. Michael Word";
@@ -597,61 +599,61 @@ char* parseCommandLine(int argc, char **argv) {
 	    RotExistingOH      = TRUE;
 	    DemandFlipAllHNQs  = TRUE;
 	 }
-	 else if(n = compArgStr(p+1, "Quiet", 1)){
+	 else if((n = compArgStr(p+1, "Quiet", 1))){
 	    Verbose = FALSE;
 	 }
-	 else if(n = compArgStr(p+1, "NOTICKs", 6)){
+	 else if((n = compArgStr(p+1, "NOTICKs", 6))){
 	    ShowCliqueTicks = FALSE;
 	 }
-	 else if(n = compArgStr(p+1, "SHOWSCore", 6)){
+	 else if((n = compArgStr(p+1, "SHOWSCore", 6))){
 	    ShowOrientScore = TRUE;
 	 }
-	 else if(n = compArgStr(p+1, "NOCon", 3)){
+	 else if((n = compArgStr(p+1, "NOCon", 3))){
 	    KeepConnections = FALSE;
 	 }
-	 else if(n = compArgStr(p+1, "NOROTMET", 8)){
+	 else if((n = compArgStr(p+1, "NOROTMET", 8))){
 	    OKProcessMetMe = FALSE;
 	 }
-	 else if(n = compArgStr(p+1, "NOADJust", 5)){
+	 else if((n = compArgStr(p+1, "NOADJust", 5))){
 	    OKtoAdjust = FALSE;
 	 }
-	 else if(n = compArgStr(p+1, "HIS", 3)){
+	 else if((n = compArgStr(p+1, "HIS", 3))){
 	    BuildHisHydrogens = TRUE;
 	 }
-	 else if(n = compArgStr(p+1, "OH", 2)){
+	 else if((n = compArgStr(p+1, "OH", 2))){
 	    SaveOHetcHydrogens = TRUE;
 	 }
-	 else if(n = compArgStr(p+1, "NOOH", 4)){
+	 else if((n = compArgStr(p+1, "NOOH", 4))){
 	    SaveOHetcHydrogens = FALSE;
 	 }
-	 else if(n = compArgStr(p+1, "Xplor", 1)){
+	 else if((n = compArgStr(p+1, "Xplor", 1))){
 	    UseXplorNames = TRUE;
 	 }
-	 else if(n = compArgStr(p+1, "Trim", 1)){
+	 else if((n = compArgStr(p+1, "Trim", 1))){
 	    RemoveHydrogens = TRUE;
 	 }
-	 else if(n = compArgStr(p+1, "Keep", 1)){
+	 else if((n = compArgStr(p+1, "Keep", 1))){
 	    StandardizeRHBondLengths = FALSE;
 	 }
-	 else if(n = compArgStr(p+1, "ALLMEthyls", 5)){
+	 else if((n = compArgStr(p+1, "ALLMEthyls", 5))){
 	    DemandRotAllMethyls = TRUE;
 	 }
-	 else if(n = compArgStr(p+1, "ROTEXist", 5)){
+	 else if((n = compArgStr(p+1, "ROTEXist", 5))){
 	    DemandRotExisting = TRUE;
 	 }
-	 else if(n = compArgStr(p+1, "ROTNH3", 6)){
+	 else if((n = compArgStr(p+1, "ROTNH3", 6))){
 	    DemandRotNH3 = TRUE;
 	 }
-	 else if(n = compArgStr(p+1, "NOROTNH3", 8)){
+	 else if((n = compArgStr(p+1, "NOROTNH3", 8))){
 	    DemandRotNH3 = FALSE;
 	 }
-	 else if(n = compArgStr(p+1, "ROTEXOH", 7)){
+	 else if((n = compArgStr(p+1, "ROTEXOH", 7))){
 	    RotExistingOH = TRUE;
 	 }
-	 else if(n = compArgStr(p+1, "FLIPs", 4)){
+	 else if((n = compArgStr(p+1, "FLIPs", 4))){
 	    DemandFlipAllHNQs = TRUE;
 	 }
-	 else if(n = compArgStr(p+1, "SEGIDmap", 5)){
+	 else if((n = compArgStr(p+1, "SEGIDmap", 5))){
 	    if (++i < argc) {
 	       UseSEGIDtoChainMap = TRUE;
 	       PDBrec::InstallMapOfSEGIDstoChains(argv[i]);
@@ -660,63 +662,63 @@ char* parseCommandLine(int argc, char **argv) {
 	       cerr << "no mapping info after -SEGIDmap flag" << endl;
 	    }
 	 }
-	 else if(n = compArgStr(p+1, "Nterm", 1)){
+	 else if((n = compArgStr(p+1, "Nterm", 1))){
 	    MinNTermResNo = parseInteger(p, n+1, 10);
 	 }
-	 else if(n = compArgStr(p+1, "Model", 1)){
+	 else if((n = compArgStr(p+1, "Model", 1))){
 	    ModelToProcess = parseInteger(p, n+1, 10);
 	 }
-	 else if(n = compArgStr(p+1, "ONLTA", 5)){
+	 else if((n = compArgStr(p+1, "ONLTA", 5))){
 	    DoOnlyAltA = TRUE;
 	 }
-	 else if(n = compArgStr(p+1, "ALLALT", 6)){
+	 else if((n = compArgStr(p+1, "ALLALT", 6))){
 	    DoOnlyAltA = FALSE;
 	 }
-	 else if(n = compArgStr(p+1, "NOHETh", 5)){
+	 else if((n = compArgStr(p+1, "NOHETh", 5))){
 	    ProcessConnHydOnHets = FALSE;
 	 }
-	 else if(n = compArgStr(p+1, "DENSity", 4)){
+	 else if((n = compArgStr(p+1, "DENSity", 4))){
 	    VdwDotDensity = parseReal(p, n+1, 10);
 	 }
-	 else if(n = compArgStr(p+1, "PENalty", 3)){
+	 else if((n = compArgStr(p+1, "PENalty", 3))){
 	    PenaltyMagnitude = parseReal(p, n+1, 10);
 	 }
-	 else if(n = compArgStr(p+1, "RADius", 3)){
+	 else if((n = compArgStr(p+1, "RADius", 3))){
 	    ProbeRadius = parseReal(p, n+1, 10);
 	 }
-	 else if(n = compArgStr(p+1, "NBonds", 2)){
+	 else if((n = compArgStr(p+1, "NBonds", 2))){
 	    NBondCutoff = parseInteger(p, n+1, 10);
 	 }
-	 else if(n = compArgStr(p+1, "OCCcutoff", 3)){
+	 else if((n = compArgStr(p+1, "OCCcutoff", 3))){
 	    OccupancyCutoff = parseReal(p, n+1, 10);
 	 }
-	 else if(n = compArgStr(p+1, "H2OBcutoff", 4)){
+	 else if((n = compArgStr(p+1, "H2OBcutoff", 4))){
 	    WaterBcutoff = 1.0 * parseInteger(p, n+1, 10);
 	 }
-	 else if(n = compArgStr(p+1, "H2OOCCcutoff", 6)){
+	 else if((n = compArgStr(p+1, "H2OOCCcutoff", 6))){
 	    WaterOCCcutoff = parseReal(p, n+1, 10);
 	 }
-	 else if(n = compArgStr(p+1, "HBREGcutoff", 5)){
+	 else if((n = compArgStr(p+1, "HBREGcutoff", 5))){
 	    MinRegHBgap = parseReal(p, n+1, 10);
 	 }
-	 else if(n = compArgStr(p+1, "HBCHargedcutoff", 4)){
+	 else if((n = compArgStr(p+1, "HBCHargedcutoff", 4))){
 	    MinChargedHBgap = parseReal(p, n+1, 10);
 	 }
-	 else if(n = compArgStr(p+1, "BADBumpcutoff", 4)){
+	 else if((n = compArgStr(p+1, "BADBumpcutoff", 4))){
 	    BadBumpGapCut = parseReal(p, n+1, 10);
 	 }
-	 else if(n = compArgStr(p+1, "NONMETALBump", 9)){
+	 else if((n = compArgStr(p+1, "NONMETALBump", 9))){
 	    NonMetalBumpBias = parseReal(p, n+1, 10);
 	 }
-	 else if(n = compArgStr(p+1, "METALBump", 6)){
+	 else if((n = compArgStr(p+1, "METALBump", 6))){
 	    MetalBumpBias = parseReal(p, n+1, 10);
 	 }
-	 else if(n = compArgStr(p+1, "REFerence", 3)){
+	 else if((n = compArgStr(p+1, "REFerence", 3))){
 	    cerr << "Please cite: " << referenceString << endl;
 	    cerr << "For more information see " << electronicReference << endl;
 	    exit(1);
 	 }
-	 else if(n = compArgStr(p+1, "FIX", 3)){
+	 else if((n = compArgStr(p+1, "FIX", 3))){
 	    if (++i < argc) {
 			OFile = argv[i];
 	    }
@@ -724,7 +726,7 @@ char* parseCommandLine(int argc, char **argv) {
 	       cerr << "no filename after -FIX flag" << endl;
 	    }
 	 }
-	 else if(n = compArgStr(p+1, "DB", 2)){
+	 else if((n = compArgStr(p+1, "DB", 2))){
 	    if (++i < argc) {
 	       DBfilename = argv[i];
 	    }
@@ -732,7 +734,7 @@ char* parseCommandLine(int argc, char **argv) {
 	       cerr << "no filename after -DB flag" << endl;
 	    }
 	 }
-	 else if(n = compArgStr(p+1, "LIMITsearch", 5)){
+	 else if((n = compArgStr(p+1, "LIMITsearch", 5))){
 	    ExhaustiveLimit = parseInteger(p, n+1, 10);
 	 }
 	 else if(compArgStr(p+1, "Help", 1)){ // has to be after all the other -HXXXs
@@ -1120,7 +1122,6 @@ void analyzeRes(CTab& hetdatabase, ResBlk* pb, ResBlk* cb, ResBlk* nb,
 
 	// add in the previous and next records
 
-	PDBrec* rec_temp = NULL;
 	if (pb) {
 		std::list<PDBrec*> pr_list;
 		pb->get(" C", pr_list);

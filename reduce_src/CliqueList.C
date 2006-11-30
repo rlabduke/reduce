@@ -14,8 +14,10 @@
 // Copyright (C) 1999 J. Michael Word
 // **************************************************************
 
+#if defined(_MSC_VER)
 #pragma warning(disable:4786) 
 #pragma warning(disable:4800) 
+#endif
 
 #ifdef OLD_STD_HDRS
 #include <iostream.h>

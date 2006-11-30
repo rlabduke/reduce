@@ -131,7 +131,6 @@ void PDBrec::MapSEGIDtoChain() {
 }
 
 char PDBrec::SEGIDtoChain(const char *seg, char cdefault) {
-   char *c = NULL;
    if (_MappingSEGIDtoChains && seg) {
       std::string s = FormatSegToChainKey(seg);
 	  std::map<std::string, char>::const_iterator i = _SEGtoChainMap.find(s);

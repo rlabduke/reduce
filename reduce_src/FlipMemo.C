@@ -393,7 +393,7 @@ bool FlipMemo::setOrientation(int oi, AtomPositions &xyz, SearchStrategy ss) {
    static const ElementInfo * eNacc = ElementInfo::StdElemTbl().element("Nacc");
 #ifdef AROMATICS_ACCEPT_HBONDS
    static const ElementInfo * eC    = ElementInfo::StdElemTbl().element("C");
-   static const ElementInfo * eCacc = ElementInfo::StdElemTbl().element("Car");
+   //static const ElementInfo * eCacc = ElementInfo::StdElemTbl().element("Car");
 #endif
 
    if ((! _isComplete) || (oi < 0) || (oi >= _numO)) { return FALSE; }

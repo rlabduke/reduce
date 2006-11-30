@@ -13,8 +13,10 @@
 // Copyright (C) 1999 J. Michael Word
 // **************************************************************
 
+#if defined(_MSC_VER)
 #pragma warning(disable:4786) 
 #pragma warning(disable:4800) 
+#endif
 
 #ifndef MOVER_H
 #define MOVER_H 1
@@ -44,9 +46,9 @@ const double LowestMoverScore = -9.9E99;
 class Mover {
 protected:
    Mover() :  _bestScore(LowestMoverScore),
-	      _initScore(LowestMoverScore), _initIsSet(FALSE),
+	      _initScore(LowestMoverScore),
 	      _bestHasBadBump(FALSE), _initHasBadBump(FALSE),
-	      _ok(FALSE), _adj(TRUE) {
+              _initIsSet(FALSE), _ok(FALSE), _adj(TRUE) {
       _orientation[0] = 0;
       _orientation[1] = 0;
       _bestOrientation[0] = 0;

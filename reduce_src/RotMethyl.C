@@ -32,7 +32,7 @@
 
 RotMethyl::RotMethyl(const Point3d& a, const Point3d& b,
                      const double ang, const PDBrec& heavyAtom)
-   : _p1(a), _p2(b), _angle(ang), _heavyAtom(heavyAtom) {
+   : _p1(a), _p2(b), _heavyAtom(heavyAtom), _angle(ang) {
    strcpy(_grpName, ((heavyAtom.elem().atno() == 7) ?
 			"NH3+   " : "methyl "));
    validateMemo();
@@ -46,7 +46,6 @@ void RotMethyl::finalize(int nBondCutoff, bool,
 		// pre-build lists of bonded atoms
 		
 		const double approxNbondDistLimit = 3.0 + 0.5*nBondCutoff; // just a rule of thumb
-		int i = 0;
 		
 		_rot.push_front(&_heavyAtom);
 		for(std::list<PDBrec*>::const_iterator alst = _rot.begin(); alst != _rot.end(); ++alst) {

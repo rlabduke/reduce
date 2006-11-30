@@ -13,7 +13,9 @@
 // Copyright (C) 1999 J. Michael Word
 // **************************************************************
 
+#if defined(_MSC_VER)
 #pragma warning(disable:4786) 
+#endif
 
 #ifdef OLD_STD_HDRS
 #include <stdio.h>
@@ -784,7 +786,6 @@ int AtomPositions::SearchClique(std::list<MoverPtr> clique, int limit)
 	std::vector< std::vector< float > > penalties( numItems );
 	std::list< float > allPenalties;
 
-	bool any3WayOverlap;
 	std::vector< std::list< AtomDescr > > atomsIn3WayOverlapForNode( numItems );
 	std::vector< bool > nodeHas3WayOverlap( numItems, false);
 	
@@ -796,8 +797,7 @@ int AtomPositions::SearchClique(std::list<MoverPtr> clique, int limit)
 	double penalty          = 0.0;
 	double worstPenalty     = 0.0;
 	//  double prevWorstPenalty = 0.0;
-	int i = 0, best = 0, j=0, k=0;
-	double prRad = 0;  
+	int i = 0, best = 0, j=0;
    _maxVDWFound = ElementInfo::StdElemTbl().maxExplicitRadius();
 
 	// ---------------------------------------------------------------
@@ -837,8 +837,8 @@ int AtomPositions::SearchClique(std::list<MoverPtr> clique, int limit)
  	std::vector< NodeState > optimal_state_enabled( numItems ); //enabled enumeration of states
  	std::vector< int > optimal_state_original( numItems );//original enumeration of states
  	std::vector< NodeState > optimal_state( numItems ); //after determining penalty
- 	float best_score_wo_penalty;
- 	float best_score_including_penalty;
+ 	float best_score_wo_penalty = -1;
+ 	float best_score_including_penalty = -1;
  	
 	
 	bool abandonedOptimization = false;
@@ -1562,7 +1562,7 @@ double AtomPositions::atomScore(const PDBrec& a, const Point3d& p,
 		bool isaHB = FALSE;
 		bool tooCloseHB = FALSE;
 		float HBmindist = 999.9;
-		PDBrec* cause;
+		PDBrec* cause = 0;
 		
 		PDBrec* b = NULL;
 		int closest_bumping = -1;
