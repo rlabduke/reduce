@@ -20,14 +20,15 @@
 //
 
 # include	"pdb++.h"
-extern "C" {
 #ifdef OLD_STD_HDRS
+#include <stdio.h>
 #include <ctype.h>
+#define REDUCE_STD_SPRINTF sprintf
 #else
+#include <cstdio>
 #include <cctype>
+#define REDUCE_STD_SPRINTF std::sprintf
 #endif
-}
-extern "C" int	sprintf(char *, const char *, ...);
 
 static char const * const pdbRecordFormat[PDB::NUM_TYPES] = {
 #include "write_format.i"
@@ -61,7 +62,7 @@ PDB::chars(void) const
 	switch (rType) {
 
 	case UNKNOWN:
-		count = ::sprintf(buf, fmt, unknown.junk);
+		count = REDUCE_STD_SPRINTF(buf, fmt, unknown.junk);
 		break;
 
 	case AGGRGT:
@@ -396,7 +397,7 @@ PDB::chars(void) const
 
 	case USER_CNAME:
 		if (pdbrunOutputVersion < 6)
-			count = ::sprintf(buf, fmt, userCName.name,
+			count = REDUCE_STD_SPRINTF(buf, fmt, userCName.name,
 				userCName.rgb[0], userCName.rgb[1],
 				userCName.rgb[2]);
 		else
@@ -407,7 +408,7 @@ PDB::chars(void) const
 
 	case USER_COLOR:
 		if (pdbrunOutputVersion < 6)
-			count = ::sprintf(buf, fmt, userColor.spec,
+			count = REDUCE_STD_SPRINTF(buf, fmt, userColor.spec,
 				userColor.rgb[0], userColor.rgb[1],
 				userColor.rgb[2]);
 		else
@@ -430,7 +431,7 @@ PDB::chars(void) const
 
 	case USER_CHAIN:
 		if (pdbrunOutputVersion < 6)
-			count = ::sprintf(buf, fmt, userChain.atom0,
+			count = REDUCE_STD_SPRINTF(buf, fmt, userChain.atom0,
 				userChain.atom1);
 		else
 			count = PDB::sprintf(buf, fmt, userChain.atom0,
@@ -456,7 +457,7 @@ PDB::chars(void) const
 
 	case USER_GFX_COLOR:
 		if (pdbrunOutputVersion < 6)
-			count = ::sprintf(buf, fmt, userGfxColor.spec,
+			count = REDUCE_STD_SPRINTF(buf, fmt, userGfxColor.spec,
 				userGfxColor.rgb[0], userGfxColor.rgb[1],
 				userGfxColor.rgb[2]);
 		else
@@ -483,7 +484,7 @@ PDB::chars(void) const
 
 	case USER_GFX_FONT:
 		if (pdbrunOutputVersion < 6)
-			count = ::sprintf(buf, fmt, userGfxFont.name,
+			count = REDUCE_STD_SPRINTF(buf, fmt, userGfxFont.name,
 				userGfxFont.size);
 		else
 			count = PDB::sprintf(buf, fmt, userGfxFont.size,
@@ -500,7 +501,7 @@ PDB::chars(void) const
 
 	case USER_GFX_LABEL:
 		if (pdbrunOutputVersion < 6)
-			count = ::sprintf(buf, fmt, userGfxLabel.xyz[0],
+			count = REDUCE_STD_SPRINTF(buf, fmt, userGfxLabel.xyz[0],
 				userGfxLabel.xyz[1], userGfxLabel.xyz[2],
 				userGfxLabel.text);
 		else

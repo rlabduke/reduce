@@ -1172,13 +1172,13 @@ void analyzeRes(CTab& hetdatabase, ResBlk* pb, ResBlk* cb, ResBlk* nb,
 			hn = StdResH::HydPlanTbl().get("amide");
 		}
 		else if (ctype == NTERM_RES) {
-			bool ispro = resname.find("PRO") != -1;
+			bool ispro = resname.find("PRO") != std::string::npos;
 			hn = StdResH::HydPlanTbl().get(ispro?"nt-pro":"nt-amide");
 		}
 		else if (ctype == FRAGMENT_RES) { // don't create NH
 			if (StandardizeRHBondLengths) {
 				// case A - really is a N terminal
-				bool ispro = resname.find("PRO") != -1;
+				bool ispro = resname.find("PRO") != std::string::npos;
 				findAndStandardize(ispro?"nt-pro":"nt-amide", resname.c_str(), *cb);
 
 				// case B - really just a fragment
@@ -1192,13 +1192,13 @@ void analyzeRes(CTab& hetdatabase, ResBlk* pb, ResBlk* cb, ResBlk* nb,
 				(*nfr)->elem(* ElementInfo::StdElemTbl().element("Nacc"));
 			}
 		}
-		if (hn && hn->exclude().find(resname.c_str()) == -1) {
+		if (hn && hn->exclude().find(resname.c_str()) == std::string::npos) {
 			std::list<atomPlacementPlan*> temp = hn->plans();
 			app.splice(app.end(), temp);
 		}
 		if (StdResH::ResXtraInfo().match(resname, "AminoAcid")) {
 			StdResH *ha = StdResH::HydPlanTbl().get("alpha");
-			if (ha && ha->exclude().find(resname.c_str()) == -1) {
+			if (ha && ha->exclude().find(resname.c_str()) == std::string::npos) {
 				std::list<atomPlacementPlan*> temp = ha->plans();
 				app.splice(app.end(), temp);
 			}
@@ -1207,7 +1207,7 @@ void analyzeRes(CTab& hetdatabase, ResBlk* pb, ResBlk* cb, ResBlk* nb,
 
 	if (StdResH::ResXtraInfo().match(resname, "NucleicAcid")) {
 		StdResH *rpbb = StdResH::HydPlanTbl().get("ribose phosphate backbone");
-		if (rpbb && rpbb->exclude().find(resname.c_str()) == -1) {
+		if (rpbb && rpbb->exclude().find(resname.c_str()) == std::string::npos) {
 			std::list<atomPlacementPlan*> temp = rpbb->plans();
 			app.splice(app.end(), temp);
 		}
@@ -1875,7 +1875,7 @@ void findAndStandardize(const char* name, const char* resname,
 						ResBlk& theRes) {
 	StdResH *hptr = StdResH::HydPlanTbl().get(name);
 
-	if (hptr && hptr->exclude().find(resname) == -1) {
+	if (hptr && hptr->exclude().find(resname) == std::string::npos) {
 		std::list<atomPlacementPlan*> app_deque = hptr->plans();
 		for (std::list<atomPlacementPlan*>::iterator app = app_deque.begin(); app != app_deque.end(); ++app) {
 
