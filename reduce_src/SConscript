@@ -13,7 +13,7 @@ env.Append(
     """-DHET_DICTIONARY='"/usr/local/reduce_het_dict.txt"'"""])
 env.Append(CPPPATH=["#reduce/toolclasses", "#reduce/libpdb"])
 env.Append(LIBPATH=["#reduce/lib"])
-env.Append(LIBS=["toolclasses", "pdb++"])
+env.Prepend(LIBS=["toolclasses", "pdb++"])
 exe = env.Program(
   target=["#reduce/exe/reduce"],
   source=[
