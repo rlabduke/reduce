@@ -9,15 +9,13 @@
 #ifndef LIST_H
 #define LIST_H 1
 
+#include <iostream>
 #ifdef OLD_STD_HDRS
-#include <iostream.h>
 #include <limits.h>
 #include <assert.h>
 #else
-#include <iostream>
 #include <climits>
 #include <cassert>
-using std::ostream;
 #endif
 
 #ifndef BOOLPREDEFINED
@@ -99,8 +97,8 @@ public:
 
    List& operator += (const List& l); // concatenate
 
-   friend ostream& operator << PARM_TYPE_T (ostream& s, const List<T>& l);
-   friend ostream& outputRecords(ostream& os, const List<T>& l);
+   friend std::ostream& operator << PARM_TYPE_T (std::ostream& s, const List<T>& l);
+   friend std::ostream& outputRecords(std::ostream& os, const List<T>& l);
 
 #ifndef LISTFRIENDFIX
 private:
@@ -133,7 +131,7 @@ private:
    }
 };
 
-template <class T> ostream& operator << (ostream& s, const List<T>& l);
+template <class T> std::ostream& operator << (std::ostream& s, const List<T>& l);
 
 #ifdef INCTEMPLATEDEFNS
 #include "List.C"

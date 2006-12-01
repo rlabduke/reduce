@@ -16,13 +16,11 @@
 #ifndef POINT3D_H
 #define POINT3D_H 1
 
+#include <iostream>
 #ifdef OLD_STD_HDRS
 #include <math.h>
-#include <iostream.h>
 #else
 #include <cmath>
-#include <iostream>
-using std::ostream;
 using std::sqrt;
 using std::sin;
 using std::cos;
@@ -148,6 +146,6 @@ Coord dihedral(const Point3d&, const Point3d&,
                const Point3d&, const Point3d&);
 
 // stream output
-ostream& operator<<(ostream&, const Point3d&);
-ostream& operator<<(ostream&, const Matrix4d&);
+std::ostream& operator<<(std::ostream&, const Point3d&);
+std::ostream& operator<<(std::ostream&, const Matrix4d&);
 #endif

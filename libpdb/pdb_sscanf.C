@@ -54,11 +54,7 @@ using std::strtod;
 
 #define	MAXFIELDSIZE	64
 
-#ifdef OLD_STD_HDRS
-//#include <iostream.h>
-#else
 //#include <iostream>
-#endif
 
 int
 PDB::sscanf(const char *buffer, const char *fmt, ...)

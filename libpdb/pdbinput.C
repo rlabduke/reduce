@@ -18,16 +18,12 @@
 //
 //
 
-#ifdef OLD_STD_HDRS
-#include <iostream.h>
-#else
 #include <iostream>
-#endif
 
 #include "pdb++.h"
 
-istream &
-operator>>(istream &s, PDB &p)
+std::istream &
+operator>>(std::istream &s, PDB &p)
 {
 	char	buf[4 * PDB::BufLen];
 

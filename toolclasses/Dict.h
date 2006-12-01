@@ -30,12 +30,7 @@
 #include "Hash.h"
 #include "utility.h"
 
-#ifdef OLD_STD_HDRS
-#include <iostream.h>
-#else
 #include <iostream>
-using std::ostream;
-#endif
 
 // simple single-link list of key/value-seq pairs
 
@@ -100,7 +95,7 @@ public:
    
    unsigned long size() const { return _n; } // num of keys
 
-   void dumpStructure(ostream& os) const;
+   void dumpStructure(std::ostream& os) const;
 private:
    Dict(const Dict&);            // can't copy
    Dict& operator=(const Dict&); // can't assign

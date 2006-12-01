@@ -23,14 +23,7 @@
 #ifndef PDB_H
 #define	PDB_H
 
-#ifdef OLD_STD_HDRS
-#include <iostream.h>
-#else
 #include <iostream>
-using std::istream;
-using std::ostream;
-#endif
-
 
 #define PDB_WORKAROUND 1
 
@@ -535,11 +528,11 @@ public:
 				return byteCmp(*this, r) != 0;
 			}
 
-	friend istream	&operator>>(istream &s, PDB &p);
+	friend std::istream	&operator>>(std::istream &s, PDB &p);
 };
 
-inline ostream &
-operator<<(ostream &s, const PDB &p)
+inline std::ostream &
+operator<<(std::ostream &s, const PDB &p)
 {
 	s << p.chars();
 	return s;

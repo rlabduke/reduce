@@ -161,7 +161,7 @@ Stringclass Stringclass::operator+(const Stringclass& s) const {
 }
 
 // stream output
-ostream& operator<<(ostream& os, const Stringclass& s) {
+std::ostream& operator<<(std::ostream& os, const Stringclass& s) {
    os << (const char *)s;
    return os;
 }

@@ -251,12 +251,12 @@ Coord dihedral(const Point3d& p1, const Point3d& p2,
 
 // ----- stream output
 
-ostream& operator<<(ostream& os, const Point3d& p) {
+std::ostream& operator<<(std::ostream& os, const Point3d& p) {
    os << "{" << p.x() << ", " << p.y() << ", " << p.z() << "}";
    return os;
 }
 
-ostream& operator<<(ostream& os, const Matrix4d& m) {
+std::ostream& operator<<(std::ostream& os, const Matrix4d& m) {
    os << "{{" << m._element[0][0] << ", " << m._element[0][1] << ", "
               << m._element[0][2] << ", " << m._element[0][3] << "},";
    os << " {" << m._element[1][0] << ", " << m._element[1][1] << ", "

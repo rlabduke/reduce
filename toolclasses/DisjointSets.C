@@ -179,7 +179,7 @@ void freeDJsubsets(int** ss) {
 }
 
 // for debugging
-void DisjointSets::dumpArray(ostream& os) const {
+void DisjointSets::dumpArray(std::ostream& os) const {
    os << "{ ";
    for(int i=0; i < *_size; i++) {
       os << _array[i] << " ";

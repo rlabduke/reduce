@@ -6,6 +6,9 @@ reduce_scons_env = env_base.Copy(
 )
 if (env_etc.compiler == "unix_gcc"):
   reduce_scons_env.Append(CXXFLAGS=["-fno-strict-aliasing"])
+elif (env_etc.compiler == "irix_CC"):
+  if (env_etc.mipspro_version == "73"):
+    reduce_scons_env.Append(CXXFLAGS=["-DOLD_STD_HDRS"])
 
 Export("reduce_scons_env")
 

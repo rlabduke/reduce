@@ -16,17 +16,15 @@
 #ifndef __CLASS_STRINGCLASS_H__
 #define __CLASS_STRINGCLASS_H__
 
+#include <iostream>
 #ifdef OLD_STD_HDRS
-#include <iostream.h>
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
 #else
-#include <iostream>
 #include <cstdio>
 #include <cstring>
 #include <cctype>
-using std::ostream;
 using std::strcpy;
 using std::strlen;
 using std::strcat;
@@ -174,7 +172,7 @@ private:
    StringRep *rep;
 };
 
-ostream& operator<<(ostream&, const Stringclass&);
+std::ostream& operator<<(std::ostream&, const Stringclass&);
 Stringclass operator+(const Stringclass& S, const char* s);
 Stringclass operator+(const char* s, const Stringclass& S);
 #endif

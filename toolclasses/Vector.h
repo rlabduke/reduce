@@ -10,13 +10,11 @@
 #define VECTOR_H 1
 
 #ifdef OLD_STD_HDRS
-#include <iostream.h>
 #include <assert.h>
 #else
-#include <iostream>
 #include <cassert>
-using std::ostream;
 #endif
+#include <iostream>
 
 #ifdef BRACKETOPERPARMS
 #define PARM_TYPE_T <T>
@@ -60,7 +58,7 @@ public:
 
    Vector& operator += (const Vector& v); // concatenate
 
-   friend ostream& operator << PARM_TYPE_T(ostream& s, const Vector<T>& v);
+   friend std::ostream& operator << PARM_TYPE_T(std::ostream& s, const Vector<T>& v);
 private:
 
    T*  _array;
@@ -71,7 +69,7 @@ private:
    void siftdown(int l, int u, int offset=0); // heap building utility func.
 };
 
-template <class T> ostream& operator << (ostream& s, const Vector<T>& v);
+template <class T> std::ostream& operator << (std::ostream& s, const Vector<T>& v);
 
 #ifdef INCTEMPLATEDEFNS
 #include "Vector.C"

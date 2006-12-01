@@ -8,12 +8,7 @@
 #ifndef DISJOINTSETS_H
 #define DISJOINTSETS_H 1
 
-#ifdef OLD_STD_HDRS
-#include <iostream.h>
-#else
 #include <iostream>
-using std::ostream;
-#endif
 
 class DisjointSets {
 public:
@@ -41,7 +36,7 @@ public:
    int findRoot(int x);
    
    // debugging
-   void dumpArray(ostream& os) const;
+   void dumpArray(std::ostream& os) const;
 private:
    int *_array;
    int *_refcnt;
