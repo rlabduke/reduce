@@ -8,6 +8,8 @@
 //and with a lot less memory required.
 
 #include "Point3d.h"
+#include <iostream>
+
 class PDBrec;
 
 class AtomDescr
@@ -114,7 +116,7 @@ private:
 	PDBrec* _originalAtom;
 };
 
-ostream& operator<<(ostream& os, const AtomDescr& A);
+std::ostream& operator<<(std::ostream& os, const AtomDescr& A);
 
 #endif //_HACK_SORT_CLASS_FOR_PDBRECS_H_
 

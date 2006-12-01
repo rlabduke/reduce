@@ -17,16 +17,10 @@
 #ifndef CLIQUELIST_H
 #define CLIQUELIST_H 1
 
-#ifdef OLD_STD_HDRS
-#include <iostream.h>
-#else
 #include <iostream>
-#endif
-
 #include <list>
 #include <string>
 #include <vector>
-using std::ostream;
 
 class Mover;
 typedef Mover* MoverPtr;
@@ -57,7 +51,7 @@ public:
    int numCliques()    { return _cliques.size(); }
    int numSingletons() { return _singles.size(); }
 
-   void describe(ostream& os) const;
+   void describe(std::ostream& os) const;
    void formatSingles(std::vector<std::string>& cliqueNotes) const;
    void formatClique(std::vector<std::string>& cliqueNotes, int c) const;
 private:

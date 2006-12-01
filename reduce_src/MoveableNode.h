@@ -17,12 +17,7 @@
 #ifndef  MoveableNode_h
 #define  MoveableNode_h
 
-#ifdef OLD_STD_HDRS
-#include <iostream.h>
-#else
 #include <iostream>
-using std::ostream;
-#endif
 
 #include "AtomDescr.h"
 #include "GraphToHoldScores.h"

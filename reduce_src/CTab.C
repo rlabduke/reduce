@@ -19,12 +19,14 @@
 #pragma warning(disable:4800) 
 #endif
 
-#ifdef OLD_STD_HDRS
-#include <iostream.h>
-#else
 #include <iostream>
 using std::cerr;
 using std::endl;
+
+#ifdef OLD_STD_HDRS
+#include <stdio.h>
+#else
+#include <cstdio>
 using std::fopen;
 using std::fgets;
 #endif

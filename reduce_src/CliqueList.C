@@ -19,20 +19,20 @@
 #pragma warning(disable:4800) 
 #endif
 
+#include <iostream>
+using std::endl;
+
 #ifdef OLD_STD_HDRS
-#include <iostream.h>
 #include <stdio.h>
 #else
-#include <iostream>
 #include <cstdio>
-using std::endl;
 using std::sprintf;
 #endif
 
 #include "CliqueList.h"
 #include "Mover.h"
 
-void CliqueList::describe(ostream& os) const {
+void CliqueList::describe(std::ostream& os) const {
    int i=0, j=0;
    os << " Singles(size " << _singles.size() << ")";
    for(std::list<MoverPtr>::const_iterator sgl = _singles.begin(); sgl != _singles.end(); ++sgl) {

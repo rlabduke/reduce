@@ -17,26 +17,28 @@
 #pragma warning(disable:4786) 
 #endif
 
+#include <iostream>
+#include <fstream>
+#include <iomanip>
+using std::cerr;
+using std::endl;
+using std::flush;
+using std::ifstream;
+using std::ios_base;
+
 #ifdef OLD_STD_HDRS
 #include <stdio.h>
-#include <fstream.h>
-#include <iomanip.h>
 #include <stdlib.h>
 #include <ctype.h>
 #include <assert.h>
 #include <math.h>
 #else
 #include <cstdio>
-#include <fstream>
-#include <iomanip>
 #include <cstdlib>
 #include <cctype>
 #include <cassert>
 #include <cmath>
-using std::ifstream;
-using std::endl;
-using std::ios_base;
-using std::flush;
+using std::sprintf;
 using std::toupper;
 using std::isdigit;
 using std::atoi;

@@ -26,6 +26,7 @@
 #include <cstring>
 #endif
 #include "ElementInfo.h"
+#include <iostream>
 #include <map>
 #include "pdb++.h"
 #include "Point3d.h"
@@ -213,14 +214,14 @@ public:
    void setNotNegative() { _rep->_recMods ^= NegativeChargeFlag; }
    void setNotPositive() { _rep->_recMods ^= PositiveChargeFlag; }
 
-   friend ostream& operator << (ostream& s, const PDBrec& r);
+   friend std::ostream& operator << (std::ostream& s, const PDBrec& r);
 
    void MapSEGIDtoChain(); // updates chain assignment
 
    static bool MappingSEGIDtoChains() { return _MappingSEGIDtoChains; }
    static int InstallMapOfSEGIDstoChains(const std::string m);
    static char SEGIDtoChain(const char *seg, char c);
-   static void DumpSEGIDtoChainMap(ostream& s, const char *t);
+   static void DumpSEGIDtoChainMap(std::ostream& s, const char *t);
    std::string recName() const;
    std::string stdFormatString() const { return recName(); };
 
@@ -235,7 +236,7 @@ private:
    int* _i;
 };
 
-inline ostream& operator << (ostream& s, const PDBrec& pdbrec) {
+inline std::ostream& operator << (std::ostream& s, const PDBrec& pdbrec) {
    return s << (const PDB&)(pdbrec.r());
 }
 #endif

@@ -15,6 +15,9 @@
 
 #include "PDBrec.h"
 
+#include <iostream>
+using std::endl;
+
 #ifdef OLD_STD_HDRS
 #include <stdio.h>
 #include <ctype.h>
@@ -23,7 +26,6 @@
 #include <cstdio>
 #include <cctype>
 #include <cstring>
-using std::endl;
 using std::toupper;
 using std::strstr;
 using std::strtok;
@@ -158,7 +160,7 @@ std::string PDBrec::FormatSegToChainKey(const char *seg) {
    return buf;
 }
 
-void PDBrec::DumpSEGIDtoChainMap(ostream& s, const char *t) {
+void PDBrec::DumpSEGIDtoChainMap(std::ostream& s, const char *t) {
    if (_MappingSEGIDtoChains) {
 		for (std::map<std::string, char>::const_iterator i = _SEGtoChainMap.begin();
 		i != _SEGtoChainMap.end(); ++i)

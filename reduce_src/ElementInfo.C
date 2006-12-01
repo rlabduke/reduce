@@ -17,18 +17,18 @@
 #pragma warning(disable:4305) 
 #endif
 
+#include <iostream>
+using std::endl;
+using std::cerr;
+
 #ifdef OLD_STD_HDRS
-#include <iostream.h>
 #include <string.h>
 #include <ctype.h>
 #include <stdio.h>
 #else
-#include <iostream>
 #include <cstring>
 #include <cctype>
 #include <cstdio>
-using std::endl;
-using std::cerr;
 using std::strstr;
 using std::strcpy;
 using std::toupper;

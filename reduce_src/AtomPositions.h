@@ -35,7 +35,7 @@ public:
 		  DotSphManager& dotBucket, float probeRadius,
 		  float pmag, float occCutoff,
 		  bool verbose, bool showOrientScore,
-		  bool cliqueTicks, ostream& os)
+		  bool cliqueTicks, std::ostream& os)
       : _onlyA(onlyA), _useXplorNames(xplor),
 	_nBondCutoff(nbCutoff),
 	_min_regular_hb_cutoff(minRegHBcut),
@@ -148,7 +148,7 @@ private:
    const bool                _outputNotice;
    const bool                _showOrientScore;
    const bool                _cliqueTicks;
-   ostream&                  _os;
+   std::ostream&             _os;
 	float	_maxVDWFound;
    
    bool

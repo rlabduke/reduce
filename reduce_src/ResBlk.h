@@ -18,8 +18,7 @@
 
 #include "PDBrec.h"
 #include <list>
-using std::cerr;
-using std::endl;
+#include <iostream>
 
 bool sameres(const PDBrec &r1, const PDBrec &rn);
 

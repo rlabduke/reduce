@@ -19,31 +19,28 @@
 #include "Mover.h"
 #include "AtomPositions.h"
 
-#ifdef OLD_STD_HDRS
-#include <stdio.h>
-#include <iostream.h>
-#include <fstream.h>
-#include <iomanip.h>
-#include <stdlib.h>
-#include <ctype.h>
-#include <algorithm.h>
-#include <assert.h>
-#include <time.h>
-#else
-#include <cstdio>
 #include <iostream>
 #include <fstream>
 #include <iomanip>
-#include <cstdlib>
-#include <cctype>
 #include <algorithm>
-#include <cassert>
-#include <ctime>
 using std::ifstream;
 using std::cout;
 using std::cerr;
 using std::endl;
 using std::ios_base;
+
+#ifdef OLD_STD_HDRS
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+#include <assert.h>
+#include <time.h>
+#else
+#include <cstdio>
+#include <cstdlib>
+#include <cctype>
+#include <cassert>
+#include <ctime>
 using std::exit;
 using std::clock;
 using std::clock_t;

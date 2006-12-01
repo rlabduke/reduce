@@ -139,26 +139,21 @@ static const char *referenceString =
                        "Word, et. al. (1999) J. Mol. Biol. 285, 1735-1747.";
 static const char *electronicReference = "http://kinemage.biochem.duke.edu";
 
-#ifdef OLD_STD_HDRS
-#include <stdlib.h>
-#include <iostream.h>
-#include <fstream.h>
-#include <string.h>
-#include <ctype.h>
-#else
-#include <cstdlib>
 #include <iostream>
 #include <fstream>
-#include <cstring>
-#include <cctype>
-using std::istream;
-using std::ostream;
-using std::ifstream;
-using std::ofstream;
 using std::cout;
 using std::cin;
 using std::cerr;
 using std::endl;
+
+#ifdef OLD_STD_HDRS
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+#else
+#include <cstdlib>
+#include <cstring>
+#include <cctype>
 using std::exit;
 using std::strstr;
 using std::toupper;
@@ -252,11 +247,11 @@ struct SummaryStats {
 SummaryStats Tally;
 
 char* parseCommandLine(int argc, char **argv);
-void processPDBfile(istream& ifs, char *pdbFile, ostream& ofs);
+void processPDBfile(std::istream& ifs, char *pdbFile, std::ostream& ofs);
 void establishHetDictionaryFileName(void);
 void reduceHelp(bool showAll);
-istream& inputRecords(istream& is, std::list<PDBrec*>& records);
-ostream& outputRecords(ostream& os, const std::list<PDBrec*>& records);
+std::istream& inputRecords(std::istream& is, std::list<PDBrec*>& records);
+std::ostream& outputRecords(std::ostream& os, const std::list<PDBrec*>& records);
 void dropHydrogens(std::list<PDBrec*>& records);
 void reduceList(CTab& db, std::list<PDBrec*>& records,
 				AtomPositions& xyz, std::vector<std::string>& fixNotes);
@@ -298,8 +293,8 @@ void recordSkipInfo(bool skipH, std::vector<std::string>& fixNotes,
 //
 //   char *pdbFile = getOptionsOnTheMac();
 //
-//   ifstream theinputstream(pdbFile);
-//   processPDBfile(theinputstream, pdbFile, ofstream("dump.out"));
+//   std::ifstream theinputstream(pdbFile);
+//   processPDBfile(theinputstream, pdbFile, std::ofstream("dump.out"));
 //
 //   return ReturnCodeGlobal; // one pass and then we quit
 //}
@@ -311,10 +306,10 @@ int main(int argc, char **argv) {
 
    if(pdbFile)
    {/*can do multiple passes by rewinding input file*/
-      //ifstream theinputstream(pdbFile); //would need rewind
+      //std::ifstream theinputstream(pdbFile); //would need rewind
       while(ModelToProcess) /* 041113 */
       {
-         ifstream theinputstream(pdbFile); //declare each time, avoid rewind
+         std::ifstream theinputstream(pdbFile); //declare each time, avoid rewind
          processPDBfile(theinputstream, pdbFile, cout); 
          if(ModelSpecified) {ModelToProcess = 0;} /* did it, so quit */
          else if(ModelNext > 0) 
@@ -337,7 +332,7 @@ int main(int argc, char **argv) {
 }
 //#endif
 
-void processPDBfile(istream& ifs, char *pdbFile, ostream& ofs) {
+void processPDBfile(std::istream& ifs, char *pdbFile, std::ostream& ofs) {
    if (Verbose) {
       cerr << versionString << endl;
       if (pdbFile) {
@@ -828,7 +823,7 @@ void reduceHelp(bool showAll) { /*help*/
 }
 
 // output a list of PDB records
-ostream& outputRecords(ostream& os, const std::list<PDBrec*>& l) {
+std::ostream& outputRecords(std::ostream& os, const std::list<PDBrec*>& l) {
 	for (std::list<PDBrec*>::const_iterator ptr = l.begin(); ptr != l.end(); ++ptr) {
 		if ((*ptr)->valid())
 			os << (const PDBrec&)(**ptr) << endl;
@@ -846,7 +841,7 @@ ostream& outputRecords(ostream& os, const std::list<PDBrec*>& l) {
 }
 
 // input a list of PDB records
-istream& inputRecords(istream& is, std::list<PDBrec*>& records) {
+std::istream& inputRecords(std::istream& is, std::list<PDBrec*>& records) {
 	PDB inputbuffer;
 	bool active = TRUE;
 	bool modelactive = FALSE;  //041113
