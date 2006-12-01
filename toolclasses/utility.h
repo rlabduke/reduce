@@ -17,6 +17,7 @@
 #define UTILITY_H 1
 
 #include <string>
+#include <algorithm>
 
 #ifndef BOOLPREDEFINED
 typedef int bool;
@@ -41,22 +42,10 @@ inline T abs(const T& x) {
    return (x < 0) ? -x : x;
 }
 #endif
-#ifndef MINPREDEFINED
-template <class T>
-inline T min(const T& x, const T& y) {
-   return (x < y) ? x : y;
-}
-#endif
 #ifndef MIN3PREDEFINED
 template <class T>
 inline T min(const T& a, const T& b, const T& c) {
    return (a < b) ? ((a < c) ? a : c) : ((b < c) ? b : c);
-}
-#endif
-#ifndef MAXPREDEFINED
-template <class T>
-inline T max(const T& x, const T& y) {
-   return (x < y) ? y : x;
 }
 #endif
 #ifndef MAX3PREDEFINED

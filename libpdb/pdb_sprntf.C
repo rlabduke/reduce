@@ -22,15 +22,14 @@
 #ifdef OLD_STD_HDRS
 #include <ctype.h>
 #include <string.h>
-#include <stdarg.h>
 #else
 #include <cctype>
 #include <cstring>
-#include <cstdarg>
 using std::isdigit;
 using std::isspace;
 using std::strlen;
 #endif
+#include <stdarg.h>
 
 	// scratch must be big enough to hold the largest number
 static char	scratch[256];

@@ -1373,7 +1373,7 @@ void AtomPositions::generateWaterPhantomHs(std::list<PDBrec*>& waters) {
 			
 #define BEST_HBOND_OVERLAP 0.6
 			double waterOHbondLen = 1.0 +
-				max(-1.0, min(0.0, nearbyA[i]._gap + BEST_HBOND_OVERLAP));
+				std::max(-1.0, std::min(0.0, nearbyA[i]._gap + BEST_HBOND_OVERLAP));
 			
 			pHatom->loc((nearbyA[i]._loc - a->loc()).scaleTo(waterOHbondLen)
 				+ a->loc());
@@ -1574,7 +1574,7 @@ double AtomPositions::atomScore(const PDBrec& a, const Point3d& p,
 		PDBrec* cause = 0;
 		
 		PDBrec* b = NULL;
-		int closest_bumping = -1;
+		//int closest_bumping = -1;
 		for (int ii = 0; ii < bumping.size(); ++ii) {
 			b = bumping[ ii ];
 			const Point3d locb = b->loc();
@@ -1617,7 +1617,7 @@ double AtomPositions::atomScore(const PDBrec& a, const Point3d& p,
 					}
 					cause = b;
 					keepDot = TRUE;
-					closest_bumping = ii;
+					//closest_bumping = ii;
 					mingap = gap;
 				}
 			}

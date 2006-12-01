@@ -23,18 +23,17 @@
 #ifdef OLD_STD_HDRS
 #include <ctype.h>
 #include <string.h>
-#include <stdarg.h>
 #include <stdlib.h>
 #else
 #include <cctype>
 #include <cstring>
-#include <cstdarg>
 #include <cstdlib>
 using std::isdigit;
 using std::isspace;
 using std::strtol;
 using std::strtod;
 #endif
+#include <stdarg.h>
 
 //
 //	pdb_sscanf performs similarly to sscanf, execept that fields are of

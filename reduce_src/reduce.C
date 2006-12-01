@@ -1367,7 +1367,7 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 				theRes.get(pp.conn(i), rs);
 				if (!rs.empty()) {
 					nconf[i] = rs.size();
-					maxalt = max(maxalt, nconf[i]);
+					maxalt = std::max(maxalt, nconf[i]);
 					std::vector<PDBrec*> rvv_v;
 					rvv_v.reserve(nconf[i]);
 					std::list<PDBrec*>::iterator it_rs = rs.begin();
@@ -1404,7 +1404,7 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 				float occ = (*(firstAtoms.begin()))->occupancy();
 
 				for(i=0; i < numConnAtoms; i++) {
-					const PDBrec* cnr = rvv[i][min(j, nconf[i]-1)];
+					const PDBrec* cnr = rvv[i][std::min(j, nconf[i]-1)];
 					loc[i] = cnr->loc(); //apl 7/3/06 -- FIXING PUSH_BACK BUG
 
 					if (j <= nconf[i]-1) {
@@ -1464,8 +1464,8 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 
 						if ((numConnAtoms > 2) &&
 							! okToPlaceHydHere(*newHatom, pp,
-							*(rvv[0][min(j, nconf[0]-1)]),
-							*(rvv[2][min(j, nconf[2]-1)]),
+							*(rvv[0][std::min(j, nconf[0]-1)]),
+							*(rvv[2][std::min(j, nconf[2]-1)]),
 							xyz, doNotAdjustSC, fixNotes)) {
 							return;  // don't add hyd.
 						}
@@ -1482,9 +1482,9 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 							||  (pp.hasFeature(ROTATEONDEMAND)
 							&& (DemandRotAllMethyls || DemandRotNH3) )     ) {
 							xyz.insertRot(*newHatom,
-								*(rvv[0][min(j, nconf[0]-1)]),
-								*(rvv[1][min(j, nconf[1]-1)]),
-								*(rvv[2][min(j, nconf[2]-1)]),
+								*(rvv[0][std::min(j, nconf[0]-1)]),
+								*(rvv[1][std::min(j, nconf[1]-1)]),
+								*(rvv[2][std::min(j, nconf[2]-1)]),
 								TRUE, DemandRotNH3,
 								((DemandRotAllMethyls && pp.hasFeature(ROTATEONDEMAND))
 								|| (OKProcessMetMe && pp.hasFeature(ROTATEFLAG))) );
