@@ -30,6 +30,10 @@
 #include <cstring>
 #include <cstdarg>
 #include <cstdlib>
+using std::isdigit;
+using std::isspace;
+using std::strtol;
+using std::strtod;
 #endif
 
 //

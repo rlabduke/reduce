@@ -26,9 +26,13 @@ typedef int bool;
 const double PI = 3.14159265358979323846264;
 #endif
 
+#if defined(__DECCXX_VER)
+#include <fstream>
+#else
 #ifndef TFPREDEFINED
 const bool TRUE  = 1;
 const bool FALSE = 0;
+#endif
 #endif
 
 #ifndef ABSPREDEFINED
@@ -89,6 +93,9 @@ int trimStr(char *str);
 
 void copyChars(char *to, const char *from, int n);
 
+#if defined(__DECCXX_VER)
+#define NEEDSTRCASECMP
+#endif
 #ifdef NEEDSTRCASECMP
 int strncasecmp(const char *buf, const char *pat, int sz);
 int strcasecmp(const char *buf, const char *pat);

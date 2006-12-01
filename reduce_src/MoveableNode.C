@@ -28,6 +28,7 @@
 #include <ctype.h>
 #include <algorithm.h>
 #include <assert.h>
+#include <time.h>
 #else
 #include <cstdio>
 #include <iostream>
@@ -37,11 +38,15 @@
 #include <cctype>
 #include <algorithm>
 #include <cassert>
+#include <ctime>
 using std::ifstream;
 using std::cout;
 using std::cerr;
 using std::endl;
 using std::ios_base;
+using std::exit;
+using std::clock;
+using std::clock_t;
 #endif
 
 #include "MoveableNode.h"
@@ -363,8 +368,8 @@ void OptimizedNodeStateMatrix3::setOptimumNodeState(
 //---------------------------------------------------------------------------------------------------------------
 
 NodeScoreVector::NodeScoreVector() : _theNScrVect(0) {}
-NodeScoreVector::NodeScoreVector(NodeState ownerMaxStates) {_theNScrVect.assign((int)ownerMaxStates, 0);}
-NodeScoreVector::~NodeScoreVector() {};  
+NodeScoreVector::NodeScoreVector(NodeState ownerMaxStates) {_theNScrVect.assign((std::vector<double>::size_type)ownerMaxStates, 0.);}
+NodeScoreVector::~NodeScoreVector() {}
 //NodeScoreVector::NodeScoreVector(const NodeScoreVector& rhs) //unimplemented
 double NodeScoreVector::getNodeScore(NodeState ownersState)
 {
@@ -1275,7 +1280,7 @@ void 				MoveableNode::combineNodeScoreWithOptEdgeAndNodeScore(NodeScoreVector& 
 	for (NodeState stateInd = (NodeState) 0; stateInd < _maxNodeStates; stateInd++)
 		_theNodeScoreVect->addToNodeScore(stateInd, optNodeAndEdgeScoreVect.getNodeScore(stateInd));
 	return;
-};
+}
 void 				MoveableNode::addEdge(EdgeBetweenMoveableNodes* newEdge) {_edgeList.push_back(newEdge); return;}
 NodeState			MoveableNode::getNodeStateInOptimalNetworkConf(std::vector<NodeState>& theOptNetworkState)
 {
@@ -1425,7 +1430,7 @@ _isEliminated(false), _firstNodeIndex(-1), _secondNodeIndex(-1),
 _firstNode(NULL), _secondNode(NULL)
 {
 	_theEdgeScoreMatrix = new EdgeScoreMatrix(totStatesFirstNode, totStatesSecondNode);
-};
+}
 EdgeBetweenMoveableNodes::~EdgeBetweenMoveableNodes() { delete _theEdgeScoreMatrix; _theEdgeScoreMatrix = NULL;}
 	
 void
@@ -1497,7 +1502,7 @@ MoveableNode* EdgeBetweenMoveableNodes::getPointerToOtherNode(int indexOfOneNode
 		std::cerr << "getPointerToOtherNode() called on edge(" << _firstNodeIndex << ", " << _secondNodeIndex << ") lacking the calling node:" << indexOfOneNode << endl;
 		return NULL;
 	}
-};
+}
 
 //------------------- Degree 3 Hyperedge ---------------------------
 
@@ -2814,7 +2819,7 @@ QueueOfToBeEliminatedNodes::~QueueOfToBeEliminatedNodes()
 {
 	_instanceFlag = false;
 	_theQueue = NULL;
-};
+}
 void QueueOfToBeEliminatedNodes::addNodeIndexForTreeReduction(int nodeIndex)
 {
 	_QForTreeRed.push_back(nodeIndex);

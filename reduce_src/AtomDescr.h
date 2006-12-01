@@ -50,6 +50,11 @@ public:
 			(_atRadius == rhs._atRadius) && 
 			(distanceSquared(_atomPos, rhs._atomPos) < .000001 ) );
 	};
+
+	bool operator!=(const AtomDescr& rhs) const
+        {
+          return !operator==(rhs);
+        }
 	
 	bool operator < (const AtomDescr& rhs) const
 	{

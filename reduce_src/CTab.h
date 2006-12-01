@@ -24,6 +24,10 @@
 #include <stdio.h>
 #else
 #include <cstdio>
+using std::FILE;
+using std::fclose;
+using std::ftell;
+using std::fseek;
 #endif
 
 #include "AtomConn.h"

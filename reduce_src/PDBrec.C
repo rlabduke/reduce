@@ -18,10 +18,15 @@
 #ifdef OLD_STD_HDRS
 #include <stdio.h>
 #include <ctype.h>
+#include <string.h>
 #else
 #include <cstdio>
 #include <cctype>
+#include <cstring>
 using std::endl;
+using std::toupper;
+using std::strstr;
+using std::strtok;
 #endif
 
 bool PDBrec::_MappingSEGIDtoChains = FALSE;

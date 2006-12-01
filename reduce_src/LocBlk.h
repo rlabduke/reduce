@@ -20,6 +20,8 @@
 #include <math.h>
 #else
 #include <cmath>
+using std::fabs;
+using std::floor;
 #endif
 
 #include "Point3d.h"

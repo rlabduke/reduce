@@ -9,6 +9,7 @@
 #include <assert.h>
 #else
 #include <cassert>
+using std::exit;
 #endif
 
 void sort_three(int a, int b, int c, int & x, int & y, int & z)
@@ -1152,6 +1153,7 @@ DegreeTwoEdge_ths::whichVertex( int vertex_index ) const
 	std::cerr << vertex_indices_[ 0 ] << ", " << vertex_indices_[ 1 ] << "]" << std::endl;
 	assert(false);
 	exit(1);
+        return 0; // to avoid warnings
 }
 
 bool DegreeTwoEdge_ths::nothingToScore() const
@@ -1538,6 +1540,7 @@ DegreeThreeEdge_ths::whichVertex( int vertex ) const
 	std::cerr << "]" << std::endl;
 	assert( false );
 	exit(1);
+        return 0; // to avoid warnings
 }
 
 void
@@ -1982,6 +1985,7 @@ DegreeFourEdge_ths::whichVertex( int vertex ) const
 	std::cerr << "]" << std::endl;
 	assert( false );
 	exit(1);
+        return 0; // to avoid warnings
 }
 
 void
@@ -2070,7 +2074,7 @@ GraphToHoldScores::GraphToHoldScores(
 	finalizeScoreVectors();
 	if (xyz_->outputNotice() ) std::cerr << " Computing dot scores" << std::endl;
 	score();
-};
+}
 
 GraphToHoldScores::~GraphToHoldScores()
 {
@@ -2326,7 +2330,9 @@ void GraphToHoldScores::incrementD2EIterator()
 
 bool GraphToHoldScores::getD2EIteratorAtEnd() const
 {
-	return d2eiter_ == deg2edges_.end();
+        // conversion to const_iterator works around Tru64 cxx issue
+        return std::list< DegreeTwoEdge_ths * >::const_iterator(d2eiter_)
+            == deg2edges_.end();
 }
 
 int GraphToHoldScores::getFirstIndexFocusedD2E() const
@@ -2356,7 +2362,9 @@ void GraphToHoldScores::incrementD3EIterator()
 
 bool GraphToHoldScores::getD3EIteratorAtEnd() const
 {
-	return d3eiter_ == deg3edges_.end();
+        // conversion to const_iterator works around Tru64 cxx issue
+        return std::list< DegreeThreeEdge_ths * >::const_iterator(d3eiter_)
+	    == deg3edges_.end();
 }
 
 void GraphToHoldScores::setD4EIteratorAtBegining()
@@ -2371,7 +2379,9 @@ void GraphToHoldScores::incrementD4EIterator()
 
 bool GraphToHoldScores::getD4EIteratorAtEnd() const
 {
-	return d4eiter_ == deg4edges_.end();
+        // conversion to const_iterator works around Tru64 cxx issue
+        return std::list< DegreeFourEdge_ths * >::const_iterator(d4eiter_)
+            == deg4edges_.end();
 }
 
 int GraphToHoldScores::getFirstIndexFocusedD3E() const

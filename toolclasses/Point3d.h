@@ -23,6 +23,10 @@
 #include <cmath>
 #include <iostream>
 using std::ostream;
+using std::sqrt;
+using std::sin;
+using std::cos;
+using std::acos;
 #endif
 
 // Note: all angles are in degrees. Conversion factors supplied below.

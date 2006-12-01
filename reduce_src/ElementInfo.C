@@ -29,6 +29,9 @@
 #include <cstdio>
 using std::endl;
 using std::cerr;
+using std::strstr;
+using std::strcpy;
+using std::toupper;
 #endif
 
 #include "ElementInfo.h"

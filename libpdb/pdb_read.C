@@ -24,6 +24,7 @@
 #include <string.h>
 #else
 #include <cstring>
+using std::memset;
 #endif
 
 # ifndef NULL

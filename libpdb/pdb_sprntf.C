@@ -27,6 +27,9 @@
 #include <cctype>
 #include <cstring>
 #include <cstdarg>
+using std::isdigit;
+using std::isspace;
+using std::strlen;
 #endif
 
 	// scratch must be big enough to hold the largest number

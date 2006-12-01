@@ -18,11 +18,27 @@
 
 #ifdef OLD_STD_HDRS
 #include <iostream.h>
+#include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 #else
 #include <iostream>
+#include <cstdio>
 #include <cstring>
+#include <cctype>
 using std::ostream;
+using std::strcpy;
+using std::strlen;
+using std::strcat;
+using std::strcmp;
+using std::strchr;
+using std::strstr;
+using std::strrchr;
+using std::strncpy;
+using std::sprintf;
+using std::sscanf;
+using std::tolower;
+using std::toupper;
 #endif
 
 #ifndef BOOLPREDEFINED

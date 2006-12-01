@@ -17,10 +17,13 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <math.h>
+#include <stdlib.h>
 #else
 #include <cstdio>
 #include <cctype>
 #include <cmath>
+#include <cstdlib>
+using std::exit;
 #endif
 
 #include "RotDonor.h"
@@ -418,6 +421,7 @@ int RotDonor::findAtom( PDBrec* atom ) const
 	}
 
 	exit(1);
+        return 0; // to avoid warnings
 }
 
 

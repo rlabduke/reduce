@@ -131,7 +131,7 @@ Stringclass Stringclass::operator()(int fr, int sz) const {
 Stringclass Stringclass::afterLast(const char ch) const {
    const char *p = ::strrchr(rep->rep, ch);
    return Stringclass((p == NULL) ? "" : p+1);
-};
+}
 
 // combine:  Str + "abc"
 Stringclass operator+(const Stringclass& S, const char* s) {

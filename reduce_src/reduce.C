@@ -159,6 +159,9 @@ using std::cout;
 using std::cin;
 using std::cerr;
 using std::endl;
+using std::exit;
+using std::strstr;
+using std::toupper;
 #endif
 
 #ifndef NOSYSSTATS

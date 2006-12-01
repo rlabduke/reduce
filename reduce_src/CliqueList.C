@@ -26,6 +26,7 @@
 #include <iostream>
 #include <cstdio>
 using std::endl;
+using std::sprintf;
 #endif
 
 #include "CliqueList.h"

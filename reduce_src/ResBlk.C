@@ -21,6 +21,7 @@
 #else
 #include <cctype>
 #include <cstring>
+using std::toupper;
 #endif
 
 // are these two records in the same residue?

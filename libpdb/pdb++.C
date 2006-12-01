@@ -24,6 +24,8 @@ extern "C" {
 #include <string.h>
 #else
 #include <cstring>
+using std::memset;
+using std::memcmp;
 #endif
 }
 

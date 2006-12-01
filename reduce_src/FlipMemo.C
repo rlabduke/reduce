@@ -16,9 +16,13 @@
 #ifdef OLD_STD_HDRS
 #include <ctype.h>
 #include <math.h>
+#include <stdlib.h>
 #else
 #include <cctype>
 #include <cmath>
+#include <cstdlib>
+using std::exit;
+using std::toupper;
 #endif
 
 #include "FlipMemo.h"
@@ -711,6 +715,7 @@ int FlipMemo::findAtom( PDBrec * atom ) const
 		std::cerr << " &_wrkAtom[ ii ] " << &_wrkAtom[ ii ]  << std::endl;
 	}
 	exit(1);
+        return 0; // to avoid warnings
 }
 
 double FlipMemo::orientationPenalty(float pmag) const {

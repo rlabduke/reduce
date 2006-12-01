@@ -18,6 +18,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include "utility.h"
+#include <string.h>
 
 void note(const char *message) {
 	fprintf(stderr, "%s\n", message);

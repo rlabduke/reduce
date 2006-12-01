@@ -19,6 +19,14 @@
 #ifndef ELEMENTINFO_H
 #define ELEMENTINFO_H 1
 
+#ifdef OLD_STD_HDRS
+#include <string.h>
+#else
+#include <cstring>
+using std::strncpy;
+using std::strcmp;
+using std::strlen;
+#endif
 #include <string>
 #include <map>
 

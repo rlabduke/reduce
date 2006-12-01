@@ -25,6 +25,8 @@
 #include <iostream>
 using std::cerr;
 using std::endl;
+using std::fopen;
+using std::fgets;
 #endif
 
 #include "CTab.h"

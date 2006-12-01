@@ -27,16 +27,17 @@ extern "C" {
 #else
 #include <cctype>
 #include <cstring>
+using std::islower;
+using std::toupper;
 #endif
 }
+#if defined(__DECCXX_VER)
+#define NEEDSTRCASECMP
+#endif
 #ifdef NEEDSTRCASECMP
 int strncasecmp(const char *buf, const char *pat, int sz);
 int strcasecmp(const char *buf, const char *pat);
 #endif
-
-# ifndef _toupper
-# define	_toupper	toupper
-# endif
 
 int PDB::pdbrunInputVersion = PDB::PDBRUNVersion;	// just in case
 int PDB::pdbrunOutputVersion = PDB::PDBRUNVersion;	// just in case
@@ -297,7 +298,7 @@ PDB::getType(const char *buf)
 
 	for (i = 0; buf[i] != '\0' && buf[i] != '\n' && i < 4; i += 1) {
 		if (islower(buf[i]))
-			rt[i] = _toupper(buf[i]);
+			rt[i] = toupper(buf[i]);
 		else
 			rt[i] = buf[i];
 	}

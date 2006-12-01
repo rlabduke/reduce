@@ -18,6 +18,9 @@
 #include <math.h>
 #else
 #include <cmath>
+using std::sin;
+using std::cos;
+using std::floor;
 #endif
 
 #include "DotSph.h"

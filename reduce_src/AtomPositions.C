@@ -24,6 +24,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <assert.h>
+#include <math.h>
 #else
 #include <cstdio>
 #include <fstream>
@@ -31,10 +32,18 @@
 #include <cstdlib>
 #include <cctype>
 #include <cassert>
+#include <cmath>
 using std::ifstream;
 using std::endl;
 using std::ios_base;
 using std::flush;
+using std::toupper;
+using std::isdigit;
+using std::atoi;
+using std::atof;
+using std::log10;
+using std::pow;
+using std::exp;
 #endif
 
 #include "AtomPositions.h"
@@ -1701,3 +1710,4 @@ double AtomPositions::atomScore(const PDBrec& a, const Point3d& p,
 	
    return s;
 }
+
