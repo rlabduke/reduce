@@ -92,6 +92,18 @@ private:
    HydrogenPlanTable& operator=(const HydrogenPlanTable&);//can't assign
 
    std::map<std::string, StdResH*> _restbl;
+
+   struct addPlan_args {
+     int type; const char* elem; const char *hname;
+     const char *c1; const char *c2; const char *c3; const char *c4;
+     double dist; double ang1; double ang2; int flags;
+   };
+
+   void
+   insertStdResH(
+     const char* rn,
+     const char* ex,
+     const addPlan_args* a);
 };
 
 // -----------------------------------------------------------------------------
