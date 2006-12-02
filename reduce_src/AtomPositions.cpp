@@ -1461,7 +1461,7 @@ double AtomPositions::atomScore(const PDBrec& a, const Point3d& p,
 		
 		if (	scoreAtomsAndDotsInAtomsToScoreVector_ )
 		{
-			assert( atoms_to_score_ptr_ );
+			assert( atoms_to_score_ptr_ != 0 );
 			for (int ii = 0; ii < atoms_to_score_ptr_->size(); ++ii )
 			{
 				//std::cerr << "Comparing against: " << (*atoms_to_score_ptr_)[ ii ].first << std::endl;
@@ -1484,7 +1484,7 @@ double AtomPositions::atomScore(const PDBrec& a, const Point3d& p,
 		}
 		else
 		{
-			assert( atoms_in_high_order_overlap_ptr_ );
+			assert( atoms_in_high_order_overlap_ptr_ != 0 );
 			if ( std::find( 
 				atoms_in_high_order_overlap_ptr_->begin(),
 				atoms_in_high_order_overlap_ptr_->end(),
