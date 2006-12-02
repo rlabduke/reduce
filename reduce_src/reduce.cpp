@@ -1488,6 +1488,10 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 							xyz.insertFlip(newHatom, resAlts);
 						}
 					}
+					else {
+					  //if not added, delete
+					  delete newHatom; newHatom = 0; 
+					}
 				}
 			}
 		}

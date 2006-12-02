@@ -28,10 +28,7 @@ class RotDonor: public Mover {
 public:
    RotDonor(const Point3d& a, const Point3d& b,
             const double ang, const PDBrec& heavyAtom);
-   virtual ~RotDonor() {
-	   std::for_each(_bnded.begin(), _bnded.end(), DeleteObject());
-	   std::for_each(_rot.begin(), _rot.end(), DeleteObject());
-   }
+   virtual ~RotDonor();
 
    virtual Mover::MemoType type() { return Mover::ROTATE_DONOR; }
    virtual bool isComplete() const { return TRUE; }

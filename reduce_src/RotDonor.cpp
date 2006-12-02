@@ -46,6 +46,17 @@ RotDonor::RotDonor(const Point3d& a, const Point3d& b,
 	validateMemo();
 }
 
+RotDonor::~RotDonor()
+{
+	for (std::vector< std::list< PDBrec * > * >::iterator iter = _bnded.begin(); iter != _bnded.end(); ++iter)
+	{
+		std::for_each( (*iter)->begin(), (*iter)->end(), DeleteObject());
+		delete (*iter);
+	}
+	std::for_each(_rot.begin(), _rot.end(), DeleteObject());
+}
+
+
 void RotDonor::finalize(int nBondCutoff, bool useXplorNames,
                         AtomPositions &xyz, DotSphManager& dotBucket) {
 	int i = 0;

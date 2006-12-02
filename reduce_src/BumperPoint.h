@@ -34,17 +34,21 @@ private:
       float   _radii;
       bool    _ok;
    };
+
+	//private and unimplemented
+	BumperPoint(const BumperPoint& b); //: _rep(b._rep) {}
+	BumperPoint& operator=(const BumperPoint& b);
+	//{
+   //	_rep = b._rep;
+   //	return *this;
+   //}
+
 public:
-   BumperPoint(const BumperPoint& b): _rep(b._rep) {}
    BumperPoint(const Point3d& p, int rn, int an, float rad) {
 	   _rep = new BumperPointRep();
 	   _rep->update(p,rn,an,rad); 
    }
-  ~BumperPoint() {}
-   BumperPoint& operator=(const BumperPoint& b) {
-      _rep = b._rep;
-      return *this;
-   }
+  ~BumperPoint() { delete _rep;}
    void invalidate() { _rep->_ok = FALSE; };
 
    const Point3d& loc() const { return _rep->_loc; }
