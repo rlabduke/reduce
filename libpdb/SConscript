@@ -8,10 +8,10 @@ env.Append(
 env.StaticLibrary(
   target=["#reduce/lib/pdb++"],
   source=[
-    "pdb_read.C",
-    "pdb_sprntf.C",
-    "pdb_sscanf.C",
-    "pdb_chars.C",
-    "pdb_type.C",
-    "pdb++.C",
-    "pdbinput.C"])
+    "pdb_read.cpp",
+    "pdb_sprntf.cpp",
+    "pdb_sscanf.cpp",
+    "pdb_chars.cpp",
+    "pdb_type.cpp",
+    "pdb++.cpp",
+    "pdbinput.cpp"])

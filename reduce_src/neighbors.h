@@ -28,7 +28,7 @@ std::list<L> neighbors(const Point3d& p, Coord minrange, Coord maxrange,
 		     const std::multimap<LocBlk, L>& locdict);
 
 #ifdef INCTEMPLATEDEFNS
-#include "neighbors.C"
+#include "neighbors.cpp"
 #endif
 
 #endif

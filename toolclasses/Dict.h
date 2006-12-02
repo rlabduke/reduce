@@ -123,7 +123,7 @@ private:
 };
 
 #ifdef INCTEMPLATEDEFNS
-#include "Dict.C"
+#include "Dict.cpp"
 #endif
 
 #endif

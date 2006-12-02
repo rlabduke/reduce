@@ -79,7 +79,7 @@ inline bool operator>=(const Hdl<T>& op1, const Hdl<T>& op2) {
 }
 
 #ifdef INCTEMPLATEDEFNS
-#include "Hdl.C"
+#include "Hdl.cpp"
 #endif
 
 #endif

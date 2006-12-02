@@ -11,11 +11,11 @@ env.Append(
 env.StaticLibrary(
   target=["#reduce/lib/toolclasses"],
   source=[
-    "UseCount.C",
-    "Point3d.C",
-    "Stringclass.C",
-    "Hash.C",
-    "utility.C",
-    "column_sprintf.C",
-    "column_sscanf.C",
-    "DisjointSets.C"])
+    "UseCount.cpp",
+    "Point3d.cpp",
+    "Stringclass.cpp",
+    "Hash.cpp",
+    "utility.cpp",
+    "column_sprintf.cpp",
+    "column_sscanf.cpp",
+    "DisjointSets.cpp"])

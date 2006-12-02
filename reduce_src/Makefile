@@ -25,8 +25,8 @@ OBJLIST = GraphToHoldScores.o reduce.o CTab.o ElementInfo.o StdResH.o ResBlk.o A
 
 CXX		= g++
 
-.C.o:
-	$(CXX) -c $*.C $(CFLAGS)
+.cpp.o:
+	$(CXX) -c $*.cpp $(CFLAGS)
 
 OPT             = -O3
 DEBUG           = $(CXXDEBUGFLAGS)
@@ -44,69 +44,69 @@ install: reduce
 	gunzip -c -d ../reduce_het_dict.txt.gz > $(DICT_HOME)
 
 # DO NOT DELETE THIS LINE -- make depend uses it
-AtomConn.o: $(TOOLHOME)/Point3d.h $(TOOLHOME)/utility.C \
-         $(TOOLHOME)/utility.h AtomConn.C \
+AtomConn.o: $(TOOLHOME)/Point3d.h $(TOOLHOME)/utility.cpp \
+         $(TOOLHOME)/utility.h AtomConn.cpp \
 	 AtomConn.h ElementInfo.h
-AtomDescr.o: AtomDescr.C AtomDescr.h
+AtomDescr.o: AtomDescr.cpp AtomDescr.h
 AtomPositions.o: $(PDBHOME)/pdb++.h $(TOOLHOME)/DisjointSets.h \
-	 $(TOOLHOME)/Point3d.h $(TOOLHOME)/utility.C \
-	 $(TOOLHOME)/utility.h AtomConn.h AtomPositions.C \
+	 $(TOOLHOME)/Point3d.h $(TOOLHOME)/utility.cpp \
+	 $(TOOLHOME)/utility.h AtomConn.h AtomPositions.cpp \
 	 AtomPositions.h BumperPoint.h CliqueList.h DotSph.h \
 	 ElementInfo.h FlipMemo.h LocBlk.h Mover.h PDBrec.h ResBlk.h \
-	 RotDonor.h RotMethyl.h StdResH.h neighbors.C neighbors.h \
+	 RotDonor.h RotMethyl.h StdResH.h neighbors.cpp neighbors.h \
 	 AtomDescr.h MoveableNode.h GraphToHoldScores.h
 CTab.o: $(TOOLHOME)/Point3d.h \
-	 $(TOOLHOME)/utility.C $(TOOLHOME)/utility.h AtomConn.h \
-	 CTab.C CTab.h ElementInfo.h
+	 $(TOOLHOME)/utility.cpp $(TOOLHOME)/utility.h AtomConn.h \
+	 CTab.cpp CTab.h ElementInfo.h
 CliqueList.o: $(PDBHOME)/pdb++.h \
-	 $(TOOLHOME)/Point3d.h $(TOOLHOME)/utility.C \
-	 $(TOOLHOME)/utility.h BumperPoint.h CliqueList.C \
+	 $(TOOLHOME)/Point3d.h $(TOOLHOME)/utility.cpp \
+	 $(TOOLHOME)/utility.h BumperPoint.h CliqueList.cpp \
 	 CliqueList.h DotSph.h ElementInfo.h LocBlk.h Mover.h PDBrec.h \
-	 neighbors.C neighbors.h
+	 neighbors.cpp neighbors.h
 DotSph.o: $(TOOLHOME)/Point3d.h \
-	 $(TOOLHOME)/utility.C $(TOOLHOME)/utility.h DotSph.C \
+	 $(TOOLHOME)/utility.cpp $(TOOLHOME)/utility.h DotSph.cpp \
 	 DotSph.h
 ElementInfo.o: $(TOOLHOME)/Point3d.h \
-	 $(TOOLHOME)/utility.C $(TOOLHOME)/utility.h AtomConn.h \
-	 ElementInfo.C ElementInfo.h StdResH.h
+	 $(TOOLHOME)/utility.cpp $(TOOLHOME)/utility.h AtomConn.h \
+	 ElementInfo.cpp ElementInfo.h StdResH.h
 FlipMemo.o: $(PDBHOME)/pdb++.h $(TOOLHOME)/Point3d.h \
-	 $(TOOLHOME)/utility.C $(TOOLHOME)/utility.h AtomConn.h \
+	 $(TOOLHOME)/utility.cpp $(TOOLHOME)/utility.h AtomConn.h \
 	 AtomPositions.h BumperPoint.h CliqueList.h DotSph.h \
-	 ElementInfo.h FlipMemo.C FlipMemo.h LocBlk.h Mover.h PDBrec.h \
-	 ResBlk.h neighbors.C neighbors.h
-GraphToHoldScores.o: GraphToHoldScores.h GraphToHoldScores.C AtomPositions.h \
+	 ElementInfo.h FlipMemo.cpp FlipMemo.h LocBlk.h Mover.h PDBrec.h \
+	 ResBlk.h neighbors.cpp neighbors.h
+GraphToHoldScores.o: GraphToHoldScores.h GraphToHoldScores.cpp AtomPositions.h \
     AtomDescr.h
 Mover.o: $(PDBHOME)/pdb++.h $(TOOLHOME)/Point3d.h \
-	 $(TOOLHOME)/utility.C $(TOOLHOME)/utility.h \
-	 BumperPoint.h DotSph.h ElementInfo.h LocBlk.h Mover.C Mover.h \
-	 PDBrec.h ResBlk.h neighbors.C neighbors.h
-MoveableNode.o: MoveableNode.C MoveableNode.h AtomDescr.h \
+	 $(TOOLHOME)/utility.cpp $(TOOLHOME)/utility.h \
+	 BumperPoint.h DotSph.h ElementInfo.h LocBlk.h Mover.cpp Mover.h \
+	 PDBrec.h ResBlk.h neighbors.cpp neighbors.h
+MoveableNode.o: MoveableNode.cpp MoveableNode.h AtomDescr.h \
     GraphToHoldScores.h AtomPositions.h
 PDBrec.o: $(PDBHOME)/pdb++.h \
-	 $(TOOLHOME)/Point3d.h $(TOOLHOME)/utility.C \
-	 $(TOOLHOME)/utility.h ElementInfo.h AtomDescr.h PDBrec.C PDBrec.h
+	 $(TOOLHOME)/Point3d.h $(TOOLHOME)/utility.cpp \
+	 $(TOOLHOME)/utility.h ElementInfo.h AtomDescr.h PDBrec.cpp PDBrec.h
 ResBlk.o: $(PDBHOME)/pdb++.h $(TOOLHOME)/Point3d.h \
-	 $(TOOLHOME)/utility.C $(TOOLHOME)/utility.h \
-	 ElementInfo.h PDBrec.h ResBlk.C ResBlk.h
+	 $(TOOLHOME)/utility.cpp $(TOOLHOME)/utility.h \
+	 ElementInfo.h PDBrec.h ResBlk.cpp ResBlk.h
 RotDonor.o: $(PDBHOME)/pdb++.h $(TOOLHOME)/Point3d.h \
-	 $(TOOLHOME)/utility.C $(TOOLHOME)/utility.h \
+	 $(TOOLHOME)/utility.cpp $(TOOLHOME)/utility.h \
 	 AtomPositions.h BumperPoint.h CliqueList.h DotSph.h \
 	 ElementInfo.h FlipMemo.h LocBlk.h Mover.h PDBrec.h ResBlk.h \
-	 RotDonor.C RotDonor.h neighbors.C neighbors.h
+	 RotDonor.cpp RotDonor.h neighbors.cpp neighbors.h
 RotMethyl.o: $(PDBHOME)/pdb++.h $(TOOLHOME)/Point3d.h \
-	 $(TOOLHOME)/utility.C $(TOOLHOME)/utility.h \
+	 $(TOOLHOME)/utility.cpp $(TOOLHOME)/utility.h \
 	 AtomPositions.h BumperPoint.h CliqueList.h DotSph.h \
-	 ElementInfo.h LocBlk.h Mover.h PDBrec.h ResBlk.h RotMethyl.C \
-	 RotMethyl.h neighbors.C neighbors.h
+	 ElementInfo.h LocBlk.h Mover.h PDBrec.h ResBlk.h RotMethyl.cpp \
+	 RotMethyl.h neighbors.cpp neighbors.h
 StdResH.o: $(TOOLHOME)/Point3d.h \
-	 $(TOOLHOME)/utility.C $(TOOLHOME)/utility.h AtomConn.h \
-	 ElementInfo.h StdResH.C StdResH.h
+	 $(TOOLHOME)/utility.cpp $(TOOLHOME)/utility.h AtomConn.h \
+	 ElementInfo.h StdResH.cpp StdResH.h
 neighbors.o: $(TOOLHOME)/Point3d.h \
-	 $(TOOLHOME)/utility.C $(TOOLHOME)/utility.h LocBlk.h \
-	 neighbors.C neighbors.h
+	 $(TOOLHOME)/utility.cpp $(TOOLHOME)/utility.h LocBlk.h \
+	 neighbors.cpp neighbors.h
 reduce.o: $(PDBHOME)/pdb++.h $(TOOLHOME)/Point3d.h \
-	 $(TOOLHOME)/utility.C $(TOOLHOME)/utility.h AtomConn.h \
+	 $(TOOLHOME)/utility.cpp $(TOOLHOME)/utility.h AtomConn.h \
 	 AtomPositions.h BumperPoint.h CTab.h CliqueList.h DotSph.h \
 	 ElementInfo.h LocBlk.h Mover.h PDBrec.h ResBlk.h StdResH.h \
-	 neighbors.C neighbors.h reduce.C
+	 neighbors.cpp neighbors.h reduce.cpp
 # DO NOT DELETE THIS 2nd LINE -- make depend uses it

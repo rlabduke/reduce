@@ -113,7 +113,7 @@ private:
 };
 
 #ifdef INCTEMPLATEDEFNS
-#include "MultiDict.C"
+#include "MultiDict.cpp"
 #endif
 
 #endif

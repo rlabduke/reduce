@@ -116,7 +116,7 @@ template <class T> void split(Seq<T>, Seq<T>&, Seq<T>&);
 template <class T> Seq<T> mergesort(Seq<T>&);
 
 #ifdef INCTEMPLATEDEFNS
-#include "Seq.C"
+#include "Seq.cpp"
 #endif
 
 #endif

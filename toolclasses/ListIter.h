@@ -84,7 +84,7 @@ protected:
 };
 
 #ifdef INCTEMPLATEDEFNS
-#include "ListIter.C"
+#include "ListIter.cpp"
 #endif
 
 #endif

@@ -134,7 +134,7 @@ private:
 template <class T> std::ostream& operator << (std::ostream& s, const List<T>& l);
 
 #ifdef INCTEMPLATEDEFNS
-#include "List.C"
+#include "List.cpp"
 #endif
 
 #endif

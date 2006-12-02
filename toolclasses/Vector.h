@@ -72,7 +72,7 @@ private:
 template <class T> std::ostream& operator << (std::ostream& s, const Vector<T>& v);
 
 #ifdef INCTEMPLATEDEFNS
-#include "Vector.C"
+#include "Vector.cpp"
 #endif
 
 #endif
