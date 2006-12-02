@@ -82,7 +82,7 @@ int trimStr(char *str);
 
 void copyChars(char *to, const char *from, int n);
 
-#if defined(__DECCXX_VER)
+#if defined(__DECCXX_VER) || defined(_MSC_VER)
 #define NEEDSTRCASECMP
 #endif
 #ifdef NEEDSTRCASECMP

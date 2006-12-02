@@ -1225,7 +1225,7 @@ AtomPositions::setNumStatesForNodes(
 		stateSpaceSize *= n_states;
 	   num_states[ i ] = n_states;
 	   penalties[ i ].resize( n_states );
-	   std::fill( penalties[ i ].begin(), penalties[ i ].end(), 0.0 );
+	   std::fill( penalties[ i ].begin(), penalties[ i ].end(), float(0) );
    }
 }
 

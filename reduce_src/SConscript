@@ -1,4 +1,4 @@
-Import("reduce_scons_env")
+Import("reduce_scons_env", "env_etc")
 
 env = reduce_scons_env.Copy()
 env.Append(
@@ -9,7 +9,9 @@ env.Append(
     "-DBRACKETOPERPARMS",
     "-DLEFT_JUSTIFY_NUC_RES_OK",
     "-DLISTFRIENDFIX",
-    "-DINCTEMPLATEDEFNS",
+    "-DINCTEMPLATEDEFNS"])
+if (env_etc.compiler != "win32_cl"):
+  env.Append(CXXFLAGS=[
     """-DHET_DICTIONARY='"/usr/local/reduce_het_dict.txt"'"""])
 env.Append(CPPPATH=["#reduce/toolclasses", "#reduce/libpdb"])
 env.Append(LIBPATH=["#reduce/lib"])

@@ -31,7 +31,7 @@ using std::islower;
 using std::toupper;
 #endif
 }
-#if defined(__DECCXX_VER)
+#if defined(__DECCXX_VER) || defined(_MSC_VER)
 #define NEEDSTRCASECMP
 #endif
 #ifdef NEEDSTRCASECMP
