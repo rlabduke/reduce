@@ -29,6 +29,8 @@ const double PI = 3.14159265358979323846264;
 
 #if defined(__DECCXX_VER)
 #include <fstream>
+#elif defined(__APPLE_CC__) && __APPLE_CC__ <= 1671
+// pass
 #else
 #ifndef TFPREDEFINED
 const bool TRUE  = 1;
