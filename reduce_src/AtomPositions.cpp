@@ -484,7 +484,7 @@ CliqueList AtomPositions::findCliques() const {
 ///////////////////////////////////////////////////////////////////////////////////////
 // Have trouble to use upper_bound()
 //		for (; bbit != bumpbins.upper_bound(*key); ++bbit) {
-		for (; bbit->first == *key; ++bbit) {
+		for (; bbit != bumpbins.end() && bbit->first == *key; ++bbit) {
 ///////////////////////////////////////////////////////////////////////////////////////
 			bp = bbit->second;
 			std::list<BumperPoint*> nearbp_list = ::neighbors(bp->loc(), (Coord)0.001,
