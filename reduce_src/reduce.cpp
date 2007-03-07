@@ -130,6 +130,7 @@
 //                        even when _insertPtr has reached the end of the rlst.  This ensures all
 //                        residues are protonated, instead of all but the last one.  Fixes Loren's
 //                        bug in trying to protonate nicotine when it was by itself in a .pdb.
+// 3/ 7/07 - apl -        inline distanceSquared in toolclasses/Point3d.h for a 10% speedup.
 
 #if defined(_MSC_VER)
 #pragma warning(disable:4786) 

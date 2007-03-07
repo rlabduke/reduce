@@ -75,10 +75,6 @@ Point3d lerp(const Point3d& lo, const Point3d& hi, Coord alpha) {
 }
 
 
-Coord distanceSquared(const Point3d& a, const Point3d& b) {
-   return Point3d( a - b ).lengthSquared();
-}
-
 Coord distance2(const Point3d& a, const Point3d& b) {
 	return (sqrt(distanceSquared(a, b)));
 }

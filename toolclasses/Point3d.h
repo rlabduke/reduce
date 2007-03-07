@@ -134,7 +134,12 @@ Point3d cross(const Point3d&, const Point3d&);
 Point3d lerp(const Point3d&, const Point3d&, Coord);
 
 // distance, etc. between two points
-Coord distanceSquared(const Point3d&, const Point3d&);
+// apl - 2007/03/07 - inline for 10% speedup.
+inline
+Coord distanceSquared(const Point3d& a, const Point3d& b) {
+   return Point3d( a - b ).lengthSquared();
+}
+
 Coord distance2(const Point3d&, const Point3d&);
 
 // create a unit length vector in the pointing from b towards a
