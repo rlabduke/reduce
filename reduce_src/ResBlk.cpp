@@ -76,8 +76,9 @@ ResBlk::ResBlk(std::list<PDBrec*>& rlst, std::list<PDBrec*>::iterator& lit) {
 //	lit.sync(_insertPt); // *tell the outside world where to look next*
 
 	// need to keep a pointer to the end of the res.
-	if (_insertPt != rlst.end())
-		--_insertPt;
+	//apl 2007/03/07.  March iterator backwards even if the list end has been reached.
+	//if (_insertPt != rlst.end()) {--_insertPt;}
+	--_insertPt;
 //	if (_insertPt) { _insertPt--;     }
 //	else           { _insertPt.end(); }
 }

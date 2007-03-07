@@ -126,6 +126,10 @@
 //                        when a network was forced to incur a penalty.
 // 3/ 7/07 - apl -        Bug fix: do not add hydrogens to "N" on non-amino acids
 //                        fixes 3H bug on SAC in 1b0b.pdb
+// 3/ 7/07 - apl -        Bug fix: march ResBlk::_insertPtr backwards at the end of constructor 
+//                        even when _insertPtr has reached the end of the rlst.  This ensures all
+//                        residues are protonated, instead of all but the last one.  Fixes Loren's
+//                        bug in trying to protonate nicotine when it was by itself in a .pdb.
 
 #if defined(_MSC_VER)
 #pragma warning(disable:4786) 
