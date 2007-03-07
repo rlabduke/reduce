@@ -124,6 +124,8 @@
 //10/19/06 - apl - v3.03- changing HIS carbons to regular carbons and not arromatic carbons
 //10/20/06 - apl -      - fixing bug in optimization code that failed to keep optimal network states
 //                        when a network was forced to incur a penalty.
+// 3/ 7/07 - apl -        Bug fix: do not add hydrogens to "N" on non-amino acids
+//                        fixes 3H bug on SAC in 1b0b.pdb
 
 #if defined(_MSC_VER)
 #pragma warning(disable:4786) 
@@ -132,9 +134,9 @@
 #endif
 
 static const char *versionString =
-     "reduce: version 3.03 10/20/06, Copyright 1997-2006, J. Michael Word";
+     "reduce: version 3.03 3/ 7/07, Copyright 1997-2006, J. Michael Word";
 
-static const char *shortVersion    = "reduce.3.03.061020";
+static const char *shortVersion    = "reduce.3.03.070307";
 static const char *referenceString =
                        "Word, et. al. (1999) J. Mol. Biol. 285, 1735-1747.";
 static const char *electronicReference = "http://kinemage.biochem.duke.edu";
@@ -1164,7 +1166,10 @@ void analyzeRes(CTab& hetdatabase, ResBlk* pb, ResBlk* cb, ResBlk* nb,
 	// create plans
 	std::list<atomPlacementPlan*> app;
 
-	if (ProcessConnHydOnHets || StdResH::ResXtraInfo().match(resname, "AminoAcid")) {
+	// apl 2007/03/07 -- Bug fix: do not add hydrogens to "N" on non-amino acids
+	// prev: 	if (ProcessConnHydOnHets || StdResH::ResXtraInfo().match(resname, "AminoAcid")) {
+	//
+	if ( StdResH::ResXtraInfo().match(resname, "AminoAcid")) {
 		StdResH *hn = NULL;
 		if (ctype == CONNECTED_RES) {
 			hn = StdResH::HydPlanTbl().get("amide");
