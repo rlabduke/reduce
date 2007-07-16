@@ -194,6 +194,8 @@ bool RemoveHydrogens          = FALSE;
 bool BuildHisHydrogens        = FALSE;
 bool SaveOHetcHydrogens       = TRUE;
 bool UseXplorNames            = FALSE;
+bool UseOldNames	      = FALSE; 
+bool BackBoneModel	      = FALSE; 
 bool DemandRotAllMethyls      = FALSE;
 bool RotExistingOH            = FALSE;
 bool DemandRotNH3             = TRUE;
@@ -229,7 +231,8 @@ std::string OFile; // if file exists, given orientations forced
 bool UseSEGIDtoChainMap = FALSE; // if true, override some chain ids
 
 #ifndef HET_DICTIONARY
-#define HET_DICTIONARY "reduce_het_dict.txt"
+//#define HET_DICTIONARY "reduce_het_dict.txt"
+#define HET_DICTIONARY "reduce_wwPDB_het_dict.txt"
 #endif
 std::string DBfilename( HET_DICTIONARY );
 
@@ -443,9 +446,9 @@ void processPDBfile(std::istream& ifs, char *pdbFile, std::ostream& ofs) {
 
       DotSphManager dotBucket(VdwDotDensity);
 
-      AtomPositions xyz(2000, DoOnlyAltA, UseXplorNames, NBondCutoff,
-                        MinRegHBgap, MinChargedHBgap, BadBumpGapCut,
-			dotBucket, ProbeRadius,
+      AtomPositions xyz(2000, DoOnlyAltA, UseXplorNames, UseOldNames, BackBoneModel, 
+			NBondCutoff, MinRegHBgap, MinChargedHBgap, 
+			BadBumpGapCut, dotBucket, ProbeRadius,
 			PenaltyMagnitude, OccupancyCutoff,
 			Verbose, ShowOrientScore, ShowCliqueTicks, cerr);
 
@@ -559,7 +562,7 @@ void establishHetDictionaryFileName(void) {
 	const int rc = stat(localfile.c_str(), &filestatbuf);
 #endif
 	if (rc == 0) {
-		DBfilename = localfile;
+  		DBfilename = localfile;
 	}
 	else {
 		const char *hetdbAlias = getenv("REDUCE_HET_DICT");
@@ -631,9 +634,24 @@ char* parseCommandLine(int argc, char **argv) {
 	 else if((n = compArgStr(p+1, "NOOH", 4))){
 	    SaveOHetcHydrogens = FALSE;
 	 }
-	 else if((n = compArgStr(p+1, "Xplor", 1))){
+	 else if((n = compArgStr(p+1, "Xplor", 1)) && !UseOldNames){
 	    UseXplorNames = TRUE;
 	 }
+         else if((n = compArgStr(p+1, "Xplor", 1)) && UseOldNames){
+            cerr << "Cannot use both -Xplor and -Old flags" << endl;
+            exit(1);         
+	 }
+	 else if((n = compArgStr(p+1, "OLDpdb", 3)) && ! UseXplorNames){
+	    UseOldNames = TRUE; 
+	    //DBfilename = reduce_het_dict.txt;
+	 }
+         else if((n = compArgStr(p+1, "OLDpdb", 3)) && UseXplorNames){
+	    cerr << "Cannot use both -Xplor and -Old flags" << endl; 
+	    exit(1);
+	 }
+	 else if((n = compArgStr(p+1, "BBmodel", 2))){
+		BackBoneModel = TRUE; 
+	 } 
 	 else if((n = compArgStr(p+1, "Trim", 1))){
 	    RemoveHydrogens = TRUE;
 	 }
@@ -813,6 +831,8 @@ void reduceHelp(bool showAll) { /*help*/
    cerr << "-NONMETALBump#.#  'bumps' nonmetal at radius plus this (default="<<NonMetalBumpBias<<")" << endl;
    cerr << "-SEGIDmap \"seg,c...\"  assign chainID based on segment identifier field" << endl;
    cerr << "-Xplor            use Xplor conventions for naming polar hydrogens" << endl;
+   cerr << "-OLDpdb 	      use the pre-remediation names for hydrogens" << endl; 
+   cerr << "-BBmodel	      expects a backbone only model and will build two hydrogens on every Calpha" <<endl; 
    cerr << "-NOCon            drop conect records" << endl;
    cerr << "-LIMIT#           max seconds to spend in exhaustive search (default="<< ExhaustiveLimit <<")" << endl;
    cerr << "-NOTICKs          do not display the set orientation ticker during processing" << endl;
@@ -1355,8 +1375,18 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 			}
 			if ( (pp.hasFeature(NOTXPLORNAME) &&   UseXplorNames)
 				||   (pp.hasFeature(   XPLORNAME) && ! UseXplorNames) ) {
-				return; // keep our naming convntions straight
+				return; // keep our naming conventions straight
 			}
+			if ( (pp.hasFeature(USENEWNAMES) &&   UseOldNames)
+                                ||   (pp.hasFeature(USEOLDNAMES) && ! UseOldNames) ) {
+                                return; // keep our naming conventions straight
+                        }
+//                        if ( (pp.hasFeature(BACKBONEMODEL) &&   UseOldNames)
+//                                ||   (pp.hasFeature(USEOLDNAMES) && ! UseOldNames) ) {
+//                                return; // keep our naming conventions straight
+//                        }
+
+
 
 			int numConnAtoms = pp.num_conn();
 			int maxalt = 0;

@@ -1,7 +1,7 @@
 TOOLHOME    =../toolclasses
 PDBHOME     =../libpdb
 INSTALLHOME =..
-DICT_HOME   =/usr/local/reduce_het_dict.txt
+DICT_HOME   =/usr/local/reduce_wwPDB_het_dict.txt
 DICT_LOC    = -DHET_DICTIONARY='"$(DICT_HOME)"'
 PROG_FLGS   = -DAROMATICS_ACCEPT_HBONDS \
               -DCHARFUNCMACROS \
@@ -41,7 +41,7 @@ clean:
 
 install: reduce
 	mv reduce $(INSTALLHOME)
-	gunzip -c -d ../reduce_het_dict.txt.gz > $(DICT_HOME)
+	gunzip -c -d ../reduce_wwPDB_het_dict.txt.gz > $(DICT_HOME)
 
 # DO NOT DELETE THIS LINE -- make depend uses it
 AtomConn.o: $(TOOLHOME)/Point3d.h $(TOOLHOME)/utility.cpp \

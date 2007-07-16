@@ -327,7 +327,7 @@ void AtomPositions::doNotAdjust(const PDBrec& a) {
 
 std::list<char> AtomPositions::insertFlip(const ResBlk& rblk) {
 	std::list<char> resAlts;
-	FlipMemo::altCodes(rblk, _useXplorNames, resAlts);
+	FlipMemo::altCodes(rblk, _useXplorNames, _useOldNames, _bbModel, resAlts);
 	std::multimap<std::string, PDBrec*> pdb = rblk.atomIt();
 	std::string key, descriptor;
 	char descrbuf[30];
@@ -356,7 +356,7 @@ std::list<char> AtomPositions::insertFlip(const ResBlk& rblk) {
 
 					if (m == NULL) {
 					   
-						m = new FlipMemo(atsq->resname(), _useXplorNames);
+						m = new FlipMemo(atsq->resname(), _useXplorNames, _useOldNames, _bbModel);
 						m->descr( descriptor );
 						_motionDesc.insert(std::make_pair(descriptor, m));
 						//std::cerr << "FlipMemo constructed: " << descriptor << " " << m << std::endl;
@@ -395,7 +395,7 @@ void AtomPositions::insertFlip(PDBrec* hr, std::list<char> alts_list) {
 				m = iter->second;
 
 			if (m == NULL) {
-				m = new FlipMemo(hr->resname(), _useXplorNames);
+				m = new FlipMemo(hr->resname(), _useXplorNames, _useOldNames, _bbModel);
 				_motionDesc.insert(std::make_pair(descr, m));
 			}
 			else if (m->type() != Mover::FLIP){
@@ -417,7 +417,7 @@ void AtomPositions::finalizeMovers() {
 			
 			m->descr(it->first);
 			//_os << "FinalizeMovers: #res " << rn << " is " << m->descr() << endl;
-			m->finalize(_nBondCutoff, _useXplorNames, *this, _dotBucket);
+			m->finalize(_nBondCutoff, _useXplorNames, _useOldNames, _bbModel, *this, _dotBucket);
 			//_os << "FinalizeMovers: #res " << rn << " is " << m->descr() << endl;
 		}
 		++rn;
@@ -1321,7 +1321,7 @@ void AtomPositions::generateWaterPhantomHs(std::list<PDBrec*>& waters) {
 			rec = *nearby;
 			
 			if (rec->hasProp(ACCEPTOR_ATOM)
-				|| FlipMemo::isHBDonorOrAcceptorFlipped(*rec, _useXplorNames)) {
+				|| FlipMemo::isHBDonorOrAcceptorFlipped(*rec, _useXplorNames, _useOldNames, _bbModel)) {
 				
 				double HBoverlap = distance2(a->loc(), rec->loc())
 					- ( elemHOd.explRad() + rec->vdwRad()

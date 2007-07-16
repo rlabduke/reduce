@@ -224,7 +224,7 @@ const int FlipMemo::_oFlipState[FMnumFlipOrient] = {
  1
 };
 
-FlipMemo::FlipMemo(const char *resname, bool useXplorNames) {
+FlipMemo::FlipMemo(const char *resname, bool useXplorNames, bool useOldNames, bool bbModel) {
    _isComplete = FALSE;
    _extendO    = FALSE;
    _fromO      = 0;
@@ -278,7 +278,7 @@ void FlipMemo::limitOrientations(bool doflip, SearchStrategy ss) {
    }
 }
 
-void FlipMemo::finalize(int, bool, AtomPositions &, DotSphManager&) {
+void FlipMemo::finalize(int, bool, bool, bool, AtomPositions &, DotSphManager&) {
 	if (isComplete()) {
 		// we copy each atom and save the old locations
 
@@ -577,7 +577,7 @@ std::list<PDBrec*> FlipMemo::neighbors(int na, int nbdist) const {
 	return nbhd;
 }
 
-void FlipMemo::altCodes(const ResBlk& rblk,	bool useXplorNames,
+void FlipMemo::altCodes(const ResBlk& rblk,	bool useXplorNames, bool useOldNames, bool bbModel, 
 						std::list<char>& sch) {
 	char ch, buf[10];
 	int rt = 0, k = 0, cursor = 0;
@@ -592,6 +592,14 @@ void FlipMemo::altCodes(const ResBlk& rblk,	bool useXplorNames,
 			isInResidueSet = TRUE;
 			break; // residue type is one of those we are concerned with
 		}
+
+		else if ( (strcmp(_resFlip[rt].rname, resname) == 0)
+                        && !(((_resFlip[rt].flags & USENEWNAMES) && useOldNames)
+                        || ((_resFlip[rt].flags & USEOLDNAMES)  && ! useOldNames)) ) {
+                        isInResidueSet = TRUE;
+                        break; // residue type is one of those we are concerned with
+                }
+
 	}
 	if (isInResidueSet) {
 		std::multimap<std::string, PDBrec*> pdb = rblk.atomIt();
@@ -636,7 +644,7 @@ void FlipMemo::altCodes(const ResBlk& rblk,	bool useXplorNames,
 
 //Is this a heavy atom which is an HBond donor or acceptor when flipped?
 
-bool FlipMemo::isHBDonorOrAcceptorFlipped(const PDBrec& a, bool useXplorNames) {
+bool FlipMemo::isHBDonorOrAcceptorFlipped(const PDBrec& a, bool useXplorNames, bool useOldNames, bool bbModel) {
    int rt = 0;
    bool isFlipableResidue = FALSE;
 

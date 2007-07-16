@@ -70,7 +70,7 @@ const int FMnumFlipRes       = 5;
 
 class FlipMemo: public Mover {
 public:
-   FlipMemo(const char *resname, bool useXplorNames);
+   FlipMemo(const char *resname, bool useXplorNames, bool useOldNames, bool bbModel);
    virtual ~FlipMemo() {
    }
 
@@ -81,7 +81,7 @@ public:
    virtual bool canRotate() const { return FALSE; }
    virtual int flipState() const;
    virtual bool markFlipAtoms();
-   virtual void finalize(int nBondCutoff, bool useXplorNames,
+   virtual void finalize(int nBondCutoff, bool useXplorNames,bool useOldNames, bool bbModel, 
                          AtomPositions &xyz, DotSphManager& dotBucket);
    virtual int makebumpers(std::multimap<LocBlk, BumperPoint*>& bbins,
                            int n, float& maxVDWrad);
@@ -115,8 +115,8 @@ public:
 
    std::list<PDBrec*> neighbors(int na, int nbdist) const;
 
-   static void altCodes(const ResBlk& rblk, bool useXplorNames, std::list<char>& sch);
-   static bool isHBDonorOrAcceptorFlipped(const PDBrec& a, bool useXplorNames);
+   static void altCodes(const ResBlk& rblk, bool useXplorNames, bool useOldNames,bool bbModel, std::list<char>& sch);
+   static bool isHBDonorOrAcceptorFlipped(const PDBrec& a, bool useXplorNames, bool useOldNames, bool bbModel);
 
    virtual void setHydAngle(double, AtomPositions &) {/*do nothing*/}
    
