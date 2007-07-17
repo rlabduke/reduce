@@ -149,7 +149,7 @@
 static const char *versionString =
      "reduce: version 3.03 3/ 7/07, Copyright 1997-2006, J. Michael Word";
 
-static const char *shortVersion    = "reduce.3.03.070307";
+static const char *shortVersion    = "reduce.3.10.070707";
 static const char *referenceString =
                        "Word, et. al. (1999) J. Mol. Biol. 285, 1735-1747.";
 static const char *electronicReference = "http://kinemage.biochem.duke.edu";
