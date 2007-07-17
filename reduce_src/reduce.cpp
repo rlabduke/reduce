@@ -131,7 +131,15 @@
 //                        residues are protonated, instead of all but the last one.  Fixes Loren's
 //                        bug in trying to protonate nicotine when it was by itself in a .pdb.
 // 3/ 7/07 - apl -        inline distanceSquared in toolclasses/Point3d.h for a 10% speedup.
-
+//
+// 7/ 7/07 - jjh & rmi -  incoporated new hydrogen names in StdResH.cpp for remediated pdb files
+//		  v3.10  followed the example of the -Xplor flag and added a -OLDpdb flag to allow
+//			  output of new (default) or old (pre-remediation) hydrogen names
+// 7/13/07 - jjh & rmi -  added -BBmodel flag allows addition of two hydrogens on Calpha of any 
+//			  amino acid
+// 7/16/07 - jjh & rmi -  added fixAtomName() to ElementInfo.cpp to check for Hg, Ho, and Hf atoms
+//			  the corresponding warnings are no longer output
+ 
 #if defined(_MSC_VER)
 #pragma warning(disable:4786) 
 #pragma warning(disable:4305) 
@@ -643,7 +651,7 @@ char* parseCommandLine(int argc, char **argv) {
 	 }
 	 else if((n = compArgStr(p+1, "OLDpdb", 3)) && ! UseXplorNames){
 	    UseOldNames = TRUE; 
-	    //DBfilename = reduce_het_dict.txt;
+	    DBfilename = "reduce_het_dict.txt";
 	 }
          else if((n = compArgStr(p+1, "OLDpdb", 3)) && UseXplorNames){
 	    cerr << "Cannot use both -Xplor and -Old flags" << endl; 
@@ -1256,7 +1264,7 @@ void analyzeRes(CTab& hetdatabase, ResBlk* pb, ResBlk* cb, ResBlk* nb,
 
 		ResConn *ct = hetdatabase.findTable(resname);
 		if (ct) {
-			std::list<atomPlacementPlan*> temp = ct->genHplans();
+			std::list<atomPlacementPlan*> temp = ct->genHplans(resname.c_str());
 			app.splice(app.end(), temp);
 		}
 		else {
@@ -1381,10 +1389,9 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
                                 ||   (pp.hasFeature(USEOLDNAMES) && ! UseOldNames) ) {
                                 return; // keep our naming conventions straight
                         }
-//                        if ( (pp.hasFeature(BACKBONEMODEL) &&   UseOldNames)
-//                                ||   (pp.hasFeature(USEOLDNAMES) && ! UseOldNames) ) {
-//                                return; // keep our naming conventions straight
-//                        }
+                        if ( (pp.hasFeature(BACKBONEMODEL) &&   ! BackBoneModel) ) {
+                                return; // keep our naming conventions straight
+                        }
 
 
 

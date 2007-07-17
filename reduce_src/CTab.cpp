@@ -35,11 +35,11 @@ using std::fgets;
 #include "ElementInfo.h"
 #include "utility.h"
 
-atomPlacementPlan* ResConn::planHplacement(const std::string &atomname) const {
+atomPlacementPlan* ResConn::planHplacement(const std::string &atomname, const char* resname) const {
    int nn = 0, nh = 0, whichH = 0, type = 0, flags = 0;
    float dist = 0.0, ang1 = 0.0, ang2 = 0.0;
 
-   ElementInfo *e = ElementInfo::StdElemTbl().lookupPDBatom(atomname.c_str());
+   ElementInfo *e = ElementInfo::StdElemTbl().lookupPDBatom(atomname.c_str(), resname);
    if (e && e->isHydrogen()) {
       AtomConn *hc = get(atomname);
       if (hc && hc->num_conn() > 0)  {
@@ -50,7 +50,7 @@ atomPlacementPlan* ResConn::planHplacement(const std::string &atomname) const {
 	 if (x1c && x1c->num_conn() > 0)  {
 	    for (int i = 0; i < x1c->num_conn(); i++) {
 			std::string xc = x1c->conn(i);
-	       ElementInfo *xe = ElementInfo::StdElemTbl().lookupPDBatom(xc.c_str());
+	       ElementInfo *xe = ElementInfo::StdElemTbl().lookupPDBatom(xc.c_str(), resname);
 	       if (xe && xe->isHydrogen()) {
 		  ++nh;
 		  if (xc == names.name()) { whichH = nh; }
@@ -61,7 +61,7 @@ atomPlacementPlan* ResConn::planHplacement(const std::string &atomname) const {
 	       }
 	    }
 
-	    ElementInfo *x1e = ElementInfo::StdElemTbl().lookupPDBatom(x1name.c_str());
+	    ElementInfo *x1e = ElementInfo::StdElemTbl().lookupPDBatom(x1name.c_str(), resname);
 	    dist = 1.1; // default X-H distance
 	    bool polarH = FALSE;
 	    if (x1e) {
@@ -90,7 +90,7 @@ atomPlacementPlan* ResConn::planHplacement(const std::string &atomname) const {
 		     for (int k = 0; k < x2c->num_conn(); k++) {
 			std::string xxc = x2c->conn(k);
 			if (xxc != x1name) {
-			   ElementInfo *xxe = ElementInfo::StdElemTbl().lookupPDBatom(xxc.c_str());
+			   ElementInfo *xxe = ElementInfo::StdElemTbl().lookupPDBatom(xxc.c_str(), resname);
 			   if (!xxe || !(xxe->isHydrogen())) {
 				   names.addConn(xxc);
 			      if (x1c->num_conn() == 4) {
@@ -99,7 +99,7 @@ atomPlacementPlan* ResConn::planHplacement(const std::string &atomname) const {
 				 ang2 = (whichH == 1) ? 180.0
 				      : (whichH == 2) ? 60.0 : -60.0;
 				 std::string x2name = names.conn(1);
-				 ElementInfo *x2e = ElementInfo::StdElemTbl().lookupPDBatom(x2name.c_str());
+				 ElementInfo *x2e = ElementInfo::StdElemTbl().lookupPDBatom(x2name.c_str(), resname);
 				 if (x2e->atno()==16) { // S, so this is like a MET methyl
 				    flags |= ROTATEFLAG;
 				 }
@@ -179,12 +179,12 @@ atomPlacementPlan* ResConn::planHplacement(const std::string &atomname) const {
    return NULL;
 }
 
-std::list<atomPlacementPlan*> ResConn::genHplans() {
+std::list<atomPlacementPlan*> ResConn::genHplans(const char* resname) {
 	std::list<atomPlacementPlan*> plans;
 	std::map<std::string, AtomConn*>::const_iterator i = _atomConn.begin();
 	
 	while (i != _atomConn.end()) {
-		atomPlacementPlan *p = planHplacement(i->first);
+		atomPlacementPlan *p = planHplacement(i->first, resname);
 		if (p) {
 			plans.push_front(p); // store a copy of this part of the plan
 		}
@@ -227,6 +227,7 @@ ResConn* CTab::findTable(const std::string &resname) {
 	char buf[DBbufsz+1];
 	char an[10][5];     // holds ten strings of length 4
 	int m = 0, n = 0;
+        //char temp[4];
 
 	std::map<std::string, ResConn*>::iterator iter1 = _rescache.find(resname);
 	if (iter1 != _rescache.end())
@@ -242,7 +243,7 @@ ResConn* CTab::findTable(const std::string &resname) {
 	if (loc == NULL || _fp == NULL || loc->relocate(_fp) == FALSE)
 		return NULL;
 
-	ResConn *currTbl = new ResConn(loc->value());
+	ResConn *currTbl = new ResConn(resname.c_str(), loc->value());
 	_rescache.insert(std::make_pair(resname, currTbl));
 //	_rescache.put(resname, currTbl);
 

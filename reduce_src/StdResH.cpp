@@ -121,9 +121,11 @@ HydrogenPlanTable::HydrogenPlanTable() {
   }
   {
     static const addPlan_args args[] = {  // added plan for placing both hydrogens on a backbone only model RMI 070713
-      {1, "H", " HA", " CA", " N", " C", " CB", 1.1,   0.0,   0.0, STRICTALTFLAG},
-      {2, "H", "2HA", " CA", " N", " C", "", 1.1, 126.5,   0.0, BACKBONEMODEL},
-      {2, "H", "1HA", " CA", " N", " C", "", 1.1,-126.5,   0.0, BACKBONEMODEL},
+      {1, "H", " HA", " CA", " N", " C", " CB", 1.1,   0.0,   0.0, STRICTALTFLAG|NOTBBMODEL},
+      {2, "H", "2HA", " CA", " N", " C", "", 1.1, 126.5,   0.0, USEOLDNAMES|BACKBONEMODEL},
+      {2, "H", "1HA", " CA", " N", " C", "", 1.1,-126.5,   0.0, USEOLDNAMES|BACKBONEMODEL},
+      {2, "H", "HA3", " CA", " N", " C", "", 1.1, 126.5,   0.0, USENEWNAMES|BACKBONEMODEL},
+      {2, "H", "HA2", " CA", " N", " C", "", 1.1,-126.5,   0.0, USENEWNAMES|BACKBONEMODEL},
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("alpha", "GLY", args); // mainchain alpha proton
@@ -448,10 +450,10 @@ HydrogenPlanTable::HydrogenPlanTable() {
   }
   {
     static const addPlan_args args[] = { //PRO updated 070703 by JJH
-      {2, "H", " HD2", " CD", " CG", " N", "", 1.1, 126.5,   0.0, USENEWNAMES}, // PDB using opposite handedness RMI 070711
-      {2, "H", " HD3", " CD", " CG", " N", "", 1.1,-126.5,   0.0, USENEWNAMES}, // PDB using opposite handedness RMI 070711
-//      {2, "H", " HD3", " CD", " CG", " N", "", 1.1, 126.5,   0.0, USENEWNAMES},
-//      {2, "H", " HD2", " CD", " CG", " N", "", 1.1,-126.5,   0.0, USENEWNAMES},
+//      {2, "H", " HD2", " CD", " CG", " N", "", 1.1, 126.5,   0.0, USENEWNAMES}, // PDB using opposite handedness RMI 070711 
+//      {2, "H", " HD3", " CD", " CG", " N", "", 1.1,-126.5,   0.0, USENEWNAMES}, // PDB using opposite handedness RMI 070711
+      {2, "H", " HD3", " CD", " CG", " N", "", 1.1, 126.5,   0.0, USENEWNAMES},
+      {2, "H", " HD2", " CD", " CG", " N", "", 1.1,-126.5,   0.0, USENEWNAMES},
       {2, "H", " HG3", " CG", " CB", " CD", "", 1.1, 126.5,   0.0, USENEWNAMES},
       {2, "H", " HG2", " CG", " CB", " CD", "", 1.1,-126.5,   0.0, USENEWNAMES},
       {2, "H", " HB3", " CB", " CA", " CG", "", 1.1, 126.5,   0.0, USENEWNAMES},

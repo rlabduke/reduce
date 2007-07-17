@@ -52,7 +52,11 @@
 // the following two flags are used to mark new vs. old naming conventions
 #define USEOLDNAMES     (1<<18)
 #define USENEWNAMES     (1<<19)
-#define BACKBONEMODEL	(1<<20)
+
+// the following two flags are used to allow two hydrogens 
+// to be built on Calpha of backbone models
+#define    NOTBBMODEL	(1<<20)
+#define BACKBONEMODEL	(1<<21)
 
 // -----------------------------------------
 //  an atom and connected atoms

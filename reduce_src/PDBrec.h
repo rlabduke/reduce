@@ -41,6 +41,21 @@ const int PositiveChargeFlag = (1 << 3);
 #define WATER_RESNAMES \
  ":HOH:DOD:H2O:D2O:WAT:TIP:SOL:MTO:hoh:dod:h2o:d2o:wat:tip:sol:mto:"
 
+/*#define HE_RESNAME \
+// currently there are none RMI 070711
+
+#define HF_RESNAME \
+ ":PHF:HF3:HF5:"
+
+#define HG_RESNAMES \
+ ": HG:HG2:HGB:HGC:HGI:MAC:MBO:MMC:PHG:PMB:AAS:AMS:BE7:CMH:EMC:EMT:"
+
+#define HO_RESNAME \
+ ": HO:HO3:"
+
+#define HS_RESNAME \
+// currently there are none RMI 070711*/
+
 class PDBrec {
 private:
    static bool _MappingSEGIDtoChains;
@@ -57,7 +72,7 @@ private:
 				    _r.atom.residue.name, _r.atom.annotation)) {
 	       _recMods |= NameModifiedFlag;
 	    }
-	    ElementInfo *e = ElementInfo::StdElemTbl().lookupPDBatom(_r.atom.name);
+	    ElementInfo *e = ElementInfo::StdElemTbl().lookupPDBatom(_r.atom.name, _r.atom.residue.name);
 	    if (e) { _e = *e; }
 
 	    _recMods |= basicChargeState(_r.atom.name, _r.atom.residue.name,
@@ -69,7 +84,7 @@ private:
 				    _r.anisou.residue.name, _r.anisou.annotation)) {
 	       _recMods |= NameModifiedFlag;
 	    }
-	    ElementInfo *e = ElementInfo::StdElemTbl().lookupPDBatom(_r.anisou.name);
+	    ElementInfo *e = ElementInfo::StdElemTbl().lookupPDBatom(_r.anisou.name, _r.atom.residue.name);
 	    if (e) { _e = *e; }
 	 }
 	 _mark = 0;
@@ -80,7 +95,7 @@ private:
       int         _mark;     // utility flag
       bool        _ok;       // is this a valid record?
       int         _recMods;  // adjustments to the record
-   };
+};
 
 public:
 	PDBrec() : _rep(new PDBrecRep()), _i(new int(1)) {}
@@ -199,6 +214,16 @@ public:
    bool   isHydrogen() const { return _rep->_e.isHydrogen(); }
 
    bool isWater() const;
+  
+   bool isHe() const; 
+
+   bool isHf() const;
+
+   bool isHg() const;
+
+   bool isHo() const;
+
+   bool isHs() const;
 
    bool isCharged() const {
       return _rep->_recMods & (PositiveChargeFlag|NegativeChargeFlag);

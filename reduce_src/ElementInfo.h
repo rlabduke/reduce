@@ -35,6 +35,23 @@ using std::strlen;
 #define ACCEPTOR_ATOM   (1 <<  2)
 #define HB_ONLY_DUMMY   (1 <<  3)
 #define IGNORE          (1 <<  4)
+
+#define HE_RESNAMES \
+ "currently there are none RMI 070711"
+
+#define HF_RESNAMES \
+ ":PHF:HF3:HF5:"
+
+#define HG_RESNAMES \
+ ": HG:HG2:HGB:HGC:HGI:MAC:MBO:MMC:PHG:PMB:AAS:AMS:BE7:CMH:EMC:EMT:"
+
+#define HO_RESNAMES \
+ ": HO:HO3:"
+
+#define HS_RESNAMES \
+ "currently there are none RMI 070711"
+
+
 class StandardElementTable;
 
 // -----------------------------------------
@@ -145,7 +162,7 @@ protected:
 public:
 virtual ~ElementTable() {};
 
-virtual ElementInfo* lookupPDBatom(const char* name) const = 0;
+virtual ElementInfo* lookupPDBatom(const char* name, const char* resname) const = 0;
 
    float maxExplicitRadius() const { return _explMaxRad; }
    float maxImplicitRadius() const { return _implMaxRad; }
@@ -167,7 +184,7 @@ public:
          StandardElementTable() { LayoutTable(); }
    virtual ~StandardElementTable();
 
-   virtual ElementInfo* lookupPDBatom(const char* name) const;
+   virtual ElementInfo* lookupPDBatom(const char* name, const char* resname) const;
 
    virtual int size() const { return _index.size(); }
 
