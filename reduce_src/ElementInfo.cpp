@@ -628,11 +628,11 @@ ElementInfo* StandardElementTable::lookupPDBatom(const char* name, const char* r
    ElementInfo* item = _index.find(elementName)->second;
 
    if (item && emitWarning) {
-      cerr << "WARNING: atom " << name << " will be treated as "
+      cerr << "WARNING: atom " << name << " from " << resname << " will be treated as "
 		  << item->fullName() << endl;
    }
    if (!item) {
-      cerr << "WARNING: atom " << name << " not recognized or unknown"
+      cerr << "WARNING: atom " << name << " from " << resname << " not recognized or unknown"
            << endl;
    }
 
