@@ -147,7 +147,7 @@
 #endif
 
 static const char *versionString =
-     "reduce: version 3.03 3/ 7/07, Copyright 1997-2006, J. Michael Word";
+     "reduce: version 3.10 7/ 7/07, Copyright 1997-2007, J. Michael Word";
 
 static const char *shortVersion    = "reduce.3.10.070707";
 static const char *referenceString =
@@ -1389,7 +1389,8 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
                                 ||   (pp.hasFeature(USEOLDNAMES) && ! UseOldNames) ) {
                                 return; // keep our naming conventions straight
                         }
-                        if ( (pp.hasFeature(BACKBONEMODEL) &&   ! BackBoneModel) ) {
+                        if ( (pp.hasFeature(BACKBONEMODEL) &&   ! BackBoneModel) 
+                                ||   (pp.hasFeature(   NOTBBMODEL) && ! BackBoneModel) ) {
                                 return; // keep our naming conventions straight
                         }
 

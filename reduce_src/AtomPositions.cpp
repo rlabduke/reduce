@@ -322,7 +322,7 @@ void AtomPositions::doNotAdjust(const PDBrec& a) {
 }
 
 // ---------------------------------------------------------------
-// Insert the atoms in a resdue block into one or more flip memos
+// Insert the atoms in a residue block into one or more flip memos
 // and return the alt codes for the memos (empty if res not flipped)
 
 std::list<char> AtomPositions::insertFlip(const ResBlk& rblk) {

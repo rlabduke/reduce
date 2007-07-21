@@ -25,6 +25,9 @@
 #include <cmath>
 #include <cstring>
 #include <cstdlib>
+#include <iostream>
+using std::cerr; 
+using std::endl; 
 using std::strcpy;
 using std::exit;
 #endif

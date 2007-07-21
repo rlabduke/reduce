@@ -592,14 +592,6 @@ void FlipMemo::altCodes(const ResBlk& rblk,	bool useXplorNames, bool useOldNames
 			isInResidueSet = TRUE;
 			break; // residue type is one of those we are concerned with
 		}
-
-		else if ( (strcmp(_resFlip[rt].rname, resname) == 0)
-                        && !(((_resFlip[rt].flags & USENEWNAMES) && useOldNames)
-                        || ((_resFlip[rt].flags & USEOLDNAMES)  && ! useOldNames)) ) {
-                        isInResidueSet = TRUE;
-                        break; // residue type is one of those we are concerned with
-                }
-
 	}
 	if (isInResidueSet) {
 		std::multimap<std::string, PDBrec*> pdb = rblk.atomIt();
