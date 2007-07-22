@@ -646,7 +646,7 @@ char* parseCommandLine(int argc, char **argv) {
 	    UseXplorNames = TRUE;
 	 }
          else if((n = compArgStr(p+1, "Xplor", 1)) && UseOldNames){
-            cerr << "Cannot use both -Xplor and -Old flags" << endl;
+            cerr << "Cannot use both -Xplor and -OLDpdb flags" << endl;
             exit(1);         
 	 }
 	 else if((n = compArgStr(p+1, "OLDpdb", 3)) && ! UseXplorNames){
@@ -654,7 +654,7 @@ char* parseCommandLine(int argc, char **argv) {
 	    DBfilename = "reduce_het_dict.txt";
 	 }
          else if((n = compArgStr(p+1, "OLDpdb", 3)) && UseXplorNames){
-	    cerr << "Cannot use both -Xplor and -Old flags" << endl; 
+	    cerr << "Cannot use both -Xplor and -OLDpdb flags" << endl; 
 	    exit(1);
 	 }
 	 else if((n = compArgStr(p+1, "BBmodel", 2))){
@@ -1381,12 +1381,14 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 			if (pp.hasFeature(UNSUREDROPFLAG) && ! SaveOHetcHydrogens) {
 				return; // do not do OH, etc. where we can't place reliably
 			}
-			if ( (pp.hasFeature(NOTXPLORNAME) &&   UseXplorNames)
-				||   (pp.hasFeature(   XPLORNAME) && ! UseXplorNames) ) {
+			if ( (pp.hasFeature(NOTXPLORNAME) &&  (UseXplorNames || UseOldNames) )
+				||   (( pp.hasFeature(   XPLORNAME) && ! pp.hasFeature(USEOLDNAMES)) && ! UseXplorNames) ) { 
 				return; // keep our naming conventions straight
 			}
-			if ( (pp.hasFeature(USENEWNAMES) &&   UseOldNames)
-                                ||   (pp.hasFeature(USEOLDNAMES) && ! UseOldNames) ) {
+			if ( (pp.hasFeature(USENEWNAMES) &&   (UseOldNames || UseXplorNames) )
+                                ||   (( pp.hasFeature(USEOLDNAMES) && ! pp.hasFeature(   XPLORNAME)) && ! UseOldNames) 
+				||   (( pp.hasFeature(USEOLDNAMES) &&   pp.hasFeature(   XPLORNAME)) 
+				&&   (! UseOldNames && ! UseXplorNames)) ) {
                                 return; // keep our naming conventions straight
                         }
                         if ( (pp.hasFeature(BACKBONEMODEL) &&   ! BackBoneModel) 

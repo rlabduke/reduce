@@ -33,20 +33,30 @@ const char* FlipMemo::_pointName[FMnumFlipRes+1]
                                 [FMmaxAtomSlots+1] = {
 {"HIS", " ND1", " CD2", " CE1", " NE2",         // all atoms needed to det.
         " HD1", " HD2", " HE1", " HE2", " CG",  // locs together at front
-	" CB", " CA", " HA", " N", " C", "1HB", "2HB",
+	" CB", " CA", " HA", " N", " C", "1HB", "2HB", // PDBv2.3 - USEOLD
 	" HD1", " HD2", " HE1", " HE2"},
-{"ASN", " OD1", " ND2", "1HD2", "2HD2", " CG",        // Not Xplor
+{"HIS", " ND1", " CD2", " CE1", " NE2",         // PDBv3.0 - USENEW
+        " HD1", " HD2", " HE1", " HE2", " CG",  
+        " CB", " CA", " HA", " N", " C", " HB2", " HB3",
+        " HD1", " HD2", " HE1", " HE2"},
+{"ASN", " OD1", " ND2", "1HD2", "2HD2", " CG",        // Not Xplor = PDBv2.3 - USEOLD
         " CB", " CA", " HA", " N", " C", "1HB", "2HB",
 	"1HD2", "2HD2"},
 {"ASN", " OD1", " ND2", "HD21", "HD22", " CG",        // Xplor
         " CB", " CA", " HA", " N", " C", "1HB", "2HB",
 	"HD21", "HD22"},
-{"GLN", " OE1", " NE2", "1HE2", "2HE2", " CD",        // Not Xplor
+{"ASN", " OD1", " ND2", "HD21", "HD22", " CG",        // PDBv3.0 - USENEW
+        " CB", " CA", " HA", " N", " C", " HB2", " HB3",
+        "HD21", "HD22"},
+{"GLN", " OE1", " NE2", "1HE2", "2HE2", " CD",        // Not Xplor = PDBv2.3 - USEOLD
         " CG", " CB", " CA", "1HB", "2HB", "1HG", "2HG",
 	"1HE2", "2HE2"},
 {"GLN", " OE1", " NE2", "HE21", "HE22", " CD",        // Xplor
         " CG", " CB", " CA", "1HB", "2HB", "1HG", "2HG",
 	"HE21", "HE22"},
+{"GLN", " OE1", " NE2", "HE21", "HE22", " CD",        // PDBv3.0 - USENEW
+        " CG", " CB", " CA", " HB2", " HB3", " HG2", " HG3",
+        "HE21", "HE22"},
 {NULL, NULL}
 };
 
@@ -55,15 +65,19 @@ const ResFlipInfo_t FlipMemo::_resFlip[FMnumFlipRes+1] = {
 // ---        fromScat,numScat, numPnts, flags
 
 #ifdef AROMATICS_ACCEPT_HBONDS
- {"HIS", 0,6,8, 0,4, 0,9,9,4, 1,9, 20,            0},
+ {"HIS", 0,6,8, 0,4, 0,9,9,4, 1,9, 20,           0},
+ {"HIS", 0,6,8, 0,4, 0,9,9,4, 1,9, 20, USENEWNAMES},
 #else
- {"HIS", 0,6,8, 0,4, 0,8,8,4, 1,9, 20,            0},
+ {"HIS", 0,6,8, 0,4, 0,8,8,4, 1,9, 20,           0},
+ {"HIS", 0,6,8, 0,4, 0,9,9,4, 1,9, 20, USENEWNAMES},
 #endif
- {"ASN", 8,2,2, 4,2, 9,5,4,2, 1,5, 14, NOTXPLORNAME},
- {"ASN", 8,2,2, 4,2, 9,5,4,2, 1,5, 14,    XPLORNAME},
- {"GLN", 8,2,2, 6,2,14,5,4,2, 1,5, 14, NOTXPLORNAME},
- {"GLN", 8,2,2, 6,2,14,5,4,2, 1,5, 14,    XPLORNAME},
- { NULL, 0,0,0, 0,0, 0,0,0,0, 0,0,  0,            0}
+ {"ASN", 8,2,2, 4,2, 9,5,4,2, 1,5, 14, USEOLDNAMES},
+ {"ASN", 8,2,2, 4,2, 9,5,4,2, 1,5, 14,   XPLORNAME},
+ {"ASN", 8,2,2, 4,2, 9,5,4,2, 1,5, 14, USENEWNAMES},
+ {"GLN", 8,2,2, 6,2,14,5,4,2, 1,5, 14, USEOLDNAMES},
+ {"GLN", 8,2,2, 6,2,14,5,4,2, 1,5, 14,   XPLORNAME},
+ {"GLN", 8,2,2, 6,2,14,5,4,2, 1,5, 14, USENEWNAMES},
+ { NULL, 0,0,0, 0,0, 0,0,0,0, 0,0,  0,           0}
 };
 
 const ProtonLoc_t FlipMemo::_protLoc[FMnumNewLocs+1] = {
@@ -236,8 +250,9 @@ FlipMemo::FlipMemo(const char *resname, bool useXplorNames, bool useOldNames, bo
 
    for(_resType = 0; _resFlip[_resType].rname; _resType++) {
       if ( (strcmp(_resFlip[_resType].rname, resname) == 0)
-      && !(((_resFlip[_resType].flags & NOTXPLORNAME) && useXplorNames)
-        || ((_resFlip[_resType].flags & XPLORNAME)  && ! useXplorNames)) ) {
+      && !(((_resFlip[_resType].flags & USEOLDNAMES) && ! useOldNames)
+        || ((_resFlip[_resType].flags & XPLORNAME)  && ! useXplorNames)
+	|| ((_resFlip[_resType].flags & USENEWNAMES) && (useOldNames || useXplorNames))) ) {
 	 validateMemo();
 	 _fromO = _resFlip[_resType].fromO;
 	 _numO  = _resFlip[_resType].numO;
@@ -586,9 +601,10 @@ void FlipMemo::altCodes(const ResBlk& rblk,	bool useXplorNames, bool useOldNames
 	const char *resname = rblk.firstRec().resname();
 
 	for(rt = 0; _resFlip[rt].rname; rt++) {
-		if ( (strcmp(_resFlip[rt].rname, resname) == 0)
-			&& !(((_resFlip[rt].flags & NOTXPLORNAME) && useXplorNames)
-			|| ((_resFlip[rt].flags & XPLORNAME)  && ! useXplorNames)) ) {
+	        if ( (strcmp(_resFlip[rt].rname, resname) == 0)
+	      		&& !(((_resFlip[rt].flags & USEOLDNAMES) && ! useOldNames)
+	        	|| ((_resFlip[rt].flags & XPLORNAME)  && ! useXplorNames)
+	        	|| ((_resFlip[rt].flags & USENEWNAMES) && (useOldNames || useXplorNames))) ) {
 			isInResidueSet = TRUE;
 			break; // residue type is one of those we are concerned with
 		}
@@ -644,8 +660,9 @@ bool FlipMemo::isHBDonorOrAcceptorFlipped(const PDBrec& a, bool useXplorNames, b
 
    for(rt = 0; _resFlip[rt].rname; rt++) {
       if ( (strcmp(_resFlip[rt].rname, resname) == 0)
-      && !(((_resFlip[rt].flags & NOTXPLORNAME) && useXplorNames)
-        || ((_resFlip[rt].flags & XPLORNAME)  && ! useXplorNames)) ) {
+              && !(((_resFlip[rt].flags & USEOLDNAMES) && ! useOldNames)
+              || ((_resFlip[rt].flags & XPLORNAME)  && ! useXplorNames)
+              || ((_resFlip[rt].flags & USENEWNAMES) && (useOldNames || useXplorNames))) ) {
 	 isFlipableResidue = TRUE; break;
       }
    }

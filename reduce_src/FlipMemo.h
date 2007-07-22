@@ -66,7 +66,7 @@ const int FMmaxBondedAtoms   =16;
 const int FnumScoreableAtoms =19;
 const int FMnumFlipOrient    =10;
 const int FMnumNewLocs       = 8;
-const int FMnumFlipRes       = 5;
+const int FMnumFlipRes       = 8;
 
 class FlipMemo: public Mover {
 public:
