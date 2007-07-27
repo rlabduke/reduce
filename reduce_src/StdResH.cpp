@@ -123,10 +123,11 @@ HydrogenPlanTable::HydrogenPlanTable() {
     static const addPlan_args args[] = {  // added plan for placing both hydrogens on a backbone only model RMI 070713
       {1, "H", " HA", " CA", " N", " C", " CB", 1.1,   0.0,   0.0, STRICTALTFLAG},
       {1, "H", " HA", " CA", " N", " C", " CB", 1.1,   0.0,   0.0, NOTBBMODEL|STRICTALTFLAG},
-      {2, "H", "2HA", " CA", " N", " C", "", 1.1, 126.5,   0.0, BACKBONEMODEL|USEOLDNAMES},
-      {2, "H", "1HA", " CA", " N", " C", "", 1.1,-126.5,   0.0, BACKBONEMODEL|USEOLDNAMES},
-      {2, "H", "HA3", " CA", " N", " C", "", 1.1, 126.5,   0.0, BACKBONEMODEL|USENEWNAMES},
-      {2, "H", "HA2", " CA", " N", " C", "", 1.1,-126.5,   0.0, BACKBONEMODEL|USENEWNAMES},
+//      {2, "H", "2HA", " CA", " N", " C", "", 1.1, 126.5,   0.0, BACKBONEMODEL|USEOLDNAMES},
+//      {2, "H", "1HA", " CA", " N", " C", "", 1.1,-126.5,   0.0, BACKBONEMODEL|USEOLDNAMES},
+//      {2, "H", " HA2", " CA", " N", " C", "", 1.1, 126.5,   0.0, BACKBONEMODEL|USENEWNAMES},
+//      {2, "H", " HA3", " CA", " N", " C", "", 1.1, 126.5,   0.0, BACKBONEMODEL|USENEWNAMES},
+      {2, "H", " HA", " CA", " N", " C", "", 1.1,-126.5,   0.0, BACKBONEMODEL},
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("alpha", "GLY", args); // mainchain alpha proton
