@@ -135,8 +135,8 @@
 // 7/ 7/07 - jjh & rmi -  incoporated new hydrogen names in StdResH.cpp for remediated pdb files
 //		  v3.10  followed the example of the -Xplor flag and added a -OLDpdb flag to allow
 //			  output of new (default) or old (pre-remediation) hydrogen names
-// 7/13/07 - jjh & rmi -  added -BBmodel flag allows addition of two hydrogens on Calpha of any 
-//			  amino acid
+// 7/13/07 - jjh & rmi -  added -BBmodel flag allows addition of hydrogens on Calpha of truncated
+//			  amino acids
 // 7/16/07 - jjh & rmi -  added fixAtomName() to ElementInfo.cpp to check for Hg, Ho, and Hf atoms
 //			  the corresponding warnings are no longer output
  
@@ -840,7 +840,7 @@ void reduceHelp(bool showAll) { /*help*/
    cerr << "-SEGIDmap \"seg,c...\"  assign chainID based on segment identifier field" << endl;
    cerr << "-Xplor            use Xplor conventions for naming polar hydrogens" << endl;
    cerr << "-OLDpdb 	      use the pre-remediation names for hydrogens" << endl; 
-   cerr << "-BBmodel	      expects a backbone only model and will build two hydrogens on every Calpha" <<endl; 
+   cerr << "-BBmodel	      expects a backbone only model and will build HA hydrogens on Calpha truncated residues" <<endl; 
    cerr << "-NOCon            drop conect records" << endl;
    cerr << "-LIMIT#           max seconds to spend in exhaustive search (default="<< ExhaustiveLimit <<")" << endl;
    cerr << "-NOTICKs          do not display the set orientation ticker during processing" << endl;
