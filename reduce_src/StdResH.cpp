@@ -343,12 +343,12 @@ HydrogenPlanTable::HydrogenPlanTable() {
     insertStdResH("ASP", "", args);
   }
   {
-    static const addPlan_args args[] = { //SER updated 070703 by JJH
+    static const addPlan_args args[] = { //SER updated 070703 by JJH reverse handedness of SER HB RMI 070731
       {3, "Hpol", " HG", " OG", " CB", " CA", "", 1.0, 109.5, 180.0, UNSUREDROPFLAG|ROTATEFLAG},
-      {2, "H", " HB3", " CB", " CA", " OG", "", 1.1,-126.5,   0.0, USENEWNAMES},
-      {2, "H", " HB2", " CB", " CA", " OG", "", 1.1, 126.5,   0.0, USENEWNAMES},
-      {2, "H", "2HB", " CB", " CA", " OG", "", 1.1,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
-      {2, "H", "1HB", " CB", " CA", " OG", "", 1.1, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
+      {2, "H", " HB3", " CB", " CA", " OG", "", 1.1, 126.5,   0.0, USENEWNAMES},
+      {2, "H", " HB2", " CB", " CA", " OG", "", 1.1,-126.5,   0.0, USENEWNAMES},
+      {2, "H", "2HB", " CB", " CA", " OG", "", 1.1, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
+      {2, "H", "1HB", " CB", " CA", " OG", "", 1.1,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("SER", "", args);
