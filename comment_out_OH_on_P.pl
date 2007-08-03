@@ -91,7 +91,7 @@ open DICT, "<$ARGV[0]";
 open OUT, ">$ARGV[0]_mod"; 
 
 while ($line=<DICT>) { 
-	if ($line !~ m/RESIDUE/) { 
+	if ($line !~ m/RESIDUE/ && $line !~ m/CONECT/) {
 		print OUT $line; 
 		next; 
 	}
