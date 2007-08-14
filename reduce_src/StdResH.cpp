@@ -1018,8 +1018,13 @@ HydrogenPlanTable::HydrogenPlanTable() {
       {3, "H", " HE3", " CE", "SED", " CG", "", 1.1, 109.5,  60.0, USENEWNAMES|ROTATEONDEMAND},
       {3, "H", " HE2", " CE", "SED", " CG", "", 1.1, 109.5, -60.0, USENEWNAMES|ROTATEONDEMAND},
       {3, "H", " HE1", " CE", "SED", " CG", "", 1.1, 109.5, 180.0, USENEWNAMES|ROTATEONDEMAND},
+      {3, "H", " HE3", " CE", "SE", " CG", "", 1.1, 109.5,  60.0, USENEWNAMES|ROTATEONDEMAND},
+      {3, "H", " HE2", " CE", "SE", " CG", "", 1.1, 109.5, -60.0, USENEWNAMES|ROTATEONDEMAND},
+      {3, "H", " HE1", " CE", "SE", " CG", "", 1.1, 109.5, 180.0, USENEWNAMES|ROTATEONDEMAND},
       {2, "H", " HG3", " CG", " CB", "SED", "", 1.1, 126.5,   0.0, USENEWNAMES},
       {2, "H", " HG2", " CG", " CB", "SED", "", 1.1,-126.5,   0.0, USENEWNAMES},
+      {2, "H", " HG3", " CG", " CB", "SE", "", 1.1, 126.5,   0.0, USENEWNAMES},
+      {2, "H", " HG2", " CG", " CB", "SE", "", 1.1,-126.5,   0.0, USENEWNAMES},
       {2, "H", " HB3", " CB", " CA", " CG", "", 1.1, 126.5,   0.0, USENEWNAMES},
       {2, "H", " HB2", " CB", " CA", " CG", "", 1.1,-126.5,   0.0, USENEWNAMES},
       {0,0,0,0,0,0,0,0,0,0,0}
