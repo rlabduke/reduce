@@ -32,6 +32,7 @@ using std::cerr;
 using std::strstr;
 using std::strcpy;
 using std::toupper;
+using std::sprintf;
 #endif
 
 #include <stdexcept>
