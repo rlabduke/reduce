@@ -34,6 +34,8 @@ using std::strcpy;
 using std::toupper;
 #endif
 
+#include <stdexcept>
+
 #include "ElementInfo.h"
 #include "StdResH.h"
 //#include "PDBrec.h"
@@ -145,7 +147,7 @@ bool fixAtomName(const char* atomname, const char* resname,int position) {
            case 'O': return strstr(HO_RESNAMES, resn) != NULL;
            case 'S': return strstr(HS_RESNAMES, resn) != NULL;
         } 
-
+   throw std::runtime_error("Internal Error: fixAtomName() " __FILE__);
 }
 
 ElementInfo::ElementInfoRep::ElementInfoRep(int atno,
