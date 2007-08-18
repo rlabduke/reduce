@@ -24,9 +24,9 @@
 #endif
 
 static const char *versionString =
-     "reduce: version 3.10 8/14/2007, Copyright 1997-2007, J. Michael Word";
+     "reduce: version 3.10 8/18/2007, Copyright 1997-2007, J. Michael Word";
 
-static const char *shortVersion    = "reduce.3.10.070814";
+static const char *shortVersion    = "reduce.3.10.070818";
 static const char *referenceString =
                        "Word, et. al. (1999) J. Mol. Biol. 285, 1735-1747.";
 static const char *electronicReference = "http://kinemage.biochem.duke.edu";
@@ -878,10 +878,12 @@ void reduceChanges(bool showAll) { /*changes*/
    cerr  << "                       strings and changed the year to the four digit year in the versionString." << endl; 
    cerr  << "8/01/07 - rmi          Added the -Version and -Changes flags. The -Changes flag uses a new function" << endl; 
    cerr  << "                       reduceChanges and follows the format of reduceHelp" << endl; 
-   cerr  << "                        Also commented out non-RNA non-DNA 'nucleic acids' from StdResH.cpp to fix" << endl;
-   cerr  << "                        doubling of backbone hydrogens." << endl;
-   cerr  << "8/14/07 - rmi 	    Fixed bug in StdResH.cpp to add hydrogens on MSE. The change was to add SE" << endl;
-   cerr  << "			     as well as SED as the name for the selenium atom" <<endl; 
+   cerr  << "                       Also commented out non-RNA non-DNA 'nucleic acids' from StdResH.cpp to fix" << endl;
+   cerr  << "                       doubling of backbone hydrogens." << endl;
+   cerr  << "8/14/07 - rmi          Fixed bug in StdResH.cpp to add hydrogens on MSE. The change was to add SE" << endl;
+   cerr  << "                       as well as SED as the name for the selenium atom" <<endl; 
+   cerr  << "8/18/07 - rwgk         Patched Elementinfo.cpp for compiler problems: (a)Visual C++ warning and (b)Tru64 error" << endl;
+   cerr  << "svn rev 67, 68         (a)threw runtime error on fixAtomName() (b)added 'using std::sprintf'" << endl;
    cerr  << endl;
    exit(1);
 }
