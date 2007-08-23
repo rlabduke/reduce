@@ -32,10 +32,14 @@ using std::cerr;
 using std::strstr;
 using std::strcpy;
 using std::toupper;
+using std::sprintf;
 #endif
+
+#include <stdexcept>
 
 #include "ElementInfo.h"
 #include "StdResH.h"
+//#include "PDBrec.h"
 
 const StandardElementTable * ElementInfo::TheStdElemTbl = NULL;
 
@@ -121,6 +125,30 @@ bool fixupAmbigAtomName(char* atomname, const char* resname, char* segID) {
       }
    }
    return rc;
+}
+
+bool fixAtomName(const char* atomname, const char* resname,int position) {
+   char resn[6];
+   ::sprintf(resn, ":%-3.3s:", resname);
+   char buf[5] = "    ";
+   int i;
+   for (i = 0; i < 4; i++) { // uppercase the input
+      if (atomname[i] == '\0') { break; }
+#ifdef CHARFUNCMACROS
+      buf[i] = toupper(atomname[i]);
+#else
+      buf[i] = ::toupper(atomname[i]);
+#endif
+   }
+   buf[i] = '\0';
+        switch(buf[position]) {
+           case 'E': return strstr(HE_RESNAMES, resn) != NULL;
+           case 'F': return strstr(HF_RESNAMES, resn) != NULL; 
+           case 'G': return strstr(HG_RESNAMES, resn) != NULL;
+           case 'O': return strstr(HO_RESNAMES, resn) != NULL;
+           case 'S': return strstr(HS_RESNAMES, resn) != NULL;
+        } 
+   throw std::runtime_error("Internal Error: fixAtomName() " __FILE__);
 }
 
 ElementInfo::ElementInfoRep::ElementInfoRep(int atno,
@@ -315,7 +343,7 @@ bool StandardElementTable::insert(int atno,
    return TRUE;
 }
 
-ElementInfo* StandardElementTable::lookupPDBatom(const char* name) const {
+ElementInfo* StandardElementTable::lookupPDBatom(const char* name, const char* resname) const {
    const char *elementName = NULL;
    bool emitWarning = FALSE;
    char buf[5] = "    ";
@@ -346,6 +374,14 @@ ElementInfo* StandardElementTable::lookupPDBatom(const char* name) const {
       case 'D': elementName = "H"; break;
       case 'F': elementName = "F"; break;
       case 'H': elementName = "H"; break;
+	switch(buf[2]) {
+     	case 'E': elementName = fixAtomName(name,resname,2) ? "He" : "H"; break;
+     	case 'F': elementName = fixAtomName(name,resname,2) ? "Hf" : "H"; break;
+	case 'G': elementName = fixAtomName(name,resname,2) ? "Hg" : "H"; break;
+     	case 'O': elementName = fixAtomName(name,resname,2) ? "Ho" : "H"; break;
+     	case 'S': elementName = fixAtomName(name,resname,2) ? "Hs" : "H"; break;
+	default :elementName = "H"; break; 
+	} break; 
       case 'I': elementName = "I"; break;
       case 'K': elementName = "K"; break;
       case 'N': elementName = "N"; break;
@@ -443,11 +479,16 @@ ElementInfo* StandardElementTable::lookupPDBatom(const char* name) const {
       } break;
    case 'H':
       switch(buf[1]) {
-      case 'E': elementName = "He"; emitWarning = TRUE;break;
-      case 'F': elementName = "Hf"; emitWarning = TRUE;break;
-      case 'G': elementName = "Hg"; emitWarning = TRUE;break;//xplor Hgamma?
-      case 'O': elementName = "Ho"; emitWarning = TRUE;break;
-      default:  elementName = "H";  emitWarning = TRUE;break;
+      case 'E': elementName = fixAtomName(name,resname,1) ? "He" : "H"; break;
+      case 'F': elementName = fixAtomName(name,resname,1) ? "Hf" : "H"; break;
+      case 'G': elementName = fixAtomName(name,resname,1) ? "Hg" : "H"; break;
+      case 'O': elementName = fixAtomName(name,resname,1) ? "Ho" : "H"; break;
+      case 'S': elementName = fixAtomName(name,resname,1) ? "Hs" : "H"; break;
+//      case 'E': elementName = "He"; emitWarning = TRUE;break;
+//      case 'F': elementName = "Hf"; emitWarning = TRUE;break;
+//      case 'G': elementName = "Hg"; emitWarning = TRUE;break;//xplor Hgamma?
+//      case 'O': elementName = "Ho"; emitWarning = TRUE;break;
+      default:  elementName = "H"; emitWarning = TRUE;break;
       } break;
    case 'I':
       switch(buf[1]) {
@@ -590,11 +631,11 @@ ElementInfo* StandardElementTable::lookupPDBatom(const char* name) const {
    ElementInfo* item = _index.find(elementName)->second;
 
    if (item && emitWarning) {
-      cerr << "WARNING: atom " << name << " will be treated as "
+      cerr << "WARNING: atom " << name << " from " << resname << " will be treated as "
 		  << item->fullName() << endl;
    }
    if (!item) {
-      cerr << "WARNING: atom " << name << " not recognized or unknown"
+      cerr << "WARNING: atom " << name << " from " << resname << " not recognized or unknown"
            << endl;
    }
 

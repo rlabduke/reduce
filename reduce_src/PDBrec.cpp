@@ -91,6 +91,36 @@ bool PDBrec::isWater() const {
    return strstr(WATER_RESNAMES, fmtbuf) != NULL;
 }
 
+/*bool PDBrec::isHe() const {
+   char resn[6];
+   ::sprintf(resn, ":%-3.3s:", resname());
+   return strstr(HE_RESNAMES, resn) != NULL;
+}
+
+bool PDBrec::isHf() const {
+   char resn[6];
+   ::sprintf(resn, ":%-3.3s:", resname());
+   return strstr(HF_RESNAMES, resn) != NULL;
+}
+
+bool PDBrec::isHg() const {
+   char resn[6];
+   ::sprintf(resn, ":%-3.3s:", resname());
+   return strstr(HG_RESNAMES, resn) != NULL;
+}
+
+bool PDBrec::isHo() const {
+   char resn[6];
+   ::sprintf(resn, ":%-3.3s:", resname());
+   return strstr(HO_RESNAMES, resn) != NULL;
+}
+
+bool PDBrec::isHs() const {
+   char resn[6];
+   ::sprintf(resn, ":%-3.3s:", resname());
+   return strstr(HS_RESNAMES, resn) != NULL;
+}*/
+
 #define SEGMAPBUFFSZ 500
 
 int PDBrec::InstallMapOfSEGIDstoChains(const std::string map) {

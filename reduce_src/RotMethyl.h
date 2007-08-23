@@ -46,7 +46,7 @@ public:
    virtual bool canRotate() const { return TRUE; }
    virtual int flipState() const { return 0; }
    virtual bool markFlipAtoms() { return FALSE; }
-   virtual void finalize(int nBondCutoff, bool useXplorNames,
+   virtual void finalize(int nBondCutoff, bool useXplorNames, bool useOldNames, bool bbModel, 
                          AtomPositions &xyz, DotSphManager& dotBucket);
    virtual int makebumpers(std::multimap<LocBlk, BumperPoint*>& bbins,
                            int n, float& maxVDWrad);

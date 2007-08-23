@@ -39,7 +39,7 @@ using std::fseek;
 // -----------------------------------------
 class ResConn {
 public:
-	ResConn(int sz_est) {}
+	ResConn(const char* resname, int sz_est) {}
 	virtual ~ResConn() {
 	   for (std::map<std::string, AtomConn*>::const_iterator i = _atomConn.begin(); i != _atomConn.end(); ++i)
 		   delete i->second;
@@ -56,15 +56,18 @@ public:
 	   else
 		   return NULL;
    }
-   atomPlacementPlan* planHplacement(const std::string &atomname) const;
+   atomPlacementPlan* planHplacement(const std::string &atomname,const char* resname) const;
 
    // Be careful, std::list must be copied.
-   std::list<atomPlacementPlan*> genHplans();
+   std::list<atomPlacementPlan*> genHplans(const char* resname);
+
+   const char*  resname() const { return _resname;       }
 
 private:
    ResConn(const ResConn&);            // can't copy
    ResConn& operator=(const ResConn&); // can't assign
    std::map<std::string, AtomConn*> _atomConn;
+   const char*       _resname;      // name of this residue
 };
 
 // -----------------------------------------

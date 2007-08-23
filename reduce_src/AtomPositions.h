@@ -29,14 +29,14 @@
 
 class AtomPositions {
 public:
-   AtomPositions(int nblocks, bool onlyA, bool xplor, int nbCutoff,
+   AtomPositions(int nblocks, bool onlyA, bool xplor, bool old, bool bbmodel, int nbCutoff,
 		  float minRegHBcut, float minChargedHBcut,
 		  float badBumpGapCut,
 		  DotSphManager& dotBucket, float probeRadius,
 		  float pmag, float occCutoff,
 		  bool verbose, bool showOrientScore,
 		  bool cliqueTicks, std::ostream& os)
-      : _onlyA(onlyA), _useXplorNames(xplor),
+      : _onlyA(onlyA), _useXplorNames(xplor), _useOldNames(old), _bbModel(bbmodel), 
 	_nBondCutoff(nbCutoff),
 	_min_regular_hb_cutoff(minRegHBcut),
 	_min_charged_hb_cutoff(minChargedHBcut),
@@ -137,6 +137,8 @@ private:
 
    const bool                _onlyA;
    const bool                _useXplorNames;
+   const bool                _useOldNames;
+   const bool		     _bbModel; 
    const int                 _nBondCutoff;
    const float               _min_regular_hb_cutoff;
    const float               _min_charged_hb_cutoff;

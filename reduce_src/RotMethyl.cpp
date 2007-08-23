@@ -25,6 +25,9 @@
 #include <cmath>
 #include <cstring>
 #include <cstdlib>
+#include <iostream>
+using std::cerr; 
+using std::endl; 
 using std::strcpy;
 using std::exit;
 #endif
@@ -44,8 +47,8 @@ RotMethyl::RotMethyl(const Point3d& a, const Point3d& b,
    validateMemo();
 }
 
-void RotMethyl::finalize(int nBondCutoff, bool,
-						 AtomPositions &xyz, DotSphManager&) {
+void RotMethyl::finalize(int nBondCutoff, bool useXplorNames, bool useOldNames, bool bbModel, 
+						 AtomPositions &xyz, DotSphManager& dotBucket) {
 
 	if (isComplete()) {
 

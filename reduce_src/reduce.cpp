@@ -14,124 +14,9 @@
 // Copyright (C) 1999-2003 J. Michael Word
 // **************************************************************
 //
-// History: this new version of reduce has been completely re-written
-//          to include het groups and rotations
+//  reduceChanges now contains the CHANGELOG or history info
 //
-// 10/ 1/97 - jmw - changed rotation score to dot score, modified geometry,
-//                  of CH2 and mcNH angles to be compatible with ECEPP,
-//                  and added option to permit all methyls to rotate.
-// 10/22/97 - jmw - fixed bug in rotation code which did not separate
-//                  alternate conformations
-// 11/12/97 - jmw - support for flips of HIS and ASN/GLN residues,
-//                  orientable waters and Hbonds to aromatics
-//                  (includes some analysis of pairing of flips and rots)
-// 12/10/97 - jmw - fixed waters to have phantom H atoms,
-//                  better rotational searching, metal covalent radii
-//  2/ 7/98 - jmw - broke out motions and re-wrote search,
-//                  use only A conf, fix penalty
-//  2/18/98 - jmw - fixup ambiguous atom names, no creation of altB Hs,
-//                  MTO waters, added -BUILD and other flags,
-//                  better recognise S-S or C-O-C bonds, etc.
-//  3/ 1/98 - jmw - fix orientations
-//  3/25/98 - jmw - updated metal radii, added HET dict env var,
-//                  expanded fixed orientations, changed -OH default
-//  4/ 8/98 - jmw - fixed bug, occupancy of water phantomHs now > 0.0 !
-//  4/18/98 - jmw - bad bump check, short water h, new limit on HB, ...
-//  4/26/98 - jmw - new hires search strategy
-//  4/29/98 - jmw - fixed min rotation angle and penalty bugs
-//  5/13/98 - jmw - fixed another min rotation angle bug where the coarse score
-//                  is the best that can be obtained. Also updated output to
-//                  the header to document K/C/X/F categories.
-//  5/15/98 - jmw - fine tuned cases where group is fixed by metal or modification
-//  7/ 3/98 - jmw - fixed bug: ASN/GLN sc C=O carbon radii was 1.75, now 1.65
-//  8/ 7/98 - jmw - stop putting notes in the segID, elem & charge fields
-//                  because PDB use of these fields are now being expanded
-//                  by naming convention differences with XPLOR and XPLORs
-//                  use of SEGID rather than CHAINID
-//  8/12/98 - jmw - changed how we figure num of permutations
-//  8/14/98 - jmw - now search for het dictionary in current directory
-//  9/ 1/98 - jmw - worked on portability by cleaning up g++ warnings
-//  9/13/98 - jmw - figured out a work-around to g++ template and
-//                  static const class initializer problems
-//  1/ 7/99 - jmw - consolidate Linux and Mac changes with SGI src
-//  3/16/99 - jmw - extended atom name parsing for wierd HETs with col1 ABCDEFGs
-//  4/ 6/99 - jmw - added OW to list of names for oxygen in water
-//  7/ 7/99 - jmw - Improved portability (near->nearr, List <T>::, Makefiles),
-//                  made penalty 1.0, added reference, changed basic io hooks
-//  9/ 2/99 - jmw - Updated Makefile list and Utility.h for DEC alpha support
-// 10/ 5/99 - jmw - Updated a Makefiles and the main in reduce.C for sgi6.5 compiler
-//  8/ 4/00 - jmw - Added -segid flag to support segment identifiers
-// 10/30/00 - jmw - Modified Seq mergesort const/non const stuff
-//  4/19/01 - jmw - Added support for left justified A/T/U/C/G for nucleic acids
-//                  which fixed a rare but nasty bug in the water recognition
-//  5/ 7/01 - jmw - Stopped output with -quiet while fixing orientation
-//                  and finally dealt with string literal conversion messages
-//  5/31/01 - jmw - Pass signal of abandoned clique search in rc,
-//                  added new flag to allow mapping of segids to chains,
-//                  changed properties of Nterminal fragment nitrogens to acceptor
-// 10/ 4/01 - jmw - fiddled to get compiled on RH linux 7 (gcc 2.96)
-//  5/24/02 - jmw - added control over hbump
-//  1/23/03 - jmw -v2.16 - Changed global MinChargedHBgap: 0.4 => 0.8
-//                         Changed phosphorus properties to drop acceptor status
-//  3/06/03 - jmw -v2.17 - Cleaning declarations found by Leo and Andrew such as
-//                         adding compile flag -DOLD_CXX_DEFNS to select const longs
-//                         instead of std::_Ios_Fmtflags in AtomPositions.C
-//  3/31/03 - jmw -v2.18 - Fixed spelling mistake by renaming cuttoff to cutoff throughout.
-//                         Edited help for -H2OBcutoff# to suggest an integer value
-//                         Made -H2OOCCcutoff#.# parse a real (was integer)
-//  4/ 3/03 - jmw -v2.19 - Moved -Help to the end of the command line parsing.
-//  6/ 3/03 - jmw -v2.20 - updated to isoC++ style std includes: #include <cstring>,
-//                         changed String class to Stringclass class,
-//                         nice speedups from Jack Snoeyink
-//  6/ 4/03 - jmw -v2.21 - added out for OLD_STD_HDRS for sgi plus other sgi polishing
-// 11/ 7/03 - jmw -v2.22 - fixed bug with creating hydrogens at the end of a triple bond
-//                         and supressed the warnings about connecting nucleic acid bases
-//
-// 040509dcr reduce.C ln 455: NO renumber, 1459: NO RXR msg
-//
-// 041113dcr reduce.C reconstructed main to loop over any NMR models in the file
-//           a specific model can still be specified.
-//
-//changes
-//
-// 050314 dcr incorporated Mike's version of 030703, to wit:
-//
-//  6/15/06 - apl -v3.0  - incorporated decomposition of scoring function into interactions of
-//                         atom singles, atom pairs, atom tripples and all other
-//                         higher-order atom interactions.  incorporated
-//                         dynamic programming. incorporated changes from v2.21.mod_dcr
-//                         disabling hydrogen atom numbering and skipInfo. removing
-//                         PDBrecNAMEout as in v2.999. Disabling hydrogen bonds to his
-//                         aromatic carbon atoms.
-//  6/19/06 - apl -v3.01- decomposing the scoring function in terms of which dots should
-//                        be scored with which hyperedges.  Incorporating S3 reduction rules
-//                        into dynamic programming.  Incorporating code to handle 4-way overlap
-//                        (but not five way overlap) though I have not observed any 4-way
-//                        overlap using the new decomposition scheme (it would show up in the previous scheme).
-//  6/24/06 - apl -v3.02- incorporating the additions to v2.23 that deal with multiple NMR models
-//                        in a single file.  Altering output from dp to be less intrusive and a
-//                        little more informative.
-//                        Adding new reduction rule for vertices with exactly 1 state (i.e. no
-//                        real options) which speeds up dynamic programming for the second-round
-//                        of optimizations that calculate the optimal network states for sub-optimal
-//                        flip states.  GLN and ASN will have 1 state in these optimizations.
-// 7/03/06 - apl -      - Fixing USER MOD Set ordering in output PDB.  Fixing "flip" records in columns
-//                        82 to 85 for the atoms on flipped residues.  Fixing atom placement plan bug
-//                        in genHydrogens() that manifested itself as aberant behavior when presented
-//                        with several (3 or more) alternate conformations.
-// 7/09/06 - apl -      - Adding #include <cassert> for gcc3.3.4 builds
-// 7/11/06 - apl -      - Fixing "node with 0 states" bug.
-//10/19/06 - apl - v3.03- changing HIS carbons to regular carbons and not arromatic carbons
-//10/20/06 - apl -      - fixing bug in optimization code that failed to keep optimal network states
-//                        when a network was forced to incur a penalty.
-// 3/ 7/07 - apl -        Bug fix: do not add hydrogens to "N" on non-amino acids
-//                        fixes 3H bug on SAC in 1b0b.pdb
-// 3/ 7/07 - apl -        Bug fix: march ResBlk::_insertPtr backwards at the end of constructor 
-//                        even when _insertPtr has reached the end of the rlst.  This ensures all
-//                        residues are protonated, instead of all but the last one.  Fixes Loren's
-//                        bug in trying to protonate nicotine when it was by itself in a .pdb.
-// 3/ 7/07 - apl -        inline distanceSquared in toolclasses/Point3d.h for a 10% speedup.
-
+ 
 #if defined(_MSC_VER)
 #pragma warning(disable:4786) 
 #pragma warning(disable:4305) 
@@ -139,9 +24,9 @@
 #endif
 
 static const char *versionString =
-     "reduce: version 3.03 3/ 7/07, Copyright 1997-2006, J. Michael Word";
+     "reduce: version 3.10 8/18/2007, Copyright 1997-2007, J. Michael Word";
 
-static const char *shortVersion    = "reduce.3.03.070307";
+static const char *shortVersion    = "reduce.3.10.070818";
 static const char *referenceString =
                        "Word, et. al. (1999) J. Mol. Biol. 285, 1735-1747.";
 static const char *electronicReference = "http://kinemage.biochem.duke.edu";
@@ -194,6 +79,8 @@ bool RemoveHydrogens          = FALSE;
 bool BuildHisHydrogens        = FALSE;
 bool SaveOHetcHydrogens       = TRUE;
 bool UseXplorNames            = FALSE;
+bool UseOldNames	      = FALSE; 
+bool BackBoneModel	      = FALSE; 
 bool DemandRotAllMethyls      = FALSE;
 bool RotExistingOH            = FALSE;
 bool DemandRotNH3             = TRUE;
@@ -229,7 +116,8 @@ std::string OFile; // if file exists, given orientations forced
 bool UseSEGIDtoChainMap = FALSE; // if true, override some chain ids
 
 #ifndef HET_DICTIONARY
-#define HET_DICTIONARY "reduce_het_dict.txt"
+//#define HET_DICTIONARY "reduce_het_dict.txt"
+#define HET_DICTIONARY "reduce_wwPDB_het_dict.txt"
 #endif
 std::string DBfilename( HET_DICTIONARY );
 
@@ -257,6 +145,7 @@ char* parseCommandLine(int argc, char **argv);
 void processPDBfile(std::istream& ifs, char *pdbFile, std::ostream& ofs);
 void establishHetDictionaryFileName(void);
 void reduceHelp(bool showAll);
+void reduceChanges(bool showAll);
 std::istream& inputRecords(std::istream& is, std::list<PDBrec*>& records);
 std::ostream& outputRecords(std::ostream& os, const std::list<PDBrec*>& records);
 void dropHydrogens(std::list<PDBrec*>& records);
@@ -443,9 +332,9 @@ void processPDBfile(std::istream& ifs, char *pdbFile, std::ostream& ofs) {
 
       DotSphManager dotBucket(VdwDotDensity);
 
-      AtomPositions xyz(2000, DoOnlyAltA, UseXplorNames, NBondCutoff,
-                        MinRegHBgap, MinChargedHBgap, BadBumpGapCut,
-			dotBucket, ProbeRadius,
+      AtomPositions xyz(2000, DoOnlyAltA, UseXplorNames, UseOldNames, BackBoneModel, 
+			NBondCutoff, MinRegHBgap, MinChargedHBgap, 
+			BadBumpGapCut, dotBucket, ProbeRadius,
 			PenaltyMagnitude, OccupancyCutoff,
 			Verbose, ShowOrientScore, ShowCliqueTicks, cerr);
 
@@ -559,7 +448,7 @@ void establishHetDictionaryFileName(void) {
 	const int rc = stat(localfile.c_str(), &filestatbuf);
 #endif
 	if (rc == 0) {
-		DBfilename = localfile;
+  		DBfilename = localfile;
 	}
 	else {
 		const char *hetdbAlias = getenv("REDUCE_HET_DICT");
@@ -604,6 +493,13 @@ char* parseCommandLine(int argc, char **argv) {
 	    RotExistingOH      = TRUE;
 	    DemandFlipAllHNQs  = TRUE;
 	 }
+	 else if((n = compArgStr(p+1, "Version", 1))){
+	    cerr << shortVersion << endl; 
+	    exit(1); 
+	 }
+	 else if((n = compArgStr(p+1, "Changes", 1))) {
+     	     reduceChanges(TRUE);
+         }
 	 else if((n = compArgStr(p+1, "Quiet", 1))){
 	    Verbose = FALSE;
 	 }
@@ -631,9 +527,24 @@ char* parseCommandLine(int argc, char **argv) {
 	 else if((n = compArgStr(p+1, "NOOH", 4))){
 	    SaveOHetcHydrogens = FALSE;
 	 }
-	 else if((n = compArgStr(p+1, "Xplor", 1))){
+	 else if((n = compArgStr(p+1, "Xplor", 1)) && !UseOldNames){
 	    UseXplorNames = TRUE;
 	 }
+         else if((n = compArgStr(p+1, "Xplor", 1)) && UseOldNames){
+            cerr << "Cannot use both -Xplor and -OLDpdb flags" << endl;
+            exit(1);         
+	 }
+	 else if((n = compArgStr(p+1, "OLDpdb", 3)) && ! UseXplorNames){
+	    UseOldNames = TRUE; 
+	    DBfilename = "reduce_het_dict.txt";
+	 }
+         else if((n = compArgStr(p+1, "OLDpdb", 3)) && UseXplorNames){
+	    cerr << "Cannot use both -Xplor and -OLDpdb flags" << endl; 
+	    exit(1);
+	 }
+	 else if((n = compArgStr(p+1, "BBmodel", 2))){
+		BackBoneModel = TRUE; 
+	 } 
 	 else if((n = compArgStr(p+1, "Trim", 1))){
 	    RemoveHydrogens = TRUE;
 	 }
@@ -763,11 +674,12 @@ char* parseCommandLine(int argc, char **argv) {
 
 void reduceHelp(bool showAll) { /*help*/
    cerr << versionString << endl;
+   cerr << shortVersion << endl; 
    cerr << "arguments: [-flags] filename or -" << endl;
-   cerr << "040509 reduce.C ln 455: NO renumber, 1459: NO RXR msg" << endl;
-   cerr << "041113 rework main to do first and loop over other NMR models if model# not specified."<< endl;
-   cerr << "Adds hydrogens to a PDB format file and writes to standard output." << endl;
-   cerr << "(note: By default, HIS sidechain NH protons are not added. See -BUILD)" << endl;
+//   cerr << "040509 reduce.C ln 455: NO renumber, 1459: NO RXR msg" << endl;
+//   cerr << "041113 rework main to do first and loop over other NMR models if model# not specified."<< endl;
+//   cerr << "Adds hydrogens to a PDB format file and writes to standard output." << endl;
+//   cerr << "(note: By default, HIS sidechain NH protons are not added. See -BUILD)" << endl;
    cerr << endl;
    cerr << "Flags:" << endl;
    cerr << "-Trim             remove (rather than add) hydrogens" << endl;
@@ -813,6 +725,8 @@ void reduceHelp(bool showAll) { /*help*/
    cerr << "-NONMETALBump#.#  'bumps' nonmetal at radius plus this (default="<<NonMetalBumpBias<<")" << endl;
    cerr << "-SEGIDmap \"seg,c...\"  assign chainID based on segment identifier field" << endl;
    cerr << "-Xplor            use Xplor conventions for naming polar hydrogens" << endl;
+   cerr << "-OLDpdb 	      use the pre-remediation names for hydrogens" << endl; 
+   cerr << "-BBmodel	      expects a backbone only model and will build HA hydrogens on Calpha truncated residues" <<endl; 
    cerr << "-NOCon            drop conect records" << endl;
    cerr << "-LIMIT#           max seconds to spend in exhaustive search (default="<< ExhaustiveLimit <<")" << endl;
    cerr << "-NOTICKs          do not display the set orientation ticker during processing" << endl;
@@ -825,9 +739,155 @@ void reduceHelp(bool showAll) { /*help*/
    cerr << endl;
    cerr << "-Quiet            do not write extra info to the console" << endl;
    cerr << "-REFerence        display citation reference" << endl;
+   cerr << "-Version          display the version of reduce" <<endl; 
+   cerr << "-Changes          display the change log" <<endl;
    cerr << "-Help             the more extensive description of command line arguments" << endl;
    exit(1);
 }
+
+void reduceChanges(bool showAll) { /*changes*/
+   cerr  <<  "History: this new version of reduce has been completely re-written" << endl; 
+   cerr  <<  "  to include het groups and rotations" << endl ; 
+   cerr  << endl; 
+   cerr  << "10/ 1/97 - jmw - changed rotation score to dot score, modified geometry," << endl; 
+   cerr  << "                 of CH2 and mcNH angles to be compatible with ECEPP," << endl; 
+   cerr  << "                 and added option to permit all methyls to rotate." << endl; 
+   cerr  << "10/22/97 - jmw - fixed bug in rotation code which did not separate" << endl; 
+   cerr  << "                 alternate conformations" << endl; 
+   cerr  << "11/12/97 - jmw - support for flips of HIS and ASN/GLN residues," << endl; 
+   cerr  << "                 orientable waters and Hbonds to aromatics" << endl; 
+   cerr  << "                 (includes some analysis of pairing of flips and rots)" << endl; 
+   cerr  << "12/10/97 - jmw - fixed waters to have phantom H atoms," << endl; 
+   cerr  << "                 better rotational searching, metal covalent radii" << endl; 
+   cerr  << " 2/ 7/98 - jmw - broke out motions and re-wrote search," << endl; 
+   cerr  << "                 use only A conf, fix penalty" << endl; 
+   cerr  << " 2/18/98 - jmw - fixup ambiguous atom names, no creation of altB Hs," << endl; 
+   cerr  << "                 MTO waters, added -BUILD and other flags," << endl; 
+   cerr  << "                 better recognise S-S or C-O-C bonds, etc." << endl; 
+   cerr  << " 3/ 1/98 - jmw - fix orientations" << endl; 
+   cerr  << " 3/25/98 - jmw - updated metal radii, added HET dict env var," << endl; 
+   cerr  << "                 expanded fixed orientations, changed -OH default" << endl; 
+   cerr  << " 4/ 8/98 - jmw - fixed bug, occupancy of water phantomHs now > 0.0 !" << endl; 
+   cerr  << " 4/18/98 - jmw - bad bump check, short water h, new limit on HB, ..." << endl; 
+   cerr  << " 4/26/98 - jmw - new hires search strategy" << endl; 
+   cerr  << " 4/29/98 - jmw - fixed min rotation angle and penalty bugs" << endl; 
+   cerr  << " 5/13/98 - jmw - fixed another min rotation angle bug where the coarse score" << endl; 
+   cerr  << "                 is the best that can be obtained. Also updated output to" << endl; 
+   cerr  << "                 the header to document K/C/X/F categories." << endl; 
+   cerr  << " 5/15/98 - jmw - fine tuned cases where group is fixed by metal or modification" << endl; 
+   cerr  << " 7/ 3/98 - jmw - fixed bug: ASN/GLN sc C=O carbon radii was 1.75, now 1.65" << endl; 
+   cerr  << " 8/ 7/98 - jmw - stop putting notes in the segID, elem & charge fields" << endl; 
+   cerr  << "                 because PDB use of these fields are now being expanded" << endl; 
+   cerr  << "                 by naming convention differences with XPLOR and XPLORs" << endl; 
+   cerr  << "                 use of SEGID rather than CHAINID" << endl; 
+   cerr  << " 8/12/98 - jmw - changed how we figure num of permutations" << endl; 
+   cerr  << " 8/14/98 - jmw - now search for het dictionary in current directory" << endl; 
+   cerr  << " 9/ 1/98 - jmw - worked on portability by cleaning up g++ warnings" << endl; 
+   cerr  << " 9/13/98 - jmw - figured out a work-around to g++ template and" << endl; 
+   cerr  << "                 static const class initializer problems" << endl; 
+   cerr  << " 1/ 7/99 - jmw - consolidate Linux and Mac changes with SGI src" << endl; 
+   cerr  << " 3/16/99 - jmw - extended atom name parsing for wierd HETs with col1 ABCDEFGs" << endl; 
+   cerr  << " 4/ 6/99 - jmw - added OW to list of names for oxygen in water" << endl; 
+   cerr  << " 7/ 7/99 - jmw - Improved portability (near->nearr, List <T>::, Makefiles)," << endl; 
+   cerr  << "                 made penalty 1.0, added reference, changed basic io hooks" << endl; 
+   cerr  << " 9/ 2/99 - jmw - Updated Makefile list and Utility.h for DEC alpha support" << endl; 
+   cerr  << "10/ 5/99 - jmw - Updated a Makefiles and the main in reduce.C for sgi6.5 compiler" << endl; 
+   cerr  << " 8/ 4/00 - jmw - Added -segid flag to support segment identifiers" << endl; 
+   cerr  << "10/30/00 - jmw - Modified Seq mergesort const/non const stuff" << endl; 
+   cerr  << " 4/19/01 - jmw - Added support for left justified A/T/U/C/G for nucleic acids" << endl; 
+   cerr  << "                 which fixed a rare but nasty bug in the water recognition" << endl; 
+   cerr  << " 5/ 7/01 - jmw - Stopped output with -quiet while fixing orientation" << endl; 
+   cerr  << "                 and finally dealt with string literal conversion messages" << endl; 
+   cerr  << " 5/31/01 - jmw - Pass signal of abandoned clique search in rc," << endl; 
+   cerr  << "                 added new flag to allow mapping of segids to chains," << endl; 
+   cerr  << "                 changed properties of Nterminal fragment nitrogens to acceptor" << endl; 
+   cerr  << "10/ 4/01 - jmw - fiddled to get compiled on RH linux 7 (gcc 2.96)" << endl; 
+   cerr  << " 5/24/02 - jmw - added control over hbump" << endl; 
+   cerr  << " 1/23/03 - jmw -v2.16 - Changed global MinChargedHBgap: 0.4 => 0.8" << endl; 
+   cerr  << "                        Changed phosphorus properties to drop acceptor status" << endl; 
+   cerr  << " 3/06/03 - jmw -v2.17 - Cleaning declarations found by Leo and Andrew such as" << endl; 
+   cerr  << "                        adding compile flag -DOLD_CXX_DEFNS to select const longs" << endl; 
+   cerr  << "                        instead of std::_Ios_Fmtflags in AtomPositions.C" << endl; 
+   cerr  << " 3/31/03 - jmw -v2.18 - Fixed spelling mistake by renaming cuttoff to cutoff throughout." << endl; 
+   cerr  << "                        Edited help for -H2OBcutoff# to suggest an integer value" << endl; 
+   cerr  << "                        Made -H2OOCCcutoff#.# parse a real (was integer)" << endl; 
+   cerr  << " 4/ 3/03 - jmw -v2.19 - Moved -Help to the end of the command line parsing." << endl; 
+   cerr  << " 6/ 3/03 - jmw -v2.20 - updated to isoC++ style std includes: #include <cstring>," << endl; 
+   cerr  << "                        changed String class to Stringclass class," << endl; 
+   cerr  << "                        nice speedups from Jack Snoeyink" << endl; 
+   cerr  << " 6/ 4/03 - jmw -v2.21 - added out for OLD_STD_HDRS for sgi plus other sgi polishing" << endl; 
+   cerr  << "11/ 7/03 - jmw -v2.22 - fixed bug with creating hydrogens at the end of a triple bond" << endl; 
+   cerr  << "                        and supressed the warnings about connecting nucleic acid bases" << endl; 
+   cerr  << endl; 
+   cerr  << "040509dcr reduce.C ln 455: NO renumber, 1459: NO RXR msg" << endl; 
+   cerr  << ""<< endl; 
+   cerr  << "041113dcr reduce.C reconstructed main to loop over any NMR models in the file" << endl; 
+   cerr  << "          a specific model can still be specified." << endl; 
+   cerr  << endl; 
+   cerr  << "changes" << endl; 
+   cerr  << endl; 
+   cerr  << "050314 dcr incorporated Mike's version of 030703, to wit:" << endl; 
+   cerr  << endl; 
+   cerr  << " 6/15/06 - apl -v3.0  - incorporated decomposition of scoring function into interactions of" << endl; 
+   cerr  << "                        atom singles, atom pairs, atom tripples and all other" << endl; 
+   cerr  << "                        higher-order atom interactions.  incorporated" << endl; 
+   cerr  << "                        dynamic programming. incorporated changes from v2.21.mod_dcr" << endl; 
+   cerr  << "                        disabling hydrogen atom numbering and skipInfo. removing" << endl; 
+   cerr  << "                        PDBrecNAMEout as in v2.999. Disabling hydrogen bonds to his" << endl; 
+   cerr  << "                        aromatic carbon atoms." << endl; 
+   cerr  << " 6/19/06 - apl -v3.01- decomposing the scoring function in terms of which dots should" << endl; 
+   cerr  << "                       be scored with which hyperedges.  Incorporating S3 reduction rules" << endl; 
+   cerr  << "                       into dynamic programming.  Incorporating code to handle 4-way overlap" << endl; 
+   cerr  << "                       (but not five way overlap) though I have not observed any 4-way" << endl; 
+   cerr  << "                       overlap using the new decomposition scheme (it would show up in the previous scheme)." << endl; 
+   cerr  << " 6/24/06 - apl -v3.02- incorporating the additions to v2.23 that deal with multiple NMR models" << endl; 
+   cerr  << "                       in a single file.  Altering output from dp to be less intrusive and a" << endl; 
+   cerr  << "                       little more informative." << endl; 
+   cerr  << "                       Adding new reduction rule for vertices with exactly 1 state (i.e. no" << endl; 
+   cerr  << "                       real options) which speeds up dynamic programming for the second-round" << endl; 
+   cerr  << "                       of optimizations that calculate the optimal network states for sub-optimal" << endl; 
+   cerr  << "                       flip states.  GLN and ASN will have 1 state in these optimizations." << endl; 
+   cerr  << "7/03/06 - apl -      - Fixing USER MOD Set ordering in output PDB.  Fixing 'flip' records in columns" << endl; 
+   cerr  << "                       82 to 85 for the atoms on flipped residues.  Fixing atom placement plan bug" << endl; 
+   cerr  << "                       in genHydrogens() that manifested itself as aberant behavior when presented" << endl; 
+   cerr  << "                       with several (3 or more) alternate conformations." << endl; 
+   cerr  << "7/09/06 - apl -      - Adding #include <cassert> for gcc3.3.4 builds" << endl; 
+   cerr  << "7/11/06 - apl -      - Fixing 'node with 0 states' bug." << endl; 
+   cerr  << "10/19/06 - apl - v3.03- changing HIS carbons to regular carbons and not arromatic carbons" << endl; 
+   cerr  << "10/20/06 - apl -      - fixing bug in optimization code that failed to keep optimal network states" << endl; 
+   cerr  << "                       when a network was forced to incur a penalty." << endl; 
+   cerr  << "3/ 7/07 - apl -        Bug fix: do not add hydrogens to 'N' on non-amino acids" << endl; 
+   cerr  << "                       fixes 3H bug on SAC in 1b0b.pdb" << endl; 
+   cerr  << "3/ 7/07 - apl -        Bug fix: march ResBlk::_insertPtr backwards at the end of constructor" << endl; 
+   cerr  << "                       even when _insertPtr has reached the end of the rlst.  This ensures all" << endl; 
+   cerr  << "                       residues are protonated, instead of all but the last one.  Fixes Loren's" << endl; 
+   cerr  << "                       bug in trying to protonate nicotine when it was by itself in a .pdb." << endl; 
+   cerr  << "3/ 7/07 - apl -        inline distanceSquared in toolclasses/Point3d.h for a 10% speedup." << endl; 
+   cerr  << endl; 
+   cerr  << "7/ 7/07 - jjh & rmi -  incoporated new hydrogen names in StdResH.cpp for remediated pdb files" << endl; 
+   cerr  << "               v3.10   followed the example of the -Xplor flag and added a -OLDpdb flag to allow" << endl; 
+   cerr  << "                       output of new (default) or old (pre-remediation) hydrogen names" << endl; 
+   cerr  << "7/13/07 - jjh & rmi -  added -BBmodel flag allows addition of hydrogens on Calpha of truncated" << endl; 
+   cerr  << "                       amino acids" << endl; 
+   cerr  << "7/16/07 - jjh & rmi -  added fixAtomName() to ElementInfo.cpp to check for Hg, Ho, and Hf atoms" << endl; 
+   cerr  << "                       the corresponding warnings are no longer output" << endl; 
+   cerr  << "7/31/07 - rmi -        Bug fix: changed the logic in selecting Xplor vs. PDBv2.3 vs. PDBv3.0 atom" << endl; 
+   cerr  << "                       names in reduce.cpp and flipmemo.cpp. Updated the Version and shortVersion" << endl; 
+   cerr  << "7/31/07 - rmi -        Bug fix: changed the logic in selecting Xplor vs. PDBv2.3 vs. PDBv3.0 atom" << endl; 
+   cerr  << "                       names in reduce.cpp and flipmemo.cpp. Updated the Version and shortVersion" << endl; 
+   cerr  << "                       strings and changed the year to the four digit year in the versionString." << endl; 
+   cerr  << "8/01/07 - rmi          Added the -Version and -Changes flags. The -Changes flag uses a new function" << endl; 
+   cerr  << "                       reduceChanges and follows the format of reduceHelp" << endl; 
+   cerr  << "                       Also commented out non-RNA non-DNA 'nucleic acids' from StdResH.cpp to fix" << endl;
+   cerr  << "                       doubling of backbone hydrogens." << endl;
+   cerr  << "8/14/07 - rmi          Fixed bug in StdResH.cpp to add hydrogens on MSE. The change was to add SE" << endl;
+   cerr  << "                       as well as SED as the name for the selenium atom" <<endl; 
+   cerr  << "8/18/07 - rwgk         Patched Elementinfo.cpp for compiler problems: (a)Visual C++ warning and (b)Tru64 error" << endl;
+   cerr  << "svn rev 67, 68         (a)threw runtime error on fixAtomName() (b)added 'using std::sprintf'" << endl;
+   cerr  << endl;
+   exit(1);
+}
+
 
 // output a list of PDB records
 std::ostream& outputRecords(std::ostream& os, const std::list<PDBrec*>& l) {
@@ -1236,7 +1296,7 @@ void analyzeRes(CTab& hetdatabase, ResBlk* pb, ResBlk* cb, ResBlk* nb,
 
 		ResConn *ct = hetdatabase.findTable(resname);
 		if (ct) {
-			std::list<atomPlacementPlan*> temp = ct->genHplans();
+			std::list<atomPlacementPlan*> temp = ct->genHplans(resname.c_str());
 			app.splice(app.end(), temp);
 		}
 		else {
@@ -1353,10 +1413,22 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 			if (pp.hasFeature(UNSUREDROPFLAG) && ! SaveOHetcHydrogens) {
 				return; // do not do OH, etc. where we can't place reliably
 			}
-			if ( (pp.hasFeature(NOTXPLORNAME) &&   UseXplorNames)
-				||   (pp.hasFeature(   XPLORNAME) && ! UseXplorNames) ) {
-				return; // keep our naming convntions straight
+			if ( (pp.hasFeature(NOTXPLORNAME) &&  (UseXplorNames || UseOldNames) )
+				||   (( pp.hasFeature(   XPLORNAME) && ! pp.hasFeature(USEOLDNAMES)) && ! UseXplorNames) ) { 
+				return; // keep our naming conventions straight
 			}
+			if ( (pp.hasFeature(USENEWNAMES) &&   (UseOldNames || UseXplorNames) )
+                                ||   (( pp.hasFeature(USEOLDNAMES) && ! pp.hasFeature(   XPLORNAME)) && ! UseOldNames) 
+				||   (( pp.hasFeature(USEOLDNAMES) &&   pp.hasFeature(   XPLORNAME)) 
+				&&   (! UseOldNames && ! UseXplorNames)) ) {
+                                return; // keep our naming conventions straight
+                        }
+                        if ( (pp.hasFeature(BACKBONEMODEL) &&   ! BackBoneModel) 
+                                ||   (pp.hasFeature(   NOTBBMODEL) && ! BackBoneModel) ) {
+                                return; // keep our naming conventions straight
+                        }
+
+
 
 			int numConnAtoms = pp.num_conn();
 			int maxalt = 0;

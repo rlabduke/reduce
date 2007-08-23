@@ -57,7 +57,7 @@ RotDonor::~RotDonor()
 }
 
 
-void RotDonor::finalize(int nBondCutoff, bool useXplorNames,
+void RotDonor::finalize(int nBondCutoff, bool useXplorNames, bool useOldNames, bool bbModel, 
                         AtomPositions &xyz, DotSphManager& dotBucket) {
 	int i = 0;
 
@@ -96,7 +96,7 @@ void RotDonor::finalize(int nBondCutoff, bool useXplorNames,
 		for(std::list<PDBrec*>::const_iterator nearby = nearby_list.begin(); nearby != nearby_list.end(); ++nearby) {
 			rec = *nearby;
 			if (rec->hasProp(ACCEPTOR_ATOM)
-				|| FlipMemo::isHBDonorOrAcceptorFlipped(*rec, useXplorNames)) {
+				|| FlipMemo::isHBDonorOrAcceptorFlipped(*rec, useXplorNames, useOldNames, bbModel)) {
 
 				double HBoverlap = distance2(_heavyAtom.loc(), rec->loc())
 					- ( elemHpol.explRad() + rec->vdwRad()
