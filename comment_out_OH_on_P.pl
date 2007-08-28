@@ -65,7 +65,8 @@ if ($resn eq "ADP") { print $contains_phosphorus.$contains_oxygen."\n"; }
 					if ($second eq "P" && !( $start eq "NP" )) {
 						$start=substr($bonded_atom_2, 0,2);
 	                                        $second=substr($bonded_atom_2,1,1);
-						if ($second eq "H" && !( $start eq "RH" || $start eq "TH" )) {
+						if (($start eq " H") ||
+                                                   ($first eq "H" and resn !~ m/ HG|HG2|HGB|HGC|HGI|MAC|MBO|MMC|PHG|PMB|AAS|AMS|BE7|CMH|EMC|EMT|PHF|HF3|HF5| HO|HO3/)) {
 							print OUT $resn." ".$bonded_atom_2."\n"; 
 						}
 					}
