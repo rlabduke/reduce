@@ -24,9 +24,9 @@
 #endif
 
 static const char *versionString =
-     "reduce: version 3.10 8/18/2007, Copyright 1997-2007, J. Michael Word";
+     "reduce: version 3.10 8/29/2007, Copyright 1997-2007, J. Michael Word";
 
-static const char *shortVersion    = "reduce.3.10.070818";
+static const char *shortVersion    = "reduce.3.10.070829";
 static const char *referenceString =
                        "Word, et. al. (1999) J. Mol. Biol. 285, 1735-1747.";
 static const char *electronicReference = "http://kinemage.biochem.duke.edu";
@@ -884,6 +884,7 @@ void reduceChanges(bool showAll) { /*changes*/
    cerr  << "                       as well as SED as the name for the selenium atom" <<endl; 
    cerr  << "8/18/07 - rwgk         Patched Elementinfo.cpp for compiler problems: (a)Visual C++ warning and (b)Tru64 error" << endl;
    cerr  << "svn rev 67, 68         (a)threw runtime error on fixAtomName() (b)added 'using std::sprintf'" << endl;
+   cerr  << "8/29/07 - rmi 	    Modified the reduce het dict so that hydrogens are not built on carboxylates" << endl; 
    cerr  << endl;
    exit(1);
 }
