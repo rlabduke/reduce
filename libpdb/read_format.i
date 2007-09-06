@@ -18,9 +18,10 @@
  *
  */
 /* extra field included in ANISOU, ATOM and related records */
+/* changed %4s for resname to %3s%1c to force three character residue names */
 /* UNKNOWN */	"%-80.80s",
-/* ANISOU */	"%6 %5d %4s%c%4s%c%4d%c %7d%7d%7d%7d%7d%7d%2 %4s%2s%2s %10s", /* SIGUIJ */   /**non-standard**/
-/* ATOM */	"%6 %5d %4s%c%4s%c%4d%c%3 %8f%8f%8f%6R%6f%6 %4s%2s%2s %10s", /* HETATM, SIGATM */   /**non-standard**/
+/* ANISOU */	"%6 %5d %4s%c%3s%1c%c%4d%c %7d%7d%7d%7d%7d%7d%2 %4s%2s%2s %10s", /* SIGUIJ */   /**non-standard**/
+/* ATOM */      "%6 %5d %4s%c%3s%1c%c%4d%c%3 %8f%8f%8f%6R%6f%6 %4s%2s%2s %10s", /* HETATM, SIGATM */   /**non-standard**/
 /* AUTHOR */	"%9 %c%60s%10s",		/* COMPND, EXPDTA, JRNL, SOURCE */
 /* COMPND */	"%9 %c%60s%10s",			/* AUTHOR */
 /* CONECT */	"%6 %5d%5d%5d%5d%5d%5d%5d%5d%5d%5d%5d%9 %10s",
@@ -31,7 +32,7 @@
 /* HEADER */	"%10 %40s%9s  %c%4s%4 %10s",
 /* HELIX */	"%7 %3d %3s %4s%c %4d%c %4s%c %4d%c%2d%30s%10s",
 /* HET */	"%7 %4s %c%4d%c  %5d%5 %40s%10s",
-/* HETATM */	"%6 %5d %4s%c%4s%c%4d%c%3 %8f%8f%8f%6f%6f%6 %4s%2s%2s %10s",	/* ATOM */   /**non-standard**/
+/* HETATM */	"%6 %5d %4s%c%3s%1c%c%4d%c%3 %8f%8f%8f%6f%6f%6 %4s%2s%2s %10s",	/* ATOM */   /**non-standard**/
 /* JRNL */	"%9 %c%60s%10s",			/* AUTHOR */
 /* MASTER */	"%10 %5d%5d%5d%5d%5d%5d%5d%5d%5d%5d%5d%5d%10s",
 /* MTRIX */	"%5 %d %3d%10f%10f%10f%5 %10f   %2d%10 %10s",
@@ -42,8 +43,8 @@
 /* SCALE */	"%5 %d%4 %10f%10f%10f%5 %10f%15 %10s",
 /* SEQRES */	"%6 %4d %c %4d  %4s%4s%4s%4s%4s%4s%4s%4s%4s%4s%4s%4s%4s%10s",
 /* SHEET */	"%6 %4d %3s%2d %4s%c%4d%c %4s%c%4d%c%2d %4s%4s%c%4d%c %4s%4s%c%4d%c%10s",
-/* SIGATM */	"%6 %5d %4s%c%4s%c%4d%c%3 %8f%8f%8f%6f%6f%6 %4s%2s%2s %10s",	/* ATOM */   /**non-standard**/
-/* SIGUIJ */	"%6 %5d %4s%c%4s%c%4d%c %7d%7d%7d%7d%7d%7d%2 %4s%2s%2s %10s", /* ANISOU */   /**non-standard**/
+/* SIGATM */	"%6 %5d %4s%c%3s%1c%c%4d%c%3 %8f%8f%8f%6f%6f%6 %4s%2s%2s %10s",	/* ATOM */   /**non-standard**/
+/* SIGUIJ */	"%6 %5d %4s%c%3s%1c%c%4d%c %7d%7d%7d%7d%7d%7d%2 %4s%2s%2s %10s", /* ANISOU */   /**non-standard**/
 /* SITE */	"%7 %3d %3s %2d %4s%c%4d%c %4s%c%4d%c %4s%c%4d%c %4s%c%4d%c%9 %10s",
 /* SOURCE */	"%9 %c%60s%10s",			/* AUTHOR */
 /* SPRSDE */	"%8 %2d %9s %4s%6 %4s %4s %4s %4s %4s %4s %4s %4s%10s",

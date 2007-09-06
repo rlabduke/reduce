@@ -61,6 +61,7 @@ PDB::PDB(const char *buf)
 {
 	initialize_everything();
 
+	const char 	*dummy; // added for 3 character resname
 	const char	*fmt;
 	Sheet		*sh;
 	Residue		*sha0, *sha1;
@@ -119,7 +120,7 @@ unknown:
 	case ANISOU:
 	case SIGUIJ:
 		if (0 > sscanf(buf, fmt, &anisou.serialNum, anisou.name,
-				&anisou.altLoc, anisou.residue.name,
+				&anisou.altLoc, anisou.residue.name, dummy, 
 				&anisou.residue.chainId,
 				&anisou.residue.seqNum,
 				&anisou.residue.insertCode,
@@ -134,14 +135,14 @@ unknown:
 	case HETATM:
 	case SIGATM:
 		if (0 > sscanf(buf, fmt, &atom.serialNum, atom.name,
-				&atom.altLoc, atom.residue.name,
+				&atom.altLoc, atom.residue.name, dummy, 
 				&atom.residue.chainId, &atom.residue.seqNum,
 				&atom.residue.insertCode, &atom.xyz[0],
 				&atom.xyz[1], &atom.xyz[2], &atom.occupancy,
 				&atom.tempFactor, atom.segID, atom.element, atom.charge,
 				atom.annotation)) // *annotaton* is non-standard
 			goto unknown;
-		break;
+		break; 
 
 	case AUTHOR:
 	case COMPND:

@@ -20,7 +20,7 @@
 "%s", /* UNKNOWN */
 /* extra field included in ANISOU, ATOM and related records */
 "ANISOU%5d %-4s%c%-4s%c%4d%c %7d%7d%7d%7d%7d%7d  %-4s%2s%-2s %-10s",	/* SIGUIJ */  /**non-standard**/
-"ATOM  %5d %-4s%c%-4s%c%4d%c   %8.3f%8.3f%8.3f%6.2f%6.2f      %-4s%2s%-2s %-10s", /* HETATM, SIGATM */  /**non-standard**/
+"ATOM  %5d %-4s%c%-3s %c%4d%c   %8.3f%8.3f%8.3f%6.2f%6.2f      %-4s%2s%-2s %-10s", /* HETATM, SIGATM */  /**non-standard**/
 "AUTHOR   %c%-60s%s",			/* COMPND, EXPDTA, JRNL, SOURCE */
 "COMPND   %c%-60s%s",					/* AUTHOR */
 "CONECT%5d%5D%5D%5D%5D%5D%5D%5D%5D%5D%5D         %s",
