@@ -87,7 +87,7 @@ HydrogenPlanTable::HydrogenPlanTable() {
 //--------------------------------------------------------------------------
   {
     static const addPlan_args args[] = {
-      {5, "Hpol", " H", " N", " CA", "- C", "", 1.0,   0.0, 0.48, BONDBUMPFLAG},
+      {5, "Hpol", " H", " N", " CA", " C", "", 1.0,   0.0, 0.48, BONDBUMPFLAG},
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("amide", "PRO", args); // *NON* N-terminal mc amide

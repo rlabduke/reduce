@@ -24,9 +24,9 @@
 #endif
 
 static const char *versionString =
-     "reduce: version 3.10 8/29/2007, Copyright 1997-2007, J. Michael Word";
+     "reduce: version 3.10 9/25/2007, Copyright 1997-2007, J. Michael Word";
 
-static const char *shortVersion    = "reduce.3.10.070829";
+static const char *shortVersion    = "reduce.3.10.070925";
 static const char *referenceString =
                        "Word, et. al. (1999) J. Mol. Biol. 285, 1735-1747.";
 static const char *electronicReference = "http://kinemage.biochem.duke.edu";
@@ -83,6 +83,7 @@ bool UseOldNames	      = FALSE;
 bool BackBoneModel	      = FALSE; 
 bool DemandRotAllMethyls      = FALSE;
 bool RotExistingOH            = FALSE;
+bool NeutralTermini           = FALSE;
 bool DemandRotNH3             = TRUE;
 bool DemandRotExisting        = FALSE;
 bool DemandFlipAllHNQs        = FALSE;
@@ -309,6 +310,9 @@ void processPDBfile(std::istream& ifs, char *pdbFile, std::ostream& ofs) {
 	    else {
 	       cerr << "Dropping existing OH & SH Hydrogens." << endl;
 	    }
+            if (NeutralTermini) {
+               cerr << "Adding \"amide\" Hydrogens to chain breaks." << endl; 
+            }
 	    if (DemandRotNH3) {
 	       cerr << "Rotating NH3 Hydrogens." << endl;
 	    }
@@ -557,6 +561,9 @@ char* parseCommandLine(int argc, char **argv) {
 	 else if((n = compArgStr(p+1, "ROTEXist", 5))){
 	    DemandRotExisting = TRUE;
 	 }
+         else if((n = compArgStr(p+1, "AMIde", 3))){
+            NeutralTermini = TRUE;
+         }
 	 else if((n = compArgStr(p+1, "ROTNH3", 6))){
 	    DemandRotNH3 = TRUE;
 	 }
@@ -692,6 +699,7 @@ void reduceHelp(bool showAll) { /*help*/
    cerr << "-FLIPs            allow complete ASN, GLN and HIS sidechains to flip" << endl;
    cerr << "                        (usually used with -HIS)" << endl;
    cerr << "-NOHETh           do not attempt to add NH proton on Het groups" << endl;
+   cerr << "-AMIde            add \"amide\" hydrogen on chain breaks" <<endl; 
    cerr << "-ROTNH3           allow lysine NH3 to rotate (default)" << endl;
    cerr << "-NOROTNH3         do not allow lysine NH3 to rotate" << endl;
    cerr << "-ROTEXist         allow existing rotatable groups (OH, SH, Met-CH3) to rotate" << endl;
@@ -884,7 +892,8 @@ void reduceChanges(bool showAll) { /*changes*/
    cerr  << "                       as well as SED as the name for the selenium atom" <<endl; 
    cerr  << "8/18/07 - rwgk         Patched Elementinfo.cpp for compiler problems: (a)Visual C++ warning and (b)Tru64 error" << endl;
    cerr  << "svn rev 67, 68         (a)threw runtime error on fixAtomName() (b)added 'using std::sprintf'" << endl;
-   cerr  << "8/29/07 - rmi 	    Modified the reduce het dict so that hydrogens are not built on carboxylates" << endl; 
+   cerr  << "8/29/07 - rmi          Modified the reduce het dict so that hydrogens are not built on carboxylates" << endl; 
+   cerr  << "9/25/07 - rmi          Added a flag AMIde which allows a single hydrogen to be built at the N-termini of chain breaks" << endl; 
    cerr  << endl;
    exit(1);
 }
@@ -1177,6 +1186,20 @@ bool isConnected(ResBlk* a, ResBlk* b) {
 
       double gap = distance2((*(ar.begin()))->loc(), (*(br.begin()))->loc());
       if (1.1 < gap && gap < 1.7) { return TRUE; } 
+
+      // rmi 070924 add warnings for chain breaks
+      else if (gap > 1.7) { 
+         cerr << "*WARNING*: Residues " << (*(ar.begin()))->resname() <<  " " << (*(ar.begin()))->resno() << (*(ar.begin()))->insCode()
+              << " and " << (*(br.begin()))->resname() << " " << (*(br.begin()))->resno() << (*(br.begin()))->insCode() << " in chain " 
+              << (*(ar.begin()))->chain() << " appear unbonded " << endl << "           "
+              << " and will be treated as a chain break" << endl; 
+      }
+      else if (gap < 1.1) { 
+         cerr << "*WARNING*: Residues " << (*(ar.begin()))->resname() << " " << (*(ar.begin()))->resno() << (*(ar.begin()))->insCode()
+              << " and " << (*(br.begin()))->resname() << " " << (*(br.begin()))->resno() << (*(br.begin()))->insCode() << " in chain "
+              << (*(ar.begin()))->chain() << " are too close together " << endl << "           "
+              << " and will be treated as a chain break" << endl;
+      }
    }
    return FALSE;
 }
@@ -1245,6 +1268,9 @@ void analyzeRes(CTab& hetdatabase, ResBlk* pb, ResBlk* cb, ResBlk* nb,
 			hn = StdResH::HydPlanTbl().get(ispro?"nt-pro":"nt-amide");
 		}
 		else if (ctype == FRAGMENT_RES) { // don't create NH
+                        if (NeutralTermini) {
+                           hn = StdResH::HydPlanTbl().get("amide"); // rmi 070925
+                        }
 			if (StandardizeRHBondLengths) {
 				// case A - really is a N terminal
 				bool ispro = resname.find("PRO") != std::string::npos;
