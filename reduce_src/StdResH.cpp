@@ -87,10 +87,17 @@ HydrogenPlanTable::HydrogenPlanTable() {
 //--------------------------------------------------------------------------
   {
     static const addPlan_args args[] = {
-      {5, "Hpol", " H", " N", " CA", " C", "", 1.0,   0.0, 0.48, BONDBUMPFLAG},
+      {5, "Hpol", " H", " N", " CA", "- C", "", 1.0,   0.0, 0.48, BONDBUMPFLAG},
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("amide", "PRO", args); // *NON* N-terminal mc amide
+  }
+  {
+    static const addPlan_args args[] = { //nt-amide updated 070703 by JJH
+      {3, "Hpol", " H",   " N", " CA", " C", "", 1.0, 109.5, 180.0, USENEWNAMES|ROTATEONDEMAND|NH3FLAG},
+      {0,0,0,0,0,0,0,0,0,0,0}
+    };
+    insertStdResH("break-amide", "PRO", args); // N-terminal mc amide
   }
   {
     static const addPlan_args args[] = { //nt-amide updated 070703 by JJH

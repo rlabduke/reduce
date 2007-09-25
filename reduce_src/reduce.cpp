@@ -1269,7 +1269,7 @@ void analyzeRes(CTab& hetdatabase, ResBlk* pb, ResBlk* cb, ResBlk* nb,
 		}
 		else if (ctype == FRAGMENT_RES) { // don't create NH
                         if (NeutralTermini) {
-                           hn = StdResH::HydPlanTbl().get("amide"); // rmi 070925
+                           hn = StdResH::HydPlanTbl().get("break-amide"); // rmi 070925
                         }
 			if (StandardizeRHBondLengths) {
 				// case A - really is a N terminal
