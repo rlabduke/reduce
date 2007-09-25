@@ -894,6 +894,7 @@ void reduceChanges(bool showAll) { /*changes*/
    cerr  << "svn rev 67, 68         (a)threw runtime error on fixAtomName() (b)added 'using std::sprintf'" << endl;
    cerr  << "8/29/07 - rmi          Modified the reduce het dict so that hydrogens are not built on carboxylates" << endl; 
    cerr  << "9/25/07 - rmi          Added a flag AMIde which allows a single hydrogen to be built at the N-termini of chain breaks" << endl; 
+   cerr  << "                       added break-amide to StdResH to treat these amides as a special case" << endl; 
    cerr  << endl;
    exit(1);
 }

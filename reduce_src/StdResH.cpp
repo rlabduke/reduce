@@ -93,7 +93,7 @@ HydrogenPlanTable::HydrogenPlanTable() {
     insertStdResH("amide", "PRO", args); // *NON* N-terminal mc amide
   }
   {
-    static const addPlan_args args[] = { //nt-amide updated 070703 by JJH
+    static const addPlan_args args[] = { //break-amide added 070925 by RMI
       {3, "Hpol", " H",   " N", " CA", " C", "", 1.0, 109.5, 180.0, USENEWNAMES|ROTATEONDEMAND|NH3FLAG},
       {0,0,0,0,0,0,0,0,0,0,0}
     };
