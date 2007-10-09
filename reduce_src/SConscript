@@ -19,6 +19,7 @@ env.Prepend(LIBS=["toolclasses", "pdb++"])
 exe = env.Program(
   target=["#reduce/exe/reduce"],
   source=[
+    "hybrid_36_c.c",
     "GraphToHoldScores.cpp",
     "reduce.cpp",
     "CTab.cpp",
