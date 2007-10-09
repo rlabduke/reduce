@@ -50,31 +50,133 @@ void PDBrec::clone(PDBrec* p, bool setmark) {
 }
 
 void PDBrec::getConect(int cvec[]) const {
-   cvec[0] = _rep->_r.conect.serialNum;
-   cvec[1] = _rep->_r.conect.covalent[0];
-   cvec[2] = _rep->_r.conect.covalent[1];
-   cvec[3] = _rep->_r.conect.covalent[2];
-   cvec[4] = _rep->_r.conect.covalent[3];
-   cvec[5] = _rep->_r.conect.bonds[0].hydrogen[0];
-   cvec[6] = _rep->_r.conect.bonds[0].hydrogen[1];
-   cvec[7] = _rep->_r.conect.bonds[0].salt;
-   cvec[8] = _rep->_r.conect.bonds[1].hydrogen[0];
-   cvec[9] = _rep->_r.conect.bonds[1].hydrogen[1];
-   cvec[10]= _rep->_r.conect.bonds[1].salt;
+   int n;
+   const char* errmsg = hy36decode(5,  _rep->_r.conect.serialNum, 5, &n);
+   //if (errmsg) throw std::runtime_error(errmsg);
+   cvec[0] = n; 
+   errmsg = hy36decode(5,  _rep->_r.conect.covalent[0], 5, &n);
+   //if (errmsg) throw std::runtime_error(errmsg);
+   cvec[1] = n;
+   errmsg = hy36decode(5,  _rep->_r.conect.covalent[1], 5, &n);
+   //if (errmsg) throw std::runtime_error(errmsg);
+   cvec[2] = n;
+   errmsg = hy36decode(5,  _rep->_r.conect.covalent[2], 5, &n);
+   //if (errmsg) throw std::runtime_error(errmsg);
+   cvec[3] = n;
+   errmsg = hy36decode(5,  _rep->_r.conect.covalent[3], 5, &n);
+   //if (errmsg) throw std::runtime_error(errmsg);
+   cvec[4] = n;
+   errmsg = hy36decode(5,  _rep->_r.conect.bonds[0].hydrogen[0], 5, &n);
+   //if (errmsg) throw std::runtime_error(errmsg);
+   cvec[5] = n;
+   errmsg = hy36decode(5,  _rep->_r.conect.bonds[0].hydrogen[1], 5, &n);
+   //if (errmsg) throw std::runtime_error(errmsg);
+   cvec[6] = n;
+   errmsg = hy36decode(5,  _rep->_r.conect.bonds[0].salt, 5, &n);
+   //if (errmsg) throw std::runtime_error(errmsg);
+   cvec[7] = n;
+   errmsg = hy36decode(5,  _rep->_r.conect.bonds[1].hydrogen[0], 5, &n);
+   //if (errmsg) throw std::runtime_error(errmsg);
+   cvec[8] = n;
+   errmsg = hy36decode(5,  _rep->_r.conect.bonds[1].hydrogen[1], 5, &n);
+   //if (errmsg) throw std::runtime_error(errmsg);
+   cvec[9] = n;
+   errmsg = hy36decode(5,  _rep->_r.conect.bonds[1].salt, 5, &n);
+   //if (errmsg) throw std::runtime_error(errmsg);
+   cvec[10] = n;
+
+//   cvec[0] = _rep->_r.conect.serialNum;
+//   cvec[1] = _rep->_r.conect.covalent[0];
+//   cvec[2] = _rep->_r.conect.covalent[1];
+//   cvec[3] = _rep->_r.conect.covalent[2];
+//   cvec[4] = _rep->_r.conect.covalent[3];
+//   cvec[5] = _rep->_r.conect.bonds[0].hydrogen[0];
+//   cvec[6] = _rep->_r.conect.bonds[0].hydrogen[1];
+//   cvec[7] = _rep->_r.conect.bonds[0].salt;
+//   cvec[8] = _rep->_r.conect.bonds[1].hydrogen[0];
+//   cvec[9] = _rep->_r.conect.bonds[1].hydrogen[1];
+//   cvec[10]= _rep->_r.conect.bonds[1].salt;
 }
 
 void PDBrec::setConect(int cvec[]) {
-   _rep->_r.conect.serialNum            = cvec[0];
-   _rep->_r.conect.covalent[0]          = cvec[1];
-   _rep->_r.conect.covalent[1]          = cvec[2];
-   _rep->_r.conect.covalent[2]          = cvec[3];
-   _rep->_r.conect.covalent[3]          = cvec[4];
-   _rep->_r.conect.bonds[0].hydrogen[0] = cvec[5];
-   _rep->_r.conect.bonds[0].hydrogen[1] = cvec[6];
-   _rep->_r.conect.bonds[0].salt        = cvec[7];
-   _rep->_r.conect.bonds[1].hydrogen[0] = cvec[8];
-   _rep->_r.conect.bonds[1].hydrogen[1] = cvec[9];
-   _rep->_r.conect.bonds[1].salt        = cvec[10];
+   char Hy36_cvec[11][6]; 
+   const char* errmsg = hy36encode(5,  cvec[0], Hy36_cvec[0]);
+   Hy36_cvec[0][6]='\0';
+   strncpy(_rep->_r.conect.serialNum, Hy36_cvec[0], 6); 
+   _rep->_r.conect.serialNum[6]='0'; 
+   //if (errmsg) throw std::runtime_error(errmsg);
+
+   errmsg = hy36encode(5, cvec[1], Hy36_cvec[1]);
+   Hy36_cvec[1][6]='\0';
+   strncpy(_rep->_r.conect.covalent[0], Hy36_cvec[1],6);
+   _rep->_r.conect.covalent[0][6]='\0';
+   //if (errmsg) throw std::runtime_error(errmsg);
+ 
+   errmsg = hy36encode(5, cvec[2], Hy36_cvec[2]);
+   Hy36_cvec[2][6]='\0';
+   strncpy(_rep->_r.conect.covalent[1], Hy36_cvec[2],6);
+   _rep->_r.conect.covalent[1][6]='\0';
+   //if (errmsg) throw std::runtime_error(errmsg);
+
+   errmsg = hy36encode(5, cvec[3], Hy36_cvec[3]);
+   Hy36_cvec[3][6]='\0';
+   strncpy(_rep->_r.conect.covalent[2], Hy36_cvec[3],6);
+   _rep->_r.conect.covalent[2][6]='\0';
+   //if (errmsg) throw std::runtime_error(errmsg);
+
+   errmsg = hy36encode(5, cvec[4], Hy36_cvec[4]);
+   Hy36_cvec[4][6]='\0';
+   strncpy(_rep->_r.conect.covalent[3], Hy36_cvec[4],6);
+   _rep->_r.conect.covalent[3][6]='\0';
+   //if (errmsg) throw std::runtime_error(errmsg);
+
+   errmsg = hy36encode(5, cvec[5], Hy36_cvec[5]);
+   Hy36_cvec[5][6]='\0';
+   strncpy(_rep->_r.conect.bonds[0].hydrogen[0], Hy36_cvec[5],6); 
+   _rep->_r.conect.bonds[0].hydrogen[0][6]='\0';
+   //if (errmsg) throw std::runtime_error(errmsg);
+
+   errmsg = hy36encode(5, cvec[6], Hy36_cvec[6]);
+   Hy36_cvec[6][6]='\0';
+   strncpy(_rep->_r.conect.bonds[0].hydrogen[1], Hy36_cvec[6],6);
+   _rep->_r.conect.bonds[0].hydrogen[1][6]='\0';
+   //if (errmsg) throw std::runtime_error(errmsg);
+
+   errmsg = hy36encode(5, cvec[7], Hy36_cvec[7]);
+   Hy36_cvec[7][6]='\0';
+   strncpy(_rep->_r.conect.bonds[0].salt, Hy36_cvec[7],6);
+   _rep->_r.conect.bonds[0].salt[6]='\0';
+   //if (errmsg) throw std::runtime_error(errmsg);
+
+   errmsg = hy36encode(5, cvec[8], Hy36_cvec[8]);
+   Hy36_cvec[8][6]='\0';
+   strncpy(_rep->_r.conect.bonds[1].hydrogen[0], Hy36_cvec[8],6);
+   _rep->_r.conect.bonds[1].hydrogen[0][6]='\0';
+   //if (errmsg) throw std::runtime_error(errmsg);
+
+   errmsg = hy36encode(5, cvec[9], Hy36_cvec[9]);
+   Hy36_cvec[9][6]='\0';
+   strncpy(_rep->_r.conect.bonds[1].hydrogen[1], Hy36_cvec[9],6);
+   _rep->_r.conect.bonds[1].hydrogen[1][6]='\0';
+   //if (errmsg) throw std::runtime_error(errmsg);
+
+   errmsg = hy36encode(5, cvec[10], Hy36_cvec[10]);
+   Hy36_cvec[10][6]='\0';
+   strncpy(_rep->_r.conect.bonds[1].salt, Hy36_cvec[10],6);
+   _rep->_r.conect.bonds[1].salt[6]='\0';
+   //if (errmsg) throw std::runtime_error(errmsg);
+
+//   _rep->_r.conect.serialNum            = cvec[0]; 
+//   _rep->_r.conect.covalent[0]          = cvec[1];
+//   _rep->_r.conect.covalent[1]          = cvec[2];
+//   _rep->_r.conect.covalent[2]          = cvec[3];
+//   _rep->_r.conect.covalent[3]          = cvec[4];
+//   _rep->_r.conect.bonds[0].hydrogen[0] = cvec[5];
+//   _rep->_r.conect.bonds[0].hydrogen[1] = cvec[6];
+//   _rep->_r.conect.bonds[0].salt        = cvec[7];
+//   _rep->_r.conect.bonds[1].hydrogen[0] = cvec[8];
+//   _rep->_r.conect.bonds[1].hydrogen[1] = cvec[9];
+//   _rep->_r.conect.bonds[1].salt        = cvec[10];
 }
 
 std::string PDBrec::recName() const {

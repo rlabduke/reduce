@@ -61,7 +61,7 @@ PDB::PDB(const char *buf)
 {
 	initialize_everything();
 
-	char dummy='\0'; // added for 3 character resname
+	char dummy='\0'; // rmi added for 3 character resname
 	const char	*fmt;
 	Sheet		*sh;
 	Residue		*sha0, *sha1;

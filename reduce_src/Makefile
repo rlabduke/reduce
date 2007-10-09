@@ -20,7 +20,7 @@ LFLAGS = -L$(PDBHOME) -lpdb++ -L$(TOOLHOME) -ltoolclasses -lm
 
 OBJLIST = GraphToHoldScores.o reduce.o CTab.o ElementInfo.o StdResH.o ResBlk.o AtomConn.o \
             AtomPositions.o DotSph.o Mover.o RotMethyl.o RotDonor.o \
-            FlipMemo.o CliqueList.o AtomDescr.o PDBrec.o MoveableNode.o \
+            FlipMemo.o CliqueList.o AtomDescr.o PDBrec.o MoveableNode.o hybrid_36_c.o\
             
 
 CXX		= g++
@@ -76,6 +76,7 @@ FlipMemo.o: $(PDBHOME)/pdb++.h $(TOOLHOME)/Point3d.h \
 	 ResBlk.h neighbors.cpp neighbors.h
 GraphToHoldScores.o: GraphToHoldScores.h GraphToHoldScores.cpp AtomPositions.h \
     AtomDescr.h
+hybrid_36_c.o: hybrid_36_c.c hybrid_36_c.h
 Mover.o: $(PDBHOME)/pdb++.h $(TOOLHOME)/Point3d.h \
 	 $(TOOLHOME)/utility.cpp $(TOOLHOME)/utility.h \
 	 BumperPoint.h DotSph.h ElementInfo.h LocBlk.h Mover.cpp Mover.h \
@@ -84,7 +85,7 @@ MoveableNode.o: MoveableNode.cpp MoveableNode.h AtomDescr.h \
     GraphToHoldScores.h AtomPositions.h
 PDBrec.o: $(PDBHOME)/pdb++.h \
 	 $(TOOLHOME)/Point3d.h $(TOOLHOME)/utility.cpp \
-	 $(TOOLHOME)/utility.h ElementInfo.h AtomDescr.h PDBrec.cpp PDBrec.h
+	 $(TOOLHOME)/utility.h ElementInfo.h AtomDescr.h PDBrec.cpp PDBrec.h hybrid_36_c.h
 ResBlk.o: $(PDBHOME)/pdb++.h $(TOOLHOME)/Point3d.h \
 	 $(TOOLHOME)/utility.cpp $(TOOLHOME)/utility.h \
 	 ElementInfo.h PDBrec.h ResBlk.cpp ResBlk.h

@@ -54,6 +54,7 @@ using std::exp;
 #include "RotMethyl.h"
 #include "RotDonor.h"
 #include "FlipMemo.h"
+#include "PDBrec.h"
 
 //#include "stuff.h"
 #include "MoveableNode.h"
@@ -241,8 +242,8 @@ void AtomPositions::insertRot(const PDBrec& hr,
 
 	char descrbuf[30];
 
-	::sprintf(descrbuf, "%c%4d%c%-3.3s%-4.4s%c",
-		hr.chain(), hr.resno(), hr.insCode(),
+	::sprintf(descrbuf, "%c%4s%c%-3.3s%-4.4s%c",
+		hr.chain(), hr.Hy36resno(), hr.insCode(),
 		hr.resname(), c1.atomname(), hr.alt());
 	std::string descr = descrbuf;
 
@@ -1265,6 +1266,7 @@ void AtomPositions::describeChanges(std::list<PDBrec*>& records,
 //			.next(s)) {	// insert notes in sorted order
 //			PDBrec userRec(s.array());
 			separator = new PDBrec((*np).c_str());
+//                      cerr << separator->resname() << endl; 
 			records.insert(infoPtr, separator);
 			++np;
 		}

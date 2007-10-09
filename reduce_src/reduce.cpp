@@ -24,9 +24,9 @@
 #endif
 
 static const char *versionString =
-     "reduce: version 3.10 9/25/2007, Copyright 1997-2007, J. Michael Word";
+     "reduce: version 3.10 10/9/2007, Copyright 1997-2007, J. Michael Word";
 
-static const char *shortVersion    = "reduce.3.10.070925";
+static const char *shortVersion    = "reduce.3.10.071009";
 static const char *referenceString =
                        "Word, et. al. (1999) J. Mol. Biol. 285, 1735-1747.";
 static const char *electronicReference = "http://kinemage.biochem.duke.edu";
@@ -895,6 +895,7 @@ void reduceChanges(bool showAll) { /*changes*/
    cerr  << "8/29/07 - rmi          Modified the reduce het dict so that hydrogens are not built on carboxylates" << endl; 
    cerr  << "9/25/07 - rmi          Added a flag AMIde which allows a single hydrogen to be built at the N-termini of chain breaks" << endl; 
    cerr  << "                       added break-amide to StdResH to treat these amides as a special case" << endl; 
+   cerr  << "10/3/07 - rmi          Added support for Hybrid36 atom and residue numbers" << endl; 
    cerr  << endl;
    exit(1);
 }
@@ -1539,7 +1540,8 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 
 					newHatom->elem(pp.elem());
 
-					newHatom->atomno(0);
+					//newHatom->atomno(0);  substituted next call to re-assign atom numbers
+                                        newHatom->Hy36Num(0); 
 					newHatom->alt(altId);
 
 					newHatom->occupancy(occ);

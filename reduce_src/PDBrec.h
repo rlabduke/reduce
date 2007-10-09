@@ -2,7 +2,9 @@
 // author: J. Michael Word
 // date written: 8/1/97
 // purpose: Interface for PDBrec
-
+//
+// rmi 10-5-07 modified to allow assignment of Hybrid36 atom numbers to PDB records
+//
 // **************************************************************
 // NOTICE: This is free software and the source code is freely
 // available. You are free to redistribute or modify under the
@@ -32,6 +34,7 @@
 #include "Point3d.h"
 #include "utility.h"
 #include "AtomDescr.h"
+#include "hybrid_36_c.h"
 
 // flags pertaining to this particular record
 const int   NameModifiedFlag = (1 << 1);
@@ -163,12 +166,24 @@ public:
    // if atom or hetatm:
 
    const char* atomname() const { return _rep->_r.atom.name;               }
-   int  atomno()          const { return _rep->_r.atom.serialNum;          }
+   const char* Hy36Num()  const { return _rep->_r.atom.serialNum;          }
+   int  atomno()          const { 
+      int n; 
+      const char* errmsg = hy36decode(5,  _rep->_r.atom.serialNum, 5, &n);
+      return n; 
+      //if (errmsg) throw std::runtime_error(errmsg); 
+   }
    const char*  resname() const { return _rep->_r.atom.residue.name;       }
    char insCode()         const { return _rep->_r.atom.residue.insertCode; }
    char chain()           const { return _rep->_r.atom.residue.chainId;    }
    char alt()             const { return _rep->_r.atom.altLoc;             }
-   int  resno()           const { return _rep->_r.atom.residue.seqNum;     }
+   const char* Hy36resno()const { return _rep->_r.atom.residue.seqNum;     }
+   int  resno()           const { 
+      int n;
+      const char* errmsg = hy36decode(4,  _rep->_r.atom.residue.seqNum, 4, &n);
+      return n;
+      //if (errmsg) throw std::runtime_error(errmsg);
+   }
    float occupancy()      const { return _rep->_r.atom.occupancy;          }
    float tempFactor()     const { return _rep->_r.atom.tempFactor;         }
    const char*segidLabel() const{ return _rep->_r.atom.segID;              }
@@ -176,13 +191,28 @@ public:
    const char*chargeLabel()const{ return _rep->_r.atom.charge;             }
    const char*annotation() const{ return _rep->_r.atom.annotation;         }
 
-	AtomDescr getAtomDescr() const {AtomDescr thedesc( Point3d( (*_rep)._r.atom.xyz[0],(*_rep)._r.atom.xyz[1],(*_rep)._r.atom.xyz[2]), (*_rep)._r.atom.residue.seqNum, vdwRad()); return thedesc;}
+	AtomDescr getAtomDescr() const {
+           int n;
+           const char* errmsg = hy36decode(5, (*_rep)._r.atom.serialNum, 5, &n);
+           //if (errmsg) throw std::runtime_error(errmsg);
+           AtomDescr thedesc( Point3d( (*_rep)._r.atom.xyz[0],(*_rep)._r.atom.xyz[1],(*_rep)._r.atom.xyz[2]), n, vdwRad()); return thedesc;
+        }
 
    void atomname(const char* s)    {
       strncpy(_rep->_r.atom.name, s, 4);
       _rep->_r.atom.name[4] = '\0';
    }
-   void atomno(int n)              { _rep->_r.atom.serialNum = n;      }
+   void atomno(int n)              { 
+      const char* errmsg = hy36decode(5,  _rep->_r.atom.serialNum, 5, &n);
+      //if (errmsg) throw std::runtime_error(errmsg);
+   }
+   void Hy36Num(int n)         { 
+      char result[6]; 
+      const char* errmsg = hy36encode(5, n, result); 
+      strncpy(_rep->_r.atom.serialNum, result,6); 
+      //_rep->_r.atom.serialNum[6] = '\0'; // RMI i don't know why, but this seems to need to be comment out
+      //if (errmsg) throw std::runtime_error(errmsg); 
+   }
    void alt(char a)                { _rep->_r.atom.altLoc = a;         }
    void occupancy(float o)         { _rep->_r.atom.occupancy = o;      }
    void tempFactor(float t)        { _rep->_r.atom.tempFactor = t;     }
@@ -199,7 +229,10 @@ public:
       strncpy(_rep->_r.atom.annotation,a,10);
       _rep->_r.atom.annotation[10] = '\0';
    }
-   void terAtomno(int n)           { _rep->_r.ter.serialNum = n;       }
+   void terAtomno(int n)           { 
+      const char* errmsg = hy36decode(5,  _rep->_r.atom.serialNum, 5, &n);
+      //if (errmsg) throw std::runtime_error(errmsg);
+   }
    void x(Coord xval) { _rep->_r.atom.xyz[0] = xval; }
    void y(Coord yval) { _rep->_r.atom.xyz[1] = yval; }
    void z(Coord zval) { _rep->_r.atom.xyz[2] = zval; }

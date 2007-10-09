@@ -34,6 +34,8 @@ typedef int bool;
 // JMW 8/6/98: BufLen has been expanded from 81 to 101 to include a non-standard
 //             .annotaton field in Atom and Aniosu type records so that the SegID
 //             elem and charge fields could be free from unneccessary modification
+// RMI 10/3/07 Hy36Num added to allow usage of the Hybrid 36 atom numbering scheme
+
  
 class PDB {
 public:
@@ -44,6 +46,7 @@ public:
 	static const int PDBRUNVersion = 6;	// Best version generated
 #endif
 	typedef char	Date[10];
+        typedef char    Hy36Num[6];              // hybrid 36 atom number
 	typedef char	AName[5];		// atom name - NO2*
 	typedef char	RName[5];		// residue name - ALA
 	typedef char	PName[5];		// pdb name - 9lyz
@@ -53,7 +56,7 @@ public:
 	struct Residue {			// residue info
 		RName	name;
 		char	chainId;
-		int	seqNum;
+		char	seqNum[5];
 		char	insertCode;
 	};
 
@@ -84,7 +87,7 @@ public:
 		char	reclabel[8];
 	};
 	struct Anisou {
-		int	serialNum;
+		Hy36Num	serialNum;
 		AName	name;
 		char	altLoc;
 		Residue	residue;
@@ -95,7 +98,7 @@ public:
 		char	annotation[11]; // *annotaton* is non-standard
 	};
 	struct Atom {
-		int	serialNum;
+		Hy36Num	serialNum;
 		AName	name;
 		char	altLoc;
 		Residue	residue;
@@ -119,11 +122,11 @@ public:
 	};
 	typedef Author	Compnd;
 	struct Conect {
-		int	serialNum;
-		int	covalent[4];
+		Hy36Num	serialNum;
+		char	covalent[4][6];
 		struct {
-			int	hydrogen[2];
-			int	salt;
+			char	hydrogen[2][6];
+			char	salt[6];
 		}	bonds[2];
 		char	reclabel[8];
 	};
@@ -277,7 +280,7 @@ public:
 		char	reclabel[8];
 	};
 	struct Ter {
-		int	serialNum;
+		Hy36Num	serialNum;
 		Residue	residue;
 		char	reclabel[8];
 	};
