@@ -112,6 +112,8 @@ float MinChargedHBgap = 0.8; // charged Hbonds start to bump at this point
 float BadBumpGapCut   = 0.4; // bump is bad if >= than this
 float NonMetalBumpBias= 0.125;//bumps if H closer than atom radius, plus this
 float MetalBumpBias   = 0.865;// ditto, for metals
+float GapWidth        = 0.3; // half width for detecting chain breaks between residues 
+                             // (center at 1.4; default allow 1.1-1.7 for accepting connected residues) 
 
 std::string OFile; // if file exists, given orientations forced
 bool UseSEGIDtoChainMap = FALSE; // if true, override some chain ids
@@ -561,7 +563,7 @@ char* parseCommandLine(int argc, char **argv) {
 	 else if((n = compArgStr(p+1, "ROTEXist", 5))){
 	    DemandRotExisting = TRUE;
 	 }
-         else if((n = compArgStr(p+1, "AMIDE", 3))){
+         else if((n = compArgStr(p+1, "ADDNHatgap", 5))){
             NeutralTermini = TRUE;
          }
 	 else if((n = compArgStr(p+1, "ROTNH3", 6))){
@@ -636,6 +638,13 @@ char* parseCommandLine(int argc, char **argv) {
 	 else if((n = compArgStr(p+1, "METALBump", 6))){
 	    MetalBumpBias = parseReal(p, n+1, 10);
 	 }
+         else if((n = compArgStr(p+1, "GAPError", 5))){
+            GapWidth = parseReal(p, n+1, 10);
+            if (GapWidth > 1.4) {
+               cerr << "Max allowed HalfGapWidth is 1.4" << endl; 
+               exit(1); 
+            }
+         }
 	 else if((n = compArgStr(p+1, "REFerence", 3))){
 	    cerr << "Please cite: " << referenceString << endl;
 	    cerr << "For more information see " << electronicReference << endl;
@@ -699,7 +708,8 @@ void reduceHelp(bool showAll) { /*help*/
    cerr << "-FLIPs            allow complete ASN, GLN and HIS sidechains to flip" << endl;
    cerr << "                        (usually used with -HIS)" << endl;
    cerr << "-NOHETh           do not attempt to add NH proton on Het groups" << endl;
-//   cerr << "-AMIDE            add \"amide\" hydrogen on chain breaks" <<endl; 
+//   cerr << "-ADDNHatgap            add \"amide\" hydrogen on chain breaks" <<endl; 
+//   cerr << "-GAPError#.#       sets the half width for allowed peptide bond lengths variations around 1.4 Angstroms: default 0.3" << endl; 
    cerr << "-ROTNH3           allow lysine NH3 to rotate (default)" << endl;
    cerr << "-NOROTNH3         do not allow lysine NH3 to rotate" << endl;
    cerr << "-ROTEXist         allow existing rotatable groups (OH, SH, Met-CH3) to rotate" << endl;
@@ -893,7 +903,7 @@ void reduceChanges(bool showAll) { /*changes*/
    cerr  << "8/18/07 - rwgk         Patched Elementinfo.cpp for compiler problems: (a)Visual C++ warning and (b)Tru64 error" << endl;
    cerr  << "svn rev 67, 68         (a)threw runtime error on fixAtomName() (b)added 'using std::sprintf'" << endl;
    cerr  << "8/29/07 - rmi          Modified the reduce het dict so that hydrogens are not built on carboxylates" << endl; 
-   cerr  << "9/25/07 - rmi          Added a flag AMIDE which allows a single hydrogen to be built at the N-termini of chain breaks" << endl; 
+//   cerr  << "9/25/07 - rmi          Added a flag ADDNHatgap which allows a single hydrogen to be built at the N-termini of chain breaks" << endl; 
    cerr  << "                       added break-amide to StdResH to treat these amides as a special case" << endl; 
    cerr  << "10/3/07 - rmi          Added support for Hybrid36 atom and residue numbers" << endl; 
    cerr  << endl;
@@ -1187,16 +1197,16 @@ bool isConnected(ResBlk* a, ResBlk* b) {
       // we only look at the first set of conformations
 
       double gap = distance2((*(ar.begin()))->loc(), (*(br.begin()))->loc());
-      if (1.1 < gap && gap < 1.7) { return TRUE; } 
+      if ((1.4-GapWidth) < gap && gap < (1.4+GapWidth)) { return TRUE; } 
 
       // rmi 070924 add warnings for chain breaks
-      else if (gap > 1.7) { 
+      else if (gap > (1.4+GapWidth)) { 
          cerr << "*WARNING*: Residues " << (*(ar.begin()))->resname() <<  " " << (*(ar.begin()))->resno() << (*(ar.begin()))->insCode()
               << " and " << (*(br.begin()))->resname() << " " << (*(br.begin()))->resno() << (*(br.begin()))->insCode() << " in chain " 
               << (*(ar.begin()))->chain() << " appear unbonded " << endl << "           "
               << " and will be treated as a chain break" << endl; 
-      }
-      else if (gap < 1.1) { 
+         }
+      else if (gap < (1.4-GapWidth)) { 
          cerr << "*WARNING*: Residues " << (*(ar.begin()))->resname() << " " << (*(ar.begin()))->resno() << (*(ar.begin()))->insCode()
               << " and " << (*(br.begin()))->resname() << " " << (*(br.begin()))->resno() << (*(br.begin()))->insCode() << " in chain "
               << (*(ar.begin()))->chain() << " are too close together " << endl << "           "
