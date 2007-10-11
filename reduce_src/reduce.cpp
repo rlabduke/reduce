@@ -557,13 +557,13 @@ char* parseCommandLine(int argc, char **argv) {
 	 else if((n = compArgStr(p+1, "Keep", 1))){
 	    StandardizeRHBondLengths = FALSE;
 	 }
-	 else if((n = compArgStr(p+1, "ALLMEthyls", 5))){
+	 else if((n = compArgStr(p+1, "ALLMETHYLS", 10))){
 	    DemandRotAllMethyls = TRUE;
 	 }
 	 else if((n = compArgStr(p+1, "ROTEXist", 5))){
 	    DemandRotExisting = TRUE;
 	 }
-         else if((n = compArgStr(p+1, "ADDNHatgap", 5))){
+         else if((n = compArgStr(p+1, "ADDNHATGAP", 10))){
             NeutralTermini = TRUE;
          }
 	 else if((n = compArgStr(p+1, "ROTNH3", 6))){
@@ -638,7 +638,7 @@ char* parseCommandLine(int argc, char **argv) {
 	 else if((n = compArgStr(p+1, "METALBump", 6))){
 	    MetalBumpBias = parseReal(p, n+1, 10);
 	 }
-         else if((n = compArgStr(p+1, "GAPError", 5))){
+         else if((n = compArgStr(p+1, "GAPERROR", 8))){
             GapWidth = parseReal(p, n+1, 10);
             if (GapWidth > 1.4) {
                cerr << "Max allowed HalfGapWidth is 1.4" << endl; 
@@ -708,13 +708,13 @@ void reduceHelp(bool showAll) { /*help*/
    cerr << "-FLIPs            allow complete ASN, GLN and HIS sidechains to flip" << endl;
    cerr << "                        (usually used with -HIS)" << endl;
    cerr << "-NOHETh           do not attempt to add NH proton on Het groups" << endl;
-//   cerr << "-ADDNHatgap            add \"amide\" hydrogen on chain breaks" <<endl; 
-//   cerr << "-GAPError#.#       sets the half width for allowed peptide bond lengths variations around 1.4 Angstroms: default 0.3" << endl; 
+//   cerr << "-ADDNHATGAP            add \"amide\" hydrogen on chain breaks" <<endl; 
+//   cerr << "-GAPERROR#.#       sets the half width for allowed peptide bond lengths variations around 1.4 Angstroms: default 0.3" << endl; 
    cerr << "-ROTNH3           allow lysine NH3 to rotate (default)" << endl;
    cerr << "-NOROTNH3         do not allow lysine NH3 to rotate" << endl;
    cerr << "-ROTEXist         allow existing rotatable groups (OH, SH, Met-CH3) to rotate" << endl;
    cerr << "-ROTEXOH          allow existing OH & SH groups to rotate" << endl;
-   cerr << "-ALLMEthyls       allow all methyl groups to rotate" << endl;
+//   cerr << "-ALLMETHYLS       allow all methyl groups to rotate" << endl;
    cerr << "-ONLYA            only adjust 'A' conformations (default)" << endl;
    cerr << "-ALLALT           process adjustments for all conformations" << endl;
    cerr << "-NOROTMET         do not rotate methionine methyl groups" << endl;
@@ -903,7 +903,7 @@ void reduceChanges(bool showAll) { /*changes*/
    cerr  << "8/18/07 - rwgk         Patched Elementinfo.cpp for compiler problems: (a)Visual C++ warning and (b)Tru64 error" << endl;
    cerr  << "svn rev 67, 68         (a)threw runtime error on fixAtomName() (b)added 'using std::sprintf'" << endl;
    cerr  << "8/29/07 - rmi          Modified the reduce het dict so that hydrogens are not built on carboxylates" << endl; 
-//   cerr  << "9/25/07 - rmi          Added a flag ADDNHatgap which allows a single hydrogen to be built at the N-termini of chain breaks" << endl; 
+//   cerr  << "9/25/07 - rmi          Added a flag ADDNHATGAP which allows a single hydrogen to be built at the N-termini of chain breaks" << endl; 
    cerr  << "                       added break-amide to StdResH to treat these amides as a special case" << endl; 
    cerr  << "10/3/07 - rmi          Added support for Hybrid36 atom and residue numbers" << endl; 
    cerr  << endl;
