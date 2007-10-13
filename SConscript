@@ -1,6 +1,7 @@
 Import("env_base", "env_etc")
 
 reduce_scons_env = env_base.Copy(
+  CCFLAGS=env_etc.ccflags_base,
   CXXFLAGS=env_etc.cxxflags_base,
   LIBS=env_etc.libm
 )
