@@ -499,6 +499,14 @@ char* parseCommandLine(int argc, char **argv) {
 	    RotExistingOH      = TRUE;
 	    DemandFlipAllHNQs  = TRUE;
 	 }
+         else if(n = compArgStr(p+1, "NOBUILD", 7)){
+            PenaltyMagnitude = parseReal(p, n+1, 10);
+         // PenaltyMagnitude = 200;      9999 in molprobity
+            BuildHisHydrogens  = TRUE;
+            SaveOHetcHydrogens = TRUE;
+            RotExistingOH      = TRUE;  //  not used in molprobity
+            DemandFlipAllHNQs  = TRUE;
+         }
 	 else if((n = compArgStr(p+1, "Version", 1))){
 	    cerr << shortVersion << endl; 
 	    exit(1); 
@@ -722,6 +730,7 @@ void reduceHelp(bool showAll) { /*help*/
   }
    cerr << endl;
    cerr << "-BUILD            add H, including His sc NH, then rotate and flip groups" << endl;
+   cerr << "-NOBUILD#.#       build with a given penalty often 200 or 999" << endl;
    cerr << "                  (except for pre-existing methionine methyl hydrogens)" << endl;
   if (showAll) {
    cerr << "                  (same as: -OH -ROTEXOH -HIS -FLIP)" << endl;
