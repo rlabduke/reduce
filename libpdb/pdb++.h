@@ -31,11 +31,11 @@
 typedef int bool;
 #endif
 
-// JMW 8/6/98: BufLen has been expanded from 81 to 101 to include a non-standard
-//             .annotaton field in Atom and Aniosu type records so that the SegID
-//             elem and charge fields could be free from unneccessary modification
-// RMI 10/3/07 Hy36Num added to allow usage of the Hybrid 36 atom numbering scheme
-
+// JMW  8/6/98:  BufLen has been expanded from 81 to 101 to include a non-standard
+//               .annotaton field in Atom and Aniosu type records so that the SegID
+//               elem and charge fields could be free from unneccessary modification
+// RMI  10/3/07  Hy36Num added to allow usage of the Hybrid 36 atom numbering scheme
+// RMI 10/10/07  Modified to allow two character chain ids with chainId[3] 
  
 class PDB {
 public:
@@ -55,7 +55,7 @@ public:
 
 	struct Residue {			// residue info
 		RName	name;
-		char	chainId;
+		char	chainId[3];
 		char	seqNum[5];
 		char	insertCode;
 	};
@@ -232,7 +232,7 @@ public:
 	};
 	struct Seqres {
 		int	serialNum;
-		char	chainId;
+		char	chainId[3];
 		int	count;
 		RName	names[13];
 		char	reclabel[8];

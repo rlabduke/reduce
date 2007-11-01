@@ -29,7 +29,7 @@ bool sameres(const PDBrec &r1, const PDBrec &rn) {
    return (::strcmp(r1.resname(), rn.resname()) == 0
 	    && r1.resno() == rn.resno()
 	    && r1.insCode() == rn.insCode()
-	    && r1.chain() == rn.chain());
+	    && strcmp(r1.chain(), rn.chain()) == 0 );
 }
 
 // build a residue block by advancing in the list (updates the input iterator)

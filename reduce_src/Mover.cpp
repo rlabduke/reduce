@@ -99,7 +99,7 @@ bool interactingConfs(const PDBrec& a, const PDBrec& b, bool onlyA) {
 // are a and b alternative locations for the same residue?
 bool diffAltLoc(const PDBrec& a, const PDBrec& b) {
    return a.resno() == b.resno() && a.insCode() == b.insCode()
-       && a.chain() == b.chain()
+       && strcmp(a.chain(), b.chain()) == 0 
        && a.alt() != b.alt() && a.alt() != ' ' && b.alt() != ' ';
 }
 

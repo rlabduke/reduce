@@ -24,9 +24,9 @@
 #endif
 
 static const char *versionString =
-     "reduce: version 3.10 10/9/2007, Copyright 1997-2007, J. Michael Word";
+     "reduce: version 3.10 11/1/2007, Copyright 1997-2007, J. Michael Word";
 
-static const char *shortVersion    = "reduce.3.10.071009";
+static const char *shortVersion    = "reduce.3.10.071101";
 static const char *referenceString =
                        "Word, et. al. (1999) J. Mol. Biol. 285, 1735-1747.";
 static const char *electronicReference = "http://kinemage.biochem.duke.edu";
@@ -498,7 +498,7 @@ char* parseCommandLine(int argc, char **argv) {
 	    SaveOHetcHydrogens = TRUE;
 	    RotExistingOH      = TRUE;
 	    DemandFlipAllHNQs  = TRUE;
-	 }
+         }
          else if(n = compArgStr(p+1, "NOBUILD", 7)){
             PenaltyMagnitude = parseReal(p, n+1, 10);
          // PenaltyMagnitude = 200;      9999 in molprobity
@@ -729,12 +729,12 @@ void reduceHelp(bool showAll) { /*help*/
    cerr << "-NOADJust         do not process any rot or flip adjustments" << endl;
   }
    cerr << endl;
-   cerr << "-BUILD            add H, including His sc NH, then rotate and flip groups" << endl;
    cerr << "-NOBUILD#.#       build with a given penalty often 200 or 999" << endl;
+   cerr << "-BUILD            add H, including His sc NH, then rotate and flip groups" << endl;
    cerr << "                  (except for pre-existing methionine methyl hydrogens)" << endl;
-  if (showAll) {
    cerr << "                  (same as: -OH -ROTEXOH -HIS -FLIP)" << endl;
    cerr << endl;
+  if (showAll) {
    cerr << "-Keep             keep bond lengths as found" << endl;
    cerr << "-NBonds#          remove dots if cause within n bonds (default="<< NBondCutoff <<")" << endl;
    cerr << "-Model#           which model to process (default="<< ModelToProcess <<")" << endl;
@@ -915,6 +915,7 @@ void reduceChanges(bool showAll) { /*changes*/
 //   cerr  << "9/25/07 - rmi          Added a flag ADDNHATGAP which allows a single hydrogen to be built at the N-termini of chain breaks" << endl; 
    cerr  << "                       added break-amide to StdResH to treat these amides as a special case" << endl; 
    cerr  << "10/3/07 - rmi          Added support for Hybrid36 atom and residue numbers" << endl; 
+   cerr  << "11/1/07 - rmi          Added support for two character chainIds" << endl; 
    cerr  << endl;
    exit(1);
 }
@@ -1200,7 +1201,7 @@ bool isConnected(ResBlk* a, ResBlk* b) {
    if (ar.size() > 0 && br.size() > 0) {
 
       // must be in same chain
-      if ((*(ar.begin()))->chain() != (*(br.begin()))->chain()) { return FALSE; }
+      if (strcmp((*(ar.begin()))->chain(), (*(br.begin()))->chain()) != 0) { return FALSE; }
 
       // cterm C of 'a' must be close to nterm N of 'b'
       // we only look at the first set of conformations

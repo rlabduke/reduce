@@ -175,7 +175,8 @@ public:
    }
    const char*  resname() const { return _rep->_r.atom.residue.name;       }
    char insCode()         const { return _rep->_r.atom.residue.insertCode; }
-   char chain()           const { return _rep->_r.atom.residue.chainId;    }
+   const char* chain()    const { return _rep->_r.atom.residue.chainId;    }
+   char one_char_chain()  const { return _rep->_r.atom.residue.chainId[1]; }
    char alt()             const { return _rep->_r.atom.altLoc;             }
    const char* Hy36resno()const { return _rep->_r.atom.residue.seqNum;     }
    int  resno()           const { 
@@ -202,6 +203,7 @@ public:
       strncpy(_rep->_r.atom.name, s, 4);
       _rep->_r.atom.name[4] = '\0';
    }
+
    void atomno(int n)              { 
       const char* errmsg = hy36decode(5,  _rep->_r.atom.serialNum, 5, &n);
       //if (errmsg) throw std::runtime_error(errmsg);
@@ -278,7 +280,7 @@ public:
 
    static bool MappingSEGIDtoChains() { return _MappingSEGIDtoChains; }
    static int InstallMapOfSEGIDstoChains(const std::string m);
-   static char SEGIDtoChain(const char *seg, char c);
+   static const char* SEGIDtoChain(const char *seg, char c);
    static void DumpSEGIDtoChainMap(std::ostream& s, const char *t);
    std::string recName() const;
    std::string stdFormatString() const { return recName(); };

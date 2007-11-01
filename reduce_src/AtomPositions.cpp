@@ -242,7 +242,7 @@ void AtomPositions::insertRot(const PDBrec& hr,
 
 	char descrbuf[30];
 
-	::sprintf(descrbuf, "%c%4s%c%-3.3s%-4.4s%c",
+	::sprintf(descrbuf, "%2s%4s%c%-3.3s%-4.4s%c",
 		hr.chain(), hr.Hy36resno(), hr.insCode(),
 		hr.resname(), c1.atomname(), hr.alt());
 	std::string descr = descrbuf;
@@ -307,7 +307,7 @@ void AtomPositions::insertRot(const PDBrec& hr,
 void AtomPositions::doNotAdjust(const PDBrec& a) {
 	char descrbuf[30];
 
-	::sprintf(descrbuf, "%c%4d%c%-3.3s%-4.4s%c",
+	::sprintf(descrbuf, "%2s%4d%c%-3.3s%-4.4s%c",
 		a.chain(), a.resno(), a.insCode(),
 		a.resname(), "", a.alt());
 	const std::string descr = descrbuf;
@@ -345,7 +345,7 @@ std::list<char> AtomPositions::insertFlip(const ResBlk& rblk) {
 				if ( visableAltConf(*atsq, _onlyA)
 					&&  (atsq->alt() == ' ' || atsq->alt() == *alts) ) {
   
-					::sprintf(descrbuf, "%c%4d%c%-3.3s%-4.4s%c",
+					::sprintf(descrbuf, "%2s%4d%c%-3.3s%-4.4s%c",
 						atsq->chain(), atsq->resno(), atsq->insCode(),
 						atsq->resname(), "", (*alts));
 					descriptor = descrbuf;
@@ -385,7 +385,7 @@ void AtomPositions::insertFlip(PDBrec* hr, std::list<char> alts_list) {
 	std::list<char>::iterator alts = alts_list.begin();
 	while(alts != alts_list.end()) {
 		if (hr->alt() == ' ' || hr->alt() == *alts) {
-			::sprintf(descrbuf, "%c%4d%c%-3.3s%-4.4s%c",
+			::sprintf(descrbuf, "%2s%4d%c%-3.3s%-4.4s%c",
 				hr->chain(), hr->resno(), hr->insCode(),
 				hr->resname(), "", (*alts));
 			std::string descr = descrbuf;
@@ -1341,7 +1341,7 @@ void AtomPositions::generateWaterPhantomHs(std::list<PDBrec*>& waters) {
 					bool isAromRingAtom = StdResH::ResXtraInfo().atomHasAttrib(
 						rec->resname(), rec->atomname(), AROMATICFLAG);
 					
-					::sprintf(descrbuf, "%-3.3s%c%-3.3s%4d%c%c",
+					::sprintf(descrbuf, "%-3.3s%c%-3.3s%4d%c%2s",
 						(isAromRingAtom ? "/R/" : ""), rec->alt(),
 						rec->resname(), rec->resno(),
 						rec->insCode(), rec->chain());
