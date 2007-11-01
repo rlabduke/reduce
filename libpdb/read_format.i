@@ -46,12 +46,12 @@
 /* SHEET */	"%6 %4d %3s%2d %3s%2s%4s%c %3s%2s%4s%c%2d %4s%3s%2s%4s%c %4s%3s%2s%4s%c%10s",
 /* SIGATM */	"%6 %5s %4s%c%3s%2s%4s%c%3 %8f%8f%8f%6f%6f%6 %4s%2s%2s %10s",	/* ATOM */   /**non-standard**/
 /* SIGUIJ */	"%6 %5s %4s%c%3s%2s%4s%c %7d%7d%7d%7d%7d%7d%2 %4s%2s%2s %10s", /* ANISOU */   /**non-standard**/
-/* SITE */	"%7 %3d %3s %2d %4s%c%4s%c %4s%c%4s%c %4s%c%4s%c %4s%c%4s%c%9 %10s",
+/* SITE */	"%7 %3d %3s %2d %3s%2s%4s%c %3s%2s%4s%c %3s%2s%4s%c %3s%2s%4s%c%9 %10s",
 /* SOURCE */	"%9 %c%60s%10s",			/* AUTHOR */
 /* SPRSDE */	"%8 %2d %9s %4s%6 %4s %4s %4s %4s %4s %4s %4s %4s%10s",
-/* SSBOND */	"%7 %3d %4s%c %4s%c   %4s%c %4s%c%4 %30s%10s",
-/* TER */	"%6 %5s%6 %4s%c%4s%c%43 %10s",
-/* TURN */	"%7 %3d %3s %4s%c%4s%c %4s%c%4s%c%4 %30s%10s",
+/* SSBOND */	"%7 %3d %3s%2s %4s%c   %3s%2s %4s%c%4 %30s%10s",
+/* TER */	"%6 %5s%6 %3s%2s%4s%c%43 %10s",
+/* TURN */	"%7 %3d %3s %3s%2s%4s%c %3s%2s%4s%c%4 %30s%10s",
 /* TVECT */	"%7 %3d%10f%10f%10f%30s%10s",
 /* USER */	"%4 %2s%64s%10s",
 /* MODEL */	"%9 %5d%56 %10s",
@@ -61,7 +61,7 @@
 /* SYMOP */	"%5 %d %3d%10f%10f%10f%5 %10f%15 %10s",
 /* MTXDES */	"%7 %3d %59s%10s",			/* FTNOTE */
 /* CMPDES */	"%7 %3d %59s%10s",			/* FTNOTE */
-/* CMPONT */	"%7 %3d %4s%c %4s%c %4s%c %4s%c%36 %10s",
+/* CMPONT */	"%7 %3d %3s%2s %4s%c %3s%2s %4s%c%36 %10s",
 /* TRNSFM */	"%7 %3d %3d %3d%52 %10s",
 /* AGRDES */	"%7 %3d %59s%10s",			/* FTNOTE */
 /* AGGRGT */	"%7 %3d %3d %3d %3d %3d %3d %3d %3d %3d %3d %3d %3d %3d %3d %3d %3d%10s",

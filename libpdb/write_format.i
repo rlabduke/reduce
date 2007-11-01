@@ -44,12 +44,12 @@
 "SHEET %4D %3s%2d %3s%2s%4s%c %-3s%2s%4s%c%2d %-4s%-3s%2s%4s%c %-4s%-3s%2s%4s%c%s",
 "SIGATM%5s %-4s%c%-3s%2s%4s%c   %8.3f%8.3f%8.3f%6.2f%6.2f      %-4s%2s%-2s %-10s", /**non-standard**/
 "SIGUIJ%5s %-4s%c%-3s%2s%4s%c %7D%7D%7D%7D%7D%7D  %-4s%2s%-2s %-10s",	/* ANISOU */  /**non-standard**/
-"SITE   %3d %3s %2d %-4s%c%4s%c %-4s%c%4s%c %-4s%c%4s%c %-4s%c%4s%c         %s",
+"SITE   %3d %3s %2d %-3s%2s%4s%c %-3s%2s%4s%c %-3s%2s%4s%c %-3s%2s%4s%c         %s",
 "SOURCE   %c%-60s%s",					/* AUTHOR */
 "SPRSDE  %2D %-9s %-10s%-5s%-5s%-5s%-5s%-5s%-5s%-5s%-4s%s",
-"SSBOND %3D %-4s%c %4s%c   %-4s%c %4s%c    %-30s%s",
-"TER   %5s      %-4s%c%4s%c                                           %s",
-"TURN   %3D %3s %-4s%c%4s%c %-4s%c%4s%c    %-30s%s",
+"SSBOND %3D %-3s%2s %4s%c   %-3s%2s %4s%c    %-30s%s",
+"TER   %5s      %-3s%2s%4s%c                                           %s",
+"TURN   %3D %3s %-3s%2s%4s%c %-3s%2s%4s%c    %-30s%s",
 "TVECT  %3D%10.5f%10.5f%10.5f%-30s%s",
 "USER%-2s%-64s%s",
 "MODEL    %5d                                                        %s",
@@ -59,7 +59,7 @@
 "SYMOP%1d %3d%10.6f%10.6f%10.6f     %10.5f               %s",
 "MTXDES %3d %59s %s",					/* FTNOTE */
 "CMPDES %3d %59s %s",					/* FTNOTE */
-"CMPONT %3d %4s%c %4s%c %4s%c %4s%c                                    %s",
+"CMPONT %3d %3s%2s %4s%c %3s%2s %4s%c                                    %s",
 "TRNSFM %3d %3d %3d                                                    %s",
 "AGRDES %3d %59s %s",					/* FTNOTE */
 "AGGRGT %3d %3d %3d %3d %3d %3d %3d %3d %3d %3d %3d %3d %3d %3d %3d %3d%s",
