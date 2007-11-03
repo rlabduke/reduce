@@ -257,33 +257,31 @@ void PDBrec::segidLabel(const char* s) {
    strncpy(_rep->_r.atom.segID, s, 4);
    _rep->_r.atom.segID[4] = '\0';
    if (_MappingSEGIDtoChains) {
-      strncpy(_rep->_r.atom.residue.chainId, SEGIDtoChain(s, one_char_chain()), 2);
-      _rep->_r.atom.residue.chainId[2] = '\0';
+      SEGIDtoChain(s, one_char_chain(), _rep->_r.atom.residue.chainId);
    }
 }
 
 void PDBrec::MapSEGIDtoChain() {
    if (_MappingSEGIDtoChains) {
-      strncpy(_rep->_r.atom.residue.chainId, SEGIDtoChain(segidLabel(), one_char_chain()), 2);
-       _rep->_r.atom.residue.chainId[2] = '\0';
+      SEGIDtoChain(
+         segidLabel(), one_char_chain(), _rep->_r.atom.residue.chainId);
    }
 }
 
-const char* PDBrec::SEGIDtoChain(const char *seg, char cdefault) {
-   char* buf; 
-   buf[0] = buf [1] = ' '; 
-   buf[2] = '\0'; 
+void PDBrec::SEGIDtoChain(const char *seg, char cdefault, char* dest) {
+   dest[0] = dest[1] = ' '; 
+   dest[2] = '\0'; 
    if (_MappingSEGIDtoChains && seg) {
       std::string s = FormatSegToChainKey(seg);
 	  std::map<std::string, char>::const_iterator i = _SEGtoChainMap.find(s);
 		if (i != _SEGtoChainMap.end())
 			//return i->second;
-                        buf[1] = i->second;
-                        return buf;  
+                        dest[1] = i->second;
+                        return;
    }
 	//return cdefault;
-        buf[1] = cdefault;
-       return buf;
+        dest[1] = cdefault;
+        return;
 }
 
 std::string PDBrec::FormatSegToChainKey(const char *seg) {

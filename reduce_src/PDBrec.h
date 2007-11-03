@@ -280,7 +280,7 @@ public:
 
    static bool MappingSEGIDtoChains() { return _MappingSEGIDtoChains; }
    static int InstallMapOfSEGIDstoChains(const std::string m);
-   static const char* SEGIDtoChain(const char *seg, char c);
+   static void SEGIDtoChain(const char *seg, char c, char* dest);
    static void DumpSEGIDtoChainMap(std::ostream& s, const char *t);
    std::string recName() const;
    std::string stdFormatString() const { return recName(); };
