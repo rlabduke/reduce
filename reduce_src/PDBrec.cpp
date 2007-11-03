@@ -101,69 +101,69 @@ void PDBrec::getConect(int cvec[]) const {
 void PDBrec::setConect(int cvec[]) {
    char Hy36_cvec[11][6]; 
    const char* errmsg = hy36encode(5,  cvec[0], Hy36_cvec[0]);
-   Hy36_cvec[0][6]='\0';
+   Hy36_cvec[0][5]='\0';
    strncpy(_rep->_r.conect.serialNum, Hy36_cvec[0], 6); 
-   _rep->_r.conect.serialNum[6]='0'; 
+   _rep->_r.conect.serialNum[5]='0'; 
    //if (errmsg) throw std::runtime_error(errmsg);
 
    errmsg = hy36encode(5, cvec[1], Hy36_cvec[1]);
-   Hy36_cvec[1][6]='\0';
+   Hy36_cvec[1][5]='\0';
    strncpy(_rep->_r.conect.covalent[0], Hy36_cvec[1],6);
-   _rep->_r.conect.covalent[0][6]='\0';
+   _rep->_r.conect.covalent[0][5]='\0';
    //if (errmsg) throw std::runtime_error(errmsg);
  
    errmsg = hy36encode(5, cvec[2], Hy36_cvec[2]);
-   Hy36_cvec[2][6]='\0';
+   Hy36_cvec[2][5]='\0';
    strncpy(_rep->_r.conect.covalent[1], Hy36_cvec[2],6);
-   _rep->_r.conect.covalent[1][6]='\0';
+   _rep->_r.conect.covalent[1][5]='\0';
    //if (errmsg) throw std::runtime_error(errmsg);
 
    errmsg = hy36encode(5, cvec[3], Hy36_cvec[3]);
-   Hy36_cvec[3][6]='\0';
+   Hy36_cvec[3][5]='\0';
    strncpy(_rep->_r.conect.covalent[2], Hy36_cvec[3],6);
-   _rep->_r.conect.covalent[2][6]='\0';
+   _rep->_r.conect.covalent[2][5]='\0';
    //if (errmsg) throw std::runtime_error(errmsg);
 
    errmsg = hy36encode(5, cvec[4], Hy36_cvec[4]);
-   Hy36_cvec[4][6]='\0';
+   Hy36_cvec[4][5]='\0';
    strncpy(_rep->_r.conect.covalent[3], Hy36_cvec[4],6);
-   _rep->_r.conect.covalent[3][6]='\0';
+   _rep->_r.conect.covalent[3][5]='\0';
    //if (errmsg) throw std::runtime_error(errmsg);
 
    errmsg = hy36encode(5, cvec[5], Hy36_cvec[5]);
-   Hy36_cvec[5][6]='\0';
+   Hy36_cvec[5][5]='\0';
    strncpy(_rep->_r.conect.bonds[0].hydrogen[0], Hy36_cvec[5],6); 
-   _rep->_r.conect.bonds[0].hydrogen[0][6]='\0';
+   _rep->_r.conect.bonds[0].hydrogen[0][5]='\0';
    //if (errmsg) throw std::runtime_error(errmsg);
 
    errmsg = hy36encode(5, cvec[6], Hy36_cvec[6]);
-   Hy36_cvec[6][6]='\0';
+   Hy36_cvec[6][5]='\0';
    strncpy(_rep->_r.conect.bonds[0].hydrogen[1], Hy36_cvec[6],6);
-   _rep->_r.conect.bonds[0].hydrogen[1][6]='\0';
+   _rep->_r.conect.bonds[0].hydrogen[1][5]='\0';
    //if (errmsg) throw std::runtime_error(errmsg);
 
    errmsg = hy36encode(5, cvec[7], Hy36_cvec[7]);
-   Hy36_cvec[7][6]='\0';
+   Hy36_cvec[7][5]='\0';
    strncpy(_rep->_r.conect.bonds[0].salt, Hy36_cvec[7],6);
-   _rep->_r.conect.bonds[0].salt[6]='\0';
+   _rep->_r.conect.bonds[0].salt[5]='\0';
    //if (errmsg) throw std::runtime_error(errmsg);
 
    errmsg = hy36encode(5, cvec[8], Hy36_cvec[8]);
-   Hy36_cvec[8][6]='\0';
+   Hy36_cvec[8][5]='\0';
    strncpy(_rep->_r.conect.bonds[1].hydrogen[0], Hy36_cvec[8],6);
-   _rep->_r.conect.bonds[1].hydrogen[0][6]='\0';
+   _rep->_r.conect.bonds[1].hydrogen[0][5]='\0';
    //if (errmsg) throw std::runtime_error(errmsg);
 
    errmsg = hy36encode(5, cvec[9], Hy36_cvec[9]);
-   Hy36_cvec[9][6]='\0';
+   Hy36_cvec[9][5]='\0';
    strncpy(_rep->_r.conect.bonds[1].hydrogen[1], Hy36_cvec[9],6);
-   _rep->_r.conect.bonds[1].hydrogen[1][6]='\0';
+   _rep->_r.conect.bonds[1].hydrogen[1][5]='\0';
    //if (errmsg) throw std::runtime_error(errmsg);
 
    errmsg = hy36encode(5, cvec[10], Hy36_cvec[10]);
-   Hy36_cvec[10][6]='\0';
+   Hy36_cvec[10][5]='\0';
    strncpy(_rep->_r.conect.bonds[1].salt, Hy36_cvec[10],6);
-   _rep->_r.conect.bonds[1].salt[6]='\0';
+   _rep->_r.conect.bonds[1].salt[5]='\0';
    //if (errmsg) throw std::runtime_error(errmsg);
 
 //   _rep->_r.conect.serialNum            = cvec[0]; 
@@ -258,14 +258,14 @@ void PDBrec::segidLabel(const char* s) {
    _rep->_r.atom.segID[4] = '\0';
    if (_MappingSEGIDtoChains) {
       strncpy(_rep->_r.atom.residue.chainId, SEGIDtoChain(s, one_char_chain()), 2);
-      _rep->_r.atom.residue.chainId[3] = '\0';
+      _rep->_r.atom.residue.chainId[2] = '\0';
    }
 }
 
 void PDBrec::MapSEGIDtoChain() {
    if (_MappingSEGIDtoChains) {
       strncpy(_rep->_r.atom.residue.chainId, SEGIDtoChain(segidLabel(), one_char_chain()), 2);
-       _rep->_r.atom.residue.chainId[3] = '\0';
+       _rep->_r.atom.residue.chainId[2] = '\0';
    }
 }
 
