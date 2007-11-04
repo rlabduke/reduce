@@ -30,7 +30,7 @@
 "FTNOTE %3D %-59s%s",					/* REMARK */
 "HEADER    %-40s%-11s%c%-4s    %s",
 "HELIX  %3D %3s %-3s%2s %4s%c %-3s%2s %4s%c%2D%-30s%s",
-"HET    %-3s %2s%4s%c  %5d     %-40s%s",
+"HET    %-3s%2s%4s%c  %5d     %-40s%s",
 "HETATM%5s %-4s%c%-3s%2s%4s%c   %8.3f%8.3f%8.3f%6.2f%6.2f      %-4s%2s%-2s %-10s", /**non-standard**/
 "JRNL     %c%-60s%s",					/* AUTHOR */
 "MASTER    %5d%5d%5d%5d%5d%5d%5d%5d%5d%5d%5d%5d%s",

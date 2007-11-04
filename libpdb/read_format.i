@@ -31,8 +31,8 @@
 /* FORMUL */	"%8 %2d  %4s%2d%c%51s%10s",
 /* FTNOTE */	"%7 %3d %59s%10s",	/*  REMARK, SYMDES, MTXDES, CMPDES, AGRDES */
 /* HEADER */	"%10 %40s%9s  %c%4s%4 %10s",
-/* HELIX */	"%7 %3d %3s %4s%c %4s%c %4s%c %4s%c%2d%30s%10s",
-/* HET */	"%7 %4s %c%4s%c  %5d%5 %40s%10s",
+/* HELIX */	"%7 %3d %3s %3s%2s %4s%c %3s%2s %4s%c%2d%30s%10s",
+/* HET */	"%7 %3s%2s%4s%c  %5d%5 %40s%10s",
 /* HETATM */	"%6 %5s %4s%c%3s%2s%4s%c%3 %8f%8f%8f%6f%6f%6 %4s%2s%2s %10s",	/* ATOM */   /**non-standard**/
 /* JRNL */	"%9 %c%60s%10s",			/* AUTHOR */
 /* MASTER */	"%10 %5d%5d%5d%5d%5d%5d%5d%5d%5d%5d%5d%5d%10s",

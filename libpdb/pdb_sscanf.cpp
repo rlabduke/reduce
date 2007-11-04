@@ -180,8 +180,8 @@ PDB::sscanf(const char *buffer, const char *fmt, ...)
 			}
 			*s = '\0';
 			// remove trailing spaces
-			while (s > t && isspace(*--s))
-				*s = '\0';
+		//	while (s > t && isspace(*--s)) // Removed 11-4-07 RMI to allow for 2 character strings ending in ' '
+		//		*s = '\0';
 			break;
 
 		case 'c':			// character(s)
