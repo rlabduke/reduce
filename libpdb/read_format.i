@@ -18,8 +18,8 @@
  *
  */
 /* extra field included in ANISOU, ATOM and related records */
-/* changed %4s for resname to %3s%1c to force three character residue names */
-/* changed %3s%1c to %3s%2s to add two character chain names */
+/* changed %4s%c for resname to %3s %1c to force three character residue names */
+/* changed %3s %1c to %3s%2s to add two character chain names */
 /* UNKNOWN */	"%-80.80s",
 /* ANISOU */	"%6 %5s %4s%c%3s%2s%4s%c %7d%7d%7d%7d%7d%7d%2 %4s%2s%2s %10s", /* SIGUIJ */   /**non-standard**/
 /* ATOM */      "%6 %5s %4s%c%3s%2s%4s%c%3 %8f%8f%8f%6R%6f%6 %4s%2s%2s %10s", /* HETATM, SIGATM */   /**non-standard**/

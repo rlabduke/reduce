@@ -24,9 +24,9 @@
 #endif
 
 static const char *versionString =
-     "reduce: version 3.10 11/1/2007, Copyright 1997-2007, J. Michael Word";
+     "reduce: version 3.10 11/7/2007, Copyright 1997-2007, J. Michael Word";
 
-static const char *shortVersion    = "reduce.3.10.071101";
+static const char *shortVersion    = "reduce.3.10.071107";
 static const char *referenceString =
                        "Word, et. al. (1999) J. Mol. Biol. 285, 1735-1747.";
 static const char *electronicReference = "http://kinemage.biochem.duke.edu";
@@ -916,6 +916,7 @@ void reduceChanges(bool showAll) { /*changes*/
    cerr  << "                       added break-amide to StdResH to treat these amides as a special case" << endl; 
    cerr  << "10/3/07 - rmi          Added support for Hybrid36 atom and residue numbers" << endl; 
    cerr  << "11/1/07 - rmi          Added support for two character chainIds" << endl; 
+   cerr  << "11/7/07 - rmi          Reverted changes to pdb_sscanf.cpp and changed write format for chains to %-2s" <<endl; 
    cerr  << endl;
    exit(1);
 }
