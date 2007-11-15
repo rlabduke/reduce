@@ -18,8 +18,8 @@
  *
  */
 /* extra field included in ANISOU, ATOM and related records */
-/* changed %4s%c for resname to %3s %1c to force three character residue names */
-/* changed %3s %1c to %3s%2s to add two character chain names */
+/* changed %4s%c for resname to %3s%1c%c to force three character residue names */
+/* changed %3s%1c%c to %3s%2s to add two character chain names */
 /* UNKNOWN */	"%-80.80s",
 /* ANISOU */	"%6 %5s %4s%c%3s%2s%4s%c %7d%7d%7d%7d%7d%7d%2 %4s%2s%2s %10s", /* SIGUIJ */   /**non-standard**/
 /* ATOM */      "%6 %5s %4s%c%3s%2s%4s%c%3 %8f%8f%8f%6R%6f%6 %4s%2s%2s %10s", /* HETATM, SIGATM */   /**non-standard**/
@@ -32,7 +32,7 @@
 /* FTNOTE */	"%7 %3d %59s%10s",	/*  REMARK, SYMDES, MTXDES, CMPDES, AGRDES */
 /* HEADER */	"%10 %40s%9s  %c%4s%4 %10s",
 /* HELIX */	"%7 %3d %3s %3s%2s %4s%c %3s%2s %4s%c%2d%30s%10s",
-/* HET */	"%7 %3s%2s%4s%c  %5d%5 %40s%10s",
+/* HET */	"%7 %3s %2s%4s%c  %5d%5 %40s%10s",
 /* HETATM */	"%6 %5s %4s%c%3s%2s%4s%c%3 %8f%8f%8f%6f%6f%6 %4s%2s%2s %10s",	/* ATOM */   /**non-standard**/
 /* JRNL */	"%9 %c%60s%10s",			/* AUTHOR */
 /* MASTER */	"%10 %5d%5d%5d%5d%5d%5d%5d%5d%5d%5d%5d%5d%10s",

@@ -194,7 +194,7 @@ public:
 
 	AtomDescr getAtomDescr() const {
            int n;
-           const char* errmsg = hy36decode(5, (*_rep)._r.atom.serialNum, 5, &n);
+           const char* errmsg = hy36decode(4, (*_rep)._r.atom.residue.seqNum, 4, &n);
            //if (errmsg) throw std::runtime_error(errmsg);
            AtomDescr thedesc( Point3d( (*_rep)._r.atom.xyz[0],(*_rep)._r.atom.xyz[1],(*_rep)._r.atom.xyz[2]), n, vdwRad()); return thedesc;
         }

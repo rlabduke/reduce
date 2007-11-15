@@ -46,7 +46,8 @@ public:
 	static const int PDBRUNVersion = 6;	// Best version generated
 #endif
 	typedef char	Date[10];
-        typedef char    Hy36Num[6];              // hybrid 36 atom number
+        typedef char    Hy36Num[6];             // hybrid 36 atom number
+        typedef char    Hy36seqNum[5];          // hybrid 36 residue number
 	typedef char	AName[5];		// atom name - NO2*
 	typedef char	RName[5];		// residue name - ALA
 	typedef char	PName[5];		// pdb name - 9lyz
@@ -54,10 +55,10 @@ public:
 	typedef double	Real;			// size of floating point
 
 	struct Residue {			// residue info
-		RName	name;
-		char	chainId[3];
-		char	seqNum[5];
-		char	insertCode;
+		RName	   name;
+		char	   chainId[3];
+		Hy36seqNum seqNum;
+		char	   insertCode;
 	};
 
 	// graphics primitive types
@@ -116,7 +117,7 @@ public:
 	};
 	typedef Agrdes	Cmpdes;
 	struct Cmpont {
-		int	seqNum;
+		Hy36seqNum	seqNum;
 		Residue	residues[2];
 		char	reclabel[8];
 	};
@@ -252,7 +253,7 @@ public:
 	typedef Atom	Sigatm;
 	typedef Anisou	Siguij;
 	struct Site {
-		int	seqNum;
+		Hy36seqNum	seqNum;
 		Id	id;
 		int	count;
 		Residue	residues[4];
@@ -267,7 +268,7 @@ public:
 		char	reclabel[8];
 	};
 	struct Ssbond {
-		int	seqNum;
+		Hy36seqNum	seqNum;
 		Residue	residues[2];
 		char	comment[31];
 		char	reclabel[8];
@@ -291,7 +292,7 @@ public:
 		char	reclabel[8];
 	};
 	struct Turn {
-		int	seqNum;
+		Hy36seqNum	seqNum;
 		Id	id;
 		Residue	residues[2];
 		char	comment[31];

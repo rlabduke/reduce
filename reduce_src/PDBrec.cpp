@@ -181,7 +181,7 @@ void PDBrec::setConect(int cvec[]) {
 
 std::string PDBrec::recName() const {
 	char fmtbuf[30];
-	::sprintf(fmtbuf, "%2s%4d%c%-3.3s%-4.4s%c",
+	::sprintf(fmtbuf, "%-2.2s%4d%c%-3.3s%-4.4s%c",
 		chain(), resno(), insCode(),
 		resname(), atomname(), alt());
 	return fmtbuf;

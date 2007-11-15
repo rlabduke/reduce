@@ -24,9 +24,9 @@
 #endif
 
 static const char *versionString =
-     "reduce: version 3.10 11/7/2007, Copyright 1997-2007, J. Michael Word";
+     "reduce: version 3.10 11/14/2007, Copyright 1997-2007, J. Michael Word";
 
-static const char *shortVersion    = "reduce.3.10.071107";
+static const char *shortVersion    = "reduce.3.10.071114";
 static const char *referenceString =
                        "Word, et. al. (1999) J. Mol. Biol. 285, 1735-1747.";
 static const char *electronicReference = "http://kinemage.biochem.duke.edu";
@@ -732,9 +732,9 @@ void reduceHelp(bool showAll) { /*help*/
    cerr << "-NOBUILD#.#       build with a given penalty often 200 or 999" << endl;
    cerr << "-BUILD            add H, including His sc NH, then rotate and flip groups" << endl;
    cerr << "                  (except for pre-existing methionine methyl hydrogens)" << endl;
-   cerr << "                  (same as: -OH -ROTEXOH -HIS -FLIP)" << endl;
    cerr << endl;
   if (showAll) {
+   cerr << "                  (same as: -OH -ROTEXOH -HIS -FLIP)" << endl;
    cerr << "-Keep             keep bond lengths as found" << endl;
    cerr << "-NBonds#          remove dots if cause within n bonds (default="<< NBondCutoff <<")" << endl;
    cerr << "-Model#           which model to process (default="<< ModelToProcess <<")" << endl;
@@ -917,6 +917,10 @@ void reduceChanges(bool showAll) { /*changes*/
    cerr  << "10/3/07 - rmi          Added support for Hybrid36 atom and residue numbers" << endl; 
    cerr  << "11/1/07 - rmi          Added support for two character chainIds" << endl; 
    cerr  << "11/7/07 - rmi          Reverted changes to pdb_sscanf.cpp and changed write format for chains to %-2s" <<endl; 
+   cerr  << "11/14/07- rmi          Several BUG fixes:  in PDBrec.h getAtomDescr() wants seqNum not serialNum" <<endl;
+   cerr  << "                         in AtomPositions.cpp change format to %-2.2s for two character chains" <<endl;
+   cerr  << "                         fixed format strings in read_format.i and write_format.i"  <<endl;
+   cerr  << "                         explicitly added Hy36seqNum to pdb++.h" << endl; 
    cerr  << endl;
    exit(1);
 }
