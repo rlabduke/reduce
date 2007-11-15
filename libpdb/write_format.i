@@ -52,7 +52,7 @@
 "TER   %-5s      %-3s%-2s%4s%c                                           %s",
 "TURN   %3D %3s %-3s%-2s%4s%c %-3s%-2s%4s%c    %-30s%s",
 "TVECT  %3D%10.5f%10.5f%10.5f%-30s%s",
-"USER%-2s%-64s%s",
+"USER%-2s%-95s",
 "MODEL    %5d                                                        %s",
 "ENDMDL                                                                %s",
 "EXPDTA   %c%-60s%s",					/* AUTHOR */
