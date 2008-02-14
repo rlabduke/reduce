@@ -209,7 +209,7 @@ pdbrun6Type(const char *buf)
 		break;
 	case 'E': case 'e':
 		if (strncasecmp(buf + 1, "NDOBJ", 5) == 0
-		&& (buf[6] == '\0' || buf[6] == '\n' || buf[6] == ' '))
+		&& (buf[6] == '\0' || buf[6] == '\n' || buf[6] == '\r' || buf[6] == ' '))
 			return PDB::USER_ENDOBJ;
 		if (strncasecmp(buf + 1, "YEPOS ", 6) == 0)
 			return PDB::USER_EYEPOS;
@@ -234,7 +234,7 @@ pdbrun6Type(const char *buf)
 			break;
 		case 'E': case 'e':
 			if (buf[5] == 'N' && buf[6] == 'D'
-			&& (buf[7] == '\0' || buf[7] == '\n' || buf[7] == ' '))
+			&& (buf[7] == '\0' || buf[7] == '\n' || buf[7] == '\r' || buf[7] == ' '))
 				return PDB::USER_GFX_END;
 			break;
 		case 'F': case 'f':
@@ -267,7 +267,7 @@ pdbrun6Type(const char *buf)
 		break;
 	case 'O': case 'o':
 		if (strncasecmp(buf + 1, "BJECT", 5) == 0
-		&& (buf[6] == '\0' || buf[6] == '\n' || buf[6] == ' '))
+		&& (buf[6] == '\0' || buf[6] == '\n' || buf[6] == '\r' || buf[6] == ' '))
 			return PDB::USER_OBJECT;
 		break;
 	case 'P': case 'p':
@@ -296,7 +296,7 @@ PDB::getType(const char *buf)
 	char	rt[4];		// PDB record type
 	int	i;
 
-	for (i = 0; buf[i] != '\0' && buf[i] != '\n' && i < 4; i += 1) {
+	for (i = 0; buf[i] != '\0' && buf[i] != '\n' && buf[i] != '\r' && i < 4; i += 1) {
 		if (islower(buf[i]))
 			rt[i] = toupper(buf[i]);
 		else

@@ -52,7 +52,7 @@ int column_sscanf(const char *buffer, const char *fmt, ...) {
       if (*fmt != '%') {
          if (*buffer == *fmt)
             buffer++;
-         else if (*buffer != '\0' && *buffer != '\n')
+         else if (*buffer != '\0' && *buffer != '\n' && *buffer != '\r')
             return -1;
          continue;
       }
@@ -63,7 +63,7 @@ int column_sscanf(const char *buffer, const char *fmt, ...) {
          field_width = field_width * 10 + *fmt - '0';
       if (field_width == 0)
          field_width = 1;   // default
-      if (*buffer != '\0' && *buffer != '\n')
+      if (*buffer != '\0' && *buffer != '\n'  && *buffer != '\r')
          nmatch++;
 
       switch (*fmt) {
@@ -71,14 +71,14 @@ int column_sscanf(const char *buffer, const char *fmt, ...) {
       case 'd':         // integer
          // if we've already seen the end of the buffer, don't
          // try to get anymore characters
-         if (*buffer == '\0' || *buffer == '\n') {
+         if (*buffer == '\0' || *buffer == '\n'  || *buffer == '\r') {
             *(va_arg(ap, int *)) = 0;
             break;
          }
 
          s = tmp;
          for (i = 0; i < field_width; i++) {
-            if (*buffer == '\0' || *buffer == '\n')
+            if (*buffer == '\0' || *buffer == '\n' || *buffer == '\r')
                break;
             *s++ = *buffer++;
          }
@@ -94,14 +94,14 @@ int column_sscanf(const char *buffer, const char *fmt, ...) {
       case 'f':         // floating point
          // if we've already seen the end of the buffer, don't
          // try to get anymore characters
-         if (*buffer == '\0' || *buffer == '\n') {
+         if (*buffer == '\0' || *buffer == '\n' || *buffer == '\r') {
             *(va_arg(ap, double *)) = 0.0;
             break;
          }
 
          s = tmp;
          for (i = 0; i < field_width; i++) {
-            if (*buffer == '\0' || *buffer == '\n')
+            if (*buffer == '\0' || *buffer == '\n' || *buffer == '\r')
                break;
             *s++ = *buffer++;
          }
@@ -117,14 +117,14 @@ int column_sscanf(const char *buffer, const char *fmt, ...) {
       case 's':         // string
          // if we've already seen the end of the buffer, don't
          // try to get anymore characters
-         if (*buffer == '\0' || *buffer == '\n') {
+         if (*buffer == '\0' || *buffer == '\n' || *buffer == '\r') {
             *(va_arg(ap, char *)) = '\0';
             break;
          }
 
          s = t = va_arg(ap, char *);
          for (i = 0; i < field_width; i++) {
-            if (*buffer == '\0' || *buffer == '\n')
+            if (*buffer == '\0' || *buffer == '\n' || *buffer == '\r')
                break;
             *s++ = *buffer++;
          }
@@ -141,11 +141,11 @@ int column_sscanf(const char *buffer, const char *fmt, ...) {
 
          // if we've already seen the end of the buffer, don't
          // try to get anymore characters
-         if (*buffer == '\0' || *buffer == '\n')
+         if (*buffer == '\0' || *buffer == '\n' || *buffer == '\r')
             break;
 
          for (i = 0; i < field_width; i++) {
-            if (*buffer == '\0' || *buffer == '\n')
+            if (*buffer == '\0' || *buffer == '\n' || *buffer == '\r')
                break;
             *s++ = *buffer++;
          }
@@ -154,11 +154,11 @@ int column_sscanf(const char *buffer, const char *fmt, ...) {
       case ' ':         // space (ignore)
          // if we've already seen the end of the buffer, don't
          // try to get anymore characters
-         if (*buffer == '\0' || *buffer == '\n')
+         if (*buffer == '\0' || *buffer == '\n' || *buffer == '\r')
             break;
 
          for (i = 0; i < field_width; i++, buffer++)
-            if (*buffer == '\0' || *buffer == '\n')
+            if (*buffer == '\0' || *buffer == '\n' || *buffer == '\r')
                break;
          break;
 

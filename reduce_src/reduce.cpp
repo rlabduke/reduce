@@ -24,9 +24,9 @@
 #endif
 
 static const char *versionString =
-     "reduce: version 3.10 11/14/2007, Copyright 1997-2007, J. Michael Word";
+     "reduce: version 3.10 02/14/2008, Copyright 1997-2008, J. Michael Word";
 
-static const char *shortVersion    = "reduce.3.10.071114";
+static const char *shortVersion    = "reduce.3.10.080214";
 static const char *referenceString =
                        "Word, et. al. (1999) J. Mol. Biol. 285, 1735-1747.";
 static const char *electronicReference = "http://kinemage.biochem.duke.edu";
@@ -921,6 +921,9 @@ void reduceChanges(bool showAll) { /*changes*/
    cerr  << "                         in AtomPositions.cpp change format to %-2.2s for two character chains" <<endl;
    cerr  << "                         fixed format strings in read_format.i and write_format.i"  <<endl;
    cerr  << "                         explicitly added Hy36seqNum to pdb++.h" << endl; 
+   cerr  << "02/14/08 - vbc & rmi   Bob's fixes for dealing with windows line ending files (no fix for mac files though)." <<endl; 
+   cerr  << "             & jjh       I (vbc) attempted to fix some of the warnings for new hydrogen names so molprobity isn't" <<endl; 
+   cerr  << "                         quite as swamped." <<endl; 
    cerr  << endl;
    exit(1);
 }
@@ -1478,7 +1481,7 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
                                 return; // keep our naming conventions straight
                         }
                         if ( (pp.hasFeature(BACKBONEMODEL) &&   ! BackBoneModel) 
-                                ||   (pp.hasFeature(   NOTBBMODEL) && ! BackBoneModel) ) {
+                                ||   (pp.hasFeature(   NOTBBMODEL) && BackBoneModel) ) {
                                 return; // keep our naming conventions straight
                         }
 
