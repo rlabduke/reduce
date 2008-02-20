@@ -1481,7 +1481,7 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
                                 return; // keep our naming conventions straight
                         }
                         if ( (pp.hasFeature(BACKBONEMODEL) &&   ! BackBoneModel) 
-                                ||   (pp.hasFeature(   NOTBBMODEL) && BackBoneModel) ) {
+                                ||   (pp.hasFeature(   NOTBBMODEL) && ! BackBoneModel) ) {
                                 return; // keep our naming conventions straight
                         }
 
