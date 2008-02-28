@@ -24,9 +24,9 @@
 #endif
 
 static const char *versionString =
-     "reduce: version 3.10 02/20/2008, Copyright 1997-2008, J. Michael Word";
+     "reduce: version 3.11 02/28/2008, Copyright 1997-2008, J. Michael Word";
 
-static const char *shortVersion    = "reduce.3.10.080220";
+static const char *shortVersion    = "reduce.3.11.080228";
 static const char *referenceString =
                        "Word, et. al. (1999) J. Mol. Biol. 285, 1735-1747.";
 static const char *electronicReference = "http://kinemage.biochem.duke.edu";
@@ -924,6 +924,8 @@ void reduceChanges(bool showAll) { /*changes*/
    cerr  << "02/14/08 - vbc & rmi   Bob's fixes for dealing with windows line ending files (no fix for mac files though)." <<endl; 
    cerr  << "             & jjh       I (vbc) attempted to fix some of the warnings for new hydrogen names so molprobity isn't" <<endl; 
    cerr  << "                         quite as swamped." <<endl; 
+   cerr  << "02/20/08 - vbc & rmi   Fixed double H bug from Bob's previous correction" << endl;
+   cerr  << "02/28/08 - jmw & jjh   Fixed altID bug for H(alpha) when connecting atoms only non-blank altID and only one total conformation" <<endl;
    cerr  << endl;
    exit(1);
 }
@@ -1520,7 +1522,8 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 			}
 
 			bool considerNonAlt = FALSE;
-
+            
+            
 			if (pp.hasFeature(STRICTALTFLAG) && (numConnAtoms > 3)
 				&& (nconf[0] == 1) && (nconf[1] == 1) && (nconf[2] == 1)) {
 				maxalt = 1; // this is an H(alpha) so ignore the fourth (CBeta) alternate conf
@@ -1549,7 +1552,7 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 						}
 					}
 				}
-				if (considerNonAlt) { altId = ' '; occ = (*(firstAtoms.begin()))->occupancy(); }
+				if (considerNonAlt) { altId = (*(firstAtoms.begin()))->alt(); occ = (*(firstAtoms.begin()))->occupancy(); }
 
 				Point3d newHpos;
 

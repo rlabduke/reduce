@@ -25,6 +25,7 @@
 //  atom plan flags
 // -----------------
 
+//NOTE:  STRICTALTFLAG is used only to prevent alpha H from worrying about sidechain alternate conformations
 #define BONDBUMPFLAG    (1<<0)
 #define STRICTALTFLAG   (1<<1)
 #define   O2PRIMEFLAG   (1<<2)
