@@ -24,15 +24,16 @@
 #endif
 
 static const char *versionString =
-     "reduce: version 3.11 02/28/2008, Copyright 1997-2008, J. Michael Word";
+     "reduce: version 3.12 04/11/2008, Copyright 1997-2008, J. Michael Word";
 
-static const char *shortVersion    = "reduce.3.11.080228";
+static const char *shortVersion    = "reduce.3.12.080411";
 static const char *referenceString =
                        "Word, et. al. (1999) J. Mol. Biol. 285, 1735-1747.";
 static const char *electronicReference = "http://kinemage.biochem.duke.edu";
 
 #include <iostream>
 #include <fstream>
+#include <sstream>
 using std::cout;
 using std::cin;
 using std::cerr;
@@ -92,6 +93,7 @@ bool OKProcessMetMe           = TRUE;
 bool OKtoAdjust               = TRUE;
 bool ShowCliqueTicks          = TRUE;
 bool ShowOrientScore          = FALSE;
+bool StringInput              = FALSE;
 
 int MinNTermResNo     = 1;   // how high can a resno be for n-term?
 int ModelToProcess    = 1;   // which model to work on, 
@@ -203,7 +205,7 @@ int main(int argc, char **argv) {
 
    char *pdbFile = parseCommandLine(argc, argv);
 
-   if(pdbFile)
+   if(pdbFile && StringInput == FALSE)
    {/*can do multiple passes by rewinding input file*/
       //std::ifstream theinputstream(pdbFile); //would need rewind
       while(ModelToProcess) /* 041113 */
@@ -223,6 +225,11 @@ int main(int argc, char **argv) {
          else {ModelToProcess = 0;} /*ModelNext==0, time to quit*/
       }
    }
+   /* pdbFile here is used to hold the string to be memory efficient */
+   else if(StringInput == TRUE){
+       std::istringstream is(pdbFile); 
+       processPDBfile(is,NULL, cout);
+   }
    else
    {/*presume stdin for pdb file info*/
       processPDBfile(cin,            pdbFile, cout); 
@@ -236,6 +243,9 @@ void processPDBfile(std::istream& ifs, char *pdbFile, std::ostream& ofs) {
       cerr << versionString << endl;
       if (pdbFile) {
 	 cerr << "Processing file: \"" << pdbFile << "\"" << endl;
+      }
+      else if (StringInput){
+          cerr << "Processing input string" << endl;
       }
       else {
 	 cerr << "Processing file: --standard input--" << endl;
@@ -493,7 +503,10 @@ char* parseCommandLine(int argc, char **argv) {
 	    nfile = 1;
 	    pdbfile = NULL; // i.e. standard input
 	 }
-	 else if(compArgStr(p+1, "BUILD", 5)){
+	 else if(compArgStr(p+1, "STRING", 6)){
+         StringInput = TRUE;
+     }
+     else if(compArgStr(p+1, "BUILD", 5)){
 	    BuildHisHydrogens  = TRUE;
 	    SaveOHetcHydrogens = TRUE;
 	    RotExistingOH      = TRUE;
@@ -684,6 +697,10 @@ char* parseCommandLine(int argc, char **argv) {
 	    cerr << "unrecognized flag, \"" << p << "\", ignored." << endl;
 	 }
       }
+      else if (StringInput == TRUE){
+          pdbfile = p;
+          nfile = 1;
+      }
       else if (nfile <= 0) {
 	    pdbfile = p;
 	    nfile = 1;
@@ -764,6 +781,8 @@ void reduceHelp(bool showAll) { /*help*/
    cerr << "note: can also redirect with unix environment variable: REDUCE_HET_DICT" << endl;
   }
    cerr << endl;
+   cerr << "-STRING           pass reduce a string object from a script, must be quoted" << endl;
+   cerr << "usage: from within a script, reduce -STRING \"_name_of_string_variable_\"" << endl << endl;
    cerr << "-Quiet            do not write extra info to the console" << endl;
    cerr << "-REFerence        display citation reference" << endl;
    cerr << "-Version          display the version of reduce" <<endl; 
@@ -926,6 +945,7 @@ void reduceChanges(bool showAll) { /*changes*/
    cerr  << "                         quite as swamped." <<endl; 
    cerr  << "02/20/08 - vbc & rmi   Fixed double H bug from Bob's previous correction" << endl;
    cerr  << "02/28/08 - jmw & jjh   Fixed altID bug for H(alpha) when connecting atoms only non-blank altID and only one total conformation" <<endl;
+   cerr  << "04/11/08 - jjh         Added -STRING flag to allow scripts in Perl/Python to pass a string to reduce for processing.  Output still directed to standard out." << endl;
    cerr  << endl;
    exit(1);
 }
