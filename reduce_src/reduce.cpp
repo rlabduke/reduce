@@ -24,9 +24,9 @@
 #endif
 
 static const char *versionString =
-     "reduce: version 3.12 04/11/2008, Copyright 1997-2008, J. Michael Word";
+     "reduce: version 3.13 04/28/2008, Copyright 1997-2008, J. Michael Word";
 
-static const char *shortVersion    = "reduce.3.12.080411";
+static const char *shortVersion    = "reduce.3.13.080428";
 static const char *referenceString =
                        "Word, et. al. (1999) J. Mol. Biol. 285, 1735-1747.";
 static const char *electronicReference = "http://kinemage.biochem.duke.edu";
@@ -946,6 +946,7 @@ void reduceChanges(bool showAll) { /*changes*/
    cerr  << "02/20/08 - vbc & rmi   Fixed double H bug from Bob's previous correction" << endl;
    cerr  << "02/28/08 - jmw & jjh   Fixed altID bug for H(alpha) when connecting atoms only non-blank altID and only one total conformation" <<endl;
    cerr  << "04/11/08 - jjh         Added -STRING flag to allow scripts in Perl/Python to pass a string to reduce for processing.  Output still directed to standard out." << endl;
+   cerr << "04/28/08 - jjh          fixed 4 character Deuterium recognition w/ PDB 3.0 names" << endl;
    cerr  << endl;
    exit(1);
 }

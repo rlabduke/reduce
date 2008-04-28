@@ -103,6 +103,11 @@ std::string ResBlk::fixupAtomKey(const PDBrec &r) const {
       else if (buf[0] != 'D' && buf[0] != 'H' && buf[1] == 'D') {
 	 buf[1] = 'H';
       }
+      // fix deuterium bug -  080428 by JJH
+      // for version 3.0 Hydrogens/Deuteriums with 4 character names
+     else if (buf[0] != ' ' && buf[1] != ' ' && buf[2] != ' ' && buf[3] != ' ' && buf[0] == 'D'){
+         buf[0] = 'H';
+     }
    }
 
    if((::strcmp(r.resname(), "NH2" ) == 0)
