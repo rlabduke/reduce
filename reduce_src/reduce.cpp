@@ -11,7 +11,7 @@
 // in any way and (2) any modified versions of the program are
 // also available for free.
 //               ** Absolutely no Warranty **
-// Copyright (C) 1999-2003 J. Michael Word
+// Copyright (C) 1999-2008 J. Michael Word
 // **************************************************************
 //
 //  reduceChanges now contains the CHANGELOG or history info
@@ -24,9 +24,9 @@
 #endif
 
 static const char *versionString =
-     "reduce: version 3.13 04/28/2008, Copyright 1997-2008, J. Michael Word";
+     "reduce: version 3.14 08/21/2008, Copyright 1997-2008, J. Michael Word";
 
-static const char *shortVersion    = "reduce.3.13.080428";
+static const char *shortVersion    = "reduce.3.14.080821";
 static const char *referenceString =
                        "Word, et. al. (1999) J. Mol. Biol. 285, 1735-1747.";
 static const char *electronicReference = "http://kinemage.biochem.duke.edu";
@@ -94,6 +94,7 @@ bool OKtoAdjust               = TRUE;
 bool ShowCliqueTicks          = TRUE;
 bool ShowOrientScore          = FALSE;
 bool StringInput              = FALSE;
+bool ShowCharges              = FALSE;
 
 int MinNTermResNo     = 1;   // how high can a resno be for n-term?
 int ModelToProcess    = 1;   // which model to work on, 
@@ -123,6 +124,9 @@ bool UseSEGIDtoChainMap = FALSE; // if true, override some chain ids
 #ifndef HET_DICTIONARY
 //#define HET_DICTIONARY "reduce_het_dict.txt"
 #define HET_DICTIONARY "reduce_wwPDB_het_dict.txt"
+#endif
+#ifndef HET_DICTOLD
+#define HET_DICTOLD "reduce_het_dict.txt"
 #endif
 std::string DBfilename( HET_DICTIONARY );
 
@@ -563,7 +567,7 @@ char* parseCommandLine(int argc, char **argv) {
 	 }
 	 else if((n = compArgStr(p+1, "OLDpdb", 3)) && ! UseXplorNames){
 	    UseOldNames = TRUE; 
-	    DBfilename = "reduce_het_dict.txt";
+	    DBfilename = HET_DICTOLD;
 	 }
          else if((n = compArgStr(p+1, "OLDpdb", 3)) && UseXplorNames){
 	    cerr << "Cannot use both -Xplor and -OLDpdb flags" << endl; 
@@ -620,6 +624,9 @@ char* parseCommandLine(int argc, char **argv) {
 	 else if((n = compArgStr(p+1, "ALLALT", 6))){
 	    DoOnlyAltA = FALSE;
 	 }
+     else if((n = compArgStr(p+1, "CHARGEs", 6))){
+        ShowCharges = TRUE;
+     }
 	 else if((n = compArgStr(p+1, "NOHETh", 5))){
 	    ProcessConnHydOnHets = FALSE;
 	 }
@@ -742,6 +749,7 @@ void reduceHelp(bool showAll) { /*help*/
 //   cerr << "-ALLMETHYLS       allow all methyl groups to rotate" << endl;
    cerr << "-ONLYA            only adjust 'A' conformations (default)" << endl;
    cerr << "-ALLALT           process adjustments for all conformations" << endl;
+   cerr << "-CHARGEs          output charge state for appropriate hydrogen records" << endl;
    cerr << "-NOROTMET         do not rotate methionine methyl groups" << endl;
    cerr << "-NOADJust         do not process any rot or flip adjustments" << endl;
   }
@@ -946,7 +954,8 @@ void reduceChanges(bool showAll) { /*changes*/
    cerr  << "02/20/08 - vbc & rmi   Fixed double H bug from Bob's previous correction" << endl;
    cerr  << "02/28/08 - jmw & jjh   Fixed altID bug for H(alpha) when connecting atoms only non-blank altID and only one total conformation" <<endl;
    cerr  << "04/11/08 - jjh         Added -STRING flag to allow scripts in Perl/Python to pass a string to reduce for processing.  Output still directed to standard out." << endl;
-   cerr << "04/28/08 - jjh          fixed 4 character Deuterium recognition w/ PDB 3.0 names" << endl;
+   cerr  << "04/28/08 - jjh          fixed 4 character Deuterium recognition w/ PDB 3.0 names" << endl;
+   cerr  << "08/21/08 - jjh          added -CHARGEs flag to control charge state output - off by default" << endl;
    cerr  << endl;
    exit(1);
 }
@@ -1406,7 +1415,6 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 	if (!firstAtoms.empty()) { // must connect to something!
 
 		if (!ourHydrogens.empty()) { // Hydrogen exists
-
 			PDBrec* o = NULL;
 			for (std::list<PDBrec*>::iterator it = ourHydrogens.begin(); it != ourHydrogens.end(); ++it) {
 				o = *it;
@@ -1544,7 +1552,6 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 
 			bool considerNonAlt = FALSE;
             
-            
 			if (pp.hasFeature(STRICTALTFLAG) && (numConnAtoms > 3)
 				&& (nconf[0] == 1) && (nconf[1] == 1) && (nconf[2] == 1)) {
 				maxalt = 1; // this is an H(alpha) so ignore the fourth (CBeta) alternate conf
@@ -1600,25 +1607,27 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 
 					newHatom->elemLabel(" H");
 					newHatom->chargeLabel("  "); // blank since we don't know
-
-					int chrgflgs = basicChargeState(newHatom->atomname(),
-						newHatom->resname(),
-						PositiveChargeFlag,
-						NegativeChargeFlag,
-						NULL);
-					if (chrgflgs != 0) {
-						if ((chrgflgs & PositiveChargeFlag) != 0) {
-							newHatom->setPositive();
-							newHatom->chargeLabel(" +");
-						}
-						if ((chrgflgs & NegativeChargeFlag) != 0) {
-							newHatom->setNegative();
-							newHatom->chargeLabel(" -");
-						}
-					}
+                    
+                    //if charges desired, determine and output
+                    if(ShowCharges){
+					    int chrgflgs = basicChargeState(newHatom->atomname(),
+						    newHatom->resname(),
+						    PositiveChargeFlag,
+						    NegativeChargeFlag,
+						    NULL);
+					    if (chrgflgs != 0) {
+						    if ((chrgflgs & PositiveChargeFlag) != 0) {
+							    newHatom->setPositive();
+							    newHatom->chargeLabel(" +");
+						    }
+						    if ((chrgflgs & NegativeChargeFlag) != 0) {
+							    newHatom->setNegative();
+							    newHatom->chargeLabel(" -");
+						    }
+					    }
+                    }
 					
 					if (visableAltConf(*newHatom, DoOnlyAltA)){ // add hyd. only if visible
-
 						// look for cyclization or other modifications to rot. groups
 
 						if ((numConnAtoms > 2) &&

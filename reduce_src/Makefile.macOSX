@@ -11,7 +11,9 @@ TOOLHOME    = ../toolclasses
 PDBHOME     = ../libpdb
 INSTALLHOME = ..
 DICT_HOME   = /usr/local/reduce_wwPDB_het_dict.txt
+DICT_OLD    =/usr/local/reduce_het_dict.txt
 DICT_LOC    = -DHET_DICTIONARY='"$(DICT_HOME)"'
+DICT_LOCOLD = -DHET_DICTOLD='"$(DICT_OLD)"'
 PROG_FLGS   = -isysroot /Developer/SDKs/MacOSX10.4u.sdk -arch i386 -arch ppc \
               -DAROMATICS_ACCEPT_HBONDS -DCHARFUNCMACROS \
               -DBOOLPREDEFINED  -DBRACKETOPERPARMS -DLEFT_JUSTIFY_NUC_RES_OK \
@@ -20,7 +22,7 @@ PROG_FLGS   = -isysroot /Developer/SDKs/MacOSX10.4u.sdk -arch i386 -arch ppc \
 #              -DDEBUGLOOKFORTHREEWAYOVERLAP 
 #              -DDEBUGMOVABLENODE -DDEBUGDOTCOUNTS
 #              -DMINPREDEFINED -DMAXPREDEFINED
-CFLAGS      = $(OPT) $(DEBUG) $(PROG_FLGS) $(DICT_LOC) \
+CFLAGS      = $(OPT) $(DEBUG) $(PROG_FLGS) $(DICT_LOC) $(DICT_LOCOLD)\
               -I$(PDBHOME) -I$(TOOLHOME) 
 #              -Wall
 LFLAGS      = -lm -Wl,-syslibroot,/Developer/SDKs/MacOSX10.4u.sdk -arch i386 -arch ppc\
