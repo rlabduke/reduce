@@ -1,6 +1,6 @@
 Import("reduce_scons_env")
 
-env = reduce_scons_env.Copy()
+env = reduce_scons_env.Clone()
 env.Append(
   CXXFLAGS=[
     "-DBOOLPREDEFINED",
