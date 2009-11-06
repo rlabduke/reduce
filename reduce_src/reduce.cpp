@@ -24,9 +24,9 @@
 #endif
 
 static const char *versionString =
-     "reduce: version 3.14 08/21/2008, Copyright 1997-2008, J. Michael Word";
+     "reduce: version 3.15 11/6/2009, Copyright 1997-2009, J. Michael Word";
 
-static const char *shortVersion    = "reduce.3.14.080821";
+static const char *shortVersion    = "reduce.3.15.091106";
 static const char *referenceString =
                        "Word, et. al. (1999) J. Mol. Biol. 285, 1735-1747.";
 static const char *electronicReference = "http://kinemage.biochem.duke.edu";
@@ -510,6 +510,19 @@ char* parseCommandLine(int argc, char **argv) {
 	 else if(compArgStr(p+1, "STRING", 6)){
          StringInput = TRUE;
      }
+     else if(compArgStr(p+1, "FLIP", 4)){
+       BuildHisHydrogens  = TRUE;
+	   SaveOHetcHydrogens = TRUE;
+	   RotExistingOH      = TRUE;
+	   DemandFlipAllHNQs  = TRUE;
+     }
+     else if(compArgStr(p+1, "NOFLIP", 6)){
+       PenaltyMagnitude=9999;
+       BuildHisHydrogens  = TRUE;
+	   SaveOHetcHydrogens = TRUE;
+	   RotExistingOH      = TRUE;
+	   DemandFlipAllHNQs  = TRUE;
+     }
      else if(compArgStr(p+1, "BUILD", 5)){
 	    BuildHisHydrogens  = TRUE;
 	    SaveOHetcHydrogens = TRUE;
@@ -517,7 +530,12 @@ char* parseCommandLine(int argc, char **argv) {
 	    DemandFlipAllHNQs  = TRUE;
          }
          else if(n = compArgStr(p+1, "NOBUILD", 7)){
-            PenaltyMagnitude = parseReal(p, n+1, 10);
+            PenaltyMagnitude = parseReal(p, n+1, 10, PenaltyMagnitude);
+            if(PenaltyMagnitude < 0){
+              cerr << "!!ERROR!!" << endl;
+              cerr << "Penalty Magnitude for -NOBUILD must be > 0" << endl << endl;
+              reduceHelp(FALSE);
+            }
          // PenaltyMagnitude = 200;      9999 in molprobity
             BuildHisHydrogens  = TRUE;
             SaveOHetcHydrogens = TRUE;
@@ -631,43 +649,43 @@ char* parseCommandLine(int argc, char **argv) {
 	    ProcessConnHydOnHets = FALSE;
 	 }
 	 else if((n = compArgStr(p+1, "DENSity", 4))){
-	    VdwDotDensity = parseReal(p, n+1, 10);
+	    VdwDotDensity = parseReal(p, n+1, 10, VdwDotDensity);
 	 }
 	 else if((n = compArgStr(p+1, "PENalty", 3))){
-	    PenaltyMagnitude = parseReal(p, n+1, 10);
+	    PenaltyMagnitude = parseReal(p, n+1, 10, PenaltyMagnitude);
 	 }
 	 else if((n = compArgStr(p+1, "RADius", 3))){
-	    ProbeRadius = parseReal(p, n+1, 10);
+	    ProbeRadius = parseReal(p, n+1, 10, ProbeRadius);
 	 }
 	 else if((n = compArgStr(p+1, "NBonds", 2))){
 	    NBondCutoff = parseInteger(p, n+1, 10);
 	 }
 	 else if((n = compArgStr(p+1, "OCCcutoff", 3))){
-	    OccupancyCutoff = parseReal(p, n+1, 10);
+	    OccupancyCutoff = parseReal(p, n+1, 10, OccupancyCutoff);
 	 }
 	 else if((n = compArgStr(p+1, "H2OBcutoff", 4))){
 	    WaterBcutoff = 1.0 * parseInteger(p, n+1, 10);
 	 }
 	 else if((n = compArgStr(p+1, "H2OOCCcutoff", 6))){
-	    WaterOCCcutoff = parseReal(p, n+1, 10);
+	    WaterOCCcutoff = parseReal(p, n+1, 10, WaterOCCcutoff);
 	 }
 	 else if((n = compArgStr(p+1, "HBREGcutoff", 5))){
-	    MinRegHBgap = parseReal(p, n+1, 10);
+	    MinRegHBgap = parseReal(p, n+1, 10, MinRegHBgap);
 	 }
 	 else if((n = compArgStr(p+1, "HBCHargedcutoff", 4))){
-	    MinChargedHBgap = parseReal(p, n+1, 10);
+	    MinChargedHBgap = parseReal(p, n+1, 10, MinChargedHBgap);
 	 }
 	 else if((n = compArgStr(p+1, "BADBumpcutoff", 4))){
-	    BadBumpGapCut = parseReal(p, n+1, 10);
+	    BadBumpGapCut = parseReal(p, n+1, 10, BadBumpGapCut);
 	 }
 	 else if((n = compArgStr(p+1, "NONMETALBump", 9))){
-	    NonMetalBumpBias = parseReal(p, n+1, 10);
+	    NonMetalBumpBias = parseReal(p, n+1, 10, NonMetalBumpBias);
 	 }
 	 else if((n = compArgStr(p+1, "METALBump", 6))){
-	    MetalBumpBias = parseReal(p, n+1, 10);
+	    MetalBumpBias = parseReal(p, n+1, 10, MetalBumpBias);
 	 }
          else if((n = compArgStr(p+1, "GAPERROR", 8))){
-            GapWidth = parseReal(p, n+1, 10);
+            GapWidth = parseReal(p, n+1, 10, GapWidth);
             if (GapWidth > 1.4) {
                cerr << "Max allowed HalfGapWidth is 1.4" << endl; 
                exit(1); 
@@ -729,8 +747,14 @@ void reduceHelp(bool showAll) { /*help*/
 //   cerr << "Adds hydrogens to a PDB format file and writes to standard output." << endl;
 //   cerr << "(note: By default, HIS sidechain NH protons are not added. See -BUILD)" << endl;
    cerr << endl;
+   cerr << "Suggested usage:" << endl;
+   cerr << "reduce -FLIP myfile.pdb > myfileFH.pdb (do NQH-flips)" << endl;
+   cerr << "reduce -NOFLIP myfile.pdb > myfileH.pdb (do NOT do NQH-flips)" << endl << endl;
    cerr << "Flags:" << endl;
+   cerr << "-FLIP             add H and rotate and flip NQH groups" << endl;
+   cerr << "-NOFLIP           add H and rotate groups with no NQH flips" << endl;
    cerr << "-Trim             remove (rather than add) hydrogens" << endl;
+   
   if (showAll) {
    cerr << endl;
    cerr << "-NOOH             remove hydrogens on OH and SH groups" << endl;
@@ -956,6 +980,7 @@ void reduceChanges(bool showAll) { /*changes*/
    cerr  << "04/11/08 - jjh         Added -STRING flag to allow scripts in Perl/Python to pass a string to reduce for processing.  Output still directed to standard out." << endl;
    cerr  << "04/28/08 - jjh          fixed 4 character Deuterium recognition w/ PDB 3.0 names" << endl;
    cerr  << "08/21/08 - jjh          added -CHARGEs flag to control charge state output - off by default" << endl;
+   cerr  << "11/06/09 - jjh         added -FLIP and -NOFLIP flag" << endl;
    cerr  << endl;
    exit(1);
 }
