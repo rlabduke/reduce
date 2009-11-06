@@ -133,11 +133,11 @@ int parseInteger(const char *str, int start, int len) {
 	return (neg?-value:value);
 }
 
-double parseReal(const char *str, int start, int len) {
+double parseReal(const char *str, int start, int len, double initialValue) {
    double value = 0.0, scale = 1.0, expscale = 1.0, expfact = 10.0;
    int expval = 0;
    register char ch;
-   int inside = 0, infract = 0, inexp = 0, insn = 0, esn = 0;
+   int inside = 0, infract = 0, inexp = 0, insn = 0, esn = 0, hasnum=0;
 
    if (!str || start < 0) { return 0; }
    str += start;
@@ -148,6 +148,7 @@ double parseReal(const char *str, int start, int len) {
 	 if ((ch >='0') && (ch <= '9')) {
 	    expval = (10*expval) + (ch - '0');
 	    esn = 1;
+	    hasnum=1;
 	 }
 	 else if (ch == '+' && !esn) {
 	    esn = 1;
@@ -160,6 +161,7 @@ double parseReal(const char *str, int start, int len) {
       }
       else if ((ch >='0') && (ch <= '9')) {
 	 value = (10.0*value) + (ch - '0');
+	 hasnum=1;
 	 if (infract) { scale *= 0.1; }
 	 inside = 1;
       }
@@ -183,7 +185,12 @@ double parseReal(const char *str, int start, int len) {
    if (expval) {
       for(;expval; expval--) { expscale *= expfact; }
    }
-   return value*scale*expscale;
+   if(hasnum==0){
+     return initialValue;
+   }
+   else{
+     return value*scale*expscale;
+   }
 }
 
 std::string
