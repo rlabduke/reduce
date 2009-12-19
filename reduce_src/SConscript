@@ -1,13 +1,6 @@
 Import("reduce_scons_env", "env_etc")
 
 env = reduce_scons_env.Clone()
-if (    env_etc.gcc_version is not None
-    and env_etc.gcc_version >= 40500):
- # http://gcc.gnu.org/bugzilla/show_bug.cgi?id=42352
- cxxflags = env["CXXFLAGS"]
- if ("-std=c++0x" in cxxflags):
-   cxxflags.remove("-std=c++0x")
-   env.Replace(CXXFLAGS=cxxflags)
 env.Append(
   CXXFLAGS=[
     "-DAROMATICS_ACCEPT_HBONDS",
