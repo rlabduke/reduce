@@ -49,7 +49,7 @@ const StdResXtraInfo& StdResH::ResXtraInfo() {
 void StdResH::addPlan(int type, const char* elem, const char *hname,
 					  const char *c1, const char *c2, const char *c3, const char *c4,
 					  double dist, double ang1, double ang2, int flags) {
-	
+
 	ElementInfo *e = ElementInfo::StdElemTbl().element(elem);
 
 	AtomConn names(hname, 0);
@@ -87,91 +87,91 @@ HydrogenPlanTable::HydrogenPlanTable() {
 //--------------------------------------------------------------------------
   {
     static const addPlan_args args[] = {
-      {5, "Hpol", " H", " N", " CA", "- C", "", 1.0,   0.0, 0.48, BONDBUMPFLAG},
+      {5, "Hpol", " H", " N", " CA", "- C", "", 0.86,   0.0, 0.48, BONDBUMPFLAG},
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("amide", "PRO", args); // *NON* N-terminal mc amide
   }
   {
     static const addPlan_args args[] = { //break-amide added 070925 by RMI
-      {3, "Hpol", " H",   " N", " CA", " C", "", 1.0, 109.5, 180.0, USENEWNAMES|ROTATEONDEMAND|NH3FLAG},
+      {3, "Hpol", " H",   " N", " CA", " C", "", 0.86, 109.5, 180.0, USENEWNAMES|ROTATEONDEMAND|NH3FLAG},
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("break-amide", "PRO", args); // N-terminal mc amide
   }
   {
     static const addPlan_args args[] = { //nt-amide updated 070703 by JJH
-      {3, "Hpol", " HT3", " N", " CA", " C", "", 1.0, 109.5,  60.0, XPLORNAME|ROTATEONDEMAND|NH3FLAG},
-      {3, "Hpol", " HT2", " N", " CA", " C", "", 1.0, 109.5, -60.0, XPLORNAME|ROTATEONDEMAND|NH3FLAG},
-      {3, "Hpol", " HT1", " N", " CA", " C", "", 1.0, 109.5, 180.0, XPLORNAME|ROTATEONDEMAND|NH3FLAG},
-      {3, "Hpol", " H3",   " N", " CA", " C", "", 1.0, 109.5,  60.0, USENEWNAMES|ROTATEONDEMAND|NH3FLAG},
-      {3, "Hpol", " H2",   " N", " CA", " C", "", 1.0, 109.5, -60.0, USENEWNAMES|ROTATEONDEMAND|NH3FLAG},
-      {3, "Hpol", " H1",   " N", " CA", " C", "", 1.0, 109.5, 180.0, USENEWNAMES|ROTATEONDEMAND|NH3FLAG},      
-      {3, "Hpol", "3H",   " N", " CA", " C", "", 1.0, 109.5,  60.0, USEOLDNAMES|ROTATEONDEMAND|NH3FLAG},
-      {3, "Hpol", "2H",   " N", " CA", " C", "", 1.0, 109.5, -60.0, USEOLDNAMES|ROTATEONDEMAND|NH3FLAG},
-      {3, "Hpol", "1H",   " N", " CA", " C", "", 1.0, 109.5, 180.0, USEOLDNAMES|ROTATEONDEMAND|NH3FLAG},
+      {3, "Hpol", " HT3", " N", " CA", " C", "", 0.89, 109.5,  60.0, XPLORNAME|ROTATEONDEMAND|NH3FLAG},
+      {3, "Hpol", " HT2", " N", " CA", " C", "", 0.89, 109.5, -60.0, XPLORNAME|ROTATEONDEMAND|NH3FLAG},
+      {3, "Hpol", " HT1", " N", " CA", " C", "", 0.89, 109.5, 180.0, XPLORNAME|ROTATEONDEMAND|NH3FLAG},
+      {3, "Hpol", " H3",   " N", " CA", " C", "", 0.89, 109.5,  60.0, USENEWNAMES|ROTATEONDEMAND|NH3FLAG},
+      {3, "Hpol", " H2",   " N", " CA", " C", "", 0.89, 109.5, -60.0, USENEWNAMES|ROTATEONDEMAND|NH3FLAG},
+      {3, "Hpol", " H1",   " N", " CA", " C", "", 0.89, 109.5, 180.0, USENEWNAMES|ROTATEONDEMAND|NH3FLAG},
+      {3, "Hpol", "3H",   " N", " CA", " C", "", 0.89, 109.5,  60.0, USEOLDNAMES|ROTATEONDEMAND|NH3FLAG},
+      {3, "Hpol", "2H",   " N", " CA", " C", "", 0.89, 109.5, -60.0, USEOLDNAMES|ROTATEONDEMAND|NH3FLAG},
+      {3, "Hpol", "1H",   " N", " CA", " C", "", 0.89, 109.5, 180.0, USEOLDNAMES|ROTATEONDEMAND|NH3FLAG},
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("nt-amide", "PRO", args); // N-terminal mc amide
   }
   {
     static const addPlan_args args[] = { //nt-pro updated 070703 by JJH
-      {2, "Hpol", " HT2", " N", " CD", " CA", "", 1.0, 126.5,   0.0, XPLORNAME|BONDBUMPFLAG},
-      {2, "Hpol", " HT1", " N", " CD", " CA", "", 1.0,-126.5,   0.0, XPLORNAME|BONDBUMPFLAG},
-      {2, "Hpol", " H3",   " N", " CD", " CA", "", 1.0, 126.5,   0.0, USENEWNAMES|BONDBUMPFLAG},
-      {2, "Hpol", " H2",   " N", " CD", " CA", "", 1.0,-126.5,   0.0, USENEWNAMES|BONDBUMPFLAG},
-      {2, "Hpol", "2H",   " N", " CD", " CA", "", 1.0, 126.5,   0.0, USEOLDNAMES|BONDBUMPFLAG},
-      {2, "Hpol", "1H",   " N", " CD", " CA", "", 1.0,-126.5,   0.0, USEOLDNAMES|BONDBUMPFLAG},
+      {2, "Hpol", " HT2", " N", " CD", " CA", "", 0.86, 126.5,   0.0, XPLORNAME|BONDBUMPFLAG},
+      {2, "Hpol", " HT1", " N", " CD", " CA", "", 0.86,-126.5,   0.0, XPLORNAME|BONDBUMPFLAG},
+      {2, "Hpol", " H3",   " N", " CD", " CA", "", 0.86, 126.5,   0.0, USENEWNAMES|BONDBUMPFLAG},
+      {2, "Hpol", " H2",   " N", " CD", " CA", "", 0.86,-126.5,   0.0, USENEWNAMES|BONDBUMPFLAG},
+      {2, "Hpol", "2H",   " N", " CD", " CA", "", 0.86, 126.5,   0.0, USEOLDNAMES|BONDBUMPFLAG},
+      {2, "Hpol", "1H",   " N", " CD", " CA", "", 0.86,-126.5,   0.0, USEOLDNAMES|BONDBUMPFLAG},
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("nt-pro", "", args); // N-terminal prolines
   }
   {
     static const addPlan_args args[] = {  // added plan for placing both hydrogens on a backbone only model RMI 070713
-      {1, "H", " HA", " CA", " N", " C", " CB", 1.1,   0.0,   0.0, STRICTALTFLAG},
-      {1, "H", " HA", " CA", " N", " C", " CB", 1.1,   0.0,   0.0, NOTBBMODEL|STRICTALTFLAG},
+      {1, "H", " HA", " CA", " N", " C", " CB", 0.98,   0.0,   0.0, STRICTALTFLAG},
+      {1, "H", " HA", " CA", " N", " C", " CB", 0.98,   0.0,   0.0, NOTBBMODEL|STRICTALTFLAG},
 //      {2, "H", "2HA", " CA", " N", " C", "", 1.1, 126.5,   0.0, BACKBONEMODEL|USEOLDNAMES},
 //      {2, "H", "1HA", " CA", " N", " C", "", 1.1,-126.5,   0.0, BACKBONEMODEL|USEOLDNAMES},
 //      {2, "H", " HA2", " CA", " N", " C", "", 1.1, 126.5,   0.0, BACKBONEMODEL|USENEWNAMES},
 //      {2, "H", " HA3", " CA", " N", " C", "", 1.1, 126.5,   0.0, BACKBONEMODEL|USENEWNAMES},
-      {2, "H", " HA", " CA", " N", " C", "", 1.1,-126.5,   0.0, BACKBONEMODEL},
+      {2, "H", " HA", " CA", " N", " C", "", 0.98,-126.5,   0.0, BACKBONEMODEL},
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("alpha", "GLY", args); // mainchain alpha proton
   }
   {
     static const addPlan_args args[] = { //ribose phosphate backbone updated 070703 by JJH
-      {3, "Hpol", "HO5'", " O5'", " C5'", " C4'", "",     1.0, 109.5, 180.0, USENEWNAMES|UNSUREDROPFLAG|ROTATEFLAG|IFNOPO4},
-      {3, "Hpol", "HO3'", " O3'", " C3'", " C4'", "",     1.0, 109.5, 180.0, USENEWNAMES|UNSUREDROPFLAG|ROTATEFLAG|IFNOPO4},
-      {3, "Hpol", "HO2'", " O2'", " C2'", " C3'", "",     1.0, 109.5, 180.0, USENEWNAMES|UNSUREDROPFLAG|ROTATEFLAG},
-      {3, "Hpol", "HO5'", " O5*", " C5*", " C4*", "",     1.0, 109.5, 180.0, USENEWNAMES|UNSUREDROPFLAG|ROTATEFLAG|IFNOPO4},
-      {3, "Hpol", "HO3'", " O3*", " C3*", " C4*", "",     1.0, 109.5, 180.0, USENEWNAMES|UNSUREDROPFLAG|ROTATEFLAG|IFNOPO4},
-      {3, "Hpol", "HO2'", " O2*", " C2*", " C3*", "",     1.0, 109.5, 180.0, USENEWNAMES|UNSUREDROPFLAG|ROTATEFLAG},
-      {1, "H",    " H2'", " C2'", " C3'", " C1'", " O2'", 1.1,   0.0,   0.0, USENEWNAMES|O2PRIMEFLAG},
-      {2, "H",    "H2''", " C2'", " C3'", " C1'", "",     1.1, 126.5,   0.0, USENEWNAMES|NOO2PRIMEFLAG},
-      {2, "H",    " H2'", " C2'", " C3'", " C1'", "",     1.1,-126.5,   0.0, USENEWNAMES|NOO2PRIMEFLAG},
-      {1, "H",    " H2'", " C2*", " C3*", " C1*", " O2*", 1.1,   0.0,   0.0, USENEWNAMES|O2PRIMEFLAG},
-      {2, "H",    "H2''", " C2*", " C3*", " C1*", "",     1.1, 126.5,   0.0, USENEWNAMES|NOO2PRIMEFLAG},
-      {2, "H",    " H2'", " C2*", " C3*", " C1*", "",     1.1,-126.5,   0.0, USENEWNAMES|NOO2PRIMEFLAG},
-      {1, "H",    " H3'", " C3'", " C4'", " C2'", " O3'", 1.1,   0.0,   0.0, USENEWNAMES},
-      {1, "H",    " H4'", " C4'", " C5'", " C3'", " O4'", 1.1,   0.0,   0.0, USENEWNAMES},
-      {1, "H",    " H3'", " C3*", " C4*", " C2*", " O3*", 1.1,   0.0,   0.0, USENEWNAMES},
-      {1, "H",    " H4'", " C4*", " C5*", " C3*", " O4*", 1.1,   0.0,   0.0, USENEWNAMES},
-      {2, "H",    "H5''", " C5'", " C4'", " O5'", "",     1.1, 126.5,   0.0, USENEWNAMES},
-      {2, "H",    " H5'", " C5'", " C4'", " O5'", "",     1.1,-126.5,   0.0, USENEWNAMES},
-      {2, "H",    "H5''", " C5*", " C4*", " O5*", "",     1.1, 126.5,   0.0, USENEWNAMES},
-      {2, "H",    " H5'", " C5*", " C4*", " O5*", "",     1.1,-126.5,   0.0, USENEWNAMES},
+      {3, "Hpol", "HO5'", " O5'", " C5'", " C4'", "",     0.82, 109.5, 180.0, USENEWNAMES|UNSUREDROPFLAG|ROTATEFLAG|IFNOPO4},
+      {3, "Hpol", "HO3'", " O3'", " C3'", " C4'", "",     0.82, 109.5, 180.0, USENEWNAMES|UNSUREDROPFLAG|ROTATEFLAG|IFNOPO4},
+      {3, "Hpol", "HO2'", " O2'", " C2'", " C3'", "",     0.82, 109.5, 180.0, USENEWNAMES|UNSUREDROPFLAG|ROTATEFLAG},
+      {3, "Hpol", "HO5'", " O5*", " C5*", " C4*", "",     0.82, 109.5, 180.0, USENEWNAMES|UNSUREDROPFLAG|ROTATEFLAG|IFNOPO4},
+      {3, "Hpol", "HO3'", " O3*", " C3*", " C4*", "",     0.82, 109.5, 180.0, USENEWNAMES|UNSUREDROPFLAG|ROTATEFLAG|IFNOPO4},
+      {3, "Hpol", "HO2'", " O2*", " C2*", " C3*", "",     0.82, 109.5, 180.0, USENEWNAMES|UNSUREDROPFLAG|ROTATEFLAG},
+      {1, "H",    " H2'", " C2'", " C3'", " C1'", " O2'", 0.98,   0.0,   0.0, USENEWNAMES|O2PRIMEFLAG},
+      {2, "H",    "H2''", " C2'", " C3'", " C1'", "",     0.98, 126.5,   0.0, USENEWNAMES|NOO2PRIMEFLAG},
+      {2, "H",    " H2'", " C2'", " C3'", " C1'", "",     0.98,-126.5,   0.0, USENEWNAMES|NOO2PRIMEFLAG},
+      {1, "H",    " H2'", " C2*", " C3*", " C1*", " O2*", 0.98,   0.0,   0.0, USENEWNAMES|O2PRIMEFLAG},
+      {2, "H",    "H2''", " C2*", " C3*", " C1*", "",     0.98, 126.5,   0.0, USENEWNAMES|NOO2PRIMEFLAG},
+      {2, "H",    " H2'", " C2*", " C3*", " C1*", "",     0.98,-126.5,   0.0, USENEWNAMES|NOO2PRIMEFLAG},
+      {1, "H",    " H3'", " C3'", " C4'", " C2'", " O3'", 0.98,   0.0,   0.0, USENEWNAMES},
+      {1, "H",    " H4'", " C4'", " C5'", " C3'", " O4'", 0.98,   0.0,   0.0, USENEWNAMES},
+      {1, "H",    " H3'", " C3*", " C4*", " C2*", " O3*", 0.98,   0.0,   0.0, USENEWNAMES},
+      {1, "H",    " H4'", " C4*", " C5*", " C3*", " O4*", 0.98,   0.0,   0.0, USENEWNAMES},
+      {2, "H",    "H5''", " C5'", " C4'", " O5'", "",     0.98, 126.5,   0.0, USENEWNAMES},
+      {2, "H",    " H5'", " C5'", " C4'", " O5'", "",     0.98,-126.5,   0.0, USENEWNAMES},
+      {2, "H",    "H5''", " C5*", " C4*", " O5*", "",     0.98, 126.5,   0.0, USENEWNAMES},
+      {2, "H",    " H5'", " C5*", " C4*", " O5*", "",     0.98,-126.5,   0.0, USENEWNAMES},
 
-      {3, "Hpol", "2HO*", " O2*", " C2*", " C3*", "",     1.0, 109.5, 180.0, USEOLDNAMES|XPLORNAME|UNSUREDROPFLAG|ROTATEFLAG},
-      {1, "H",    " H2*", " C2*", " C3*", " C1*", " O2*", 1.1,   0.0,   0.0, USEOLDNAMES|XPLORNAME|O2PRIMEFLAG},
-      {2, "H",    "2H2*", " C2*", " C3*", " C1*", "",     1.1, 126.5,   0.0, USEOLDNAMES|XPLORNAME|NOO2PRIMEFLAG},
-      {2, "H",    "1H2*", " C2*", " C3*", " C1*", "",     1.1,-126.5,   0.0, USEOLDNAMES|XPLORNAME|NOO2PRIMEFLAG},
-      {1, "H",    " H3*", " C3*", " C4*", " C2*", " O3*", 1.1,   0.0,   0.0, USEOLDNAMES|XPLORNAME},
-      {1, "H",    " H4*", " C4*", " C5*", " C3*", " O4*", 1.1,   0.0,   0.0, USEOLDNAMES|XPLORNAME},
-      {2, "H",    "2H5*", " C5*", " C4*", " O5*", "",     1.1, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
-      {2, "H",    "1H5*", " C5*", " C4*", " O5*", "",     1.1,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
-      {3, "Hpol", " H5T", " O5'", " C5'", " C4'", "",     1.0, 109.5, 180.0, USEOLDNAMES|XPLORNAME|UNSUREDROPFLAG|ROTATEFLAG|IFNOPO4},
-      {3, "Hpol", " H3T", " O3'", " C3'", " C4'", "",     1.0, 109.5, 180.0, USEOLDNAMES|XPLORNAME|UNSUREDROPFLAG|ROTATEFLAG|IFNOPO4},
+      {3, "Hpol", "2HO*", " O2*", " C2*", " C3*", "",     0.82, 109.5, 180.0, USEOLDNAMES|XPLORNAME|UNSUREDROPFLAG|ROTATEFLAG},
+      {1, "H",    " H2*", " C2*", " C3*", " C1*", " O2*", 0.98,   0.0,   0.0, USEOLDNAMES|XPLORNAME|O2PRIMEFLAG},
+      {2, "H",    "2H2*", " C2*", " C3*", " C1*", "",     0.98, 126.5,   0.0, USEOLDNAMES|XPLORNAME|NOO2PRIMEFLAG},
+      {2, "H",    "1H2*", " C2*", " C3*", " C1*", "",     0.98,-126.5,   0.0, USEOLDNAMES|XPLORNAME|NOO2PRIMEFLAG},
+      {1, "H",    " H3*", " C3*", " C4*", " C2*", " O3*", 0.98,   0.0,   0.0, USEOLDNAMES|XPLORNAME},
+      {1, "H",    " H4*", " C4*", " C5*", " C3*", " O4*", 0.98,   0.0,   0.0, USEOLDNAMES|XPLORNAME},
+      {2, "H",    "2H5*", " C5*", " C4*", " O5*", "",     0.98, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
+      {2, "H",    "1H5*", " C5*", " C4*", " O5*", "",     0.98,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
+      {3, "Hpol", " H5T", " O5'", " C5'", " C4'", "",     0.82, 109.5, 180.0, USEOLDNAMES|XPLORNAME|UNSUREDROPFLAG|ROTATEFLAG|IFNOPO4},
+      {3, "Hpol", " H3T", " O3'", " C3'", " C4'", "",     0.82, 109.5, 180.0, USEOLDNAMES|XPLORNAME|UNSUREDROPFLAG|ROTATEFLAG|IFNOPO4},
 
       {0,0,0,0,0,0,0,0,0,0,0}
     };
@@ -180,343 +180,343 @@ HydrogenPlanTable::HydrogenPlanTable() {
 //--------------------------------------------------------------------------
   {
     static const addPlan_args args[] = { //LYS updated 070702 by JJH
-      {3, "Hpol", " HZ3", " NZ", " CE", " CD", "", 1.0, 109.5,  60.0, XPLORNAME|ROTATEONDEMAND|NH3FLAG},
-      {3, "Hpol", " HZ2", " NZ", " CE", " CD", "", 1.0, 109.5, -60.0, XPLORNAME|ROTATEONDEMAND|NH3FLAG},
-      {3, "Hpol", " HZ1", " NZ", " CE", " CD", "", 1.0, 109.5, 180.0, XPLORNAME|ROTATEONDEMAND|NH3FLAG},
-      {3, "Hpol", " HZ3",  " NZ", " CE", " CD", "", 1.0, 109.5,  60.0, USENEWNAMES|ROTATEONDEMAND|NH3FLAG},
-      {3, "Hpol", " HZ2",  " NZ", " CE", " CD", "", 1.0, 109.5, -60.0, USENEWNAMES|ROTATEONDEMAND|NH3FLAG},
-      {3, "Hpol", " HZ1",  " NZ", " CE", " CD", "", 1.0, 109.5, 180.0, USENEWNAMES|ROTATEONDEMAND|NH3FLAG},
-      {3, "Hpol", "3HZ",  " NZ", " CE", " CD", "", 1.0, 109.5,  60.0, USEOLDNAMES|ROTATEONDEMAND|NH3FLAG},
-      {3, "Hpol", "2HZ",  " NZ", " CE", " CD", "", 1.0, 109.5, -60.0, USEOLDNAMES|ROTATEONDEMAND|NH3FLAG},
-      {3, "Hpol", "1HZ",  " NZ", " CE", " CD", "", 1.0, 109.5, 180.0, USEOLDNAMES|ROTATEONDEMAND|NH3FLAG},
-      {2, "H", " HE3",  " CE", " CD", " NZ", "", 1.1, 126.5,   0.0, USENEWNAMES},
-      {2, "H", " HE2",  " CE", " CD", " NZ", "", 1.1,-126.5,   0.0, USENEWNAMES},
-      {2, "H", " HD3",  " CD", " CG", " CE", "", 1.1, 126.5,   0.0, USENEWNAMES},
-      {2, "H", " HD2",  " CD", " CG", " CE", "", 1.1,-126.5,   0.0, USENEWNAMES},
-      {2, "H", " HG3",  " CG", " CB", " CD", "", 1.1, 126.5,   0.0, USENEWNAMES},
-      {2, "H", " HG2",  " CG", " CB", " CD", "", 1.1,-126.5,   0.0, USENEWNAMES},
-      {2, "H", " HB3",  " CB", " CA", " CG", "", 1.1, 126.5,   0.0, USENEWNAMES},
-      {2, "H", " HB2",  " CB", " CA", " CG", "", 1.1,-126.5,   0.0, USENEWNAMES},      
-      {2, "H", "2HE",  " CE", " CD", " NZ", "", 1.1, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
-      {2, "H", "1HE",  " CE", " CD", " NZ", "", 1.1,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
-      {2, "H", "2HD",  " CD", " CG", " CE", "", 1.1, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
-      {2, "H", "1HD",  " CD", " CG", " CE", "", 1.1,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
-      {2, "H", "2HG",  " CG", " CB", " CD", "", 1.1, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
-      {2, "H", "1HG",  " CG", " CB", " CD", "", 1.1,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
-      {2, "H", "2HB",  " CB", " CA", " CG", "", 1.1, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
-      {2, "H", "1HB",  " CB", " CA", " CG", "", 1.1,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
+      {3, "Hpol", " HZ3", " NZ", " CE", " CD", "", 0.89, 109.5,  60.0, XPLORNAME|ROTATEONDEMAND|NH3FLAG},
+      {3, "Hpol", " HZ2", " NZ", " CE", " CD", "", 0.89, 109.5, -60.0, XPLORNAME|ROTATEONDEMAND|NH3FLAG},
+      {3, "Hpol", " HZ1", " NZ", " CE", " CD", "", 0.89, 109.5, 180.0, XPLORNAME|ROTATEONDEMAND|NH3FLAG},
+      {3, "Hpol", " HZ3",  " NZ", " CE", " CD", "", 0.89, 109.5,  60.0, USENEWNAMES|ROTATEONDEMAND|NH3FLAG},
+      {3, "Hpol", " HZ2",  " NZ", " CE", " CD", "", 0.89, 109.5, -60.0, USENEWNAMES|ROTATEONDEMAND|NH3FLAG},
+      {3, "Hpol", " HZ1",  " NZ", " CE", " CD", "", 0.89, 109.5, 180.0, USENEWNAMES|ROTATEONDEMAND|NH3FLAG},
+      {3, "Hpol", "3HZ",  " NZ", " CE", " CD", "", 0.89, 109.5,  60.0, USEOLDNAMES|ROTATEONDEMAND|NH3FLAG},
+      {3, "Hpol", "2HZ",  " NZ", " CE", " CD", "", 0.89, 109.5, -60.0, USEOLDNAMES|ROTATEONDEMAND|NH3FLAG},
+      {3, "Hpol", "1HZ",  " NZ", " CE", " CD", "", 0.89, 109.5, 180.0, USEOLDNAMES|ROTATEONDEMAND|NH3FLAG},
+      {2, "H", " HE3",  " CE", " CD", " NZ", "", 0.97, 126.5,   0.0, USENEWNAMES},
+      {2, "H", " HE2",  " CE", " CD", " NZ", "", 0.97,-126.5,   0.0, USENEWNAMES},
+      {2, "H", " HD3",  " CD", " CG", " CE", "", 0.97, 126.5,   0.0, USENEWNAMES},
+      {2, "H", " HD2",  " CD", " CG", " CE", "", 0.97,-126.5,   0.0, USENEWNAMES},
+      {2, "H", " HG3",  " CG", " CB", " CD", "", 0.97, 126.5,   0.0, USENEWNAMES},
+      {2, "H", " HG2",  " CG", " CB", " CD", "", 0.97,-126.5,   0.0, USENEWNAMES},
+      {2, "H", " HB3",  " CB", " CA", " CG", "", 0.97, 126.5,   0.0, USENEWNAMES},
+      {2, "H", " HB2",  " CB", " CA", " CG", "", 0.97,-126.5,   0.0, USENEWNAMES},
+      {2, "H", "2HE",  " CE", " CD", " NZ", "", 0.97, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
+      {2, "H", "1HE",  " CE", " CD", " NZ", "", 0.97,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
+      {2, "H", "2HD",  " CD", " CG", " CE", "", 0.97, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
+      {2, "H", "1HD",  " CD", " CG", " CE", "", 0.97,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
+      {2, "H", "2HG",  " CG", " CB", " CD", "", 0.97, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
+      {2, "H", "1HG",  " CG", " CB", " CD", "", 0.97,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
+      {2, "H", "2HB",  " CB", " CA", " CG", "", 0.97, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
+      {2, "H", "1HB",  " CB", " CA", " CG", "", 0.97,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("LYS", "", args);
   }
   {
     static const addPlan_args args[] = { //GLY updated 070702 by JJH
-      {2, "H", " HA3", " CA", " N", " C", "", 1.1, 126.5,   0.0, USENEWNAMES},
-      {2, "H", " HA2", " CA", " N", " C", "", 1.1,-126.5,   0.0, USENEWNAMES},
-      {2, "H", "2HA", " CA", " N", " C", "", 1.1, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
-      {2, "H", "1HA", " CA", " N", " C", "", 1.1,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
+      {2, "H", " HA3", " CA", " N", " C", "", 0.97, 126.5,   0.0, USENEWNAMES},
+      {2, "H", " HA2", " CA", " N", " C", "", 0.97,-126.5,   0.0, USENEWNAMES},
+      {2, "H", "2HA", " CA", " N", " C", "", 0.97, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
+      {2, "H", "1HA", " CA", " N", " C", "", 0.97,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("GLY", "", args);
   }
   {
     static const addPlan_args args[] = { //GLU updated 070702 by JJH
-      {2, "H", " HG3", " CG", " CB", " CD", "", 1.1, 126.5,   0.0, USENEWNAMES},
-      {2, "H", " HG2", " CG", " CB", " CD", "", 1.1,-126.5,   0.0, USENEWNAMES},
-      {2, "H", " HB3", " CB", " CA", " CG", "", 1.1, 126.5,   0.0, USENEWNAMES},
-      {2, "H", " HB2", " CB", " CA", " CG", "", 1.1,-126.5,   0.0, USENEWNAMES},
-      {2, "H", "2HG", " CG", " CB", " CD", "", 1.1, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
-      {2, "H", "1HG", " CG", " CB", " CD", "", 1.1,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
-      {2, "H", "2HB", " CB", " CA", " CG", "", 1.1, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
-      {2, "H", "1HB", " CB", " CA", " CG", "", 1.1,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
+      {2, "H", " HG3", " CG", " CB", " CD", "", 0.97, 126.5,   0.0, USENEWNAMES},
+      {2, "H", " HG2", " CG", " CB", " CD", "", 0.97,-126.5,   0.0, USENEWNAMES},
+      {2, "H", " HB3", " CB", " CA", " CG", "", 0.97, 126.5,   0.0, USENEWNAMES},
+      {2, "H", " HB2", " CB", " CA", " CG", "", 0.97,-126.5,   0.0, USENEWNAMES},
+      {2, "H", "2HG", " CG", " CB", " CD", "", 0.97, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
+      {2, "H", "1HG", " CG", " CB", " CD", "", 0.97,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
+      {2, "H", "2HB", " CB", " CA", " CG", "", 0.97, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
+      {2, "H", "1HB", " CB", " CA", " CG", "", 0.97,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("GLU", "", args);
   }
   {
     static const addPlan_args args[] = { //THR updated 070702 by JJH
-      {3, "H", "HG23", " CG2", " CB", " CA", "", 1.1, 109.5,  60.0, USENEWNAMES|ROTATEONDEMAND},
-      {3, "H", "HG22", " CG2", " CB", " CA", "", 1.1, 109.5, -60.0, USENEWNAMES|ROTATEONDEMAND},
-      {3, "H", "HG21", " CG2", " CB", " CA", "", 1.1, 109.5, 180.0, USENEWNAMES|ROTATEONDEMAND},
-      {3, "H", "3HG2", " CG2", " CB", " CA", "", 1.1, 109.5,  60.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
-      {3, "H", "2HG2", " CG2", " CB", " CA", "", 1.1, 109.5, -60.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
-      {3, "H", "1HG2", " CG2", " CB", " CA", "", 1.1, 109.5, 180.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
-      {3, "Hpol", " HG1", " OG1", " CB", " CA", "", 1.0, 109.5, 180.0, UNSUREDROPFLAG|ROTATEFLAG},
-      {1, "H", " HB", " CB", " CA", " OG1", " CG2", 1.1,   0.0,   0.0, 0},
+      {3, "H", "HG23", " CG2", " CB", " CA", "", 0.96, 109.5,  60.0, USENEWNAMES|ROTATEONDEMAND},
+      {3, "H", "HG22", " CG2", " CB", " CA", "", 0.96, 109.5, -60.0, USENEWNAMES|ROTATEONDEMAND},
+      {3, "H", "HG21", " CG2", " CB", " CA", "", 0.96, 109.5, 180.0, USENEWNAMES|ROTATEONDEMAND},
+      {3, "H", "3HG2", " CG2", " CB", " CA", "", 0.96, 109.5,  60.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
+      {3, "H", "2HG2", " CG2", " CB", " CA", "", 0.96, 109.5, -60.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
+      {3, "H", "1HG2", " CG2", " CB", " CA", "", 0.96, 109.5, 180.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
+      {3, "Hpol", " HG1", " OG1", " CB", " CA", "", 0.82, 109.5, 180.0, UNSUREDROPFLAG|ROTATEFLAG},
+      {1, "H", " HB", " CB", " CA", " OG1", " CG2", 0.98,   0.0,   0.0, 0},
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("THR", "", args);
   }
   {
     static const addPlan_args args[] = { //ALA updated 070702 by JJH
-      {3, "H", " HB3", " CB", " CA", " N", "", 1.1, 109.5,  60.0, USENEWNAMES|ROTATEONDEMAND},
-      {3, "H", " HB2", " CB", " CA", " N", "", 1.1, 109.5, -60.0, USENEWNAMES|ROTATEONDEMAND},
-      {3, "H", " HB1", " CB", " CA", " N", "", 1.1, 109.5, 180.0, USENEWNAMES|ROTATEONDEMAND},
-      {3, "H", "3HB", " CB", " CA", " N", "", 1.1, 109.5,  60.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
-      {3, "H", "2HB", " CB", " CA", " N", "", 1.1, 109.5, -60.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
-      {3, "H", "1HB", " CB", " CA", " N", "", 1.1, 109.5, 180.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
+      {3, "H", " HB3", " CB", " CA", " N", "", 0.96, 109.5,  60.0, USENEWNAMES|ROTATEONDEMAND},
+      {3, "H", " HB2", " CB", " CA", " N", "", 0.96, 109.5, -60.0, USENEWNAMES|ROTATEONDEMAND},
+      {3, "H", " HB1", " CB", " CA", " N", "", 0.96, 109.5, 180.0, USENEWNAMES|ROTATEONDEMAND},
+      {3, "H", "3HB", " CB", " CA", " N", "", 0.96, 109.5,  60.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
+      {3, "H", "2HB", " CB", " CA", " N", "", 0.96, 109.5, -60.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
+      {3, "H", "1HB", " CB", " CA", " N", "", 0.96, 109.5, 180.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("ALA", "", args);
   }
   {
     static const addPlan_args args[] = { //PHE updated 070702 by JJH
-      {4, "Har", " HZ",  " CZ",  " CE1", " CE2", "", 1.1,   0.0,   0.0, 0},
-      {4, "Har", " HE2", " CE2", " CZ",  " CD2", "", 1.1,   0.0,   0.0, 0},
-      {4, "Har", " HE1", " CE1", " CD1", " CZ",  "", 1.1,   0.0,   0.0, 0},
-      {4, "Har", " HD2", " CD2", " CE2", " CG",  "", 1.1,   0.0,   0.0, 0},
-      {4, "Har", " HD1", " CD1", " CG",  " CE1", "", 1.1,   0.0,   0.0, 0},
-      {2, "H", " HB3",  " CB",  " CA",  " CG",  "", 1.1, 126.5,   0.0, USENEWNAMES},
-      {2, "H", " HB2",  " CB",  " CA",  " CG",  "", 1.1,-126.5,   0.0, USENEWNAMES},
-      {2, "H", "2HB",  " CB",  " CA",  " CG",  "", 1.1, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
-      {2, "H", "1HB",  " CB",  " CA",  " CG",  "", 1.1,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
+      {4, "Har", " HZ",  " CZ",  " CE1", " CE2", "", 0.93,   0.0,   0.0, 0},
+      {4, "Har", " HE2", " CE2", " CZ",  " CD2", "", 0.93,   0.0,   0.0, 0},
+      {4, "Har", " HE1", " CE1", " CD1", " CZ",  "", 0.93,   0.0,   0.0, 0},
+      {4, "Har", " HD2", " CD2", " CE2", " CG",  "", 0.93,   0.0,   0.0, 0},
+      {4, "Har", " HD1", " CD1", " CG",  " CE1", "", 0.93,   0.0,   0.0, 0},
+      {2, "H", " HB3",  " CB",  " CA",  " CG",  "", 0.97, 126.5,   0.0, USENEWNAMES},
+      {2, "H", " HB2",  " CB",  " CA",  " CG",  "", 0.97,-126.5,   0.0, USENEWNAMES},
+      {2, "H", "2HB",  " CB",  " CA",  " CG",  "", 0.97, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
+      {2, "H", "1HB",  " CB",  " CA",  " CG",  "", 0.97,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("PHE", "", args);
   }
   {
     static const addPlan_args args[] = { //ARG updated 070702 by JJH
-      {3, "Hpol", "HH22", " NH2", " CZ", " NE", "", 1.0, 120.0, 180.0, XPLORNAME|BONDBUMPFLAG},
-      {3, "Hpol", "HH21", " NH2", " CZ", " NE", "", 1.0, 120.0,   0.0, XPLORNAME|BONDBUMPFLAG},
-      {3, "Hpol", "HH12", " NH1", " CZ", " NE", "", 1.0, 120.0, 180.0, XPLORNAME|BONDBUMPFLAG},
-      {3, "Hpol", "HH11", " NH1", " CZ", " NE", "", 1.0, 120.0,   0.0, XPLORNAME|BONDBUMPFLAG},
-      {3, "Hpol", "HH22", " NH2", " CZ", " NE", "", 1.0, 120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
-      {3, "Hpol", "HH21", " NH2", " CZ", " NE", "", 1.0, 120.0,   0.0, USENEWNAMES|BONDBUMPFLAG},
-      {3, "Hpol", "HH12", " NH1", " CZ", " NE", "", 1.0, 120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
-      {3, "Hpol", "HH11", " NH1", " CZ", " NE", "", 1.0, 120.0,   0.0, USENEWNAMES|BONDBUMPFLAG},
-      {3, "Hpol", "2HH2", " NH2", " CZ", " NE", "", 1.0, 120.0, 180.0, USEOLDNAMES|BONDBUMPFLAG},
-      {3, "Hpol", "1HH2", " NH2", " CZ", " NE", "", 1.0, 120.0,   0.0, USEOLDNAMES|BONDBUMPFLAG},
-      {3, "Hpol", "2HH1", " NH1", " CZ", " NE", "", 1.0, 120.0, 180.0, USEOLDNAMES|BONDBUMPFLAG},
-      {3, "Hpol", "1HH1", " NH1", " CZ", " NE", "", 1.0, 120.0,   0.0, USEOLDNAMES|BONDBUMPFLAG},
-      {4, "Hpol", " HE", " NE", " CD", " CZ", "", 1.0,   0.0,   0.0, 0},
-      {2, "H", " HD3", " CD", " CG", " NE", "", 1.1, 126.5,   0.0, USENEWNAMES},
-      {2, "H", " HD2", " CD", " CG", " NE", "", 1.1,-126.5,   0.0, USENEWNAMES},
-      {2, "H", " HG3", " CG", " CB", " CD", "", 1.1, 126.5,   0.0, USENEWNAMES},
-      {2, "H", " HG2", " CG", " CB", " CD", "", 1.1,-126.5,   0.0, USENEWNAMES},
-      {2, "H", " HB3", " CB", " CA", " CG", "", 1.1, 126.5,   0.0, USENEWNAMES},
-      {2, "H", " HB2", " CB", " CA", " CG", "", 1.1,-126.5,   0.0, USENEWNAMES},
-      {2, "H", "2HD", " CD", " CG", " NE", "", 1.1, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
-      {2, "H", "1HD", " CD", " CG", " NE", "", 1.1,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
-      {2, "H", "2HG", " CG", " CB", " CD", "", 1.1, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
-      {2, "H", "1HG", " CG", " CB", " CD", "", 1.1,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
-      {2, "H", "2HB", " CB", " CA", " CG", "", 1.1, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
-      {2, "H", "1HB", " CB", " CA", " CG", "", 1.1,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
+      {3, "Hpol", "HH22", " NH2", " CZ", " NE", "", 0.86, 120.0, 180.0, XPLORNAME|BONDBUMPFLAG},
+      {3, "Hpol", "HH21", " NH2", " CZ", " NE", "", 0.86, 120.0,   0.0, XPLORNAME|BONDBUMPFLAG},
+      {3, "Hpol", "HH12", " NH1", " CZ", " NE", "", 0.86, 120.0, 180.0, XPLORNAME|BONDBUMPFLAG},
+      {3, "Hpol", "HH11", " NH1", " CZ", " NE", "", 0.86, 120.0,   0.0, XPLORNAME|BONDBUMPFLAG},
+      {3, "Hpol", "HH22", " NH2", " CZ", " NE", "", 0.86, 120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
+      {3, "Hpol", "HH21", " NH2", " CZ", " NE", "", 0.86, 120.0,   0.0, USENEWNAMES|BONDBUMPFLAG},
+      {3, "Hpol", "HH12", " NH1", " CZ", " NE", "", 0.86, 120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
+      {3, "Hpol", "HH11", " NH1", " CZ", " NE", "", 0.86, 120.0,   0.0, USENEWNAMES|BONDBUMPFLAG},
+      {3, "Hpol", "2HH2", " NH2", " CZ", " NE", "", 0.86, 120.0, 180.0, USEOLDNAMES|BONDBUMPFLAG},
+      {3, "Hpol", "1HH2", " NH2", " CZ", " NE", "", 0.86, 120.0,   0.0, USEOLDNAMES|BONDBUMPFLAG},
+      {3, "Hpol", "2HH1", " NH1", " CZ", " NE", "", 0.86, 120.0, 180.0, USEOLDNAMES|BONDBUMPFLAG},
+      {3, "Hpol", "1HH1", " NH1", " CZ", " NE", "", 0.86, 120.0,   0.0, USEOLDNAMES|BONDBUMPFLAG},
+      {4, "Hpol", " HE", " NE", " CD", " CZ", "", 0.86,   0.0,   0.0, 0},
+      {2, "H", " HD3", " CD", " CG", " NE", "", 0.97, 126.5,   0.0, USENEWNAMES},
+      {2, "H", " HD2", " CD", " CG", " NE", "", 0.97,-126.5,   0.0, USENEWNAMES},
+      {2, "H", " HG3", " CG", " CB", " CD", "", 0.97, 126.5,   0.0, USENEWNAMES},
+      {2, "H", " HG2", " CG", " CB", " CD", "", 0.97,-126.5,   0.0, USENEWNAMES},
+      {2, "H", " HB3", " CB", " CA", " CG", "", 0.97, 126.5,   0.0, USENEWNAMES},
+      {2, "H", " HB2", " CB", " CA", " CG", "", 0.97,-126.5,   0.0, USENEWNAMES},
+      {2, "H", "2HD", " CD", " CG", " NE", "", 0.97, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
+      {2, "H", "1HD", " CD", " CG", " NE", "", 0.97,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
+      {2, "H", "2HG", " CG", " CB", " CD", "", 0.97, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
+      {2, "H", "1HG", " CG", " CB", " CD", "", 0.97,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
+      {2, "H", "2HB", " CB", " CA", " CG", "", 0.97, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
+      {2, "H", "1HB", " CB", " CA", " CG", "", 0.97,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("ARG", "", args);
   }
   {
     static const addPlan_args args[] = { //HIS updated 070703 by JJH
-      {4, "Ha+p", " HE2", " NE2", " CE1", " CD2", "", 1.0,   0.0,   0.0, XTRAFLAG|BONDBUMPFLAG},
-      {4, "Har", " HE1", " CE1", " ND1", " NE2", "", 1.1,   0.0,   0.0, 0},
-      {4, "Har", " HD2", " CD2", " NE2", " CG", "", 1.1,   0.0,   0.0, 0},
-      {4, "Ha+p", " HD1", " ND1", " CG", " CE1", "", 1.0,   0.0,   0.0, XTRAFLAG|BONDBUMPFLAG},
-      {2, "H", " HB3", " CB", " CA", " CG", "", 1.1, 126.5,   0.0, USENEWNAMES},
-      {2, "H", " HB2", " CB", " CA", " CG", "", 1.1,-126.5,   0.0, USENEWNAMES},
-      {2, "H", "2HB", " CB", " CA", " CG", "", 1.1, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
-      {2, "H", "1HB", " CB", " CA", " CG", "", 1.1,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
+      {4, "Ha+p", " HE2", " NE2", " CE1", " CD2", "", 0.86,   0.0,   0.0, XTRAFLAG|BONDBUMPFLAG},
+      {4, "Har", " HE1", " CE1", " ND1", " NE2", "", 0.93,   0.0,   0.0, 0},
+      {4, "Har", " HD2", " CD2", " NE2", " CG", "", 0.93,   0.0,   0.0, 0},
+      {4, "Ha+p", " HD1", " ND1", " CG", " CE1", "", 0.86,   0.0,   0.0, XTRAFLAG|BONDBUMPFLAG},
+      {2, "H", " HB3", " CB", " CA", " CG", "", 0.97, 126.5,   0.0, USENEWNAMES},
+      {2, "H", " HB2", " CB", " CA", " CG", "", 0.97,-126.5,   0.0, USENEWNAMES},
+      {2, "H", "2HB", " CB", " CA", " CG", "", 0.97, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
+      {2, "H", "1HB", " CB", " CA", " CG", "", 0.97,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("HIS", "", args);
   }
   {
     static const addPlan_args args[] = { //MET updated 070703 by JJH
-      {3, "H", " HE3", " CE", " SD", " CG", "", 1.1, 109.5,  60.0, USENEWNAMES|ROTATEFLAG},
-      {3, "H", " HE2", " CE", " SD", " CG", "", 1.1, 109.5, -60.0, USENEWNAMES|ROTATEFLAG},
-      {3, "H", " HE1", " CE", " SD", " CG", "", 1.1, 109.5, 180.0, USENEWNAMES|ROTATEFLAG},
-      {2, "H", " HG3", " CG", " CB", " SD", "", 1.1, 126.5,   0.0, USENEWNAMES},
-      {2, "H", " HG2", " CG", " CB", " SD", "", 1.1,-126.5,   0.0, USENEWNAMES},
-      {2, "H", " HB3", " CB", " CA", " CG", "", 1.1, 126.5,   0.0, USENEWNAMES},
-      {2, "H", " HB2", " CB", " CA", " CG", "", 1.1,-126.5,   0.0, USENEWNAMES},
-      {3, "H", "3HE", " CE", " SD", " CG", "", 1.1, 109.5,  60.0, USEOLDNAMES|XPLORNAME|ROTATEFLAG},
-      {3, "H", "2HE", " CE", " SD", " CG", "", 1.1, 109.5, -60.0, USEOLDNAMES|XPLORNAME|ROTATEFLAG},
-      {3, "H", "1HE", " CE", " SD", " CG", "", 1.1, 109.5, 180.0, USEOLDNAMES|XPLORNAME|ROTATEFLAG},
-      {2, "H", "2HG", " CG", " CB", " SD", "", 1.1, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
-      {2, "H", "1HG", " CG", " CB", " SD", "", 1.1,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
-      {2, "H", "2HB", " CB", " CA", " CG", "", 1.1, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
-      {2, "H", "1HB", " CB", " CA", " CG", "", 1.1,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
+      {3, "H", " HE3", " CE", " SD", " CG", "", 0.96, 109.5,  60.0, USENEWNAMES|ROTATEFLAG},
+      {3, "H", " HE2", " CE", " SD", " CG", "", 0.96, 109.5, -60.0, USENEWNAMES|ROTATEFLAG},
+      {3, "H", " HE1", " CE", " SD", " CG", "", 0.96, 109.5, 180.0, USENEWNAMES|ROTATEFLAG},
+      {2, "H", " HG3", " CG", " CB", " SD", "", 0.97, 126.5,   0.0, USENEWNAMES},
+      {2, "H", " HG2", " CG", " CB", " SD", "", 0.97,-126.5,   0.0, USENEWNAMES},
+      {2, "H", " HB3", " CB", " CA", " CG", "", 0.97, 126.5,   0.0, USENEWNAMES},
+      {2, "H", " HB2", " CB", " CA", " CG", "", 0.97,-126.5,   0.0, USENEWNAMES},
+      {3, "H", "3HE", " CE", " SD", " CG", "", 0.96, 109.5,  60.0, USEOLDNAMES|XPLORNAME|ROTATEFLAG},
+      {3, "H", "2HE", " CE", " SD", " CG", "", 0.96, 109.5, -60.0, USEOLDNAMES|XPLORNAME|ROTATEFLAG},
+      {3, "H", "1HE", " CE", " SD", " CG", "", 0.96, 109.5, 180.0, USEOLDNAMES|XPLORNAME|ROTATEFLAG},
+      {2, "H", "2HG", " CG", " CB", " SD", "", 0.97, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
+      {2, "H", "1HG", " CG", " CB", " SD", "", 0.97,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
+      {2, "H", "2HB", " CB", " CA", " CG", "", 0.97, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
+      {2, "H", "1HB", " CB", " CA", " CG", "", 0.97,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("MET", "", args);
   }
   {
     static const addPlan_args args[] = { //ASP updated 070703 by JJH
-      {2, "H", " HB3", " CB", " CA", " CG", "", 1.1, 126.5,   0.0, USENEWNAMES},
-      {2, "H", " HB2", " CB", " CA", " CG", "", 1.1,-126.5,   0.0, USENEWNAMES},
-      {2, "H", "2HB", " CB", " CA", " CG", "", 1.1, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
-      {2, "H", "1HB", " CB", " CA", " CG", "", 1.1,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
+      {2, "H", " HB3", " CB", " CA", " CG", "", 0.97, 126.5,   0.0, USENEWNAMES},
+      {2, "H", " HB2", " CB", " CA", " CG", "", 0.97,-126.5,   0.0, USENEWNAMES},
+      {2, "H", "2HB", " CB", " CA", " CG", "", 0.97, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
+      {2, "H", "1HB", " CB", " CA", " CG", "", 0.97,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("ASP", "", args);
   }
   {
     static const addPlan_args args[] = { //SER updated 070703 by JJH reverse handedness of SER HB RMI 070731
-      {3, "Hpol", " HG", " OG", " CB", " CA", "", 1.0, 109.5, 180.0, UNSUREDROPFLAG|ROTATEFLAG},
-      {2, "H", " HB3", " CB", " CA", " OG", "", 1.1, 126.5,   0.0, USENEWNAMES},
-      {2, "H", " HB2", " CB", " CA", " OG", "", 1.1,-126.5,   0.0, USENEWNAMES},
-      {2, "H", "2HB", " CB", " CA", " OG", "", 1.1, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
-      {2, "H", "1HB", " CB", " CA", " OG", "", 1.1,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
+      {3, "Hpol", " HG", " OG", " CB", " CA", "", 0.82, 109.5, 180.0, UNSUREDROPFLAG|ROTATEFLAG},
+      {2, "H", " HB3", " CB", " CA", " OG", "", 0.97, 126.5,   0.0, USENEWNAMES},
+      {2, "H", " HB2", " CB", " CA", " OG", "", 0.97,-126.5,   0.0, USENEWNAMES},
+      {2, "H", "2HB", " CB", " CA", " OG", "", 0.97, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
+      {2, "H", "1HB", " CB", " CA", " OG", "", 0.97,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("SER", "", args);
   }
   {
     static const addPlan_args args[] = { //ASN updated 070703 by JJH
-      {3, "Hpol", "HD22", " ND2", " CG", " OD1", "", 1.0, 120.0, 180.0, XPLORNAME|BONDBUMPFLAG},
-      {3, "Hpol", "HD21", " ND2", " CG", " OD1", "", 1.0, 120.0,   0.0, XPLORNAME|BONDBUMPFLAG},
-      {3, "Hpol", "HD22", " ND2", " CG", " OD1", "", 1.0, 120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
-      {3, "Hpol", "HD21", " ND2", " CG", " OD1", "", 1.0, 120.0,   0.0, USENEWNAMES|BONDBUMPFLAG},
-      {3, "Hpol", "2HD2", " ND2", " CG", " OD1", "", 1.0, 120.0, 180.0, USEOLDNAMES|BONDBUMPFLAG},
-      {3, "Hpol", "1HD2", " ND2", " CG", " OD1", "", 1.0, 120.0,   0.0, USEOLDNAMES|BONDBUMPFLAG},
-      {2, "H", " HB3", " CB", " CA", " CG", "", 1.1, 126.5,   0.0, USENEWNAMES},
-      {2, "H", " HB2", " CB", " CA", " CG", "", 1.1,-126.5,   0.0, USENEWNAMES},
-      {2, "H", "2HB", " CB", " CA", " CG", "", 1.1, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
-      {2, "H", "1HB", " CB", " CA", " CG", "", 1.1,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
+      {3, "Hpol", "HD22", " ND2", " CG", " OD1", "", 0.86, 120.0, 180.0, XPLORNAME|BONDBUMPFLAG},
+      {3, "Hpol", "HD21", " ND2", " CG", " OD1", "", 0.86, 120.0,   0.0, XPLORNAME|BONDBUMPFLAG},
+      {3, "Hpol", "HD22", " ND2", " CG", " OD1", "", 0.86, 120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
+      {3, "Hpol", "HD21", " ND2", " CG", " OD1", "", 0.86, 120.0,   0.0, USENEWNAMES|BONDBUMPFLAG},
+      {3, "Hpol", "2HD2", " ND2", " CG", " OD1", "", 0.86, 120.0, 180.0, USEOLDNAMES|BONDBUMPFLAG},
+      {3, "Hpol", "1HD2", " ND2", " CG", " OD1", "", 0.86, 120.0,   0.0, USEOLDNAMES|BONDBUMPFLAG},
+      {2, "H", " HB3", " CB", " CA", " CG", "", 0.97, 126.5,   0.0, USENEWNAMES},
+      {2, "H", " HB2", " CB", " CA", " CG", "", 0.97,-126.5,   0.0, USENEWNAMES},
+      {2, "H", "2HB", " CB", " CA", " CG", "", 0.97, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
+      {2, "H", "1HB", " CB", " CA", " CG", "", 0.97,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("ASN", "", args);
   }
   {
     static const addPlan_args args[] = { //TYR updated 070703 by JJH
-      {3, "Hpol", " HH", " OH", " CZ", " CE1", "", 1.0, 109.5, 180.0, UNSUREDROPFLAG|ROTATEFLAG},
-      {4, "Har", " HE2", " CE2", " CZ", " CD2", "", 1.1,   0.0,   0.0, 0},
-      {4, "Har", " HE1", " CE1", " CD1", " CZ", "", 1.1,   0.0,   0.0, 0},
-      {4, "Har", " HD2", " CD2", " CE2", " CG", "", 1.1,   0.0,   0.0, 0},
-      {4, "Har", " HD1", " CD1", " CG", " CE1", "", 1.1,   0.0,   0.0, 0},
-      {2, "H", " HB3", " CB", " CA", " CG", "", 1.1, 126.5,   0.0, USENEWNAMES},
-      {2, "H", " HB2", " CB", " CA", " CG", "", 1.1,-126.5,   0.0, USENEWNAMES},
-      {2, "H", "2HB", " CB", " CA", " CG", "", 1.1, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
-      {2, "H", "1HB", " CB", " CA", " CG", "", 1.1,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
+      {3, "Hpol", " HH", " OH", " CZ", " CE1", "", 0.82, 109.5, 180.0, UNSUREDROPFLAG|ROTATEFLAG},
+      {4, "Har", " HE2", " CE2", " CZ", " CD2", "", 0.86,   0.0,   0.0, 0},
+      {4, "Har", " HE1", " CE1", " CD1", " CZ", "", 0.86,   0.0,   0.0, 0},
+      {4, "Har", " HD2", " CD2", " CE2", " CG", "", 0.86,   0.0,   0.0, 0},
+      {4, "Har", " HD1", " CD1", " CG", " CE1", "", 0.86,   0.0,   0.0, 0},
+      {2, "H", " HB3", " CB", " CA", " CG", "", 0.97, 126.5,   0.0, USENEWNAMES},
+      {2, "H", " HB2", " CB", " CA", " CG", "", 0.97,-126.5,   0.0, USENEWNAMES},
+      {2, "H", "2HB", " CB", " CA", " CG", "", 0.97, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
+      {2, "H", "1HB", " CB", " CA", " CG", "", 0.97,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("TYR", "", args);
   }
   {
     static const addPlan_args args[] = { //CYS updated 070703 by JJH
-      {3, "Hpol", " HG", " SG", " CB", " CA", "", 1.3, 109.5,  180.0,UNSUREDROPFLAG|ROTATEFLAG},
-      {2, "H", " HB3", " CB", " CA", " SG", "", 1.1, 126.5,   0.0, USENEWNAMES},
-      {2, "H", " HB2", " CB", " CA", " SG", "", 1.1,-126.5,   0.0, USENEWNAMES},
-      {2, "H", "2HB", " CB", " CA", " SG", "", 1.1, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
-      {2, "H", "1HB", " CB", " CA", " SG", "", 1.1,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
+      {3, "Hpol", " HG", " SG", " CB", " CA", "", 1.2, 109.5,  180.0,UNSUREDROPFLAG|ROTATEFLAG},
+      {2, "H", " HB3", " CB", " CA", " SG", "", 0.97, 126.5,   0.0, USENEWNAMES},
+      {2, "H", " HB2", " CB", " CA", " SG", "", 0.97,-126.5,   0.0, USENEWNAMES},
+      {2, "H", "2HB", " CB", " CA", " SG", "", 0.97, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
+      {2, "H", "1HB", " CB", " CA", " SG", "", 0.97,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("CYS", "", args);
   }
   {
     static const addPlan_args args[] = { //GLN updated 070703 by JJH
-      {3, "Hpol", "HE22", " NE2", " CD", " OE1", "", 1.0, 120.0, 180.0, XPLORNAME|BONDBUMPFLAG},
-      {3, "Hpol", "HE21", " NE2", " CD", " OE1", "", 1.0, 120.0,   0.0, XPLORNAME|BONDBUMPFLAG},
-      {3, "Hpol", "HE22", " NE2", " CD", " OE1", "", 1.0, 120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
-      {3, "Hpol", "HE21", " NE2", " CD", " OE1", "", 1.0, 120.0,   0.0, USENEWNAMES|BONDBUMPFLAG},
-      {3, "Hpol", "2HE2", " NE2", " CD", " OE1", "", 1.0, 120.0, 180.0, USEOLDNAMES|BONDBUMPFLAG},
-      {3, "Hpol", "1HE2", " NE2", " CD", " OE1", "", 1.0, 120.0,   0.0, USEOLDNAMES|BONDBUMPFLAG},
-      {2, "H", " HG3", " CG", " CB", " CD", "", 1.1, 126.5,   0.0, USENEWNAMES},
-      {2, "H", " HG2", " CG", " CB", " CD", "", 1.1,-126.5,   0.0, USENEWNAMES},
-      {2, "H", " HB3", " CB", " CA", " CG", "", 1.1, 126.5,   0.0, USENEWNAMES},
-      {2, "H", " HB2", " CB", " CA", " CG", "", 1.1,-126.5,   0.0, USENEWNAMES},
-      {2, "H", "2HG", " CG", " CB", " CD", "", 1.1, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
-      {2, "H", "1HG", " CG", " CB", " CD", "", 1.1,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
-      {2, "H", "2HB", " CB", " CA", " CG", "", 1.1, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
-      {2, "H", "1HB", " CB", " CA", " CG", "", 1.1,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
+      {3, "Hpol", "HE22", " NE2", " CD", " OE1", "", 0.86, 120.0, 180.0, XPLORNAME|BONDBUMPFLAG},
+      {3, "Hpol", "HE21", " NE2", " CD", " OE1", "", 0.86, 120.0,   0.0, XPLORNAME|BONDBUMPFLAG},
+      {3, "Hpol", "HE22", " NE2", " CD", " OE1", "", 0.86, 120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
+      {3, "Hpol", "HE21", " NE2", " CD", " OE1", "", 0.86, 120.0,   0.0, USENEWNAMES|BONDBUMPFLAG},
+      {3, "Hpol", "2HE2", " NE2", " CD", " OE1", "", 0.86, 120.0, 180.0, USEOLDNAMES|BONDBUMPFLAG},
+      {3, "Hpol", "1HE2", " NE2", " CD", " OE1", "", 0.86, 120.0,   0.0, USEOLDNAMES|BONDBUMPFLAG},
+      {2, "H", " HG3", " CG", " CB", " CD", "", 0.97, 126.5,   0.0, USENEWNAMES},
+      {2, "H", " HG2", " CG", " CB", " CD", "", 0.97,-126.5,   0.0, USENEWNAMES},
+      {2, "H", " HB3", " CB", " CA", " CG", "", 0.97, 126.5,   0.0, USENEWNAMES},
+      {2, "H", " HB2", " CB", " CA", " CG", "", 0.97,-126.5,   0.0, USENEWNAMES},
+      {2, "H", "2HG", " CG", " CB", " CD", "", 0.97, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
+      {2, "H", "1HG", " CG", " CB", " CD", "", 0.97,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
+      {2, "H", "2HB", " CB", " CA", " CG", "", 0.97, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
+      {2, "H", "1HB", " CB", " CA", " CG", "", 0.97,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("GLN", "", args);
   }
   {
     static const addPlan_args args[] = { //LEU updated 070703 by JJH
-      {3, "H", "HD23", " CD2", " CG", " CB", "", 1.1, 109.5,  60.0, USENEWNAMES|ROTATEONDEMAND},
-      {3, "H", "HD22", " CD2", " CG", " CB", "", 1.1, 109.5, -60.0, USENEWNAMES|ROTATEONDEMAND},
-      {3, "H", "HD21", " CD2", " CG", " CB", "", 1.1, 109.5, 180.0, USENEWNAMES|ROTATEONDEMAND},
-      {3, "H", "HD13", " CD1", " CG", " CB", "", 1.1, 109.5,  60.0, USENEWNAMES|ROTATEONDEMAND},
-      {3, "H", "HD12", " CD1", " CG", " CB", "", 1.1, 109.5, -60.0, USENEWNAMES|ROTATEONDEMAND},
-      {3, "H", "HD11", " CD1", " CG", " CB", "", 1.1, 109.5, 180.0, USENEWNAMES|ROTATEONDEMAND},
-      {3, "H", "3HD2", " CD2", " CG", " CB", "", 1.1, 109.5,  60.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
-      {3, "H", "2HD2", " CD2", " CG", " CB", "", 1.1, 109.5, -60.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
-      {3, "H", "1HD2", " CD2", " CG", " CB", "", 1.1, 109.5, 180.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
-      {3, "H", "3HD1", " CD1", " CG", " CB", "", 1.1, 109.5,  60.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
-      {3, "H", "2HD1", " CD1", " CG", " CB", "", 1.1, 109.5, -60.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
-      {3, "H", "1HD1", " CD1", " CG", " CB", "", 1.1, 109.5, 180.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
-      {1, "H", " HG", " CG", " CB", " CD1", " CD2", 1.1,   0.0,   0.0, 0},
-      {2, "H", " HB3", " CB", " CA", " CG", "", 1.1, 126.5,   0.0, USENEWNAMES},
-      {2, "H", " HB2", " CB", " CA", " CG", "", 1.1,-126.5,   0.0, USENEWNAMES},
-      {2, "H", "2HB", " CB", " CA", " CG", "", 1.1, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
-      {2, "H", "1HB", " CB", " CA", " CG", "", 1.1,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
+      {3, "H", "HD23", " CD2", " CG", " CB", "", 0.96, 109.5,  60.0, USENEWNAMES|ROTATEONDEMAND},
+      {3, "H", "HD22", " CD2", " CG", " CB", "", 0.96, 109.5, -60.0, USENEWNAMES|ROTATEONDEMAND},
+      {3, "H", "HD21", " CD2", " CG", " CB", "", 0.96, 109.5, 180.0, USENEWNAMES|ROTATEONDEMAND},
+      {3, "H", "HD13", " CD1", " CG", " CB", "", 0.96, 109.5,  60.0, USENEWNAMES|ROTATEONDEMAND},
+      {3, "H", "HD12", " CD1", " CG", " CB", "", 0.96, 109.5, -60.0, USENEWNAMES|ROTATEONDEMAND},
+      {3, "H", "HD11", " CD1", " CG", " CB", "", 0.96, 109.5, 180.0, USENEWNAMES|ROTATEONDEMAND},
+      {3, "H", "3HD2", " CD2", " CG", " CB", "", 0.96, 109.5,  60.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
+      {3, "H", "2HD2", " CD2", " CG", " CB", "", 0.96, 109.5, -60.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
+      {3, "H", "1HD2", " CD2", " CG", " CB", "", 0.96, 109.5, 180.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
+      {3, "H", "3HD1", " CD1", " CG", " CB", "", 0.96, 109.5,  60.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
+      {3, "H", "2HD1", " CD1", " CG", " CB", "", 0.96, 109.5, -60.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
+      {3, "H", "1HD1", " CD1", " CG", " CB", "", 0.96, 109.5, 180.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
+      {1, "H", " HG", " CG", " CB", " CD1", " CD2", 0.98,   0.0,   0.0, 0},
+      {2, "H", " HB3", " CB", " CA", " CG", "", 0.97, 126.5,   0.0, USENEWNAMES},
+      {2, "H", " HB2", " CB", " CA", " CG", "", 0.97,-126.5,   0.0, USENEWNAMES},
+      {2, "H", "2HB", " CB", " CA", " CG", "", 0.97, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
+      {2, "H", "1HB", " CB", " CA", " CG", "", 0.97,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("LEU", "", args);
   }
   {
     static const addPlan_args args[] = { //PRO updated 070703 by JJH
-      {2, "H", " HD3", " CD", " CG", " N", "", 1.1, 126.5,   0.0, USENEWNAMES},
-      {2, "H", " HD2", " CD", " CG", " N", "", 1.1,-126.5,   0.0, USENEWNAMES},
-      {2, "H", " HG3", " CG", " CB", " CD", "", 1.1, 126.5,   0.0, USENEWNAMES},
-      {2, "H", " HG2", " CG", " CB", " CD", "", 1.1,-126.5,   0.0, USENEWNAMES},
-      {2, "H", " HB3", " CB", " CA", " CG", "", 1.1, 126.5,   0.0, USENEWNAMES},
-      {2, "H", " HB2", " CB", " CA", " CG", "", 1.1,-126.5,   0.0, USENEWNAMES},
-      {2, "H", "2HD", " CD", " CG", " N", "", 1.1, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
-      {2, "H", "1HD", " CD", " CG", " N", "", 1.1,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
-      {2, "H", "2HG", " CG", " CB", " CD", "", 1.1, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
-      {2, "H", "1HG", " CG", " CB", " CD", "", 1.1,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
-      {2, "H", "2HB", " CB", " CA", " CG", "", 1.1, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
-      {2, "H", "1HB", " CB", " CA", " CG", "", 1.1,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
+      {2, "H", " HD3", " CD", " CG", " N", "", 0.97, 126.5,   0.0, USENEWNAMES},
+      {2, "H", " HD2", " CD", " CG", " N", "", 0.97,-126.5,   0.0, USENEWNAMES},
+      {2, "H", " HG3", " CG", " CB", " CD", "", 0.97, 126.5,   0.0, USENEWNAMES},
+      {2, "H", " HG2", " CG", " CB", " CD", "", 0.97,-126.5,   0.0, USENEWNAMES},
+      {2, "H", " HB3", " CB", " CA", " CG", "", 0.97, 126.5,   0.0, USENEWNAMES},
+      {2, "H", " HB2", " CB", " CA", " CG", "", 0.97,-126.5,   0.0, USENEWNAMES},
+      {2, "H", "2HD", " CD", " CG", " N", "", 0.97, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
+      {2, "H", "1HD", " CD", " CG", " N", "", 0.97,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
+      {2, "H", "2HG", " CG", " CB", " CD", "", 0.97, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
+      {2, "H", "1HG", " CG", " CB", " CD", "", 0.97,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
+      {2, "H", "2HB", " CB", " CA", " CG", "", 0.97, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
+      {2, "H", "1HB", " CB", " CA", " CG", "", 0.97,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("PRO", "", args);
   }
   {
     static const addPlan_args args[] = { //VAL updated 070703 by JJH
-      {3, "H", "HG23", " CG2", " CB", " CA", "", 1.1, 109.5,  60.0, USENEWNAMES|ROTATEONDEMAND},
-      {3, "H", "HG22", " CG2", " CB", " CA", "", 1.1, 109.5, -60.0, USENEWNAMES|ROTATEONDEMAND},
-      {3, "H", "HG21", " CG2", " CB", " CA", "", 1.1, 109.5, 180.0, USENEWNAMES|ROTATEONDEMAND},
-      {3, "H", "HG13", " CG1", " CB", " CA", "", 1.1, 109.5,  60.0, USENEWNAMES|ROTATEONDEMAND},
-      {3, "H", "HG12", " CG1", " CB", " CA", "", 1.1, 109.5, -60.0, USENEWNAMES|ROTATEONDEMAND},
-      {3, "H", "HG11", " CG1", " CB", " CA", "", 1.1, 109.5, 180.0, USENEWNAMES|ROTATEONDEMAND},
-      {3, "H", "3HG2", " CG2", " CB", " CA", "", 1.1, 109.5,  60.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
-      {3, "H", "2HG2", " CG2", " CB", " CA", "", 1.1, 109.5, -60.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
-      {3, "H", "1HG2", " CG2", " CB", " CA", "", 1.1, 109.5, 180.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
-      {3, "H", "3HG1", " CG1", " CB", " CA", "", 1.1, 109.5,  60.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
-      {3, "H", "2HG1", " CG1", " CB", " CA", "", 1.1, 109.5, -60.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
-      {3, "H", "1HG1", " CG1", " CB", " CA", "", 1.1, 109.5, 180.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
-      {1, "H", " HB", " CB", " CA", " CG1", " CG2", 1.1,   0.0,   0.0, 0},
+      {3, "H", "HG23", " CG2", " CB", " CA", "", 0.96, 109.5,  60.0, USENEWNAMES|ROTATEONDEMAND},
+      {3, "H", "HG22", " CG2", " CB", " CA", "", 0.96, 109.5, -60.0, USENEWNAMES|ROTATEONDEMAND},
+      {3, "H", "HG21", " CG2", " CB", " CA", "", 0.96, 109.5, 180.0, USENEWNAMES|ROTATEONDEMAND},
+      {3, "H", "HG13", " CG1", " CB", " CA", "", 0.96, 109.5,  60.0, USENEWNAMES|ROTATEONDEMAND},
+      {3, "H", "HG12", " CG1", " CB", " CA", "", 0.96, 109.5, -60.0, USENEWNAMES|ROTATEONDEMAND},
+      {3, "H", "HG11", " CG1", " CB", " CA", "", 0.96, 109.5, 180.0, USENEWNAMES|ROTATEONDEMAND},
+      {3, "H", "3HG2", " CG2", " CB", " CA", "", 0.96, 109.5,  60.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
+      {3, "H", "2HG2", " CG2", " CB", " CA", "", 0.96, 109.5, -60.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
+      {3, "H", "1HG2", " CG2", " CB", " CA", "", 0.96, 109.5, 180.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
+      {3, "H", "3HG1", " CG1", " CB", " CA", "", 0.96, 109.5,  60.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
+      {3, "H", "2HG1", " CG1", " CB", " CA", "", 0.96, 109.5, -60.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
+      {3, "H", "1HG1", " CG1", " CB", " CA", "", 0.96, 109.5, 180.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
+      {1, "H", " HB", " CB", " CA", " CG1", " CG2", 0.98,   0.0,   0.0, 0},
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("VAL", "", args);
   }
   {
     static const addPlan_args args[] = {  //ILE updated 070703 by JJH
-      {3, "H", "HD13", " CD1", " CG1", " CB", "", 1.1, 109.5,  60.0, USENEWNAMES|ROTATEONDEMAND},
-      {3, "H", "HD12", " CD1", " CG1", " CB", "", 1.1, 109.5, -60.0, USENEWNAMES|ROTATEONDEMAND},
-      {3, "H", "HD11", " CD1", " CG1", " CB", "", 1.1, 109.5, 180.0, USENEWNAMES|ROTATEONDEMAND},
-      {3, "H", "HG23", " CG2", " CB", " CA", "", 1.1, 109.5,  60.0, USENEWNAMES|ROTATEONDEMAND},
-      {3, "H", "HG22", " CG2", " CB", " CA", "", 1.1, 109.5, -60.0, USENEWNAMES|ROTATEONDEMAND},
-      {3, "H", "HG21", " CG2", " CB", " CA", "", 1.1, 109.5, 180.0, USENEWNAMES|ROTATEONDEMAND},
-      {2, "H", "HG13", " CG1", " CB", " CD1", "", 1.1, 126.5,   0.0, USENEWNAMES},
-      {2, "H", "HG12", " CG1", " CB", " CD1", "", 1.1,-126.5,   0.0, USENEWNAMES},
-      {3, "H", "3HD1", " CD1", " CG1", " CB", "", 1.1, 109.5,  60.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
-      {3, "H", "2HD1", " CD1", " CG1", " CB", "", 1.1, 109.5, -60.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
-      {3, "H", "1HD1", " CD1", " CG1", " CB", "", 1.1, 109.5, 180.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
-      {3, "H", "3HG2", " CG2", " CB", " CA", "", 1.1, 109.5,  60.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
-      {3, "H", "2HG2", " CG2", " CB", " CA", "", 1.1, 109.5, -60.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
-      {3, "H", "1HG2", " CG2", " CB", " CA", "", 1.1, 109.5, 180.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
-      {2, "H", "2HG1", " CG1", " CB", " CD1", "", 1.1, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
-      {2, "H", "1HG1", " CG1", " CB", " CD1", "", 1.1,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
-      {1, "H", " HB", " CB", " CA", " CG1", " CG2", 1.1,   0.0,   0.0, 0},
+      {3, "H", "HD13", " CD1", " CG1", " CB", "", 0.96, 109.5,  60.0, USENEWNAMES|ROTATEONDEMAND},
+      {3, "H", "HD12", " CD1", " CG1", " CB", "", 0.96, 109.5, -60.0, USENEWNAMES|ROTATEONDEMAND},
+      {3, "H", "HD11", " CD1", " CG1", " CB", "", 0.96, 109.5, 180.0, USENEWNAMES|ROTATEONDEMAND},
+      {3, "H", "HG23", " CG2", " CB", " CA", "", 0.96, 109.5,  60.0, USENEWNAMES|ROTATEONDEMAND},
+      {3, "H", "HG22", " CG2", " CB", " CA", "", 0.96, 109.5, -60.0, USENEWNAMES|ROTATEONDEMAND},
+      {3, "H", "HG21", " CG2", " CB", " CA", "", 0.96, 109.5, 180.0, USENEWNAMES|ROTATEONDEMAND},
+      {2, "H", "HG13", " CG1", " CB", " CD1", "", 0.97, 126.5,   0.0, USENEWNAMES},
+      {2, "H", "HG12", " CG1", " CB", " CD1", "", 0.97,-126.5,   0.0, USENEWNAMES},
+      {3, "H", "3HD1", " CD1", " CG1", " CB", "", 0.96, 109.5,  60.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
+      {3, "H", "2HD1", " CD1", " CG1", " CB", "", 0.96, 109.5, -60.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
+      {3, "H", "1HD1", " CD1", " CG1", " CB", "", 0.96, 109.5, 180.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
+      {3, "H", "3HG2", " CG2", " CB", " CA", "", 0.96, 109.5,  60.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
+      {3, "H", "2HG2", " CG2", " CB", " CA", "", 0.96, 109.5, -60.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
+      {3, "H", "1HG2", " CG2", " CB", " CA", "", 0.96, 109.5, 180.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
+      {2, "H", "2HG1", " CG1", " CB", " CD1", "", 0.97, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
+      {2, "H", "1HG1", " CG1", " CB", " CD1", "", 0.97,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
+      {1, "H", " HB", " CB", " CA", " CG1", " CG2", 0.98,   0.0,   0.0, 0},
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("ILE", "", args);
   }
   {
     static const addPlan_args args[] = { //TRP updated 070703 by JJH
-      {4, "Har", " HH2", " CH2", " CZ3", " CZ2", "", 1.1,   0.0,   0.0, 0},
-      {4, "Har", " HZ3", " CZ3", " CE3", " CH2", "", 1.1,   0.0,   0.0, 0},
-      {4, "Har", " HZ2", " CZ2", " CH2", " CE2", "", 1.1,   0.0,   0.0, 0},
-      {4, "Har", " HE3", " CE3", " CD2", " CZ3", "", 1.1,   0.0,   0.0, 0},
-      {4, "Ha+p", " HE1", " NE1", " CE2", " CD1", "", 1.0,   0.0,   0.0, 0},
-      {4, "Har", " HD1", " CD1", " NE1", " CG", "", 1.1,   0.0,   0.0, 0},
-      {2, "H", " HB3", " CB", " CA", " CG", "", 1.1, 126.5,   0.0, USENEWNAMES},
-      {2, "H", " HB2", " CB", " CA", " CG", "", 1.1,-126.5,   0.0, USENEWNAMES},
-      {2, "H", "2HB", " CB", " CA", " CG", "", 1.1, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
-      {2, "H", "1HB", " CB", " CA", " CG", "", 1.1,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
+      {4, "Har", " HH2", " CH2", " CZ3", " CZ2", "", 0.93,   0.0,   0.0, 0},
+      {4, "Har", " HZ3", " CZ3", " CE3", " CH2", "", 0.93,   0.0,   0.0, 0},
+      {4, "Har", " HZ2", " CZ2", " CH2", " CE2", "", 0.93,   0.0,   0.0, 0},
+      {4, "Har", " HE3", " CE3", " CD2", " CZ3", "", 0.93,   0.0,   0.0, 0},
+      {4, "Ha+p", " HE1", " NE1", " CE2", " CD1", "", 0.86,   0.0,   0.0, 0},
+      {4, "Har", " HD1", " CD1", " NE1", " CG", "", 0.93,   0.0,   0.0, 0},
+      {2, "H", " HB3", " CB", " CA", " CG", "", 0.97, 126.5,   0.0, USENEWNAMES},
+      {2, "H", " HB2", " CB", " CA", " CG", "", 0.97,-126.5,   0.0, USENEWNAMES},
+      {2, "H", "2HB", " CB", " CA", " CG", "", 0.97, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
+      {2, "H", "1HB", " CB", " CA", " CG", "", 0.97,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("TRP", "", args);
@@ -538,13 +538,13 @@ HydrogenPlanTable::HydrogenPlanTable() {
 #ifdef LEFT_JUSTIFY_NUC_RES_OK
   {
     static const addPlan_args args[] = {
-      {4, "Har", " H6",  " C6",  " C5",  " N1",  "",    1.1,   0.0,   0.0, 0},
-      {4, "Har", " H5",  " C5",  " C4",  " C6",  "",    1.1,   0.0,   0.0, 0},
-      {4, "Ha+p"," H3",  " N3",  " C4",  " C2",  "",    1.0,   0.0,   0.0, BONDBUMPFLAG},
-      {1, "H",   " H1*", " C1*", " O4*", " C2*", " N1", 1.1,   0.0,   0.0, USEOLDNAMES},
-      {1, "H",   " H1'", " C1'", " O4'", " C2'", " N1", 1.1,   0.0,   0.0, XPLORNAME},
-      {1, "H",   " H1'",  " C1*",  " O4*",  " C2*", " N1", 1.1,   0.0,   0.0, USENEWNAMES},
-      {1, "H",   " H1'",  " C1'",  " O4'",  " C2'", " N1", 1.1,   0.0,   0.0, USENEWNAMES},
+      {4, "Har", " H6",  " C6",  " C5",  " N1",  "",    0.93,   0.0,   0.0, 0},
+      {4, "Har", " H5",  " C5",  " C4",  " C6",  "",    0.93,   0.0,   0.0, 0},
+      {4, "Ha+p"," H3",  " N3",  " C4",  " C2",  "",    0.86,   0.0,   0.0, BONDBUMPFLAG},
+      {1, "H",   " H1*", " C1*", " O4*", " C2*", " N1", 0.98,   0.0,   0.0, USEOLDNAMES},
+      {1, "H",   " H1'", " C1'", " O4'", " C2'", " N1", 0.98,   0.0,   0.0, XPLORNAME},
+      {1, "H",   " H1'",  " C1*",  " O4*",  " C2*", " N1", 0.98,   0.0,   0.0, USENEWNAMES},
+      {1, "H",   " H1'",  " C1'",  " O4'",  " C2'", " N1", 0.98,   0.0,   0.0, USENEWNAMES},
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("U", "", args);
@@ -552,13 +552,13 @@ HydrogenPlanTable::HydrogenPlanTable() {
 #endif
   {
     static const addPlan_args args[] = {
-      {4, "Har", " H6",  " C6",  " C5",  " N1",  "",    1.1,   0.0,   0.0, 0},
-      {4, "Har", " H5",  " C5",  " C4",  " C6",  "",    1.1,   0.0,   0.0, 0},
-      {4, "Ha+p"," H3",  " N3",  " C4",  " C2",  "",    1.0,   0.0,   0.0, BONDBUMPFLAG},
-      {1, "H",   " H1*", " C1*", " O4*", " C2*", " N1", 1.1,   0.0,   0.0, USEOLDNAMES},
-      {1, "H",   " H1'", " C1'", " O4'", " C2'", " N1", 1.1,   0.0,   0.0, XPLORNAME},
-      {1, "H",   " H1'",  " C1*",  " O4*",  " C2*", " N1", 1.1,   0.0,   0.0, USENEWNAMES},
-      {1, "H",   " H1'",  " C1'",  " O4'",  " C2'", " N1", 1.1,   0.0,   0.0, USENEWNAMES},
+      {4, "Har", " H6",  " C6",  " C5",  " N1",  "",    0.93,   0.0,   0.0, 0},
+      {4, "Har", " H5",  " C5",  " C4",  " C6",  "",    0.93,   0.0,   0.0, 0},
+      {4, "Ha+p"," H3",  " N3",  " C4",  " C2",  "",    0.86,   0.0,   0.0, BONDBUMPFLAG},
+      {1, "H",   " H1*", " C1*", " O4*", " C2*", " N1", 0.98,   0.0,   0.0, USEOLDNAMES},
+      {1, "H",   " H1'", " C1'", " O4'", " C2'", " N1", 0.98,   0.0,   0.0, XPLORNAME},
+      {1, "H",   " H1'",  " C1*",  " O4*",  " C2*", " N1", 0.98,   0.0,   0.0, USENEWNAMES},
+      {1, "H",   " H1'",  " C1'",  " O4'",  " C2'", " N1", 0.98,   0.0,   0.0, USENEWNAMES},
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("URA", "", args);
@@ -631,7 +631,7 @@ HydrogenPlanTable::HydrogenPlanTable() {
       {3, "H",    " H71", " C7", " C5",  " C4",  "",    1.1, 109.5, 180.0, USENEWNAMES|ROTATEONDEMAND},
       {4, "Ha+p", " H3",  " N3",  " C4",  " C2",  "",    1.0,   0.0,   0.0, BONDBUMPFLAG},
       {1, "H",    " H1*", " C1*", " O4*", " C2*", " N1", 1.1,   0.0,   0.0, USEOLDNAMES|XPLORNAME},
-      {1, "H",    " H1'", " C1'", " O4'", " C2'", " N1", 1.1,   0.0,   0.0, XPLORNAME}, 
+      {1, "H",    " H1'", " C1'", " O4'", " C2'", " N1", 1.1,   0.0,   0.0, XPLORNAME},
       {1, "H",    " H1'", " C1*", " O4*", " C2*", " N1", 1.1,   0.0,   0.0, USENEWNAMES},
       {1, "H",    " H1'", " C1'", " O4'", " C2'", " N1", 1.1,   0.0,   0.0, USENEWNAMES},
       {0,0,0,0,0,0,0,0,0,0,0}
@@ -668,7 +668,7 @@ HydrogenPlanTable::HydrogenPlanTable() {
       {3, "H",    " H71", " C7", " C5",  " C4",  "",    1.1, 109.5, 180.0, USENEWNAMES|ROTATEONDEMAND},
       {4, "Ha+p", " H3",  " N3",  " C4",  " C2",  "",    1.0,   0.0,   0.0, BONDBUMPFLAG},
       {1, "H",    " H1*", " C1*", " O4*", " C2*", " N1", 1.1,   0.0,   0.0, USEOLDNAMES|XPLORNAME},
-      {1, "H",    " H1'", " C1'", " O4'", " C2'", " N1", 1.1,   0.0,   0.0, XPLORNAME},      
+      {1, "H",    " H1'", " C1'", " O4'", " C2'", " N1", 1.1,   0.0,   0.0, XPLORNAME},
       {1, "H",    " H1'", " C1*", " O4*", " C2*", " N1", 1.1,   0.0,   0.0, USENEWNAMES},
       {1, "H",    " H1'", " C1'", " O4'", " C2'", " N1", 1.1,   0.0,   0.0, USENEWNAMES},
       {0,0,0,0,0,0,0,0,0,0,0}
@@ -678,18 +678,18 @@ HydrogenPlanTable::HydrogenPlanTable() {
 //--------------------------------------------------------------------------
   {
     static const addPlan_args args[] = {
-      {4, "Har",  " H2",  " C2",  " N1",  " N3",  "",    1.1,   0.0,   0.0, 0},
-      {3, "Hpol", "2H6",  " N6",  " C6",  " C5",  "",    1.0,-120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
-      {3, "Hpol", "1H6",  " N6",  " C6",  " C5",  "",    1.0, 120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
-      {7, "Hpol", " H62", " N6",  "",     "",     "",    1.0,   0.0,   0.0, BONDBUMPFLAG},
-      {7, "Hpol", " H61", " N6",  "",     "",     "",    1.0,   0.0,   0.0, BONDBUMPFLAG},
-      {3, "Hpol", " H62",  " N6",  " C6",  " C5",  "",    1.0,-120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
-      {3, "Hpol", " H61",  " N6",  " C6",  " C5",  "",    1.0, 120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
-      {4, "Har",  " H8",  " C8",  " N7",  " N9",  "",    1.1,   0.0,   0.0, 0},
-      {1, "H",    " H1*", " C1*", " O4*", " C2*", " N9", 1.1,   0.0,   0.0, USEOLDNAMES},
-      {1, "H",    " H1'", " C1'", " O4'", " C2'", " N9", 1.1,   0.0,   0.0, XPLORNAME},
-      {1, "H",    " H1'",  " C1*",  " O4*",  " C2*",  " N9", 1.1,   0.0,   0.0, USENEWNAMES},
-      {1, "H",    " H1'",  " C1'",  " O4'",  " C2'",  " N9", 1.1,   0.0,   0.0, USENEWNAMES},
+      {4, "Har",  " H2",  " C2",  " N1",  " N3",  "",    0.93,   0.0,   0.0, 0},
+      {3, "Hpol", "2H6",  " N6",  " C6",  " C5",  "",    0.86,-120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
+      {3, "Hpol", "1H6",  " N6",  " C6",  " C5",  "",    0.86, 120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
+      {7, "Hpol", " H62", " N6",  "",     "",     "",    0.86,   0.0,   0.0, BONDBUMPFLAG},
+      {7, "Hpol", " H61", " N6",  "",     "",     "",    0.86,   0.0,   0.0, BONDBUMPFLAG},
+      {3, "Hpol", " H62",  " N6",  " C6",  " C5",  "",    0.86,-120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
+      {3, "Hpol", " H61",  " N6",  " C6",  " C5",  "",    0.86, 120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
+      {4, "Har",  " H8",  " C8",  " N7",  " N9",  "",    0.93,   0.0,   0.0, 0},
+      {1, "H",    " H1*", " C1*", " O4*", " C2*", " N9", 0.98,   0.0,   0.0, USEOLDNAMES},
+      {1, "H",    " H1'", " C1'", " O4'", " C2'", " N9", 0.98,   0.0,   0.0, XPLORNAME},
+      {1, "H",    " H1'",  " C1*",  " O4*",  " C2*",  " N9", 0.98,   0.0,   0.0, USENEWNAMES},
+      {1, "H",    " H1'",  " C1'",  " O4'",  " C2'",  " N9", 0.98,   0.0,   0.0, USENEWNAMES},
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("  A", "", args);
@@ -697,18 +697,18 @@ HydrogenPlanTable::HydrogenPlanTable() {
 #ifdef LEFT_JUSTIFY_NUC_RES_OK
   {
     static const addPlan_args args[] = {
-      {4, "Har",  " H2",  " C2",  " N1",  " N3",  "",    1.1,   0.0,   0.0, 0},
-      {3, "Hpol", "2H6",  " N6",  " C6",  " C5",  "",    1.0,-120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
-      {3, "Hpol", "1H6",  " N6",  " C6",  " C5",  "",    1.0, 120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
-      {7, "Hpol", " H62", " N6",  "",     "",     "",    1.0,   0.0,   0.0, BONDBUMPFLAG},
-      {7, "Hpol", " H61", " N6",  "",     "",     "",    1.0,   0.0,   0.0, BONDBUMPFLAG},
-      {3, "Hpol", " H62",  " N6",  " C6",  " C5",  "",    1.0,-120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
-      {3, "Hpol", " H61",  " N6",  " C6",  " C5",  "",    1.0, 120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
-      {4, "Har",  " H8",  " C8",  " N7",  " N9",  "",    1.1,   0.0,   0.0, 0},
-      {1, "H",    " H1*", " C1*", " O4*", " C2*", " N9", 1.1,   0.0,   0.0, USEOLDNAMES},
-      {1, "H",    " H1'", " C1'", " O4'", " C2'", " N9", 1.1,   0.0,   0.0, XPLORNAME},
-      {1, "H",    " H1'",  " C1*",  " O4*",  " C2*",  " N9", 1.1,   0.0,   0.0, USENEWNAMES},
-      {1, "H",    " H1'",  " C1'",  " O4'",  " C2'",  " N9", 1.1,   0.0,   0.0, USENEWNAMES},
+      {4, "Har",  " H2",  " C2",  " N1",  " N3",  "",    0.93,   0.0,   0.0, 0},
+      {3, "Hpol", "2H6",  " N6",  " C6",  " C5",  "",    0.86,-120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
+      {3, "Hpol", "1H6",  " N6",  " C6",  " C5",  "",    0.86, 120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
+      {7, "Hpol", " H62", " N6",  "",     "",     "",    0.86,   0.0,   0.0, BONDBUMPFLAG},
+      {7, "Hpol", " H61", " N6",  "",     "",     "",    0.86,   0.0,   0.0, BONDBUMPFLAG},
+      {3, "Hpol", " H62",  " N6",  " C6",  " C5",  "",    0.86,-120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
+      {3, "Hpol", " H61",  " N6",  " C6",  " C5",  "",    0.86, 120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
+      {4, "Har",  " H8",  " C8",  " N7",  " N9",  "",    0.93,   0.0,   0.0, 0},
+      {1, "H",    " H1*", " C1*", " O4*", " C2*", " N9", 0.98,   0.0,   0.0, USEOLDNAMES},
+      {1, "H",    " H1'", " C1'", " O4'", " C2'", " N9", 0.98,   0.0,   0.0, XPLORNAME},
+      {1, "H",    " H1'",  " C1*",  " O4*",  " C2*",  " N9", 0.98,   0.0,   0.0, USENEWNAMES},
+      {1, "H",    " H1'",  " C1'",  " O4'",  " C2'",  " N9", 0.98,   0.0,   0.0, USENEWNAMES},
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("A", "", args);
@@ -716,19 +716,19 @@ HydrogenPlanTable::HydrogenPlanTable() {
 #endif
   {
     static const addPlan_args args[] = {
-      {3, "Hpol", " H62",  " N6",  " C6",  " C5",  "",    1.0,-120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
-      {3, "Hpol", " H61",  " N6",  " C6",  " C5",  "",    1.0, 120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
-      {1, "H",    " H1'",  " C1*",  " O4*",  " C2*",  " N9", 1.1,   0.0,   0.0, USENEWNAMES},
-      {1, "H",    " H1'",  " C1'",  " O4'",  " C2'",  " N9", 1.1,   0.0,   0.0, USENEWNAMES},
+      {3, "Hpol", " H62",  " N6",  " C6",  " C5",  "",    0.86,-120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
+      {3, "Hpol", " H61",  " N6",  " C6",  " C5",  "",    0.86, 120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
+      {1, "H",    " H1'",  " C1*",  " O4*",  " C2*",  " N9", 0.98,   0.0,   0.0, USENEWNAMES},
+      {1, "H",    " H1'",  " C1'",  " O4'",  " C2'",  " N9", 0.98,   0.0,   0.0, USENEWNAMES},
 
-      {4, "Har",  " H2",  " C2",  " N1",  " N3",  "",    1.1,   0.0,   0.0, 0},
-      {3, "Hpol", "2H6",  " N6",  " C6",  " C5",  "",    1.0,-120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
-      {3, "Hpol", "1H6",  " N6",  " C6",  " C5",  "",    1.0, 120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
-      {7, "Hpol", " H62", " N6",  "",     "",     "",    1.0,   0.0,   0.0, BONDBUMPFLAG},
-      {7, "Hpol", " H61", " N6",  "",     "",     "",    1.0,   0.0,   0.0, BONDBUMPFLAG},
-      {4, "Har",  " H8",  " C8",  " N7",  " N9",  "",    1.1,   0.0,   0.0, 0},
-      {1, "H",    " H1*", " C1*", " O4*", " C2*", " N9", 1.1,   0.0,   0.0, USEOLDNAMES},
-      {1, "H",    " H1'", " C1'", " O4'", " C2'", " N9", 1.1,   0.0,   0.0, XPLORNAME}, 
+      {4, "Har",  " H2",  " C2",  " N1",  " N3",  "",    0.93,   0.0,   0.0, 0},
+      {3, "Hpol", "2H6",  " N6",  " C6",  " C5",  "",    0.86,-120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
+      {3, "Hpol", "1H6",  " N6",  " C6",  " C5",  "",    0.86, 120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
+      {7, "Hpol", " H62", " N6",  "",     "",     "",    0.86,   0.0,   0.0, BONDBUMPFLAG},
+      {7, "Hpol", " H61", " N6",  "",     "",     "",    0.86,   0.0,   0.0, BONDBUMPFLAG},
+      {4, "Har",  " H8",  " C8",  " N7",  " N9",  "",    0.93,   0.0,   0.0, 0},
+      {1, "H",    " H1*", " C1*", " O4*", " C2*", " N9", 0.98,   0.0,   0.0, USEOLDNAMES},
+      {1, "H",    " H1'", " C1'", " O4'", " C2'", " N9", 0.98,   0.0,   0.0, XPLORNAME},
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("ADE", "", args);
@@ -736,18 +736,18 @@ HydrogenPlanTable::HydrogenPlanTable() {
 //--------------------------------------------------------------------------
   {
     static const addPlan_args args[] = {
-      {4, "Har",  " H6",  " C6",  " C5",  " N1",  "",    1.1,   0.0,   0.0, 0},
-      {4, "Har",  " H5",  " C5",  " C4",  " C6",  "",    1.1,   0.0,   0.0, 0},
-      {3, "Hpol", "2H4",  " N4",  " C4",  " N3",  "",    1.0,-120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
-      {3, "Hpol", "1H4",  " N4",  " C4",  " N3",  "",    1.0, 120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
-      {7, "Hpol", " H42", " N4",  "",     "",     "",    1.0,   0.0,   0.0, BONDBUMPFLAG},
-      {7, "Hpol", " H41", " N4",  "",     "",     "",    1.0,   0.0,   0.0, BONDBUMPFLAG},
-      {3, "Hpol", " H42",  " N4",  " C4",  " N3",  "",    1.0,-120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
-      {3, "Hpol", " H41",  " N4",  " C4",  " N3",  "",    1.0, 120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
-      {1, "H",    " H1*", " C1*", " O4*", " C2*", " N1", 1.1,   0.0,   0.0, USEOLDNAMES},
-      {1, "H",    " H1'", " C1'", " O4'", " C2'", " N1", 1.1,   0.0,   0.0, XPLORNAME},
-      {1, "H",    " H1'", " C1*", " O4*", " C2*", " N1", 1.1,   0.0,   0.0, USENEWNAMES},
-      {1, "H",    " H1'", " C1'", " O4'", " C2'", " N1", 1.1,   0.0,   0.0, USENEWNAMES},
+      {4, "Har",  " H6",  " C6",  " C5",  " N1",  "",    0.93,   0.0,   0.0, 0},
+      {4, "Har",  " H5",  " C5",  " C4",  " C6",  "",    0.93,   0.0,   0.0, 0},
+      {3, "Hpol", "2H4",  " N4",  " C4",  " N3",  "",    0.86,-120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
+      {3, "Hpol", "1H4",  " N4",  " C4",  " N3",  "",    0.86, 120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
+      {7, "Hpol", " H42", " N4",  "",     "",     "",    0.86,   0.0,   0.0, BONDBUMPFLAG},
+      {7, "Hpol", " H41", " N4",  "",     "",     "",    0.86,   0.0,   0.0, BONDBUMPFLAG},
+      {3, "Hpol", " H42",  " N4",  " C4",  " N3",  "",    0.86,-120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
+      {3, "Hpol", " H41",  " N4",  " C4",  " N3",  "",    0.86, 120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
+      {1, "H",    " H1*", " C1*", " O4*", " C2*", " N1", 0.98,   0.0,   0.0, USEOLDNAMES},
+      {1, "H",    " H1'", " C1'", " O4'", " C2'", " N1", 0.98,   0.0,   0.0, XPLORNAME},
+      {1, "H",    " H1'", " C1*", " O4*", " C2*", " N1", 0.98,   0.0,   0.0, USENEWNAMES},
+      {1, "H",    " H1'", " C1'", " O4'", " C2'", " N1", 0.98,   0.0,   0.0, USENEWNAMES},
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("  C", "", args);
@@ -755,37 +755,37 @@ HydrogenPlanTable::HydrogenPlanTable() {
 #ifdef LEFT_JUSTIFY_NUC_RES_OK
   {
     static const addPlan_args args[] = {
-      {4, "Har",  " H6",  " C6",  " C5",  " N1",  "",    1.1,   0.0,   0.0, 0},
-      {4, "Har",  " H5",  " C5",  " C4",  " C6",  "",    1.1,   0.0,   0.0, 0},
-      {3, "Hpol", "2H4",  " N4",  " C4",  " N3",  "",    1.0,-120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
-      {3, "Hpol", "1H4",  " N4",  " C4",  " N3",  "",    1.0, 120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
-      {7, "Hpol", " H42", " N4",  "",     "",     "",    1.0,   0.0,   0.0, BONDBUMPFLAG},
-      {7, "Hpol", " H41", " N4",  "",     "",     "",    1.0,   0.0,   0.0, BONDBUMPFLAG},
-      {3, "Hpol", " H42",  " N4",  " C4",  " N3",  "",    1.0,-120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
-      {3, "Hpol", " H41",  " N4",  " C4",  " N3",  "",    1.0, 120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
-      {1, "H",    " H1*", " C1*", " O4*", " C2*", " N1", 1.1,   0.0,   0.0, USEOLDNAMES},
-      {1, "H",    " H1'", " C1'", " O4'", " C2'", " N1", 1.1,   0.0,   0.0, XPLORNAME},
-      {1, "H",    " H1'", " C1*", " O4*", " C2*", " N1", 1.1,   0.0,   0.0, USENEWNAMES},
-      {1, "H",    " H1'", " C1'", " O4'", " C2'", " N1", 1.1,   0.0,   0.0, USENEWNAMES},
-      {0,0,0,0,0,0,0,0,0,0,0} 
+      {4, "Har",  " H6",  " C6",  " C5",  " N1",  "",    0.93,   0.0,   0.0, 0},
+      {4, "Har",  " H5",  " C5",  " C4",  " C6",  "",    0.93,   0.0,   0.0, 0},
+      {3, "Hpol", "2H4",  " N4",  " C4",  " N3",  "",    0.86,-120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
+      {3, "Hpol", "1H4",  " N4",  " C4",  " N3",  "",    0.86, 120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
+      {7, "Hpol", " H42", " N4",  "",     "",     "",    0.86,   0.0,   0.0, BONDBUMPFLAG},
+      {7, "Hpol", " H41", " N4",  "",     "",     "",    0.86,   0.0,   0.0, BONDBUMPFLAG},
+      {3, "Hpol", " H42",  " N4",  " C4",  " N3",  "",    0.86,-120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
+      {3, "Hpol", " H41",  " N4",  " C4",  " N3",  "",    0.86, 120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
+      {1, "H",    " H1*", " C1*", " O4*", " C2*", " N1", 0.98,   0.0,   0.0, USEOLDNAMES},
+      {1, "H",    " H1'", " C1'", " O4'", " C2'", " N1", 0.98,   0.0,   0.0, XPLORNAME},
+      {1, "H",    " H1'", " C1*", " O4*", " C2*", " N1", 0.98,   0.0,   0.0, USENEWNAMES},
+      {1, "H",    " H1'", " C1'", " O4'", " C2'", " N1", 0.98,   0.0,   0.0, USENEWNAMES},
+      {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("C", "", args);
   }
 #endif
   {
     static const addPlan_args args[] = {
-      {4, "Har",  " H6",  " C6",  " C5",  " N1",  "",    1.1,   0.0,   0.0, 0},
-      {4, "Har",  " H5",  " C5",  " C4",  " C6",  "",    1.1,   0.0,   0.0, 0},
-      {3, "Hpol", "2H4",  " N4",  " C4",  " N3",  "",    1.0,-120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
-      {3, "Hpol", "1H4",  " N4",  " C4",  " N3",  "",    1.0, 120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
-      {7, "Hpol", " H42", " N4",  "",     "",     "",    1.0,   0.0,   0.0, BONDBUMPFLAG},
-      {7, "Hpol", " H41", " N4",  "",     "",     "",    1.0,   0.0,   0.0, BONDBUMPFLAG},
-      {3, "Hpol", " H42",  " N4",  " C4",  " N3",  "",    1.0,-120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
-      {3, "Hpol", " H41",  " N4",  " C4",  " N3",  "",    1.0, 120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
-      {1, "H",    " H1*", " C1*", " O4*", " C2*", " N1", 1.1,   0.0,   0.0, USEOLDNAMES},
-      {1, "H",    " H1'", " C1'", " O4'", " C2'", " N1", 1.1,   0.0,   0.0, XPLORNAME},
-      {1, "H",    " H1'", " C1*", " O4*", " C2*", " N1", 1.1,   0.0,   0.0, USENEWNAMES},
-      {1, "H",    " H1'", " C1'", " O4'", " C2'", " N1", 1.1,   0.0,   0.0, USENEWNAMES},
+      {4, "Har",  " H6",  " C6",  " C5",  " N1",  "",    0.93,   0.0,   0.0, 0},
+      {4, "Har",  " H5",  " C5",  " C4",  " C6",  "",    0.93,   0.0,   0.0, 0},
+      {3, "Hpol", "2H4",  " N4",  " C4",  " N3",  "",    0.86,-120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
+      {3, "Hpol", "1H4",  " N4",  " C4",  " N3",  "",    0.86, 120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
+      {7, "Hpol", " H42", " N4",  "",     "",     "",    0.86,   0.0,   0.0, BONDBUMPFLAG},
+      {7, "Hpol", " H41", " N4",  "",     "",     "",    0.86,   0.0,   0.0, BONDBUMPFLAG},
+      {3, "Hpol", " H42",  " N4",  " C4",  " N3",  "",    0.86,-120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
+      {3, "Hpol", " H41",  " N4",  " C4",  " N3",  "",    0.86, 120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
+      {1, "H",    " H1*", " C1*", " O4*", " C2*", " N1", 0.98,   0.0,   0.0, USEOLDNAMES},
+      {1, "H",    " H1'", " C1'", " O4'", " C2'", " N1", 0.98,   0.0,   0.0, XPLORNAME},
+      {1, "H",    " H1'", " C1*", " O4*", " C2*", " N1", 0.98,   0.0,   0.0, USENEWNAMES},
+      {1, "H",    " H1'", " C1'", " O4'", " C2'", " N1", 0.98,   0.0,   0.0, USENEWNAMES},
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("CYT", "", args);
@@ -793,18 +793,18 @@ HydrogenPlanTable::HydrogenPlanTable() {
 //--------------------------------------------------------------------------
   {
     static const addPlan_args args[] = {
-      {3, "Hpol", "2H2",  " N2",  " C2",  " N1",  "",    1.0,-120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
-      {3, "Hpol", "1H2",  " N2",  " C2",  " N1",  "",    1.0, 120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
-      {7, "Hpol", " H22", " N2",  "",     "",     "",    1.0,   0.0,   0.0, BONDBUMPFLAG},
-      {7, "Hpol", " H21", " N2",  "",     "",     "",    1.0,   0.0,   0.0, BONDBUMPFLAG},
-      {3, "Hpol", " H22",  " N2",  " C2",  " N1",  "",    1.0,-120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
-      {3, "Hpol", " H21",  " N2",  " C2",  " N1",  "",    1.0, 120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
-      {4, "Ha+p", " H1",  " N1",  " C6",  " C2",  "",    1.0,   0.0,   0.0, BONDBUMPFLAG},
-      {4, "Har",  " H8",  " C8",  " N7",  " N9",  "",    1.1,   0.0,   0.0, 0},
-      {1, "H",    " H1*", " C1*", " O4*", " C2*", " N9", 1.1,   0.0,   0.0, USEOLDNAMES},
-      {1, "H",    " H1'", " C1'", " O4'", " C2'", " N9", 1.1,   0.0,   0.0, XPLORNAME},
-      {1, "H",    " H1'", " C1*", " O4*", " C2*", " N9", 1.1,   0.0,   0.0, USENEWNAMES},
-      {1, "H",    " H1'", " C1'", " O4'", " C2'", " N9", 1.1,   0.0,   0.0, USENEWNAMES},
+      {3, "Hpol", "2H2",  " N2",  " C2",  " N1",  "",    0.86,-120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
+      {3, "Hpol", "1H2",  " N2",  " C2",  " N1",  "",    0.86, 120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
+      {7, "Hpol", " H22", " N2",  "",     "",     "",    0.86,   0.0,   0.0, BONDBUMPFLAG},
+      {7, "Hpol", " H21", " N2",  "",     "",     "",    0.86,   0.0,   0.0, BONDBUMPFLAG},
+      {3, "Hpol", " H22",  " N2",  " C2",  " N1",  "",    0.86,-120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
+      {3, "Hpol", " H21",  " N2",  " C2",  " N1",  "",    0.86, 120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
+      {4, "Ha+p", " H1",  " N1",  " C6",  " C2",  "",    0.86,   0.0,   0.0, BONDBUMPFLAG},
+      {4, "Har",  " H8",  " C8",  " N7",  " N9",  "",    0.93,   0.0,   0.0, 0},
+      {1, "H",    " H1*", " C1*", " O4*", " C2*", " N9", 0.98,   0.0,   0.0, USEOLDNAMES},
+      {1, "H",    " H1'", " C1'", " O4'", " C2'", " N9", 0.98,   0.0,   0.0, XPLORNAME},
+      {1, "H",    " H1'", " C1*", " O4*", " C2*", " N9", 0.98,   0.0,   0.0, USENEWNAMES},
+      {1, "H",    " H1'", " C1'", " O4'", " C2'", " N9", 0.98,   0.0,   0.0, USENEWNAMES},
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("  G", "", args);
@@ -812,18 +812,18 @@ HydrogenPlanTable::HydrogenPlanTable() {
 #ifdef LEFT_JUSTIFY_NUC_RES_OK
   {
     static const addPlan_args args[] = {
-      {3, "Hpol", "2H2",  " N2",  " C2",  " N1",  "",    1.0,-120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
-      {3, "Hpol", "1H2",  " N2",  " C2",  " N1",  "",    1.0, 120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
-      {7, "Hpol", " H22", " N2",  "",     "",     "",    1.0,   0.0,   0.0, BONDBUMPFLAG},
-      {7, "Hpol", " H21", " N2",  "",     "",     "",    1.0,   0.0,   0.0, BONDBUMPFLAG},
-      {3, "Hpol", " H22",  " N2",  " C2",  " N1",  "",    1.0,-120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
-      {3, "Hpol", " H21",  " N2",  " C2",  " N1",  "",    1.0, 120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
-      {4, "Ha+p", " H1",  " N1",  " C6",  " C2",  "",    1.0,   0.0,   0.0, BONDBUMPFLAG},
-      {4, "Har",  " H8",  " C8",  " N7",  " N9",  "",    1.1,   0.0,   0.0, 0},
-      {1, "H",    " H1*", " C1*", " O4*", " C2*", " N9", 1.1,   0.0,   0.0, USEOLDNAMES},
-      {1, "H",    " H1'", " C1'", " O4'", " C2'", " N9", 1.1,   0.0,   0.0, XPLORNAME},
-      {1, "H",    " H1'", " C1*", " O4*", " C2*", " N9", 1.1,   0.0,   0.0, USENEWNAMES},
-      {1, "H",    " H1'", " C1'", " O4'", " C2'", " N9", 1.1,   0.0,   0.0, USENEWNAMES},
+      {3, "Hpol", "2H2",  " N2",  " C2",  " N1",  "",    0.86,-120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
+      {3, "Hpol", "1H2",  " N2",  " C2",  " N1",  "",    0.86, 120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
+      {7, "Hpol", " H22", " N2",  "",     "",     "",    0.86,   0.0,   0.0, BONDBUMPFLAG},
+      {7, "Hpol", " H21", " N2",  "",     "",     "",    0.86,   0.0,   0.0, BONDBUMPFLAG},
+      {3, "Hpol", " H22",  " N2",  " C2",  " N1",  "",    0.86,-120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
+      {3, "Hpol", " H21",  " N2",  " C2",  " N1",  "",    0.86, 120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
+      {4, "Ha+p", " H1",  " N1",  " C6",  " C2",  "",    0.86,   0.0,   0.0, BONDBUMPFLAG},
+      {4, "Har",  " H8",  " C8",  " N7",  " N9",  "",    0.93,   0.0,   0.0, 0},
+      {1, "H",    " H1*", " C1*", " O4*", " C2*", " N9", 0.98,   0.0,   0.0, USEOLDNAMES},
+      {1, "H",    " H1'", " C1'", " O4'", " C2'", " N9", 0.98,   0.0,   0.0, XPLORNAME},
+      {1, "H",    " H1'", " C1*", " O4*", " C2*", " N9", 0.98,   0.0,   0.0, USENEWNAMES},
+      {1, "H",    " H1'", " C1'", " O4'", " C2'", " N9", 0.98,   0.0,   0.0, USENEWNAMES},
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("G", "", args);
@@ -831,23 +831,23 @@ HydrogenPlanTable::HydrogenPlanTable() {
 #endif
   {
     static const addPlan_args args[] = {
-      {3, "Hpol", "2H2",  " N2",  " C2",  " N1",  "",    1.0,-120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
-      {3, "Hpol", "1H2",  " N2",  " C2",  " N1",  "",    1.0, 120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
-      {7, "Hpol", " H22", " N2",  "",     "",     "",    1.0,   0.0,   0.0, BONDBUMPFLAG},
+      {3, "Hpol", "2H2",  " N2",  " C2",  " N1",  "",    0.86,-120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
+      {3, "Hpol", "1H2",  " N2",  " C2",  " N1",  "",    0.86, 120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
+      {7, "Hpol", " H22", " N2",  "",     "",     "",    0.86,   0.0,   0.0, BONDBUMPFLAG},
 
-      {3, "Hpol", " H21",  " N2",  " C2",  " N1",  "",    1.0, 120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
-      {4, "Ha+p", " H1",  " N1",  " C6",  " C2",  "",    1.0,   0.0,   0.0, BONDBUMPFLAG},
-      {4, "Har",  " H8",  " C8",  " N7",  " N9",  "",    1.1,   0.0,   0.0, 0},
-      {1, "H",    " H1*", " C1*", " O4*", " C2*", " N9", 1.1,   0.0,   0.0, USEOLDNAMES},
-      {1, "H",    " H1'", " C1'", " O4'", " C2'", " N9", 1.1,   0.0,   0.0, XPLORNAME},
-      {1, "H",    " H1'", " C1*", " O4*", " C2*", " N9", 1.1,   0.0,   0.0, USENEWNAMES},
-      {1, "H",    " H1'", " C1'", " O4'", " C2'", " N9", 1.1,   0.0,   0.0, USENEWNAMES},
+      {3, "Hpol", " H21",  " N2",  " C2",  " N1",  "",    0.86, 120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
+      {4, "Ha+p", " H1",  " N1",  " C6",  " C2",  "",    0.86,   0.0,   0.0, BONDBUMPFLAG},
+      {4, "Har",  " H8",  " C8",  " N7",  " N9",  "",    0.93,   0.0,   0.0, 0},
+      {1, "H",    " H1*", " C1*", " O4*", " C2*", " N9", 0.98,   0.0,   0.0, USEOLDNAMES},
+      {1, "H",    " H1'", " C1'", " O4'", " C2'", " N9", 0.98,   0.0,   0.0, XPLORNAME},
+      {1, "H",    " H1'", " C1*", " O4*", " C2*", " N9", 0.98,   0.0,   0.0, USENEWNAMES},
+      {1, "H",    " H1'", " C1'", " O4'", " C2'", " N9", 0.98,   0.0,   0.0, USENEWNAMES},
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("GUA", "", args);
   }
 //--------------------------------------------------------------------------
-  { 
+  {
     static const addPlan_args args[] = {
       {4, "Har",  " H6",  " C6",  " C5",  " N1",  "",    1.1,   0.0,   0.0, 0},
       {3, "H",    "3H5M", " C5M", " C5",  " C4",  "",    1.1, 109.5,  60.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
@@ -984,7 +984,7 @@ HydrogenPlanTable::HydrogenPlanTable() {
      {3, "H", "1H", " CH3", " C", " O", "", 1.1, 109.5, 120.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
      {3, "H", " H3", " CH3", " C", " O", "", 1.1, 109.5,   0.0, USENEWNAMES|ROTATEONDEMAND},
      {3, "H", " H2", " CH3", " C", " O", "", 1.1, 109.5,-120.0, USENEWNAMES|ROTATEONDEMAND},
-     {3, "H", " H1", " CH3", " C", " O", "", 1.1, 109.5, 120.0, USENEWNAMES|ROTATEONDEMAND}, 
+     {3, "H", " H1", " CH3", " C", " O", "", 1.1, 109.5, 120.0, USENEWNAMES|ROTATEONDEMAND},
      {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("ACE", "", args);
@@ -993,8 +993,8 @@ HydrogenPlanTable::HydrogenPlanTable() {
     static const addPlan_args args[] = {
       {2, "H", "2HB", " CB", " CA", " CG", "", 1.1, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
       {2, "H", "1HB", " CB", " CA", " CG", "", 1.1,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
-      {2, "H", " HB2", " CB", " CA", " CG", "", 1.1, 126.5,   0.0, USENEWNAMES},
-      {2, "H", " HB1", " CB", " CA", " CG", "", 1.1,-126.5,   0.0, USENEWNAMES},
+      {2, "H", " HB2", " CB", " CA", " CG", "", 0.97, 126.5,   0.0, USENEWNAMES},
+      {2, "H", " HB1", " CB", " CA", " CG", "", 0.97,-126.5,   0.0, USENEWNAMES},
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("ASX", "", args);
@@ -1005,10 +1005,10 @@ HydrogenPlanTable::HydrogenPlanTable() {
       {2, "H", "1HG", " CG", " CB", " CD", "", 1.1,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
       {2, "H", "2HB", " CB", " CA", " CG", "", 1.1, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
       {2, "H", "1HB", " CB", " CA", " CG", "", 1.1,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
-      {2, "H", " HG2", " CG", " CB", " CD", "", 1.1, 126.5,   0.0, USENEWNAMES},
-      {2, "H", " HG1", " CG", " CB", " CD", "", 1.1,-126.5,   0.0, USENEWNAMES},
-      {2, "H", " HB2", " CB", " CA", " CG", "", 1.1, 126.5,   0.0, USENEWNAMES},
-      {2, "H", " HB1", " CB", " CA", " CG", "", 1.1,-126.5,   0.0, USENEWNAMES},
+      {2, "H", " HG2", " CG", " CB", " CD", "", 0.97, 126.5,   0.0, USENEWNAMES},
+      {2, "H", " HG1", " CG", " CB", " CD", "", 0.97,-126.5,   0.0, USENEWNAMES},
+      {2, "H", " HB2", " CB", " CA", " CG", "", 0.97, 126.5,   0.0, USENEWNAMES},
+      {2, "H", " HB1", " CB", " CA", " CG", "", 0.97,-126.5,   0.0, USENEWNAMES},
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("GLX", "", args);
@@ -1022,18 +1022,18 @@ HydrogenPlanTable::HydrogenPlanTable() {
       {2, "H", "1HG", " CG", " CB", "SED", "", 1.1,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
       {2, "H", "2HB", " CB", " CA", " CG", "", 1.1, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
       {2, "H", "1HB", " CB", " CA", " CG", "", 1.1,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
-      {3, "H", " HE3", " CE", "SED", " CG", "", 1.1, 109.5,  60.0, USENEWNAMES|ROTATEONDEMAND},
-      {3, "H", " HE2", " CE", "SED", " CG", "", 1.1, 109.5, -60.0, USENEWNAMES|ROTATEONDEMAND},
-      {3, "H", " HE1", " CE", "SED", " CG", "", 1.1, 109.5, 180.0, USENEWNAMES|ROTATEONDEMAND},
-      {3, "H", " HE3", " CE", "SE", " CG", "", 1.1, 109.5,  60.0, USENEWNAMES|ROTATEONDEMAND},
-      {3, "H", " HE2", " CE", "SE", " CG", "", 1.1, 109.5, -60.0, USENEWNAMES|ROTATEONDEMAND},
-      {3, "H", " HE1", " CE", "SE", " CG", "", 1.1, 109.5, 180.0, USENEWNAMES|ROTATEONDEMAND},
-      {2, "H", " HG3", " CG", " CB", "SED", "", 1.1, 126.5,   0.0, USENEWNAMES},
-      {2, "H", " HG2", " CG", " CB", "SED", "", 1.1,-126.5,   0.0, USENEWNAMES},
-      {2, "H", " HG3", " CG", " CB", "SE", "", 1.1, 126.5,   0.0, USENEWNAMES},
-      {2, "H", " HG2", " CG", " CB", "SE", "", 1.1,-126.5,   0.0, USENEWNAMES},
-      {2, "H", " HB3", " CB", " CA", " CG", "", 1.1, 126.5,   0.0, USENEWNAMES},
-      {2, "H", " HB2", " CB", " CA", " CG", "", 1.1,-126.5,   0.0, USENEWNAMES},
+      {3, "H", " HE3", " CE", "SED", " CG", "", 0.96, 109.5,  60.0, USENEWNAMES|ROTATEONDEMAND},
+      {3, "H", " HE2", " CE", "SED", " CG", "", 0.96, 109.5, -60.0, USENEWNAMES|ROTATEONDEMAND},
+      {3, "H", " HE1", " CE", "SED", " CG", "", 0.96, 109.5, 180.0, USENEWNAMES|ROTATEONDEMAND},
+      {3, "H", " HE3", " CE", "SE", " CG", "", 0.96, 109.5,  60.0, USENEWNAMES|ROTATEONDEMAND},
+      {3, "H", " HE2", " CE", "SE", " CG", "", 0.96, 109.5, -60.0, USENEWNAMES|ROTATEONDEMAND},
+      {3, "H", " HE1", " CE", "SE", " CG", "", 0.96, 109.5, 180.0, USENEWNAMES|ROTATEONDEMAND},
+      {2, "H", " HG3", " CG", " CB", "SED", "", 0.97, 126.5,   0.0, USENEWNAMES},
+      {2, "H", " HG2", " CG", " CB", "SED", "", 0.97,-126.5,   0.0, USENEWNAMES},
+      {2, "H", " HG3", " CG", " CB", "SE", "", 0.97, 126.5,   0.0, USENEWNAMES},
+      {2, "H", " HG2", " CG", " CB", "SE", "", 0.97,-126.5,   0.0, USENEWNAMES},
+      {2, "H", " HB3", " CB", " CA", " CG", "", 0.97, 126.5,   0.0, USENEWNAMES},
+      {2, "H", " HB2", " CB", " CA", " CG", "", 0.97,-126.5,   0.0, USENEWNAMES},
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("MSE", "", args);
@@ -1044,10 +1044,10 @@ HydrogenPlanTable::HydrogenPlanTable() {
       {2, "H", "1HG", " CG", " CB", " CD", "", 1.1,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
       {2, "H", "2HB", " CB", " CA", " CG", "", 1.1, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
       {2, "H", "1HB", " CB", " CA", " CG", "", 1.1,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
-      {2, "H", " HG3", " CG", " CB", " CD", "", 1.1, 126.5,   0.0, USENEWNAMES},
-      {2, "H", " HG2", " CG", " CB", " CD", "", 1.1,-126.5,   0.0, USENEWNAMES},
-      {2, "H", " HB3", " CB", " CA", " CG", "", 1.1, 126.5,   0.0, USENEWNAMES},
-      {2, "H", " HB2", " CB", " CA", " CG", "", 1.1,-126.5,   0.0, USENEWNAMES},
+      {2, "H", " HG3", " CG", " CB", " CD", "", 0.97, 126.5,   0.0, USENEWNAMES},
+      {2, "H", " HG2", " CG", " CB", " CD", "", 0.97,-126.5,   0.0, USENEWNAMES},
+      {2, "H", " HB3", " CB", " CA", " CG", "", 0.97, 126.5,   0.0, USENEWNAMES},
+      {2, "H", " HB2", " CB", " CA", " CG", "", 0.97,-126.5,   0.0, USENEWNAMES},
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("PCA", "", args);
@@ -1056,8 +1056,8 @@ HydrogenPlanTable::HydrogenPlanTable() {
     static const addPlan_args args[] = {
       {3, "Hpol", " H2", " N", "- C", "- O", "", 1.0, 120.0,   0.0, XPLORNAME|BONDBUMPFLAG},
       {3, "Hpol", " HN1", " N", "- C", "- O", "", 1.0, 120.0, 180.0, XPLORNAME|BONDBUMPFLAG},
-      {3, "Hpol", " H2", " N", "- C", "- O", "", 1.0, 120.0,   0.0, USENEWNAMES|BONDBUMPFLAG},
-      {3, "Hpol", " HN1", " N", "- C", "- O", "", 1.0, 120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
+      {3, "Hpol", " H2", " N", "- C", "- O", "", 0.89, 120.0,   0.0, USENEWNAMES|BONDBUMPFLAG},
+      {3, "Hpol", " HN1", " N", "- C", "- O", "", 0.89, 120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
       {3, "Hpol", "2HN",  " N", "- C", "- O", "", 1.0, 120.0,   0.0, USEOLDNAMES|BONDBUMPFLAG},
       {3, "Hpol", "1HN",  " N", "- C", "- O", "", 1.0, 120.0, 180.0, USEOLDNAMES|BONDBUMPFLAG},
       {0,0,0,0,0,0,0,0,0,0,0}
