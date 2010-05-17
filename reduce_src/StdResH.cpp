@@ -88,6 +88,7 @@ HydrogenPlanTable::HydrogenPlanTable() {
   {
     static const addPlan_args args[] = {
       {5, "Hpol", " H", " N", " CA", "- C", "", 0.86,   0.0, 0.48, BONDBUMPFLAG},
+// wba 100514 dist changed to 0.86 from 1.0
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("amide", "PRO", args); // *NON* N-terminal mc amide
@@ -95,6 +96,7 @@ HydrogenPlanTable::HydrogenPlanTable() {
   {
     static const addPlan_args args[] = { //break-amide added 070925 by RMI
       {3, "Hpol", " H",   " N", " CA", " C", "", 0.86, 109.5, 180.0, USENEWNAMES|ROTATEONDEMAND|NH3FLAG},
+// wba 100514 dist changed to 0.86 from 1.0
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("break-amide", "PRO", args); // N-terminal mc amide
@@ -110,6 +112,7 @@ HydrogenPlanTable::HydrogenPlanTable() {
       {3, "Hpol", "3H",   " N", " CA", " C", "", 0.89, 109.5,  60.0, USEOLDNAMES|ROTATEONDEMAND|NH3FLAG},
       {3, "Hpol", "2H",   " N", " CA", " C", "", 0.89, 109.5, -60.0, USEOLDNAMES|ROTATEONDEMAND|NH3FLAG},
       {3, "Hpol", "1H",   " N", " CA", " C", "", 0.89, 109.5, 180.0, USEOLDNAMES|ROTATEONDEMAND|NH3FLAG},
+// wba 100514 dist changed to 0.89 from 1.0
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("nt-amide", "PRO", args); // N-terminal mc amide
@@ -122,6 +125,7 @@ HydrogenPlanTable::HydrogenPlanTable() {
       {2, "Hpol", " H2",   " N", " CD", " CA", "", 0.86,-126.5,   0.0, USENEWNAMES|BONDBUMPFLAG},
       {2, "Hpol", "2H",   " N", " CD", " CA", "", 0.86, 126.5,   0.0, USEOLDNAMES|BONDBUMPFLAG},
       {2, "Hpol", "1H",   " N", " CD", " CA", "", 0.86,-126.5,   0.0, USEOLDNAMES|BONDBUMPFLAG},
+// wba 100514 dist changed to 0.86 from 1.0
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("nt-pro", "", args); // N-terminal prolines
@@ -135,6 +139,7 @@ HydrogenPlanTable::HydrogenPlanTable() {
 //      {2, "H", " HA2", " CA", " N", " C", "", 1.1, 126.5,   0.0, BACKBONEMODEL|USENEWNAMES},
 //      {2, "H", " HA3", " CA", " N", " C", "", 1.1, 126.5,   0.0, BACKBONEMODEL|USENEWNAMES},
       {2, "H", " HA", " CA", " N", " C", "", 0.98,-126.5,   0.0, BACKBONEMODEL},
+// wba 100514 dist changed to 0.98 from 1.1
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("alpha", "GLY", args); // mainchain alpha proton
@@ -172,7 +177,7 @@ HydrogenPlanTable::HydrogenPlanTable() {
       {2, "H",    "1H5*", " C5*", " C4*", " O5*", "",     0.97,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
       {3, "Hpol", " H5T", " O5'", " C5'", " C4'", "",     0.82, 109.5, 180.0, USEOLDNAMES|XPLORNAME|UNSUREDROPFLAG|ROTATEFLAG|IFNOPO4},
       {3, "Hpol", " H3T", " O3'", " C3'", " C4'", "",     0.82, 109.5, 180.0, USEOLDNAMES|XPLORNAME|UNSUREDROPFLAG|ROTATEFLAG|IFNOPO4},
-
+// wba 100514 dist changed to 0.82, 0.97, 0.98 from 1.0, 1.1, 1.1
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("ribose phosphate backbone", "", args); // phosphate chain (two different naming schemes)
@@ -205,6 +210,7 @@ HydrogenPlanTable::HydrogenPlanTable() {
       {2, "H", "1HG",  " CG", " CB", " CD", "", 0.97,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
       {2, "H", "2HB",  " CB", " CA", " CG", "", 0.97, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
       {2, "H", "1HB",  " CB", " CA", " CG", "", 0.97,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
+// wba 100514 dist changed to 0.89, 0.97 from 1.0, 1.1
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("LYS", "", args);
@@ -215,7 +221,8 @@ HydrogenPlanTable::HydrogenPlanTable() {
       {2, "H", " HA2", " CA", " N", " C", "", 0.97,-126.5,   0.0, USENEWNAMES},
       {2, "H", "2HA", " CA", " N", " C", "", 0.97, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
       {2, "H", "1HA", " CA", " N", " C", "", 0.97,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
-      {0,0,0,0,0,0,0,0,0,0,0}
+ // wba 100514 dist changed to 0.97 from 1.1
+     {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("GLY", "", args);
   }
@@ -229,6 +236,7 @@ HydrogenPlanTable::HydrogenPlanTable() {
       {2, "H", "1HG", " CG", " CB", " CD", "", 0.97,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
       {2, "H", "2HB", " CB", " CA", " CG", "", 0.97, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
       {2, "H", "1HB", " CB", " CA", " CG", "", 0.97,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
+ // wba 100514 dist changed to 0.97 from 1.1
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("GLU", "", args);
@@ -243,6 +251,7 @@ HydrogenPlanTable::HydrogenPlanTable() {
       {3, "H", "1HG2", " CG2", " CB", " CA", "", 0.96, 109.5, 180.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
       {3, "Hpol", " HG1", " OG1", " CB", " CA", "", 0.82, 109.5, 180.0, UNSUREDROPFLAG|ROTATEFLAG},
       {1, "H", " HB", " CB", " CA", " OG1", " CG2", 0.98,   0.0,   0.0, 0},
+// wba 100514 dist changed to 0.82, 0.96, 0.98 from 1.0, 1.1, 1.1
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("THR", "", args);
@@ -255,6 +264,7 @@ HydrogenPlanTable::HydrogenPlanTable() {
       {3, "H", "3HB", " CB", " CA", " N", "", 0.96, 109.5,  60.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
       {3, "H", "2HB", " CB", " CA", " N", "", 0.96, 109.5, -60.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
       {3, "H", "1HB", " CB", " CA", " N", "", 0.96, 109.5, 180.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
+// wba 100514 dist changed to 0.96 from 1.1
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("ALA", "", args);
@@ -270,6 +280,7 @@ HydrogenPlanTable::HydrogenPlanTable() {
       {2, "H", " HB2",  " CB",  " CA",  " CG",  "", 0.97,-126.5,   0.0, USENEWNAMES},
       {2, "H", "2HB",  " CB",  " CA",  " CG",  "", 0.97, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
       {2, "H", "1HB",  " CB",  " CA",  " CG",  "", 0.97,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
+// wba 100514 dist changed to 0.93, 0.97 from 1.1, 1.1
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("PHE", "", args);
@@ -301,6 +312,7 @@ HydrogenPlanTable::HydrogenPlanTable() {
       {2, "H", "1HG", " CG", " CB", " CD", "", 0.97,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
       {2, "H", "2HB", " CB", " CA", " CG", "", 0.97, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
       {2, "H", "1HB", " CB", " CA", " CG", "", 0.97,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
+// wba 100514 dist changed to 0.86, 0.97 from 1.0, 1.1
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("ARG", "", args);
@@ -315,6 +327,7 @@ HydrogenPlanTable::HydrogenPlanTable() {
       {2, "H", " HB2", " CB", " CA", " CG", "", 0.97,-126.5,   0.0, USENEWNAMES},
       {2, "H", "2HB", " CB", " CA", " CG", "", 0.97, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
       {2, "H", "1HB", " CB", " CA", " CG", "", 0.97,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
+// wba 100514 dist changed to 0.86, 0.93, 0.97 from 1.0, 1.1, 1.1
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("HIS", "", args);
@@ -335,6 +348,7 @@ HydrogenPlanTable::HydrogenPlanTable() {
       {2, "H", "1HG", " CG", " CB", " SD", "", 0.97,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
       {2, "H", "2HB", " CB", " CA", " CG", "", 0.97, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
       {2, "H", "1HB", " CB", " CA", " CG", "", 0.97,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
+// wba 100514 dist changed to 0.96, 0.97 from 1.1, 1.1
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("MET", "", args);
@@ -345,6 +359,7 @@ HydrogenPlanTable::HydrogenPlanTable() {
       {2, "H", " HB2", " CB", " CA", " CG", "", 0.97,-126.5,   0.0, USENEWNAMES},
       {2, "H", "2HB", " CB", " CA", " CG", "", 0.97, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
       {2, "H", "1HB", " CB", " CA", " CG", "", 0.97,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
+// wba 100514 dist changed to 0.97 from 1.1
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("ASP", "", args);
@@ -356,6 +371,7 @@ HydrogenPlanTable::HydrogenPlanTable() {
       {2, "H", " HB2", " CB", " CA", " OG", "", 0.97,-126.5,   0.0, USENEWNAMES},
       {2, "H", "2HB", " CB", " CA", " OG", "", 0.97, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
       {2, "H", "1HB", " CB", " CA", " OG", "", 0.97,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
+// wba 100514 dist changed to 0.82, 0.97 from 1.0, 1.1
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("SER", "", args);
@@ -372,6 +388,7 @@ HydrogenPlanTable::HydrogenPlanTable() {
       {2, "H", " HB2", " CB", " CA", " CG", "", 0.97,-126.5,   0.0, USENEWNAMES},
       {2, "H", "2HB", " CB", " CA", " CG", "", 0.97, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
       {2, "H", "1HB", " CB", " CA", " CG", "", 0.97,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
+// wba 100514 dist changed to 0.86, 0.97 from 1.0, 1.1
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("ASN", "", args);
@@ -387,6 +404,7 @@ HydrogenPlanTable::HydrogenPlanTable() {
       {2, "H", " HB2", " CB", " CA", " CG", "", 0.97,-126.5,   0.0, USENEWNAMES},
       {2, "H", "2HB", " CB", " CA", " CG", "", 0.97, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
       {2, "H", "1HB", " CB", " CA", " CG", "", 0.97,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
+// wba 100514 dist changed to 0.82, 0.86, 0.97 from 1.0, 1.1, 1.1
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("TYR", "", args);
@@ -398,6 +416,7 @@ HydrogenPlanTable::HydrogenPlanTable() {
       {2, "H", " HB2", " CB", " CA", " SG", "", 0.97,-126.5,   0.0, USENEWNAMES},
       {2, "H", "2HB", " CB", " CA", " SG", "", 0.97, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
       {2, "H", "1HB", " CB", " CA", " SG", "", 0.97,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
+// wba 100514 dist changed to 1.2, 0.97 from 1.3, 1.1
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("CYS", "", args);
@@ -418,6 +437,7 @@ HydrogenPlanTable::HydrogenPlanTable() {
       {2, "H", "1HG", " CG", " CB", " CD", "", 0.97,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
       {2, "H", "2HB", " CB", " CA", " CG", "", 0.97, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
       {2, "H", "1HB", " CB", " CA", " CG", "", 0.97,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
+// wba 100514 dist changed to 0.86, 0.97 from 1.0, 1.1
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("GLN", "", args);
@@ -459,6 +479,7 @@ HydrogenPlanTable::HydrogenPlanTable() {
       {2, "H", "1HG", " CG", " CB", " CD", "", 0.97,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
       {2, "H", "2HB", " CB", " CA", " CG", "", 0.97, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
       {2, "H", "1HB", " CB", " CA", " CG", "", 0.97,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
+// wba 100514 dist changed to 0.97 from 1.1
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("PRO", "", args);
@@ -478,6 +499,7 @@ HydrogenPlanTable::HydrogenPlanTable() {
       {3, "H", "2HG1", " CG1", " CB", " CA", "", 0.96, 109.5, -60.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
       {3, "H", "1HG1", " CG1", " CB", " CA", "", 0.96, 109.5, 180.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
       {1, "H", " HB", " CB", " CA", " CG1", " CG2", 0.98,   0.0,   0.0, 0},
+// wba 100514 dist changed to 0.96, 0.98 from 1.1, 1.1
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("VAL", "", args);
@@ -501,6 +523,7 @@ HydrogenPlanTable::HydrogenPlanTable() {
       {2, "H", "2HG1", " CG1", " CB", " CD1", "", 0.97, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
       {2, "H", "1HG1", " CG1", " CB", " CD1", "", 0.97,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
       {1, "H", " HB", " CB", " CA", " CG1", " CG2", 0.98,   0.0,   0.0, 0},
+// wba 100514 dist changed to 0.96, 0.97, 0.98 from 1.1, 1.1, 1.1
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("ILE", "", args);
@@ -517,6 +540,7 @@ HydrogenPlanTable::HydrogenPlanTable() {
       {2, "H", " HB2", " CB", " CA", " CG", "", 0.97,-126.5,   0.0, USENEWNAMES},
       {2, "H", "2HB", " CB", " CA", " CG", "", 0.97, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
       {2, "H", "1HB", " CB", " CA", " CG", "", 0.97,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
+// wba 100514 dist changed to 0.86, 0.93, 0.97 from 1.0, 1.1, 1.1
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("TRP", "", args);
@@ -524,13 +548,14 @@ HydrogenPlanTable::HydrogenPlanTable() {
 //--------------------------------------------------------------------------
   {
     static const addPlan_args args[] = {
-      {4, "Har", " H6",  " C6",  " C5",  " N1",  "",    1.1,   0.0,   0.0, 0},
-      {4, "Har", " H5",  " C5",  " C4",  " C6",  "",    1.1,   0.0,   0.0, 0},
-      {4, "Ha+p"," H3",  " N3",  " C4",  " C2",  "",    1.0,   0.0,   0.0, BONDBUMPFLAG},
-      {1, "H",   " H1*", " C1*", " O4*", " C2*", " N1", 1.1,   0.0,   0.0, USEOLDNAMES},
-      {1, "H",   " H1'", " C1'", " O4'", " C2'", " N1", 1.1,   0.0,   0.0, XPLORNAME},
-      {1, "H",   " H1'",  " C1*",  " O4*",  " C2*", " N1", 1.1,   0.0,   0.0, USENEWNAMES},
-      {1, "H",   " H1'",  " C1'",  " O4'",  " C2'", " N1", 1.1,   0.0,   0.0, USENEWNAMES},
+      {4, "Har", " H6",  " C6",  " C5",  " N1",  "",    0.93,   0.0,   0.0, 0},
+      {4, "Har", " H5",  " C5",  " C4",  " C6",  "",    0.93,   0.0,   0.0, 0},
+      {4, "Ha+p"," H3",  " N3",  " C4",  " C2",  "",    0.86,   0.0,   0.0, BONDBUMPFLAG},
+      {1, "H",   " H1*", " C1*", " O4*", " C2*", " N1", 0.98,   0.0,   0.0, USEOLDNAMES},
+      {1, "H",   " H1'", " C1'", " O4'", " C2'", " N1", 0.98,   0.0,   0.0, XPLORNAME},
+      {1, "H",   " H1'",  " C1*",  " O4*",  " C2*", " N1", 0.98,   0.0,   0.0, USENEWNAMES},
+      {1, "H",   " H1'",  " C1'",  " O4'",  " C2'", " N1", 0.98,   0.0,   0.0, USENEWNAMES},
+// wba 100514 dist changed to 0.86, 0.93, 0.98 from 1.0, 1.1, 1.1
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("  U", "", args);
@@ -545,6 +570,7 @@ HydrogenPlanTable::HydrogenPlanTable() {
       {1, "H",   " H1'", " C1'", " O4'", " C2'", " N1", 0.98,   0.0,   0.0, XPLORNAME},
       {1, "H",   " H1'",  " C1*",  " O4*",  " C2*", " N1", 0.98,   0.0,   0.0, USENEWNAMES},
       {1, "H",   " H1'",  " C1'",  " O4'",  " C2'", " N1", 0.98,   0.0,   0.0, USENEWNAMES},
+// wba 100514 dist changed to 0.86, 0.93, 0.98 from 1.0, 1.1, 1.1
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("U", "", args);
@@ -559,6 +585,7 @@ HydrogenPlanTable::HydrogenPlanTable() {
       {1, "H",   " H1'", " C1'", " O4'", " C2'", " N1", 0.98,   0.0,   0.0, XPLORNAME},
       {1, "H",   " H1'",  " C1*",  " O4*",  " C2*", " N1", 0.98,   0.0,   0.0, USENEWNAMES},
       {1, "H",   " H1'",  " C1'",  " O4'",  " C2'", " N1", 0.98,   0.0,   0.0, USENEWNAMES},
+// wba 100514 dist changed to 0.86, 0.93, 0.98 from 1.0, 1.1, 1.1
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("URA", "", args);
@@ -567,36 +594,37 @@ HydrogenPlanTable::HydrogenPlanTable() {
   // note C5M is an alternative name for C5A  --- C7 is the remediated name
   {
     static const addPlan_args args[] = {
-      {4, "Har",  " H6",  " C6",  " C5",  " N1",  "",    1.1,   0.0,   0.0, 0},
-      {3, "H",    "3H5M", " C5M", " C5",  " C4",  "",    1.1, 109.5,  60.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
-      {3, "H",    "2H5M", " C5M", " C5",  " C4",  "",    1.1, 109.5, -60.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
-      {3, "H",    "1H5M", " C5M", " C5",  " C4",  "",    1.1, 109.5, 180.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
-      {7, "H",    " H53", " C5M", "",     "",     "",    1.1,   0.0,   0.0, ROTATEONDEMAND},
-      {7, "H",    " H52", " C5M", "",     "",     "",    1.1,   0.0,   0.0, ROTATEONDEMAND},
-      {7, "H",    " H51", " C5M", "",     "",     "",    1.1,   0.0,   0.0, ROTATEONDEMAND},
-      {3, "H",    "3H5A", " C5A", " C5",  " C4",  "",    1.1, 109.5,  60.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
-      {3, "H",    "2H5A", " C5A", " C5",  " C4",  "",    1.1, 109.5, -60.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
-      {3, "H",    "1H5A", " C5A", " C5",  " C4",  "",    1.1, 109.5, 180.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
-      {3, "H",    "3H5A", " C7", " C5",  " C4",  "",    1.1, 109.5,  60.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
-      {3, "H",    "2H5A", " C7", " C5",  " C4",  "",    1.1, 109.5, -60.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
-      {3, "H",    "1H5A", " C7", " C5",  " C4",  "",    1.1, 109.5, 180.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
-      {7, "H",    " H53", " C5A", "",     "",     "",    1.1,   0.0,   0.0, ROTATEONDEMAND},
-      {7, "H",    " H52", " C5A", "",     "",     "",    1.1,   0.0,   0.0, ROTATEONDEMAND},
-      {7, "H",    " H51", " C5A", "",     "",     "",    1.1,   0.0,   0.0, ROTATEONDEMAND},
-      {3, "H",    " H73", " C5M", " C5",  " C4",  "",    1.1, 109.5,  60.0, USENEWNAMES|ROTATEONDEMAND},
-      {3, "H",    " H72", " C5M", " C5",  " C4",  "",    1.1, 109.5, -60.0, USENEWNAMES|ROTATEONDEMAND},
-      {3, "H",    " H71", " C5M", " C5",  " C4",  "",    1.1, 109.5, 180.0, USENEWNAMES|ROTATEONDEMAND},
-      {3, "H",    " H73", " C5A", " C5",  " C4",  "",    1.1, 109.5,  60.0, USENEWNAMES|ROTATEONDEMAND},
-      {3, "H",    " H72", " C5A", " C5",  " C4",  "",    1.1, 109.5, -60.0, USENEWNAMES|ROTATEONDEMAND},
-      {3, "H",    " H71", " C5A", " C5",  " C4",  "",    1.1, 109.5, 180.0, USENEWNAMES|ROTATEONDEMAND},
-      {3, "H",    " H73", " C7", " C5",  " C4",  "",    1.1, 109.5,  60.0, USENEWNAMES|ROTATEONDEMAND},
-      {3, "H",    " H72", " C7", " C5",  " C4",  "",    1.1, 109.5, -60.0, USENEWNAMES|ROTATEONDEMAND},
-      {3, "H",    " H71", " C7", " C5",  " C4",  "",    1.1, 109.5, 180.0, USENEWNAMES|ROTATEONDEMAND},
-      {4, "Ha+p", " H3",  " N3",  " C4",  " C2",  "",    1.0,   0.0,   0.0, BONDBUMPFLAG},
+      {4, "Har",  " H6",  " C6",  " C5",  " N1",  "",    0.93,   0.0,   0.0, 0},
+      {3, "H",    "3H5M", " C5M", " C5",  " C4",  "",    0.96, 109.5,  60.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
+      {3, "H",    "2H5M", " C5M", " C5",  " C4",  "",    0.96, 109.5, -60.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
+      {3, "H",    "1H5M", " C5M", " C5",  " C4",  "",    0.96, 109.5, 180.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
+      {7, "H",    " H53", " C5M", "",     "",     "",    0.96,   0.0,   0.0, ROTATEONDEMAND},
+      {7, "H",    " H52", " C5M", "",     "",     "",    0.96,   0.0,   0.0, ROTATEONDEMAND},
+      {7, "H",    " H51", " C5M", "",     "",     "",    0.96,   0.0,   0.0, ROTATEONDEMAND},
+      {3, "H",    "3H5A", " C5A", " C5",  " C4",  "",    0.96, 109.5,  60.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
+      {3, "H",    "2H5A", " C5A", " C5",  " C4",  "",    0.96, 109.5, -60.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
+      {3, "H",    "1H5A", " C5A", " C5",  " C4",  "",    0.96, 109.5, 180.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
+      {3, "H",    "3H5A", " C7", " C5",  " C4",  "",    0.96, 109.5,  60.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
+      {3, "H",    "2H5A", " C7", " C5",  " C4",  "",    0.96, 109.5, -60.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
+      {3, "H",    "1H5A", " C7", " C5",  " C4",  "",    0.96, 109.5, 180.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
+      {7, "H",    " H53", " C5A", "",     "",     "",    0.96,   0.0,   0.0, ROTATEONDEMAND},
+      {7, "H",    " H52", " C5A", "",     "",     "",    0.96,   0.0,   0.0, ROTATEONDEMAND},
+      {7, "H",    " H51", " C5A", "",     "",     "",    0.96,   0.0,   0.0, ROTATEONDEMAND},
+      {3, "H",    " H73", " C5M", " C5",  " C4",  "",    0.96, 109.5,  60.0, USENEWNAMES|ROTATEONDEMAND},
+      {3, "H",    " H72", " C5M", " C5",  " C4",  "",    0.96, 109.5, -60.0, USENEWNAMES|ROTATEONDEMAND},
+      {3, "H",    " H71", " C5M", " C5",  " C4",  "",    0.96, 109.5, 180.0, USENEWNAMES|ROTATEONDEMAND},
+      {3, "H",    " H73", " C5A", " C5",  " C4",  "",    0.96, 109.5,  60.0, USENEWNAMES|ROTATEONDEMAND},
+      {3, "H",    " H72", " C5A", " C5",  " C4",  "",    0.96, 109.5, -60.0, USENEWNAMES|ROTATEONDEMAND},
+      {3, "H",    " H71", " C5A", " C5",  " C4",  "",    0.96, 109.5, 180.0, USENEWNAMES|ROTATEONDEMAND},
+      {3, "H",    " H73", " C7", " C5",  " C4",  "",    0.96, 109.5,  60.0, USENEWNAMES|ROTATEONDEMAND},
+      {3, "H",    " H72", " C7", " C5",  " C4",  "",    0.96, 109.5, -60.0, USENEWNAMES|ROTATEONDEMAND},
+      {3, "H",    " H71", " C7", " C5",  " C4",  "",    0.96, 109.5, 180.0, USENEWNAMES|ROTATEONDEMAND},
+      {4, "Ha+p", " H3",  " N3",  " C4",  " C2",  "",    0.86,   0.0,   0.0, BONDBUMPFLAG},
       {1, "H",    " H1*", " C1*", " O4*", " C2*", " N1", 1.1,   0.0,   0.0, USEOLDNAMES|XPLORNAME},
       {1, "H",    " H1'", " C1'", " O4'", " C2'", " N1", 1.1,   0.0,   0.0, XPLORNAME},
       {1, "H",    " H1'", " C1*", " O4*", " C2*", " N1", 1.1,   0.0,   0.0, USENEWNAMES},
       {1, "H",    " H1'", " C1'", " O4'", " C2'", " N1", 1.1,   0.0,   0.0, USENEWNAMES},
+// wba 100514 dist changed to 0.86, 0.93, 0.96 from 1.0, 1.1, 1.1
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("  T", "", args);
@@ -673,7 +701,8 @@ HydrogenPlanTable::HydrogenPlanTable() {
       {1, "H",    " H1'", " C1'", " O4'", " C2'", " N1", 1.1,   0.0,   0.0, USENEWNAMES},
       {0,0,0,0,0,0,0,0,0,0,0}
     };
-    insertStdResH("THY", "", args);
+    insertStdResH("TMP", "", args);
+// wba 100514 changed to TMP from THY
   }
 //--------------------------------------------------------------------------
   {
@@ -690,6 +719,7 @@ HydrogenPlanTable::HydrogenPlanTable() {
       {1, "H",    " H1'", " C1'", " O4'", " C2'", " N9", 0.98,   0.0,   0.0, XPLORNAME},
       {1, "H",    " H1'",  " C1*",  " O4*",  " C2*",  " N9", 0.98,   0.0,   0.0, USENEWNAMES},
       {1, "H",    " H1'",  " C1'",  " O4'",  " C2'",  " N9", 0.98,   0.0,   0.0, USENEWNAMES},
+// wba 100514 dist changed to 0.86, 0.93, 0.98 from 1.0, 1.1, 1.1
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("  A", "", args);
@@ -709,6 +739,7 @@ HydrogenPlanTable::HydrogenPlanTable() {
       {1, "H",    " H1'", " C1'", " O4'", " C2'", " N9", 0.98,   0.0,   0.0, XPLORNAME},
       {1, "H",    " H1'",  " C1*",  " O4*",  " C2*",  " N9", 0.98,   0.0,   0.0, USENEWNAMES},
       {1, "H",    " H1'",  " C1'",  " O4'",  " C2'",  " N9", 0.98,   0.0,   0.0, USENEWNAMES},
+// wba 100514 dist changed to 0.86, 0.93, 0.98 from 1.0, 1.1, 1.1
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("A", "", args);
@@ -729,6 +760,7 @@ HydrogenPlanTable::HydrogenPlanTable() {
       {4, "Har",  " H8",  " C8",  " N7",  " N9",  "",    0.93,   0.0,   0.0, 0},
       {1, "H",    " H1*", " C1*", " O4*", " C2*", " N9", 0.98,   0.0,   0.0, USEOLDNAMES},
       {1, "H",    " H1'", " C1'", " O4'", " C2'", " N9", 0.98,   0.0,   0.0, XPLORNAME},
+// wba 100514 dist changed to 0.86, 0.93, 0.98 from 1.0, 1.1, 1.1
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("ADE", "", args);
@@ -748,6 +780,7 @@ HydrogenPlanTable::HydrogenPlanTable() {
       {1, "H",    " H1'", " C1'", " O4'", " C2'", " N1", 0.98,   0.0,   0.0, XPLORNAME},
       {1, "H",    " H1'", " C1*", " O4*", " C2*", " N1", 0.98,   0.0,   0.0, USENEWNAMES},
       {1, "H",    " H1'", " C1'", " O4'", " C2'", " N1", 0.98,   0.0,   0.0, USENEWNAMES},
+// wba 100514 dist changed to 0.86, 0.93, 0.98 from 1.0, 1.1, 1.1
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("  C", "", args);
@@ -767,6 +800,7 @@ HydrogenPlanTable::HydrogenPlanTable() {
       {1, "H",    " H1'", " C1'", " O4'", " C2'", " N1", 0.98,   0.0,   0.0, XPLORNAME},
       {1, "H",    " H1'", " C1*", " O4*", " C2*", " N1", 0.98,   0.0,   0.0, USENEWNAMES},
       {1, "H",    " H1'", " C1'", " O4'", " C2'", " N1", 0.98,   0.0,   0.0, USENEWNAMES},
+// wba 100514 dist changed to 0.86, 0.93, 0.98 from 1.0, 1.1, 1.1
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("C", "", args);
@@ -786,6 +820,7 @@ HydrogenPlanTable::HydrogenPlanTable() {
       {1, "H",    " H1'", " C1'", " O4'", " C2'", " N1", 0.98,   0.0,   0.0, XPLORNAME},
       {1, "H",    " H1'", " C1*", " O4*", " C2*", " N1", 0.98,   0.0,   0.0, USENEWNAMES},
       {1, "H",    " H1'", " C1'", " O4'", " C2'", " N1", 0.98,   0.0,   0.0, USENEWNAMES},
+// wba 100514 dist changed to 0.86, 0.93, 0.98 from 1.0, 1.1, 1.1
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("CYT", "", args);
@@ -805,6 +840,7 @@ HydrogenPlanTable::HydrogenPlanTable() {
       {1, "H",    " H1'", " C1'", " O4'", " C2'", " N9", 0.98,   0.0,   0.0, XPLORNAME},
       {1, "H",    " H1'", " C1*", " O4*", " C2*", " N9", 0.98,   0.0,   0.0, USENEWNAMES},
       {1, "H",    " H1'", " C1'", " O4'", " C2'", " N9", 0.98,   0.0,   0.0, USENEWNAMES},
+// wba 100514 dist changed to 0.86, 0.93, 0.98 from 1.0, 1.1, 1.1
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("  G", "", args);
@@ -824,6 +860,7 @@ HydrogenPlanTable::HydrogenPlanTable() {
       {1, "H",    " H1'", " C1'", " O4'", " C2'", " N9", 0.98,   0.0,   0.0, XPLORNAME},
       {1, "H",    " H1'", " C1*", " O4*", " C2*", " N9", 0.98,   0.0,   0.0, USENEWNAMES},
       {1, "H",    " H1'", " C1'", " O4'", " C2'", " N9", 0.98,   0.0,   0.0, USENEWNAMES},
+// wba 100514 dist changed to 0.86, 0.93, 0.98 from 1.0, 1.1, 1.1
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("G", "", args);
@@ -842,6 +879,7 @@ HydrogenPlanTable::HydrogenPlanTable() {
       {1, "H",    " H1'", " C1'", " O4'", " C2'", " N9", 0.98,   0.0,   0.0, XPLORNAME},
       {1, "H",    " H1'", " C1*", " O4*", " C2*", " N9", 0.98,   0.0,   0.0, USENEWNAMES},
       {1, "H",    " H1'", " C1'", " O4'", " C2'", " N9", 0.98,   0.0,   0.0, USENEWNAMES},
+// wba 100514 dist changed to 0.86, 0.93, 0.98 from 1.0, 1.1, 1.1
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("GUA", "", args);
@@ -995,6 +1033,7 @@ HydrogenPlanTable::HydrogenPlanTable() {
       {2, "H", "1HB", " CB", " CA", " CG", "", 1.1,-126.5,   0.0, USEOLDNAMES|XPLORNAME},
       {2, "H", " HB2", " CB", " CA", " CG", "", 0.97, 126.5,   0.0, USENEWNAMES},
       {2, "H", " HB1", " CB", " CA", " CG", "", 0.97,-126.5,   0.0, USENEWNAMES},
+// wba 100514 dist changed to 0.97 from 1.1
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("ASX", "", args);
@@ -1009,6 +1048,7 @@ HydrogenPlanTable::HydrogenPlanTable() {
       {2, "H", " HG1", " CG", " CB", " CD", "", 0.97,-126.5,   0.0, USENEWNAMES},
       {2, "H", " HB2", " CB", " CA", " CG", "", 0.97, 126.5,   0.0, USENEWNAMES},
       {2, "H", " HB1", " CB", " CA", " CG", "", 0.97,-126.5,   0.0, USENEWNAMES},
+// wba 100514 dist changed to 0.97 from 1.1
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("GLX", "", args);
@@ -1034,6 +1074,7 @@ HydrogenPlanTable::HydrogenPlanTable() {
       {2, "H", " HG2", " CG", " CB", "SE", "", 0.97,-126.5,   0.0, USENEWNAMES},
       {2, "H", " HB3", " CB", " CA", " CG", "", 0.97, 126.5,   0.0, USENEWNAMES},
       {2, "H", " HB2", " CB", " CA", " CG", "", 0.97,-126.5,   0.0, USENEWNAMES},
+// wba 100514 dist changed to 0.96, 0.97 from 1.1, 1.1
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("MSE", "", args);
@@ -1048,6 +1089,7 @@ HydrogenPlanTable::HydrogenPlanTable() {
       {2, "H", " HG2", " CG", " CB", " CD", "", 0.97,-126.5,   0.0, USENEWNAMES},
       {2, "H", " HB3", " CB", " CA", " CG", "", 0.97, 126.5,   0.0, USENEWNAMES},
       {2, "H", " HB2", " CB", " CA", " CG", "", 0.97,-126.5,   0.0, USENEWNAMES},
+// wba 100514 dist changed to 0.97 from 1.1
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("PCA", "", args);
@@ -1060,6 +1102,7 @@ HydrogenPlanTable::HydrogenPlanTable() {
       {3, "Hpol", " HN1", " N", "- C", "- O", "", 0.89, 120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
       {3, "Hpol", "2HN",  " N", "- C", "- O", "", 1.0, 120.0,   0.0, USEOLDNAMES|BONDBUMPFLAG},
       {3, "Hpol", "1HN",  " N", "- C", "- O", "", 1.0, 120.0, 180.0, USEOLDNAMES|BONDBUMPFLAG},
+// wba 100514 dist changed to 0.89 from 1.0
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("NH2", "", args);

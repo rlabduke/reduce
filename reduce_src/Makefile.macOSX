@@ -1,11 +1,16 @@
 #  This Makefile for Reduce was adopted from the gcc makefile, it will 
-#  generate a MACH-O executable for MacOSX containing binaries for both
-#  i386 (intel) and powerpc cpus, which is called an universal binary.  
-#  It requires installation of the Apple Developer package, XCode.
-#  Standard C libraries and header files are in /Developer/SDKs/MacOSX10.4u.sdk
-#  To use, replace the reduce_src makefile with this makefile (likewise for
-#  the libpdb and toolclasses directories, and then type "make" in the 
-#  directory above reduce_src.
+#  generate a MACH-O executable for MacOSX i386 (intel 32 bit chipset).
+#  It requires installation of the Apple Developer package, XCode in its
+#  default location: something like /Developer/SDKs/MacOSX10.5.sdk
+#  Modify the SDK location and or the -arch flag to suit your computer.
+#  Make the same changes in the companion Makefile.macOSX for each of the
+#  three major object subdirectories: reduce_src, libpdb, and toolclasses.
+#  Then to compile, do one of the following:
+#     1. Copy Makefile.macOSX to Makefile for each of the three subdirecories 
+#        and then change directory to the level above the three and type 'make'.
+#     2. Individually compile each subdirectory (doing reduce_src last) using
+#        the command 'make -f Makefile.macOSX'.
+
 
 TOOLHOME    = ../toolclasses
 PDBHOME     = ../libpdb

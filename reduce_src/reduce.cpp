@@ -24,9 +24,9 @@
 #endif
 
 static const char *versionString =
-     "reduce: version 3.15 11/6/2009, Copyright 1997-2009, J. Michael Word";
+     "reduce: version 3.16 05/14.10, Copyright 1997-2010, J. Michael Word";
 
-static const char *shortVersion    = "reduce.3.15.091106";
+static const char *shortVersion    = "reduce.3.16.100514";
 static const char *referenceString =
                        "Word, et. al. (1999) J. Mol. Biol. 285, 1735-1747.";
 static const char *electronicReference = "http://kinemage.biochem.duke.edu";
@@ -80,8 +80,8 @@ bool RemoveHydrogens          = FALSE;
 bool BuildHisHydrogens        = FALSE;
 bool SaveOHetcHydrogens       = TRUE;
 bool UseXplorNames            = FALSE;
-bool UseOldNames	      = FALSE; 
-bool BackBoneModel	      = FALSE; 
+bool UseOldNames              = FALSE; 
+bool BackBoneModel            = FALSE; 
 bool DemandRotAllMethyls      = FALSE;
 bool RotExistingOH            = FALSE;
 bool NeutralTermini           = FALSE;
@@ -981,6 +981,8 @@ void reduceChanges(bool showAll) { /*changes*/
    cerr  << "04/28/08 - jjh          fixed 4 character Deuterium recognition w/ PDB 3.0 names" << endl;
    cerr  << "08/21/08 - jjh          added -CHARGEs flag to control charge state output - off by default" << endl;
    cerr  << "11/06/09 - jjh         added -FLIP and -NOFLIP flag" << endl;
+   cerr  << "05/14/10 - wba         changes to hydrogen bond-lengths in StdResH.cpp" << endl;
+   cerr  << "05/14/10 - wba         changes to hydrogen VDW radii in ElementInfo.cpp" << endl;
    cerr  << endl;
    exit(1);
 }
