@@ -1125,14 +1125,16 @@ void renumberAndReconnect(std::list<PDBrec*>& rlst) {
 }
 
 void dropHydrogens(std::list<PDBrec*>& rlst) {
-	for (std::list<PDBrec*>::iterator it = rlst.begin(); it != rlst.end(); ++it) {
+  typedef std::list<PDBrec*>::iterator pdb_iter;
+	for (pdb_iter it = rlst.begin(); it != rlst.end(); ) {
 		PDBrec* r = *it;
+    bool need_increment = true;
 		if (r->type() == PDB::ATOM) {
 			if (r->isHydrogen()) {
 				Tally._H_removed++;
 				delete r;
-				rlst.erase(it);
-				--it;
+				it = rlst.erase(it);
+        need_increment = false;
 			}
 			Tally._num_atoms++;
 		}
@@ -1141,8 +1143,8 @@ void dropHydrogens(std::list<PDBrec*>& rlst) {
 				Tally._H_removed++;
 				Tally._H_HET_removed++;
 				delete r;
-				rlst.erase(it);
-				--it;
+				it = rlst.erase(it);
+        need_increment = false;
 			}
 			Tally._num_atoms++;
 		}
@@ -1151,13 +1153,14 @@ void dropHydrogens(std::list<PDBrec*>& rlst) {
             || r->type() == PDB::SIGUIJ) { // supplemental records
 			if (r->isHydrogen()) {
 				delete r;
-				rlst.erase(it);
-				--it;
+				it = rlst.erase(it);
+        need_increment = false;
 			}
 		}
 		else if ( r->type() == PDB::CONECT) {
 			Tally._conect++;
 		}
+    if (need_increment) it++;
 	}
 }
 
