@@ -563,6 +563,19 @@ HydrogenPlanTable::HydrogenPlanTable() {
     };
     insertStdResH("URA", "", args);
   }
+  {
+    static const addPlan_args args[] = {
+      {4, "Har", " H6",  " C6",  " C5",  " N1",  "",    1.1,   0.0,   0.0, 0},
+      {4, "Har", " H5",  " C5",  " C4",  " C6",  "",    1.1,   0.0,   0.0, 0},
+      {4, "Ha+p"," H3",  " N3",  " C4",  " C2",  "",    1.0,   0.0,   0.0, BONDBUMPFLAG},
+      {1, "H",   " H1*", " C1*", " O4*", " C2*", " N1", 1.1,   0.0,   0.0, USEOLDNAMES},
+      {1, "H",   " H1'", " C1'", " O4'", " C2'", " N1", 1.1,   0.0,   0.0, XPLORNAME},
+      {1, "H",   " H1'",  " C1*",  " O4*",  " C2*", " N1", 1.1,   0.0,   0.0, USENEWNAMES},
+      {1, "H",   " H1'",  " C1'",  " O4'",  " C2'", " N1", 1.1,   0.0,   0.0, USENEWNAMES},
+      {0,0,0,0,0,0,0,0,0,0,0}
+    };
+    insertStdResH("URI", "", args);
+  }
 //--------------------------------------------------------------------------
   // note C5M is an alternative name for C5A  --- C7 is the remediated name
   {
@@ -1222,6 +1235,7 @@ StdResXtraInfo::StdResXtraInfo() {
     {"U",  "NucleicAcid", 1},
 #endif
     {"URA","NucleicAcid", 1},
+    {"URI","NucleicAcid", 1},
     {"  T","NucleicAcid", 1},
 #ifdef LEFT_JUSTIFY_NUC_RES_OK
     {"T",  "NucleicAcid", 1},
@@ -1571,6 +1585,13 @@ StdResXtraInfo::StdResXtraInfo() {
     {"URA", " C4",  HBACCEPTORFLAG|AROMATICFLAG},
     {"URA", " C5",  HBACCEPTORFLAG|AROMATICFLAG},
     {"URA", " C6",  HBACCEPTORFLAG|AROMATICFLAG},
+
+    {"URI", " N1",  HBACCEPTORFLAG|AROMATICFLAG},
+    {"URI", " C2",  HBACCEPTORFLAG|AROMATICFLAG},
+    {"URI", " N3",  HBACCEPTORFLAG|AROMATICFLAG},
+    {"URI", " C4",  HBACCEPTORFLAG|AROMATICFLAG},
+    {"URI", " C5",  HBACCEPTORFLAG|AROMATICFLAG},
+    {"URI", " C6",  HBACCEPTORFLAG|AROMATICFLAG},
 #endif
 
     {" DA", " C2",  HBACCEPTORFLAG|AROMATICFLAG},
