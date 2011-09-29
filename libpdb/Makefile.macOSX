@@ -1,8 +1,18 @@
-#  This Makefile for Reduce was adopted from the gcc makefile, it will 
-#  generate a MACH-O executable for MacOSX containing binaries for both
-#  i386 (intel) and powerpc cpus, which is called an universal binary.  
-#  It requires installation of the Apple Developer package, XCode.
-#  Standard C libraries and header files are in /Developer/SDKs/MacOSX10.4u.sdk
+#  Makefile.libpdb.macOSX
+#  This Makefile for Reduce was adopted from the gcc makefile,  it will generate
+#  a MACH-O file containing any mixture of MacOSX 32 bit ( -arch i386 or 
+#  -arch ppc) or MacOSX 64 bit ( -arch x86_64 or -arch ppc64 )executables.  It
+#  is up to the user of the makefile to choose which flags are appropriate; but
+#  as a reminder, 10.7 is only intel 64 bit, 10.6 is only intel.
+#  This makefile assumes installation of the Apple XCode IDE, XCode in its
+#  default disk location, /Developer.  Standard C libraries and header files are
+#  in /Developer/SDKs/MacOSX10.X.sdk, where 'X' is the targeted Mac OS X version.
+#  When using a compiler from a later OS to compile against an earlier SDK, 
+#  minimum OS flag will need to be added after the arch flag(s).  So for 
+#  compilation of a Snow Leopard ( 10.6 ) executable on a Lion ( 10.7 ) OS
+#  computer, one should use the MacOSX10.6.sdk, the arch flag(s) i386 and/or
+#  x86_64, AND a "MINOS = -mmacosx-version-min=10.6" 
+#  The compile order for Reduce is: libpdb, then toolclasses, then reduce_src.
 #  To use, replace the libpdb makefile with this makefile (likewise for
 #  the reduce_src and toolclasses directories, and then type "make" in the 
 #  directory above reduce_src.
@@ -11,15 +21,29 @@
 #  On System V machines, RANLIB should be ':'
 #  
 
+ARCHFLAGi32  = -arch i386
+ARCHFLAGi64  = -arch x86_64
+ARCHFLAGp31  = -arch ppc
+ARCHFLAGp64  = -arch ppc64
+
+# Pick one of these three:
+# MINOS        =
+MINOS        = -mmacosx-version-min=10.5
+# MINOS        = -mmacosx-version-min=10.6
+
 SHELL    = /bin/sh
 RANLIB   = ranlib
 CXX      = g++
 OPT      = -O
 DEBUG    = $(CXXDEBUGFLAGS)
-PROG_FLGS   = -isysroot /Developer/SDKs/MacOSX10.4u.sdk -arch i386 -arch ppc
-CFLAGS   = $(OPT) $(DEBUG) $(PROG_FLGS) -DBOOLPREDEFINED -DHASSSCANFEXTERN
+
+PROG_FLGS   = -isysroot /Developer/SDKs/MacOSX10.5.sdk \
+              -arch i386 -arch x86_64 -arch ppc -mmacosx-version-min=10.5
+CFLAGS      = $(OPT) $(DEBUG) $(PROG_FLGS) -DBOOLPREDEFINED -DHASSSCANFEXTERN
+
 LIBRARY  = pdb++
 LIBARCH  = lib$(LIBRARY).a
+
 OBJS     = pdb_read.o pdb_sprntf.o pdb_sscanf.o pdb_chars.o \
            pdb_type.o pdb++.o pdbinput.o
 SRCS     = pdb_read.cpp pdb_sprntf.cppc pdb_sscanf.cpp pdb_chars.cpp \

@@ -11,12 +11,23 @@
 #  On System V machines, RANLIB should be ':'
 #  
 
+ARCHFLAGi32  = -arch i386
+ARCHFLAGi64  = -arch x86_64
+ARCHFLAGp31  = -arch ppc
+ARCHFLAGp64  = -arch ppc64
+
+# Pick one of these three:
+# MINOS        =
+MINOS        = -mmacosx-version-min=10.5
+# MINOS        = -mmacosx-version-min=10.6
+
 SHELL    = /bin/sh
 RANLIB   = ranlib
 CXX      = g++
 OPT      = -O
 DEBUG    = $(CXXDEBUGFLAGS)
-PROG_FLGS = -isysroot /Developer/SDKs/MacOSX10.4u.sdk -arch i386 -arch ppc
+PROG_FLGS = -isysroot /Developer/SDKs/MacOSX10.5.sdk  \
+            -arch i386 -arch x86_64 -arch ppc -mmacosx-version-min=10.5
 CFLAGS   = $(OPT) $(DEBUG) $(PROG_FLGS) \
            -DCHARFUNCMACROS -DINCTEMPLATEDEFNS \
            -DBOOLPREDEFINED -DBRACKETOPERPARMS -DLISTFRIENDFIX
