@@ -35,6 +35,94 @@ using std::fgets;
 #include "ElementInfo.h"
 #include "utility.h"
 
+std::list<std::string> ResConn::findRingBondedToMethyl(const std::string &atomname,const char* resname) const {
+	int nh = 0;
+
+	ElementInfo *e = ElementInfo::StdElemTbl().lookupPDBatom(atomname.c_str(), resname);
+	if (e && e->isHydrogen()) { // start only from hydrogens
+		
+		std::stack<AtomConn*> stkAtoms;
+		std::stack<int> stkAtomsDepth;
+		std::vector<bool> visited(_atomConn.size());
+		std::list<std::string> L;
+
+		// initialize all nodes to false
+		for (int i=0; i < visited.size(); i++)
+			visited.at(i)=false;
+		
+		AtomConn *hc = get(atomname);
+		if (hc && hc->num_conn() > 0)  {
+			
+			std::string x1name = hc->conn(0); // heavy atom
+			AtomConn *x1c = get(x1name);
+			int x1cDepth = 0;
+			
+			ElementInfo *x1e = ElementInfo::StdElemTbl().lookupPDBatom(x1name.c_str(), resname);
+			if (x1c && x1e->atno()==6) { // Test to see if this hydrogen is in methyl group
+				std::string xc = "";
+				for (int i = x1c->num_conn()-1; i >= 0; i--) {
+					ElementInfo *xe = ElementInfo::StdElemTbl().lookupPDBatom(x1c->conn(i).c_str(), resname);
+					
+					if (xe && xe->isHydrogen()) { // Count number of hydrogen atoms
+						++nh;
+					}
+					
+					if (xe && !xe->isHydrogen()) { // heavy atom
+						xc = x1c->conn(i);
+					}
+				}
+				
+				//std::cout << std::endl << "nh: " << nh << " xc: " << xc;
+				
+				if (nh == 3) {
+					visited[x1c->order()]=true;
+					AtomConn *x2c = get(xc);
+					stkAtoms.push(x2c);
+					stkAtomsDepth.push(x1cDepth+1);
+					x1name = xc;
+				}
+			}
+			
+			while (!stkAtoms.empty()) {
+				x1c = stkAtoms.top();				
+				x1cDepth = stkAtomsDepth.top();
+				stkAtoms.pop();
+				stkAtomsDepth.pop();
+				
+				if ( x1c && x1c->num_conn() > 1    // Atom exists and has more than 1 connected atoms (other than it's parent)
+					 && x1cDepth < 7 )  {		   // only report 5 or 6 member rings
+				
+					std::cout << std::endl << "here: " << x1c->order() << x1c->name() << "-" << x1cDepth;
+					visited[x1c->order()]=true;
+					if (L.size() > x1cDepth-1)
+						L.resize(x1cDepth-1);
+					std::string xparent = L.empty() ? "NONE" : L.back();
+					L.push_back(x1c->name());
+					
+					for (int i = x1c->num_conn()-1; i >= 0; i--) {
+						std::string xc = x1c->conn(i);
+						if (xparent != xc) {
+							if (xc == x1name) { // Found cycle
+								return L;
+							}
+							
+							AtomConn *x2c = get(xc);
+							if (x2c && !visited[x2c->order()]) {
+								std::cout << "(x2c: " << x2c->order() << x2c->name();
+								stkAtoms.push(x2c);
+								stkAtomsDepth.push(x1cDepth+1);
+							}
+						}
+					}
+				}				
+			}
+		}
+	}
+	
+	std::list<std::string> emptyList;
+	return emptyList;
+}
+
 atomPlacementPlan* ResConn::planHplacement(const std::string &atomname, const char* resname) const {
    int nn = 0, nh = 0, whichH = 0, type = 0, flags = 0;
    float dist = 0.0, ang1 = 0.0, ang2 = 0.0;
