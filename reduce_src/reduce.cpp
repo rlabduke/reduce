@@ -96,7 +96,7 @@ bool ShowOrientScore          = FALSE;
 bool StringInput              = FALSE;
 bool ShowCharges              = FALSE;
 
-int MaxAromRingDih    = 5;   // max dihedral angle in planarity check for aromatic rings  120724 - Aram
+int MaxAromRingDih    = 10;   // max dihedral angle in planarity check for aromatic rings  120724 - Aram
 
 int MinNTermResNo     = 1;   // how high can a resno be for n-term?
 int ModelToProcess    = 1;   // which model to work on, 
@@ -1316,16 +1316,16 @@ bool isAromMethyl(ResConn& ct, const atomPlacementPlan& pp, ResBlk& theRes, cons
 	std::vector<PDBrec*> r_vec;
 	r_vec.reserve(temp.size());
 	
-	std::cout << std::endl << "resname: " << resname << ", atomname: " << pp.name() << "." << theRes.firstRec().atomname();
+	// std::cout << std::endl << "resname: " << resname << ", atomname: " << pp.name() << "." << theRes.firstRec().atomname();
 	while (it != temp.end()) {
 		std::list<PDBrec*> r_list;
 		theRes.get(*it, r_list);
 		PDBrec* rec = *r_list.begin(); // Do not consider alt configulation for now
 		r_vec.push_back(rec);
-		std::cout << " " << *it << "(" << r_vec[r_vec.size()-1]->loc() << ")";
+		// std::cout << " " << *it << "(" << r_vec[r_vec.size()-1]->loc() << ")";
 		++it;
 	}
-	std::cout << std::endl;
+	// std::cout << std::endl;
 	
 	for (int i = 0; i < r_vec.size(); i++) { // check dihedral angles starting from each atom in the ring
 		int i0=i, i1=(i+1)%r_vec.size(), i2=(i+2)%r_vec.size(), i3=(i+3)%r_vec.size();
@@ -1333,10 +1333,10 @@ bool isAromMethyl(ResConn& ct, const atomPlacementPlan& pp, ResBlk& theRes, cons
 		while (dih < 0) dih += 360;
 		while (dih >= 180) dih -= 180;
 		if ( (dih > AROMATIC_RING_DIHEDRAL) && (dih < (180.0 - AROMATIC_RING_DIHEDRAL)) ) {
-			std::cout << "    dihedral test failed: " << r_vec[i]->atomname() << " (" << dih << ")" << std::endl;
+			// std::cout << "    dihedral test failed: " << r_vec[i]->atomname() << " (" << dih << ")" << std::endl;
 			return FALSE;
 		} else {
-			std::cout << ", " << dih;
+			// std::cout << ", " << dih;
 		}		
 	}
 	
@@ -1816,9 +1816,6 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 									*(rvv[0][std::min(j, nconf[0]-1)]),
 									*(rvv[1][std::min(j, nconf[1]-1)]),
 									*(rvv[2][std::min(j, nconf[2]-1)]),
-
-
-
 									TRUE, DemandRotNH3,
 									((DemandRotAllMethyls && pp.hasFeature(ROTATEONDEMAND))
 									|| (OKProcessMetMe && pp.hasFeature(ROTATEFLAG))) );

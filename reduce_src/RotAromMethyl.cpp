@@ -169,8 +169,8 @@ double RotAromMethyl::orientationAngle(int oi, SearchStrategy ss) const {
 		}
 	}
 	
-	cout << "orientationAngle oi:" << oi << ", START_ANGLE:" << START_ANGLE << ", delta:" << delta << ", step:" << 
-		((oi+1)>>1) * ((oi&1) ? 1.0 : -1.0) * ROUGH_STEP << endl;
+	// cout << "orientationAngle oi:" << oi << ", START_ANGLE:" << START_ANGLE << ", delta:" << delta << ", step:" << 
+		// ((oi+1)>>1) * ((oi&1) ? 1.0 : -1.0) * ROUGH_STEP << endl;
 
 	const double a = START_ANGLE + delta +
 		((oi+1)>>1) * ((oi&1) ? 1.0 : -1.0) * ROUGH_STEP;
