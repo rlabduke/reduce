@@ -1,4 +1,4 @@
-// Name: reduce.C
+// Name: reduce.cpp
 // Author: J. Michael Word
 // Date Written: 7/15/97
 // Purpose: add hydrogens to a Protein Data Bank file and
@@ -24,9 +24,9 @@
 #endif
 
 static const char *versionString =
-     "reduce: version 3.15 11/6/2009, Copyright 1997-2009, J. Michael Word";
+     "reducer: version 3.15 09/15/2010, Copyright 1997-2010, J. Michael Word";
 
-static const char *shortVersion    = "reduce.3.15.091106";
+static const char *shortVersion    = "reducer.3.15.100915";
 static const char *referenceString =
                        "Word, et. al. (1999) J. Mol. Biol. 285, 1735-1747.";
 static const char *electronicReference = "http://kinemage.biochem.duke.edu";
@@ -981,6 +981,7 @@ void reduceChanges(bool showAll) { /*changes*/
    cerr  << "04/28/08 - jjh          fixed 4 character Deuterium recognition w/ PDB 3.0 names" << endl;
    cerr  << "08/21/08 - jjh          added -CHARGEs flag to control charge state output - off by default" << endl;
    cerr  << "11/06/09 - jjh         added -FLIP and -NOFLIP flag" << endl;
+   cerr  << "09/15/10 - wba         'reducer' versions are for evaluation of changes to H bond-distances" << endl;
    cerr  << endl;
    exit(1);
 }
