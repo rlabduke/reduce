@@ -362,12 +362,12 @@ HydrogenPlanTable::HydrogenPlanTable() {
   }
   {
     static const addPlan_args args[] = { //ASN updated 070703 by JJH
-      {3, "Hpol", "HD22", " ND2", " CG", " OD1", "", 0.86, 120.0, 180.0, XPLORNAME|BONDBUMPFLAG},
-      {3, "Hpol", "HD21", " ND2", " CG", " OD1", "", 0.86, 120.0,   0.0, XPLORNAME|BONDBUMPFLAG},
-      {3, "Hpol", "HD22", " ND2", " CG", " OD1", "", 0.86, 120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
-      {3, "Hpol", "HD21", " ND2", " CG", " OD1", "", 0.86, 120.0,   0.0, USENEWNAMES|BONDBUMPFLAG},
-      {3, "Hpol", "2HD2", " ND2", " CG", " OD1", "", 0.86, 120.0, 180.0, USEOLDNAMES|BONDBUMPFLAG},
-      {3, "Hpol", "1HD2", " ND2", " CG", " OD1", "", 0.86, 120.0,   0.0, USEOLDNAMES|BONDBUMPFLAG},
+      {3, "Hpol", "HD22", " ND2", " CG", " OD1", "", 0.86, 120.0,   0.0, XPLORNAME|BONDBUMPFLAG},
+      {3, "Hpol", "HD21", " ND2", " CG", " OD1", "", 0.86, 120.0, 180.0, XPLORNAME|BONDBUMPFLAG},
+      {3, "Hpol", "HD22", " ND2", " CG", " OD1", "", 0.86, 120.0,   0.0, USENEWNAMES|BONDBUMPFLAG},
+      {3, "Hpol", "HD21", " ND2", " CG", " OD1", "", 0.86, 120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
+      {3, "Hpol", "2HD2", " ND2", " CG", " OD1", "", 0.86, 120.0,   0.0, USEOLDNAMES|BONDBUMPFLAG},
+      {3, "Hpol", "1HD2", " ND2", " CG", " OD1", "", 0.86, 120.0, 180.0, USEOLDNAMES|BONDBUMPFLAG},
       {2, "H", " HB3", " CB", " CA", " CG", "", 0.97, 126.5,   0.0, USENEWNAMES},
       {2, "H", " HB2", " CB", " CA", " CG", "", 0.97,-126.5,   0.0, USENEWNAMES},
       {2, "H", "2HB", " CB", " CA", " CG", "", 0.97, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
@@ -404,12 +404,12 @@ HydrogenPlanTable::HydrogenPlanTable() {
   }
   {
     static const addPlan_args args[] = { //GLN updated 070703 by JJH
-      {3, "Hpol", "HE22", " NE2", " CD", " OE1", "", 0.86, 120.0, 180.0, XPLORNAME|BONDBUMPFLAG},
-      {3, "Hpol", "HE21", " NE2", " CD", " OE1", "", 0.86, 120.0,   0.0, XPLORNAME|BONDBUMPFLAG},
-      {3, "Hpol", "HE22", " NE2", " CD", " OE1", "", 0.86, 120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
-      {3, "Hpol", "HE21", " NE2", " CD", " OE1", "", 0.86, 120.0,   0.0, USENEWNAMES|BONDBUMPFLAG},
-      {3, "Hpol", "2HE2", " NE2", " CD", " OE1", "", 0.86, 120.0, 180.0, USEOLDNAMES|BONDBUMPFLAG},
-      {3, "Hpol", "1HE2", " NE2", " CD", " OE1", "", 0.86, 120.0,   0.0, USEOLDNAMES|BONDBUMPFLAG},
+      {3, "Hpol", "HE22", " NE2", " CD", " OE1", "", 0.86, 120.0,   0.0, XPLORNAME|BONDBUMPFLAG},
+      {3, "Hpol", "HE21", " NE2", " CD", " OE1", "", 0.86, 120.0, 180.0, XPLORNAME|BONDBUMPFLAG},
+      {3, "Hpol", "HE22", " NE2", " CD", " OE1", "", 0.86, 120.0,   0.0, USENEWNAMES|BONDBUMPFLAG},
+      {3, "Hpol", "HE21", " NE2", " CD", " OE1", "", 0.86, 120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
+      {3, "Hpol", "2HE2", " NE2", " CD", " OE1", "", 0.86, 120.0,   0.0, USEOLDNAMES|BONDBUMPFLAG},
+      {3, "Hpol", "1HE2", " NE2", " CD", " OE1", "", 0.86, 120.0, 180.0, USEOLDNAMES|BONDBUMPFLAG},
       {2, "H", " HG3", " CG", " CB", " CD", "", 0.97, 126.5,   0.0, USENEWNAMES},
       {2, "H", " HG2", " CG", " CB", " CD", "", 0.97,-126.5,   0.0, USENEWNAMES},
       {2, "H", " HB3", " CB", " CA", " CG", "", 0.97, 126.5,   0.0, USENEWNAMES},
@@ -1571,6 +1571,7 @@ StdResXtraInfo::StdResXtraInfo() {
     {"URA", " C4",  HBACCEPTORFLAG|AROMATICFLAG},
     {"URA", " C5",  HBACCEPTORFLAG|AROMATICFLAG},
     {"URA", " C6",  HBACCEPTORFLAG|AROMATICFLAG},
+
 #endif
 
     {" DA", " C2",  HBACCEPTORFLAG|AROMATICFLAG},
