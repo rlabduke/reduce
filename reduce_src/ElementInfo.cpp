@@ -187,7 +187,7 @@ void StandardElementTable::LayoutTable() {
 
 // changes in hydrogen VDW radii made to accompany changes in hydrogen bond-lengths in StdResH.cpp
 //    atno                          explRad implRad covRad mageColors flags
-insert( 0, "?",  "unknown",            1.00, 0.00, 0.00, "magenta", 0);
+insert( 0, "?",  "unknown",            1.05, 0.00, 0.00, "magenta", 0);
 insert( 0, "ignore", "ignore",         0.00, 0.00, 0.00, "magenta", IGNORE);
 
 insert( 1, "H",  "hydrogen",           1.22, 0.00, 0.30, "grey",   0);
