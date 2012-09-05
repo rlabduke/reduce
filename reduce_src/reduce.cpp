@@ -24,9 +24,9 @@
 #endif
 
 static const char *versionString =
-     "reduce: version 3.17 08/23/2012, Copyright 1997-2012, J. Michael Word";
+     "reduce: version 3.17 09/04/2012, Copyright 1997-2012, J. Michael Word";
 
-static const char *shortVersion    = "reduce.3.17.120823";
+static const char *shortVersion    = "reduce.3.17.120904";
 static const char *referenceString =
                        "Word, et. al. (1999) J. Mol. Biol. 285, 1735-1747.";
 static const char *electronicReference = "http://kinemage.biochem.duke.edu";
@@ -984,6 +984,7 @@ void reduceChanges(bool showAll) { /*changes*/
    cerr  << "09/15/10 - wba         'reducer' versions are for evaluation of changes to H bond-distances" << endl;
    cerr  << "11/18/11 - jjh         Overhauled handling of alternate conformers" << endl;
    cerr  << "2012/08/23 - lnd & vbc New, shorter, H bond distances and van der Waals - version 3.17" << endl;
+   cerr  << "2012/09/05 - gjk       New, shorter, H bond distances and van der Waals for nucleic acids" << endl;
    cerr  << endl;
    exit(1);
 }
