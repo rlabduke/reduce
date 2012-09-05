@@ -11,7 +11,7 @@
 // in any way and (2) any modified versions of the program are
 // also available for free.
 //               ** Absolutely no Warranty **
-// Copyright (C) 1999-2011 J. Michael Word
+// Copyright (C) 1999-2008 J. Michael Word
 // **************************************************************
 //
 //  reduceChanges now contains the CHANGELOG or history info
@@ -24,9 +24,9 @@
 #endif
 
 static const char *versionString =
-     "reduce: version 3.17 09/04/2012, Copyright 1997-2012, J. Michael Word";
+     "reducer: version 3.15 09/15/2010, Copyright 1997-2010, J. Michael Word";
 
-static const char *shortVersion    = "reduce.3.17.120904";
+static const char *shortVersion    = "reducer.3.15.100915";
 static const char *referenceString =
                        "Word, et. al. (1999) J. Mol. Biol. 285, 1735-1747.";
 static const char *electronicReference = "http://kinemage.biochem.duke.edu";
@@ -88,7 +88,7 @@ bool NeutralTermini           = FALSE;
 bool DemandRotNH3             = TRUE;
 bool DemandRotExisting        = FALSE;
 bool DemandFlipAllHNQs        = FALSE;
-bool DoOnlyAltA               = FALSE; //jjh changed default 111118
+bool DoOnlyAltA               = TRUE;
 bool OKProcessMetMe           = TRUE;
 bool OKtoAdjust               = TRUE;
 bool ShowCliqueTicks          = TRUE;
@@ -771,8 +771,8 @@ void reduceHelp(bool showAll) { /*help*/
    cerr << "-ROTEXist         allow existing rotatable groups (OH, SH, Met-CH3) to rotate" << endl;
    cerr << "-ROTEXOH          allow existing OH & SH groups to rotate" << endl;
 //   cerr << "-ALLMETHYLS       allow all methyl groups to rotate" << endl;
-   cerr << "-ALLALT           process adjustments for all conformations (default)" << endl;
-   cerr << "-ONLYA            only adjust 'A' conformations" << endl;
+   cerr << "-ONLYA            only adjust 'A' conformations (default)" << endl;
+   cerr << "-ALLALT           process adjustments for all conformations" << endl;
    cerr << "-CHARGEs          output charge state for appropriate hydrogen records" << endl;
    cerr << "-NOROTMET         do not rotate methionine methyl groups" << endl;
    cerr << "-NOADJust         do not process any rot or flip adjustments" << endl;
@@ -982,9 +982,6 @@ void reduceChanges(bool showAll) { /*changes*/
    cerr  << "08/21/08 - jjh          added -CHARGEs flag to control charge state output - off by default" << endl;
    cerr  << "11/06/09 - jjh         added -FLIP and -NOFLIP flag" << endl;
    cerr  << "09/15/10 - wba         'reducer' versions are for evaluation of changes to H bond-distances" << endl;
-   cerr  << "11/18/11 - jjh         Overhauled handling of alternate conformers" << endl;
-   cerr  << "2012/08/23 - lnd & vbc New, shorter, H bond distances and van der Waals - version 3.17" << endl;
-   cerr  << "2012/09/05 - gjk       New, shorter, H bond distances and van der Waals for nucleic acids" << endl;
    cerr  << endl;
    exit(1);
 }
@@ -1129,16 +1126,14 @@ void renumberAndReconnect(std::list<PDBrec*>& rlst) {
 }
 
 void dropHydrogens(std::list<PDBrec*>& rlst) {
-  typedef std::list<PDBrec*>::iterator pdb_iter;
-	for (pdb_iter it = rlst.begin(); it != rlst.end(); ) {
+	for (std::list<PDBrec*>::iterator it = rlst.begin(); it != rlst.end(); ++it) {
 		PDBrec* r = *it;
-    bool need_increment = true;
 		if (r->type() == PDB::ATOM) {
 			if (r->isHydrogen()) {
 				Tally._H_removed++;
 				delete r;
-				it = rlst.erase(it);
-        need_increment = false;
+				rlst.erase(it);
+				--it;
 			}
 			Tally._num_atoms++;
 		}
@@ -1147,8 +1142,8 @@ void dropHydrogens(std::list<PDBrec*>& rlst) {
 				Tally._H_removed++;
 				Tally._H_HET_removed++;
 				delete r;
-				it = rlst.erase(it);
-        need_increment = false;
+				rlst.erase(it);
+				--it;
 			}
 			Tally._num_atoms++;
 		}
@@ -1157,14 +1152,13 @@ void dropHydrogens(std::list<PDBrec*>& rlst) {
             || r->type() == PDB::SIGUIJ) { // supplemental records
 			if (r->isHydrogen()) {
 				delete r;
-				it = rlst.erase(it);
-        need_increment = false;
+				rlst.erase(it);
+				--it;
 			}
 		}
 		else if ( r->type() == PDB::CONECT) {
 			Tally._conect++;
 		}
-    if (need_increment) it++;
 	}
 }
 
@@ -1405,8 +1399,10 @@ void analyzeRes(CTab& hetdatabase, ResBlk* pb, ResBlk* cb, ResBlk* nb,
 
 	// first look in the standard H table...
 
+	//std::cerr << "resname: " << resname << std::endl;
 	StdResH *srh = StdResH::HydPlanTbl().get(resname);
 	if (srh) {
+		//std::cerr << "Found srh for " << resname << std::endl;
 		std::list<atomPlacementPlan*> temp = srh->plans();
 		app.splice(app.end(), temp);
 	}
@@ -1441,6 +1437,7 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 	theRes.get(pp.conn(0), firstAtoms);
 
 	bool doNotAdjustSC = FALSE;
+
 	if (!firstAtoms.empty()) { // must connect to something!
 
 		if (!ourHydrogens.empty()) { // Hydrogen exists
@@ -1519,7 +1516,7 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 			}
 		}
 		else {
-			int i = 0, j = 0, k = 0;
+			int i = 0, j = 0;
 
 			if (pp.hasFeature(NOO2PRIMEFLAG) && o2prime) {
 				return; // if o2* atom then we have RNA not DNA
@@ -1550,12 +1547,11 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 			int numConnAtoms = pp.num_conn();
 			int maxalt = 0;
 			std::vector<int> nconf;
-			std::vector<char> all_confs;
 			nconf.reserve(numConnAtoms);
 
 			std::vector< std::vector<PDBrec*> > rvv;
 			rvv.reserve(numConnAtoms);
-			bool success = TRUE, alt_success = TRUE;
+			bool success = TRUE;
 
 			for (i = 0; i < numConnAtoms; i++) { // get the records and count how many
 				std::list<PDBrec*> rs;
@@ -1568,7 +1564,6 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 					std::list<PDBrec*>::iterator it_rs = rs.begin();
 					for(j=0; j < nconf[i]; ++j, ++it_rs) {
 						rvv_v.push_back(*it_rs);
-						all_confs.push_back(rvv_v[j]->alt());
 						for(int k=j; k > 0; k--) { // sort by altIds
 							if ( toupper(rvv_v[j  ]->alt())
 								< toupper(rvv_v[j-1]->alt()) ) {
@@ -1581,99 +1576,42 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 				else { success = FALSE; }
 			}
 
-            // only keep unique chains
-            /*(for(k=all_confs.size()-1; k > 0; k--){
-                if ( toupper(all_confs[k])
-				    < toupper(all_confs[k-1]) ) {
-					swap2(all_confs[k], all_confs[k-1]);
-			    }
-            }*/
-            sort (all_confs.begin(), all_confs.end());
-            for(k=all_confs.size()-1; k > 0; k--) {
-                if ( toupper(all_confs[k])
-                    == toupper(all_confs[k-1]) ) {
-                    all_confs.erase(all_confs.begin()+k);   
-                }
-            }
-            if ( (all_confs.size() > 1) && (all_confs[0] == ' ') ) {
-                all_confs.erase(all_confs.begin());
-            }
-
 			bool considerNonAlt = FALSE;
             
 			if (pp.hasFeature(STRICTALTFLAG) && (numConnAtoms > 3)
 				&& (nconf[0] == 1) && (nconf[1] == 1) && (nconf[2] == 1)) {
 				maxalt = 1; // this is an H(alpha) so ignore the fourth (CBeta) alternate conf
 				considerNonAlt = TRUE;
-				all_confs.clear();
-				const PDBrec* cnr = rvv[0][0];
-				char abc = cnr->alt();
-				all_confs.push_back(abc);
 			}
 
 			// LIMITATION:
 			// the logic to determine alt conf codes does not handle the case were the chain
 			// of atoms switches codes
-
+			
 			std::vector<Point3d> loc(numConnAtoms);
-			std::vector<int> counter(numConnAtoms);
 			for(j=0; success && j < maxalt; j++) { // for each alternate conformation...
-				char altId = ' ', foundId = ' ';
+
+				char altId = ' ';
 				float occ = (*(firstAtoms.begin()))->occupancy();
-                alt_success = TRUE;
-				if (considerNonAlt) {
-				    const PDBrec* cnr = rvv[3][j];
-				    char abc = cnr->alt();
-				    altId = abc;
-				}
-				else {
-				    altId = all_confs[j];
-				}
+
 				for(i=0; i < numConnAtoms; i++) {
 					const PDBrec* cnr = rvv[i][std::min(j, nconf[i]-1)];
 					loc[i] = cnr->loc(); //apl 7/3/06 -- FIXING PUSH_BACK BUG
-					counter[i] = std::min(j, nconf[i]-1);
-					char abc = cnr->alt();
-					if (abc == altId) {
-					    if ( (altId != ' ') && (foundId == ' ') ) {
-					        foundId = altId;
-					        occ = cnr->occupancy();
-					    }
+
+					if (j <= nconf[i]-1) {
+						char abc = cnr->alt();   // get the alt loc char to use
+						if (abc != ' ' && altId == ' ') { // (use only the first...)
+							altId = abc;
+							occ = cnr->occupancy();
+						}
 					}
-					else {
-			            alt_success = FALSE;
-			            for(k=maxalt-1; k>=0; k--) { //comprehensive search
-			                const PDBrec* cnr_v = rvv[i][std::min(k, nconf[i]-1)];
-			                char abc = cnr_v->alt();
-			                if (abc == altId || abc == ' ') {
-				                loc[i] = cnr_v->loc();
-				                if ( (abc != ' ') && (foundId == ' ') ) {
-				                    foundId = altId;
-				                    occ = cnr_v->occupancy();
-				                }
-				                counter[i] = std::min(k, nconf[i]-1);
-				                alt_success = TRUE;
-				                break;
-			                }
-			            }
-			            if (!alt_success) {
-			                if ( (i>0) && (nconf[i]==1) ) {
-			                    const PDBrec* cnr_v = rvv[i][0];
-			                    loc[i] = cnr_v->loc();
-			                    counter[i] = 0;
-				                alt_success = TRUE;
-			                }
-			                else {
-			                    //cerr << "FAILED " << pp.name().substr(0,4).c_str() << " " << altId << endl;
-			                    break;
-			                }
-			            }
-					}			
 				}
 				if (considerNonAlt) { altId = (*(firstAtoms.begin()))->alt(); occ = (*(firstAtoms.begin()))->occupancy(); }
 
 				Point3d newHpos;
-				if (success && alt_success && (success = pp.placeH(loc, newHpos))) {
+
+				if (success && (success = pp.placeH(loc, newHpos))) {
+
 					PDBrec* newHatom = new PDBrec();
 					(*(firstAtoms.begin()))->clone(newHatom); // dup and modify connected heavy atom
 
@@ -1688,7 +1626,7 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 					newHatom->elem(pp.elem());
 
 					//newHatom->atomno(0);  substituted next call to re-assign atom numbers
-                    newHatom->Hy36Num(0); 
+                                        newHatom->Hy36Num(0); 
 					newHatom->alt(altId);
 
 					newHatom->occupancy(occ);
@@ -1720,10 +1658,10 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 
 						if ((numConnAtoms > 2) &&
 							! okToPlaceHydHere(*newHatom, pp,
-							*(rvv[0][counter[0]]),
-							*(rvv[2][counter[2]]),
+							*(rvv[0][std::min(j, nconf[0]-1)]),
+							*(rvv[2][std::min(j, nconf[2]-1)]),
 							xyz, doNotAdjustSC, fixNotes)) {
-							continue; // don't add hyd.
+							return;  // don't add hyd.
 						}
 
 						theRes.insertNewRec(rlst, newHatom);
@@ -1738,9 +1676,9 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 							||  (pp.hasFeature(ROTATEONDEMAND)
 							&& (DemandRotAllMethyls || DemandRotNH3) )     ) {
 							xyz.insertRot(*newHatom,
-								*(rvv[0][counter[0]]),
-								*(rvv[1][counter[1]]),
-								*(rvv[2][counter[2]]),
+								*(rvv[0][std::min(j, nconf[0]-1)]),
+								*(rvv[1][std::min(j, nconf[1]-1)]),
+								*(rvv[2][std::min(j, nconf[2]-1)]),
 								TRUE, DemandRotNH3,
 								((DemandRotAllMethyls && pp.hasFeature(ROTATEONDEMAND))
 								|| (OKProcessMetMe && pp.hasFeature(ROTATEFLAG))) );
