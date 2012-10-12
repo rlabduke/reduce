@@ -306,7 +306,7 @@ HydrogenPlanTable::HydrogenPlanTable() {
     insertStdResH("ARG", "", args);
   }
   {
-    static const addPlan_args args[] = {   updated 070703 by JJH
+    static const addPlan_args args[] = {   //updated 070703 by JJH
       {4, "Ha+p", " HE2", " NE2", " CE1", " CD2", "", 0.86,   0.0,   0.0, XTRAFLAG|BONDBUMPFLAG},
       {4, "Har", " HE1", " CE1", " ND1", " NE2", "", 0.93,   0.0,   0.0, 0},
       {4, "Har", " HD2", " CD2", " NE2", " CG", "", 0.93,   0.0,   0.0, 0},
