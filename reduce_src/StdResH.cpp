@@ -87,41 +87,41 @@ HydrogenPlanTable::HydrogenPlanTable() {
 //--------------------------------------------------------------------------
   {
     static const addPlan_args args[] = {
-      {5, "Hpol", " H", " N", " CA", "- C", "", 0.87,   0.0, 0.48, BONDBUMPFLAG},
+      {5, "Hpol", " H", " N", " CA", "- C", "", 0.86,   0.0, 0.48, BONDBUMPFLAG},
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("amide", "PRO", args); // *NON* N-terminal mc amide
   }
   {
     static const addPlan_args args[] = { //break-amide added 070925 by RMI
-      {3, "Hpol", " H",   " N", " CA", " C", "", 0.87, 109.5, 180.0, USENEWNAMES|ROTATEONDEMAND|NH3FLAG},
+      {3, "Hpol", " H",   " N", " CA", " C", "", 0.86, 109.5, 180.0, USENEWNAMES|ROTATEONDEMAND|NH3FLAG},
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("break-amide", "PRO", args); // N-terminal mc amide
   }
   {
     static const addPlan_args args[] = { //nt-amide updated 070703 by JJH
-      {3, "Hpol", " HT3", " N", " CA", " C", "", 0.87, 109.5,  60.0, XPLORNAME|ROTATEONDEMAND|NH3FLAG},
-      {3, "Hpol", " HT2", " N", " CA", " C", "", 0.87, 109.5, -60.0, XPLORNAME|ROTATEONDEMAND|NH3FLAG},
-      {3, "Hpol", " HT1", " N", " CA", " C", "", 0.87, 109.5, 180.0, XPLORNAME|ROTATEONDEMAND|NH3FLAG},
-      {3, "Hpol", " H3",   " N", " CA", " C", "", 0.87, 109.5,  60.0, USENEWNAMES|ROTATEONDEMAND|NH3FLAG},
-      {3, "Hpol", " H2",   " N", " CA", " C", "", 0.87, 109.5, -60.0, USENEWNAMES|ROTATEONDEMAND|NH3FLAG},
-      {3, "Hpol", " H1",   " N", " CA", " C", "", 0.87, 109.5, 180.0, USENEWNAMES|ROTATEONDEMAND|NH3FLAG},
-      {3, "Hpol", "3H",   " N", " CA", " C", "", 0.87, 109.5,  60.0, USEOLDNAMES|ROTATEONDEMAND|NH3FLAG},
-      {3, "Hpol", "2H",   " N", " CA", " C", "", 0.87, 109.5, -60.0, USEOLDNAMES|ROTATEONDEMAND|NH3FLAG},
-      {3, "Hpol", "1H",   " N", " CA", " C", "", 0.87, 109.5, 180.0, USEOLDNAMES|ROTATEONDEMAND|NH3FLAG},
+      {3, "Hpol", " HT3", " N", " CA", " C", "", 0.89, 109.5,  60.0, XPLORNAME|ROTATEONDEMAND|NH3FLAG},
+      {3, "Hpol", " HT2", " N", " CA", " C", "", 0.89, 109.5, -60.0, XPLORNAME|ROTATEONDEMAND|NH3FLAG},
+      {3, "Hpol", " HT1", " N", " CA", " C", "", 0.89, 109.5, 180.0, XPLORNAME|ROTATEONDEMAND|NH3FLAG},
+      {3, "Hpol", " H3",   " N", " CA", " C", "", 0.89, 109.5,  60.0, USENEWNAMES|ROTATEONDEMAND|NH3FLAG},
+      {3, "Hpol", " H2",   " N", " CA", " C", "", 0.89, 109.5, -60.0, USENEWNAMES|ROTATEONDEMAND|NH3FLAG},
+      {3, "Hpol", " H1",   " N", " CA", " C", "", 0.89, 109.5, 180.0, USENEWNAMES|ROTATEONDEMAND|NH3FLAG},
+      {3, "Hpol", "3H",   " N", " CA", " C", "", 0.89, 109.5,  60.0, USEOLDNAMES|ROTATEONDEMAND|NH3FLAG},
+      {3, "Hpol", "2H",   " N", " CA", " C", "", 0.89, 109.5, -60.0, USEOLDNAMES|ROTATEONDEMAND|NH3FLAG},
+      {3, "Hpol", "1H",   " N", " CA", " C", "", 0.89, 109.5, 180.0, USEOLDNAMES|ROTATEONDEMAND|NH3FLAG},
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("nt-amide", "PRO", args); // N-terminal mc amide
   }
   {
     static const addPlan_args args[] = { //nt-pro updated 070703 by JJH
-      {2, "Hpol", " HT2", " N", " CD", " CA", "", 0.87, 126.5,   0.0, XPLORNAME|BONDBUMPFLAG},
-      {2, "Hpol", " HT1", " N", " CD", " CA", "", 0.87,-126.5,   0.0, XPLORNAME|BONDBUMPFLAG},
-      {2, "Hpol", " H3",   " N", " CD", " CA", "", 0.87, 126.5,   0.0, USENEWNAMES|BONDBUMPFLAG},
-      {2, "Hpol", " H2",   " N", " CD", " CA", "", 0.87,-126.5,   0.0, USENEWNAMES|BONDBUMPFLAG},
-      {2, "Hpol", "2H",   " N", " CD", " CA", "", 0.87, 126.5,   0.0, USEOLDNAMES|BONDBUMPFLAG},
-      {2, "Hpol", "1H",   " N", " CD", " CA", "", 0.87,-126.5,   0.0, USEOLDNAMES|BONDBUMPFLAG},
+      {2, "Hpol", " HT2", " N", " CD", " CA", "", 0.86, 126.5,   0.0, XPLORNAME|BONDBUMPFLAG},
+      {2, "Hpol", " HT1", " N", " CD", " CA", "", 0.86,-126.5,   0.0, XPLORNAME|BONDBUMPFLAG},
+      {2, "Hpol", " H3",   " N", " CD", " CA", "", 0.86, 126.5,   0.0, USENEWNAMES|BONDBUMPFLAG},
+      {2, "Hpol", " H2",   " N", " CD", " CA", "", 0.86,-126.5,   0.0, USENEWNAMES|BONDBUMPFLAG},
+      {2, "Hpol", "2H",   " N", " CD", " CA", "", 0.86, 126.5,   0.0, USEOLDNAMES|BONDBUMPFLAG},
+      {2, "Hpol", "1H",   " N", " CD", " CA", "", 0.86,-126.5,   0.0, USEOLDNAMES|BONDBUMPFLAG},
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("nt-pro", "", args); // N-terminal prolines
@@ -180,15 +180,15 @@ HydrogenPlanTable::HydrogenPlanTable() {
 //--------------------------------------------------------------------------
   {
     static const addPlan_args args[] = { //LYS updated 070702 by JJH
-      {3, "Hpol", " HZ3", " NZ", " CE", " CD", "", 0.87, 109.5,  60.0, XPLORNAME|ROTATEONDEMAND|NH3FLAG},
-      {3, "Hpol", " HZ2", " NZ", " CE", " CD", "", 0.87, 109.5, -60.0, XPLORNAME|ROTATEONDEMAND|NH3FLAG},
-      {3, "Hpol", " HZ1", " NZ", " CE", " CD", "", 0.87, 109.5, 180.0, XPLORNAME|ROTATEONDEMAND|NH3FLAG},
-      {3, "Hpol", " HZ3",  " NZ", " CE", " CD", "", 0.87, 109.5,  60.0, USENEWNAMES|ROTATEONDEMAND|NH3FLAG},
-      {3, "Hpol", " HZ2",  " NZ", " CE", " CD", "", 0.87, 109.5, -60.0, USENEWNAMES|ROTATEONDEMAND|NH3FLAG},
-      {3, "Hpol", " HZ1",  " NZ", " CE", " CD", "", 0.87, 109.5, 180.0, USENEWNAMES|ROTATEONDEMAND|NH3FLAG},
-      {3, "Hpol", "3HZ",  " NZ", " CE", " CD", "", 0.87, 109.5,  60.0, USEOLDNAMES|ROTATEONDEMAND|NH3FLAG},
-      {3, "Hpol", "2HZ",  " NZ", " CE", " CD", "", 0.87, 109.5, -60.0, USEOLDNAMES|ROTATEONDEMAND|NH3FLAG},
-      {3, "Hpol", "1HZ",  " NZ", " CE", " CD", "", 0.87, 109.5, 180.0, USEOLDNAMES|ROTATEONDEMAND|NH3FLAG},
+      {3, "Hpol", " HZ3", " NZ", " CE", " CD", "", 0.89, 109.5,  60.0, XPLORNAME|ROTATEONDEMAND|NH3FLAG},
+      {3, "Hpol", " HZ2", " NZ", " CE", " CD", "", 0.89, 109.5, -60.0, XPLORNAME|ROTATEONDEMAND|NH3FLAG},
+      {3, "Hpol", " HZ1", " NZ", " CE", " CD", "", 0.89, 109.5, 180.0, XPLORNAME|ROTATEONDEMAND|NH3FLAG},
+      {3, "Hpol", " HZ3",  " NZ", " CE", " CD", "", 0.89, 109.5,  60.0, USENEWNAMES|ROTATEONDEMAND|NH3FLAG},
+      {3, "Hpol", " HZ2",  " NZ", " CE", " CD", "", 0.89, 109.5, -60.0, USENEWNAMES|ROTATEONDEMAND|NH3FLAG},
+      {3, "Hpol", " HZ1",  " NZ", " CE", " CD", "", 0.89, 109.5, 180.0, USENEWNAMES|ROTATEONDEMAND|NH3FLAG},
+      {3, "Hpol", "3HZ",  " NZ", " CE", " CD", "", 0.89, 109.5,  60.0, USEOLDNAMES|ROTATEONDEMAND|NH3FLAG},
+      {3, "Hpol", "2HZ",  " NZ", " CE", " CD", "", 0.89, 109.5, -60.0, USEOLDNAMES|ROTATEONDEMAND|NH3FLAG},
+      {3, "Hpol", "1HZ",  " NZ", " CE", " CD", "", 0.89, 109.5, 180.0, USEOLDNAMES|ROTATEONDEMAND|NH3FLAG},
       {2, "H", " HE3",  " CE", " CD", " NZ", "", 0.97, 126.5,   0.0, USENEWNAMES},
       {2, "H", " HE2",  " CE", " CD", " NZ", "", 0.97,-126.5,   0.0, USENEWNAMES},
       {2, "H", " HD3",  " CD", " CG", " CE", "", 0.97, 126.5,   0.0, USENEWNAMES},
@@ -276,19 +276,19 @@ HydrogenPlanTable::HydrogenPlanTable() {
   }
   {
     static const addPlan_args args[] = { //ARG updated 070702 by JJH
-      {3, "Hpol", "HH22", " NH2", " CZ", " NE", "", 0.87, 120.0, 180.0, XPLORNAME|BONDBUMPFLAG},
-      {3, "Hpol", "HH21", " NH2", " CZ", " NE", "", 0.87, 120.0,   0.0, XPLORNAME|BONDBUMPFLAG},
-      {3, "Hpol", "HH12", " NH1", " CZ", " NE", "", 0.87, 120.0, 180.0, XPLORNAME|BONDBUMPFLAG},
-      {3, "Hpol", "HH11", " NH1", " CZ", " NE", "", 0.87, 120.0,   0.0, XPLORNAME|BONDBUMPFLAG},
-      {3, "Hpol", "HH22", " NH2", " CZ", " NE", "", 0.87, 120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
-      {3, "Hpol", "HH21", " NH2", " CZ", " NE", "", 0.87, 120.0,   0.0, USENEWNAMES|BONDBUMPFLAG},
-      {3, "Hpol", "HH12", " NH1", " CZ", " NE", "", 0.87, 120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
-      {3, "Hpol", "HH11", " NH1", " CZ", " NE", "", 0.87, 120.0,   0.0, USENEWNAMES|BONDBUMPFLAG},
-      {3, "Hpol", "2HH2", " NH2", " CZ", " NE", "", 0.87, 120.0, 180.0, USEOLDNAMES|BONDBUMPFLAG},
-      {3, "Hpol", "1HH2", " NH2", " CZ", " NE", "", 0.87, 120.0,   0.0, USEOLDNAMES|BONDBUMPFLAG},
-      {3, "Hpol", "2HH1", " NH1", " CZ", " NE", "", 0.87, 120.0, 180.0, USEOLDNAMES|BONDBUMPFLAG},
-      {3, "Hpol", "1HH1", " NH1", " CZ", " NE", "", 0.87, 120.0,   0.0, USEOLDNAMES|BONDBUMPFLAG},
-      {4, "Hpol", " HE", " NE", " CD", " CZ", "", 0.87,   0.0,   0.0, 0},
+      {3, "Hpol", "HH22", " NH2", " CZ", " NE", "", 0.86, 120.0, 180.0, XPLORNAME|BONDBUMPFLAG},
+      {3, "Hpol", "HH21", " NH2", " CZ", " NE", "", 0.86, 120.0,   0.0, XPLORNAME|BONDBUMPFLAG},
+      {3, "Hpol", "HH12", " NH1", " CZ", " NE", "", 0.86, 120.0, 180.0, XPLORNAME|BONDBUMPFLAG},
+      {3, "Hpol", "HH11", " NH1", " CZ", " NE", "", 0.86, 120.0,   0.0, XPLORNAME|BONDBUMPFLAG},
+      {3, "Hpol", "HH22", " NH2", " CZ", " NE", "", 0.86, 120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
+      {3, "Hpol", "HH21", " NH2", " CZ", " NE", "", 0.86, 120.0,   0.0, USENEWNAMES|BONDBUMPFLAG},
+      {3, "Hpol", "HH12", " NH1", " CZ", " NE", "", 0.86, 120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
+      {3, "Hpol", "HH11", " NH1", " CZ", " NE", "", 0.86, 120.0,   0.0, USENEWNAMES|BONDBUMPFLAG},
+      {3, "Hpol", "2HH2", " NH2", " CZ", " NE", "", 0.86, 120.0, 180.0, USEOLDNAMES|BONDBUMPFLAG},
+      {3, "Hpol", "1HH2", " NH2", " CZ", " NE", "", 0.86, 120.0,   0.0, USEOLDNAMES|BONDBUMPFLAG},
+      {3, "Hpol", "2HH1", " NH1", " CZ", " NE", "", 0.86, 120.0, 180.0, USEOLDNAMES|BONDBUMPFLAG},
+      {3, "Hpol", "1HH1", " NH1", " CZ", " NE", "", 0.86, 120.0,   0.0, USEOLDNAMES|BONDBUMPFLAG},
+      {4, "Hpol", " HE", " NE", " CD", " CZ", "", 0.86,   0.0,   0.0, 0},
       {2, "H", " HD3", " CD", " CG", " NE", "", 0.97, 126.5,   0.0, USENEWNAMES},
       {2, "H", " HD2", " CD", " CG", " NE", "", 0.97,-126.5,   0.0, USENEWNAMES},
       {2, "H", " HG3", " CG", " CB", " CD", "", 0.97, 126.5,   0.0, USENEWNAMES},
@@ -306,11 +306,11 @@ HydrogenPlanTable::HydrogenPlanTable() {
     insertStdResH("ARG", "", args);
   }
   {
-    static const addPlan_args args[] = { //HIS updated 070703 by JJH
-      {4, "Ha+p", " HE2", " NE2", " CE1", " CD2", "", 0.87,   0.0,   0.0, XTRAFLAG|BONDBUMPFLAG},
+    static const addPlan_args args[] = {   updated 070703 by JJH
+      {4, "Ha+p", " HE2", " NE2", " CE1", " CD2", "", 0.86,   0.0,   0.0, XTRAFLAG|BONDBUMPFLAG},
       {4, "Har", " HE1", " CE1", " ND1", " NE2", "", 0.93,   0.0,   0.0, 0},
       {4, "Har", " HD2", " CD2", " NE2", " CG", "", 0.93,   0.0,   0.0, 0},
-      {4, "Ha+p", " HD1", " ND1", " CG", " CE1", "", 0.87,   0.0,   0.0, XTRAFLAG|BONDBUMPFLAG},
+      {4, "Ha+p", " HD1", " ND1", " CG", " CE1", "", 0.86,   0.0,   0.0, XTRAFLAG|BONDBUMPFLAG},
       {2, "H", " HB3", " CB", " CA", " CG", "", 0.97, 126.5,   0.0, USENEWNAMES},
       {2, "H", " HB2", " CB", " CA", " CG", "", 0.97,-126.5,   0.0, USENEWNAMES},
       {2, "H", "2HB", " CB", " CA", " CG", "", 0.97, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
@@ -362,12 +362,12 @@ HydrogenPlanTable::HydrogenPlanTable() {
   }
   {
     static const addPlan_args args[] = { //ASN updated 070703 by JJH
-      {3, "Hpol", "HD22", " ND2", " CG", " OD1", "", 0.87, 120.0,   0.0, XPLORNAME|BONDBUMPFLAG},
-      {3, "Hpol", "HD21", " ND2", " CG", " OD1", "", 0.87, 120.0, 180.0, XPLORNAME|BONDBUMPFLAG},
-      {3, "Hpol", "HD22", " ND2", " CG", " OD1", "", 0.87, 120.0,   0.0, USENEWNAMES|BONDBUMPFLAG},
-      {3, "Hpol", "HD21", " ND2", " CG", " OD1", "", 0.87, 120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
-      {3, "Hpol", "2HD2", " ND2", " CG", " OD1", "", 0.87, 120.0,   0.0, USEOLDNAMES|BONDBUMPFLAG},
-      {3, "Hpol", "1HD2", " ND2", " CG", " OD1", "", 0.87, 120.0, 180.0, USEOLDNAMES|BONDBUMPFLAG},
+      {3, "Hpol", "HD22", " ND2", " CG", " OD1", "", 0.86, 120.0, 180.0, XPLORNAME|BONDBUMPFLAG},
+      {3, "Hpol", "HD21", " ND2", " CG", " OD1", "", 0.86, 120.0,   0.0, XPLORNAME|BONDBUMPFLAG},
+      {3, "Hpol", "HD22", " ND2", " CG", " OD1", "", 0.86, 120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
+      {3, "Hpol", "HD21", " ND2", " CG", " OD1", "", 0.86, 120.0,   0.0, USENEWNAMES|BONDBUMPFLAG},
+      {3, "Hpol", "2HD2", " ND2", " CG", " OD1", "", 0.86, 120.0, 180.0, USEOLDNAMES|BONDBUMPFLAG},
+      {3, "Hpol", "1HD2", " ND2", " CG", " OD1", "", 0.86, 120.0,   0.0, USEOLDNAMES|BONDBUMPFLAG},
       {2, "H", " HB3", " CB", " CA", " CG", "", 0.97, 126.5,   0.0, USENEWNAMES},
       {2, "H", " HB2", " CB", " CA", " CG", "", 0.97,-126.5,   0.0, USENEWNAMES},
       {2, "H", "2HB", " CB", " CA", " CG", "", 0.97, 126.5,   0.0, USEOLDNAMES|XPLORNAME},
@@ -404,12 +404,12 @@ HydrogenPlanTable::HydrogenPlanTable() {
   }
   {
     static const addPlan_args args[] = { //GLN updated 070703 by JJH
-      {3, "Hpol", "HE22", " NE2", " CD", " OE1", "", 0.87, 120.0,   0.0, XPLORNAME|BONDBUMPFLAG},
-      {3, "Hpol", "HE21", " NE2", " CD", " OE1", "", 0.87, 120.0, 180.0, XPLORNAME|BONDBUMPFLAG},
-      {3, "Hpol", "HE22", " NE2", " CD", " OE1", "", 0.87, 120.0,   0.0, USENEWNAMES|BONDBUMPFLAG},
-      {3, "Hpol", "HE21", " NE2", " CD", " OE1", "", 0.87, 120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
-      {3, "Hpol", "2HE2", " NE2", " CD", " OE1", "", 0.87, 120.0,   0.0, USEOLDNAMES|BONDBUMPFLAG},
-      {3, "Hpol", "1HE2", " NE2", " CD", " OE1", "", 0.87, 120.0, 180.0, USEOLDNAMES|BONDBUMPFLAG},
+      {3, "Hpol", "HE22", " NE2", " CD", " OE1", "", 0.86, 120.0,   0.0, XPLORNAME|BONDBUMPFLAG},
+      {3, "Hpol", "HE21", " NE2", " CD", " OE1", "", 0.86, 120.0, 180.0, XPLORNAME|BONDBUMPFLAG},
+      {3, "Hpol", "HE22", " NE2", " CD", " OE1", "", 0.86, 120.0,   0.0, USENEWNAMES|BONDBUMPFLAG},
+      {3, "Hpol", "HE21", " NE2", " CD", " OE1", "", 0.86, 120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
+      {3, "Hpol", "2HE2", " NE2", " CD", " OE1", "", 0.86, 120.0,   0.0, USEOLDNAMES|BONDBUMPFLAG},
+      {3, "Hpol", "1HE2", " NE2", " CD", " OE1", "", 0.86, 120.0, 180.0, USEOLDNAMES|BONDBUMPFLAG},
       {2, "H", " HG3", " CG", " CB", " CD", "", 0.97, 126.5,   0.0, USENEWNAMES},
       {2, "H", " HG2", " CG", " CB", " CD", "", 0.97,-126.5,   0.0, USENEWNAMES},
       {2, "H", " HB3", " CB", " CA", " CG", "", 0.97, 126.5,   0.0, USENEWNAMES},
@@ -511,7 +511,7 @@ HydrogenPlanTable::HydrogenPlanTable() {
       {4, "Har", " HZ3", " CZ3", " CE3", " CH2", "", 0.93,   0.0,   0.0, 0},
       {4, "Har", " HZ2", " CZ2", " CH2", " CE2", "", 0.93,   0.0,   0.0, 0},
       {4, "Har", " HE3", " CE3", " CD2", " CZ3", "", 0.93,   0.0,   0.0, 0},
-      {4, "Ha+p", " HE1", " NE1", " CE2", " CD1", "", 0.87,   0.0,   0.0, 0},
+      {4, "Ha+p", " HE1", " NE1", " CE2", " CD1", "", 0.86,   0.0,   0.0, 0},
       {4, "Har", " HD1", " CD1", " NE1", " CG", "", 0.93,   0.0,   0.0, 0},
       {2, "H", " HB3", " CB", " CA", " CG", "", 0.97, 126.5,   0.0, USENEWNAMES},
       {2, "H", " HB2", " CB", " CA", " CG", "", 0.97,-126.5,   0.0, USENEWNAMES},
@@ -526,7 +526,7 @@ HydrogenPlanTable::HydrogenPlanTable() {
     static const addPlan_args args[] = {
       {4, "Har", " H6",  " C6",  " C5",  " N1",  "",   0.93,   0.0,   0.0, 0},
       {4, "Har", " H5",  " C5",  " C4",  " C6",  "",   0.93,   0.0,   0.0, 0},
-      {4, "Ha+p"," H3",  " N3",  " C4",  " C2",  "",   0.87,   0.0,   0.0, BONDBUMPFLAG},
+      {4, "Ha+p"," H3",  " N3",  " C4",  " C2",  "",   0.86,   0.0,   0.0, BONDBUMPFLAG},
       {1, "H",   " H1*", " C1*", " O4*", " C2*", " N1", 0.97,   0.0,   0.0, USEOLDNAMES},
       {1, "H",   " H1'", " C1'", " O4'", " C2'", " N1", 0.97,   0.0,   0.0, XPLORNAME},
       {1, "H",   " H1'",  " C1*",  " O4*",  " C2*", " N1", 0.97,   0.0,   0.0, USENEWNAMES},
@@ -540,7 +540,7 @@ HydrogenPlanTable::HydrogenPlanTable() {
     static const addPlan_args args[] = {
       {4, "Har", " H6",  " C6",  " C5",  " N1",  "",    0.93,   0.0,   0.0, 0},
       {4, "Har", " H5",  " C5",  " C4",  " C6",  "",    0.93,   0.0,   0.0, 0},
-      {4, "Ha+p"," H3",  " N3",  " C4",  " C2",  "",    0.87,   0.0,   0.0, BONDBUMPFLAG},
+      {4, "Ha+p"," H3",  " N3",  " C4",  " C2",  "",    0.86,   0.0,   0.0, BONDBUMPFLAG},
       {1, "H",   " H1*", " C1*", " O4*", " C2*", " N1", 0.97,   0.0,   0.0, USEOLDNAMES},
       {1, "H",   " H1'", " C1'", " O4'", " C2'", " N1", 0.97,   0.0,   0.0, XPLORNAME},
       {1, "H",   " H1'",  " C1*",  " O4*",  " C2*", " N1", 0.97,   0.0,   0.0, USENEWNAMES},
@@ -554,7 +554,7 @@ HydrogenPlanTable::HydrogenPlanTable() {
     static const addPlan_args args[] = {
       {4, "Har", " H6",  " C6",  " C5",  " N1",  "",    0.93,   0.0,   0.0, 0},
       {4, "Har", " H5",  " C5",  " C4",  " C6",  "",    0.93,   0.0,   0.0, 0},
-      {4, "Ha+p"," H3",  " N3",  " C4",  " C2",  "",    0.87,   0.0,   0.0, BONDBUMPFLAG},
+      {4, "Ha+p"," H3",  " N3",  " C4",  " C2",  "",    0.86,   0.0,   0.0, BONDBUMPFLAG},
       {1, "H",   " H1*", " C1*", " O4*", " C2*", " N1", 0.97,   0.0,   0.0, USEOLDNAMES},
       {1, "H",   " H1'", " C1'", " O4'", " C2'", " N1", 0.97,   0.0,   0.0, XPLORNAME},
       {1, "H",   " H1'",  " C1*",  " O4*",  " C2*", " N1", 0.97,   0.0,   0.0, USENEWNAMES},
@@ -592,7 +592,7 @@ HydrogenPlanTable::HydrogenPlanTable() {
       {3, "H",    " H73", " C7", " C5",  " C4",  "",    0.97, 109.5,  60.0, USENEWNAMES|ROTATEONDEMAND},
       {3, "H",    " H72", " C7", " C5",  " C4",  "",    0.97, 109.5, -60.0, USENEWNAMES|ROTATEONDEMAND},
       {3, "H",    " H71", " C7", " C5",  " C4",  "",    0.97, 109.5, 180.0, USENEWNAMES|ROTATEONDEMAND},
-      {4, "Ha+p", " H3",  " N3",  " C4",  " C2",  "",    0.87,   0.0,   0.0, BONDBUMPFLAG},
+      {4, "Ha+p", " H3",  " N3",  " C4",  " C2",  "",    0.86,   0.0,   0.0, BONDBUMPFLAG},
       {1, "H",    " H1*", " C1*", " O4*", " C2*", " N1", 0.97,   0.0,   0.0, USEOLDNAMES|XPLORNAME},
       {1, "H",    " H1'", " C1'", " O4'", " C2'", " N1", 0.97,   0.0,   0.0, XPLORNAME},
       {1, "H",    " H1'", " C1*", " O4*", " C2*", " N1", 0.97,   0.0,   0.0, USENEWNAMES},
@@ -629,7 +629,7 @@ HydrogenPlanTable::HydrogenPlanTable() {
       {3, "H",    " H73", " C7", " C5",  " C4",  "",    0.97, 109.5,  60.0, USENEWNAMES|ROTATEONDEMAND},
       {3, "H",    " H72", " C7", " C5",  " C4",  "",    0.97, 109.5, -60.0, USENEWNAMES|ROTATEONDEMAND},
       {3, "H",    " H71", " C7", " C5",  " C4",  "",    0.97, 109.5, 180.0, USENEWNAMES|ROTATEONDEMAND},
-      {4, "Ha+p", " H3",  " N3",  " C4",  " C2",  "",    0.87,   0.0,   0.0, BONDBUMPFLAG},
+      {4, "Ha+p", " H3",  " N3",  " C4",  " C2",  "",    0.86,   0.0,   0.0, BONDBUMPFLAG},
       {1, "H",    " H1*", " C1*", " O4*", " C2*", " N1", 0.97,   0.0,   0.0, USEOLDNAMES|XPLORNAME},
       {1, "H",    " H1'", " C1'", " O4'", " C2'", " N1", 0.97,   0.0,   0.0, XPLORNAME},
       {1, "H",    " H1'", " C1*", " O4*", " C2*", " N1", 0.97,   0.0,   0.0, USENEWNAMES},
@@ -666,7 +666,7 @@ HydrogenPlanTable::HydrogenPlanTable() {
       {3, "H",    " H73", " C7", " C5",  " C4",  "",    0.97, 109.5,  60.0, USENEWNAMES|ROTATEONDEMAND},
       {3, "H",    " H72", " C7", " C5",  " C4",  "",    0.97, 109.5, -60.0, USENEWNAMES|ROTATEONDEMAND},
       {3, "H",    " H71", " C7", " C5",  " C4",  "",    0.97, 109.5, 180.0, USENEWNAMES|ROTATEONDEMAND},
-      {4, "Ha+p", " H3",  " N3",  " C4",  " C2",  "",    0.87,   0.0,   0.0, BONDBUMPFLAG},
+      {4, "Ha+p", " H3",  " N3",  " C4",  " C2",  "",    0.86,   0.0,   0.0, BONDBUMPFLAG},
       {1, "H",    " H1*", " C1*", " O4*", " C2*", " N1", 0.97,   0.0,   0.0, USEOLDNAMES|XPLORNAME},
       {1, "H",    " H1'", " C1'", " O4'", " C2'", " N1", 0.97,   0.0,   0.0, XPLORNAME},
       {1, "H",    " H1'", " C1*", " O4*", " C2*", " N1", 0.97,   0.0,   0.0, USENEWNAMES},
@@ -679,12 +679,12 @@ HydrogenPlanTable::HydrogenPlanTable() {
   {
     static const addPlan_args args[] = {
       {4, "Har",  " H2",  " C2",  " N1",  " N3",  "",    0.93,   0.0,   0.0, 0},
-      {3, "Hpol", "2H6",  " N6",  " C6",  " C5",  "",    0.87,-120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
-      {3, "Hpol", "1H6",  " N6",  " C6",  " C5",  "",    0.87, 120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
-      {7, "Hpol", " H62", " N6",  "",     "",     "",    0.87,   0.0,   0.0, BONDBUMPFLAG},
-      {7, "Hpol", " H61", " N6",  "",     "",     "",    0.87,   0.0,   0.0, BONDBUMPFLAG},
-      {3, "Hpol", " H62",  " N6",  " C6",  " C5",  "",    0.87,-120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
-      {3, "Hpol", " H61",  " N6",  " C6",  " C5",  "",    0.87, 120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
+      {3, "Hpol", "2H6",  " N6",  " C6",  " C5",  "",    0.86,-120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
+      {3, "Hpol", "1H6",  " N6",  " C6",  " C5",  "",    0.86, 120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
+      {7, "Hpol", " H62", " N6",  "",     "",     "",    0.86,   0.0,   0.0, BONDBUMPFLAG},
+      {7, "Hpol", " H61", " N6",  "",     "",     "",    0.86,   0.0,   0.0, BONDBUMPFLAG},
+      {3, "Hpol", " H62",  " N6",  " C6",  " C5",  "",    0.86,-120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
+      {3, "Hpol", " H61",  " N6",  " C6",  " C5",  "",    0.86, 120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
       {4, "Har",  " H8",  " C8",  " N7",  " N9",  "",    0.93,   0.0,   0.0, 0},
       {1, "H",    " H1*", " C1*", " O4*", " C2*", " N9", 0.97,   0.0,   0.0, USEOLDNAMES},
       {1, "H",    " H1'", " C1'", " O4'", " C2'", " N9", 0.97,   0.0,   0.0, XPLORNAME},
@@ -698,12 +698,12 @@ HydrogenPlanTable::HydrogenPlanTable() {
   {
     static const addPlan_args args[] = {
       {4, "Har",  " H2",  " C2",  " N1",  " N3",  "",    0.93,   0.0,   0.0, 0},
-      {3, "Hpol", "2H6",  " N6",  " C6",  " C5",  "",    0.87,-120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
-      {3, "Hpol", "1H6",  " N6",  " C6",  " C5",  "",    0.87, 120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
-      {7, "Hpol", " H62", " N6",  "",     "",     "",    0.87,   0.0,   0.0, BONDBUMPFLAG},
-      {7, "Hpol", " H61", " N6",  "",     "",     "",    0.87,   0.0,   0.0, BONDBUMPFLAG},
-      {3, "Hpol", " H62",  " N6",  " C6",  " C5",  "",    0.87,-120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
-      {3, "Hpol", " H61",  " N6",  " C6",  " C5",  "",    0.87, 120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
+      {3, "Hpol", "2H6",  " N6",  " C6",  " C5",  "",    0.86,-120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
+      {3, "Hpol", "1H6",  " N6",  " C6",  " C5",  "",    0.86, 120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
+      {7, "Hpol", " H62", " N6",  "",     "",     "",    0.86,   0.0,   0.0, BONDBUMPFLAG},
+      {7, "Hpol", " H61", " N6",  "",     "",     "",    0.86,   0.0,   0.0, BONDBUMPFLAG},
+      {3, "Hpol", " H62",  " N6",  " C6",  " C5",  "",    0.86,-120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
+      {3, "Hpol", " H61",  " N6",  " C6",  " C5",  "",    0.86, 120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
       {4, "Har",  " H8",  " C8",  " N7",  " N9",  "",    0.93,   0.0,   0.0, 0},
       {1, "H",    " H1*", " C1*", " O4*", " C2*", " N9", 0.97,   0.0,   0.0, USEOLDNAMES},
       {1, "H",    " H1'", " C1'", " O4'", " C2'", " N9", 0.97,   0.0,   0.0, XPLORNAME},
@@ -716,16 +716,16 @@ HydrogenPlanTable::HydrogenPlanTable() {
 #endif
   {
     static const addPlan_args args[] = {
-      {3, "Hpol", " H62",  " N6",  " C6",  " C5",  "",    0.87,-120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
-      {3, "Hpol", " H61",  " N6",  " C6",  " C5",  "",    0.87, 120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
+      {3, "Hpol", " H62",  " N6",  " C6",  " C5",  "",    0.86,-120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
+      {3, "Hpol", " H61",  " N6",  " C6",  " C5",  "",    0.86, 120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
       {1, "H",    " H1'",  " C1*",  " O4*",  " C2*",  " N9", 0.97,   0.0,   0.0, USENEWNAMES},
       {1, "H",    " H1'",  " C1'",  " O4'",  " C2'",  " N9", 0.97,   0.0,   0.0, USENEWNAMES},
 
       {4, "Har",  " H2",  " C2",  " N1",  " N3",  "",    0.93,   0.0,   0.0, 0},
-      {3, "Hpol", "2H6",  " N6",  " C6",  " C5",  "",    0.87,-120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
-      {3, "Hpol", "1H6",  " N6",  " C6",  " C5",  "",    0.87, 120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
-      {7, "Hpol", " H62", " N6",  "",     "",     "",    0.87,   0.0,   0.0, BONDBUMPFLAG},
-      {7, "Hpol", " H61", " N6",  "",     "",     "",    0.87,   0.0,   0.0, BONDBUMPFLAG},
+      {3, "Hpol", "2H6",  " N6",  " C6",  " C5",  "",    0.86,-120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
+      {3, "Hpol", "1H6",  " N6",  " C6",  " C5",  "",    0.86, 120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
+      {7, "Hpol", " H62", " N6",  "",     "",     "",    0.86,   0.0,   0.0, BONDBUMPFLAG},
+      {7, "Hpol", " H61", " N6",  "",     "",     "",    0.86,   0.0,   0.0, BONDBUMPFLAG},
       {4, "Har",  " H8",  " C8",  " N7",  " N9",  "",    0.93,   0.0,   0.0, 0},
       {1, "H",    " H1*", " C1*", " O4*", " C2*", " N9", 0.97,   0.0,   0.0, USEOLDNAMES},
       {1, "H",    " H1'", " C1'", " O4'", " C2'", " N9", 0.97,   0.0,   0.0, XPLORNAME},
@@ -738,12 +738,12 @@ HydrogenPlanTable::HydrogenPlanTable() {
     static const addPlan_args args[] = {
       {4, "Har",  " H6",  " C6",  " C5",  " N1",  "",    0.93,   0.0,   0.0, 0},
       {4, "Har",  " H5",  " C5",  " C4",  " C6",  "",    0.93,   0.0,   0.0, 0},
-      {3, "Hpol", "2H4",  " N4",  " C4",  " N3",  "",    0.87,-120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
-      {3, "Hpol", "1H4",  " N4",  " C4",  " N3",  "",    0.87, 120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
-      {7, "Hpol", " H42", " N4",  "",     "",     "",    0.87,   0.0,   0.0, BONDBUMPFLAG},
-      {7, "Hpol", " H41", " N4",  "",     "",     "",    0.87,   0.0,   0.0, BONDBUMPFLAG},
-      {3, "Hpol", " H42",  " N4",  " C4",  " N3",  "",    0.87,-120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
-      {3, "Hpol", " H41",  " N4",  " C4",  " N3",  "",    0.87, 120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
+      {3, "Hpol", "2H4",  " N4",  " C4",  " N3",  "",    0.86,-120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
+      {3, "Hpol", "1H4",  " N4",  " C4",  " N3",  "",    0.86, 120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
+      {7, "Hpol", " H42", " N4",  "",     "",     "",    0.86,   0.0,   0.0, BONDBUMPFLAG},
+      {7, "Hpol", " H41", " N4",  "",     "",     "",    0.86,   0.0,   0.0, BONDBUMPFLAG},
+      {3, "Hpol", " H42",  " N4",  " C4",  " N3",  "",    0.86,-120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
+      {3, "Hpol", " H41",  " N4",  " C4",  " N3",  "",    0.86, 120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
       {1, "H",    " H1*", " C1*", " O4*", " C2*", " N1", 0.97,   0.0,   0.0, USEOLDNAMES},
       {1, "H",    " H1'", " C1'", " O4'", " C2'", " N1", 0.97,   0.0,   0.0, XPLORNAME},
       {1, "H",    " H1'", " C1*", " O4*", " C2*", " N1", 0.97,   0.0,   0.0, USENEWNAMES},
@@ -757,12 +757,12 @@ HydrogenPlanTable::HydrogenPlanTable() {
     static const addPlan_args args[] = {
       {4, "Har",  " H6",  " C6",  " C5",  " N1",  "",    0.93,   0.0,   0.0, 0},
       {4, "Har",  " H5",  " C5",  " C4",  " C6",  "",    0.93,   0.0,   0.0, 0},
-      {3, "Hpol", "2H4",  " N4",  " C4",  " N3",  "",    0.87,-120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
-      {3, "Hpol", "1H4",  " N4",  " C4",  " N3",  "",    0.87, 120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
-      {7, "Hpol", " H42", " N4",  "",     "",     "",    0.87,   0.0,   0.0, BONDBUMPFLAG},
-      {7, "Hpol", " H41", " N4",  "",     "",     "",    0.87,   0.0,   0.0, BONDBUMPFLAG},
-      {3, "Hpol", " H42",  " N4",  " C4",  " N3",  "",    0.87,-120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
-      {3, "Hpol", " H41",  " N4",  " C4",  " N3",  "",    0.87, 120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
+      {3, "Hpol", "2H4",  " N4",  " C4",  " N3",  "",    0.86,-120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
+      {3, "Hpol", "1H4",  " N4",  " C4",  " N3",  "",    0.86, 120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
+      {7, "Hpol", " H42", " N4",  "",     "",     "",    0.86,   0.0,   0.0, BONDBUMPFLAG},
+      {7, "Hpol", " H41", " N4",  "",     "",     "",    0.86,   0.0,   0.0, BONDBUMPFLAG},
+      {3, "Hpol", " H42",  " N4",  " C4",  " N3",  "",    0.86,-120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
+      {3, "Hpol", " H41",  " N4",  " C4",  " N3",  "",    0.86, 120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
       {1, "H",    " H1*", " C1*", " O4*", " C2*", " N1", 0.97,   0.0,   0.0, USEOLDNAMES},
       {1, "H",    " H1'", " C1'", " O4'", " C2'", " N1", 0.97,   0.0,   0.0, XPLORNAME},
       {1, "H",    " H1'", " C1*", " O4*", " C2*", " N1", 0.97,   0.0,   0.0, USENEWNAMES},
@@ -776,12 +776,12 @@ HydrogenPlanTable::HydrogenPlanTable() {
     static const addPlan_args args[] = {
       {4, "Har",  " H6",  " C6",  " C5",  " N1",  "",    0.93,   0.0,   0.0, 0},
       {4, "Har",  " H5",  " C5",  " C4",  " C6",  "",    0.93,   0.0,   0.0, 0},
-      {3, "Hpol", "2H4",  " N4",  " C4",  " N3",  "",    0.87,-120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
-      {3, "Hpol", "1H4",  " N4",  " C4",  " N3",  "",    0.87, 120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
-      {7, "Hpol", " H42", " N4",  "",     "",     "",    0.87,   0.0,   0.0, BONDBUMPFLAG},
-      {7, "Hpol", " H41", " N4",  "",     "",     "",    0.87,   0.0,   0.0, BONDBUMPFLAG},
-      {3, "Hpol", " H42",  " N4",  " C4",  " N3",  "",    0.87,-120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
-      {3, "Hpol", " H41",  " N4",  " C4",  " N3",  "",    0.87, 120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
+      {3, "Hpol", "2H4",  " N4",  " C4",  " N3",  "",    0.86,-120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
+      {3, "Hpol", "1H4",  " N4",  " C4",  " N3",  "",    0.86, 120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
+      {7, "Hpol", " H42", " N4",  "",     "",     "",    0.86,   0.0,   0.0, BONDBUMPFLAG},
+      {7, "Hpol", " H41", " N4",  "",     "",     "",    0.86,   0.0,   0.0, BONDBUMPFLAG},
+      {3, "Hpol", " H42",  " N4",  " C4",  " N3",  "",    0.86,-120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
+      {3, "Hpol", " H41",  " N4",  " C4",  " N3",  "",    0.86, 120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
       {1, "H",    " H1*", " C1*", " O4*", " C2*", " N1", 0.97,   0.0,   0.0, USEOLDNAMES},
       {1, "H",    " H1'", " C1'", " O4'", " C2'", " N1", 0.97,   0.0,   0.0, XPLORNAME},
       {1, "H",    " H1'", " C1*", " O4*", " C2*", " N1", 0.97,   0.0,   0.0, USENEWNAMES},
@@ -793,13 +793,13 @@ HydrogenPlanTable::HydrogenPlanTable() {
 //--------------------------------------------------------------------------
   {
     static const addPlan_args args[] = {
-      {3, "Hpol", "2H2",  " N2",  " C2",  " N1",  "",    0.87,-120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
-      {3, "Hpol", "1H2",  " N2",  " C2",  " N1",  "",    0.87, 120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
-      {7, "Hpol", " H22", " N2",  "",     "",     "",    0.87,   0.0,   0.0, BONDBUMPFLAG},
-      {7, "Hpol", " H21", " N2",  "",     "",     "",    0.87,   0.0,   0.0, BONDBUMPFLAG},
-      {3, "Hpol", " H22",  " N2",  " C2",  " N1",  "",    0.87,-120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
-      {3, "Hpol", " H21",  " N2",  " C2",  " N1",  "",    0.87, 120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
-      {4, "Ha+p", " H1",  " N1",  " C6",  " C2",  "",    0.87,   0.0,   0.0, BONDBUMPFLAG},
+      {3, "Hpol", "2H2",  " N2",  " C2",  " N1",  "",    0.86,-120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
+      {3, "Hpol", "1H2",  " N2",  " C2",  " N1",  "",    0.86, 120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
+      {7, "Hpol", " H22", " N2",  "",     "",     "",    0.86,   0.0,   0.0, BONDBUMPFLAG},
+      {7, "Hpol", " H21", " N2",  "",     "",     "",    0.86,   0.0,   0.0, BONDBUMPFLAG},
+      {3, "Hpol", " H22",  " N2",  " C2",  " N1",  "",    0.86,-120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
+      {3, "Hpol", " H21",  " N2",  " C2",  " N1",  "",    0.86, 120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
+      {4, "Ha+p", " H1",  " N1",  " C6",  " C2",  "",    0.86,   0.0,   0.0, BONDBUMPFLAG},
       {4, "Har",  " H8",  " C8",  " N7",  " N9",  "",    0.93,   0.0,   0.0, 0},
       {1, "H",    " H1*", " C1*", " O4*", " C2*", " N9", 0.97,   0.0,   0.0, USEOLDNAMES},
       {1, "H",    " H1'", " C1'", " O4'", " C2'", " N9", 0.97,   0.0,   0.0, XPLORNAME},
@@ -812,13 +812,13 @@ HydrogenPlanTable::HydrogenPlanTable() {
 #ifdef LEFT_JUSTIFY_NUC_RES_OK
   {
     static const addPlan_args args[] = {
-      {3, "Hpol", "2H2",  " N2",  " C2",  " N1",  "",    0.87,-120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
-      {3, "Hpol", "1H2",  " N2",  " C2",  " N1",  "",    0.87, 120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
-      {7, "Hpol", " H22", " N2",  "",     "",     "",    0.87,   0.0,   0.0, BONDBUMPFLAG},
-      {7, "Hpol", " H21", " N2",  "",     "",     "",    0.87,   0.0,   0.0, BONDBUMPFLAG},
-      {3, "Hpol", " H22",  " N2",  " C2",  " N1",  "",    0.87,-120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
-      {3, "Hpol", " H21",  " N2",  " C2",  " N1",  "",    0.87, 120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
-      {4, "Ha+p", " H1",  " N1",  " C6",  " C2",  "",    0.87,   0.0,   0.0, BONDBUMPFLAG},
+      {3, "Hpol", "2H2",  " N2",  " C2",  " N1",  "",    0.86,-120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
+      {3, "Hpol", "1H2",  " N2",  " C2",  " N1",  "",    0.86, 120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
+      {7, "Hpol", " H22", " N2",  "",     "",     "",    0.86,   0.0,   0.0, BONDBUMPFLAG},
+      {7, "Hpol", " H21", " N2",  "",     "",     "",    0.86,   0.0,   0.0, BONDBUMPFLAG},
+      {3, "Hpol", " H22",  " N2",  " C2",  " N1",  "",    0.86,-120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
+      {3, "Hpol", " H21",  " N2",  " C2",  " N1",  "",    0.86, 120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
+      {4, "Ha+p", " H1",  " N1",  " C6",  " C2",  "",    0.86,   0.0,   0.0, BONDBUMPFLAG},
       {4, "Har",  " H8",  " C8",  " N7",  " N9",  "",    0.93,   0.0,   0.0, 0},
       {1, "H",    " H1*", " C1*", " O4*", " C2*", " N9", 0.97,   0.0,   0.0, USEOLDNAMES},
       {1, "H",    " H1'", " C1'", " O4'", " C2'", " N9", 0.97,   0.0,   0.0, XPLORNAME},
@@ -831,12 +831,12 @@ HydrogenPlanTable::HydrogenPlanTable() {
 #endif
   {
     static const addPlan_args args[] = {
-      {3, "Hpol", "2H2",  " N2",  " C2",  " N1",  "",    0.87,-120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
-      {3, "Hpol", "1H2",  " N2",  " C2",  " N1",  "",    0.87, 120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
-      {7, "Hpol", " H22", " N2",  "",     "",     "",    0.87,   0.0,   0.0, BONDBUMPFLAG},
+      {3, "Hpol", "2H2",  " N2",  " C2",  " N1",  "",    0.86,-120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
+      {3, "Hpol", "1H2",  " N2",  " C2",  " N1",  "",    0.86, 120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
+      {7, "Hpol", " H22", " N2",  "",     "",     "",    0.86,   0.0,   0.0, BONDBUMPFLAG},
 
-      {3, "Hpol", " H21",  " N2",  " C2",  " N1",  "",    0.87, 120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
-      {4, "Ha+p", " H1",  " N1",  " C6",  " C2",  "",    0.87,   0.0,   0.0, BONDBUMPFLAG},
+      {3, "Hpol", " H21",  " N2",  " C2",  " N1",  "",    0.86, 120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
+      {4, "Ha+p", " H1",  " N1",  " C6",  " C2",  "",    0.86,   0.0,   0.0, BONDBUMPFLAG},
       {4, "Har",  " H8",  " C8",  " N7",  " N9",  "",    0.93,   0.0,   0.0, 0},
       {1, "H",    " H1*", " C1*", " O4*", " C2*", " N9", 0.97,   0.0,   0.0, USEOLDNAMES},
       {1, "H",    " H1'", " C1'", " O4'", " C2'", " N9", 0.97,   0.0,   0.0, XPLORNAME},
@@ -874,7 +874,7 @@ HydrogenPlanTable::HydrogenPlanTable() {
       {3, "H",    " H73", " C7", " C5",  " C4",  "",    0.97, 109.5,  60.0, USENEWNAMES|ROTATEONDEMAND},
       {3, "H",    " H72", " C7", " C5",  " C4",  "",    0.97, 109.5, -60.0, USENEWNAMES|ROTATEONDEMAND},
       {3, "H",    " H71", " C7", " C5",  " C4",  "",    0.97, 109.5, 180.0, USENEWNAMES|ROTATEONDEMAND},
-      {4, "Ha+p", " H3",  " N3",  " C4",  " C2",  "",    0.87,   0.0,   0.0, BONDBUMPFLAG},
+      {4, "Ha+p", " H3",  " N3",  " C4",  " C2",  "",    0.86,   0.0,   0.0, BONDBUMPFLAG},
       {1, "H",    " H1*", " C1*", " O4*", " C2*", " N1", 0.97,   0.0,   0.0, USEOLDNAMES},
       {1, "H",    " H1'", " C1'", " O4'", " C2'", " N1", 0.97,   0.0,   0.0, XPLORNAME},
       {1, "H",    " H1'", " C1*", " O4*", " C2*", " N1", 0.97,   0.0,   0.0, USENEWNAMES},
@@ -886,12 +886,12 @@ HydrogenPlanTable::HydrogenPlanTable() {
   {
     static const addPlan_args args[] = {
       {4, "Har",  " H2",  " C2",  " N1",  " N3",  "",    0.93,   0.0,   0.0, 0},
-      {3, "Hpol", "2H6",  " N6",  " C6",  " C5",  "",    0.87,-120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
-      {3, "Hpol", "1H6",  " N6",  " C6",  " C5",  "",    0.87, 120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
-      {7, "Hpol", " H62", " N6",  "",     "",     "",    0.87,   0.0,   0.0, BONDBUMPFLAG},
-      {7, "Hpol", " H61", " N6",  "",     "",     "",    0.87,   0.0,   0.0, BONDBUMPFLAG},
-      {3, "Hpol", " H62",  " N6",  " C6",  " C5",  "",    0.87,-120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
-      {3, "Hpol", " H61",  " N6",  " C6",  " C5",  "",    0.87, 120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
+      {3, "Hpol", "2H6",  " N6",  " C6",  " C5",  "",    0.86,-120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
+      {3, "Hpol", "1H6",  " N6",  " C6",  " C5",  "",    0.86, 120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
+      {7, "Hpol", " H62", " N6",  "",     "",     "",    0.86,   0.0,   0.0, BONDBUMPFLAG},
+      {7, "Hpol", " H61", " N6",  "",     "",     "",    0.86,   0.0,   0.0, BONDBUMPFLAG},
+      {3, "Hpol", " H62",  " N6",  " C6",  " C5",  "",    0.86,-120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
+      {3, "Hpol", " H61",  " N6",  " C6",  " C5",  "",    0.86, 120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
       {4, "Har",  " H8",  " C8",  " N7",  " N9",  "",    0.93,   0.0,   0.0, 0},
       {1, "H",    " H1*", " C1*", " O4*", " C2*", " N9", 0.97,   0.0,   0.0, USEOLDNAMES},
       {1, "H",    " H1'", " C1'", " O4'", " C2'", " N9", 0.97,   0.0,   0.0, XPLORNAME},
@@ -905,12 +905,12 @@ HydrogenPlanTable::HydrogenPlanTable() {
     static const addPlan_args args[] = {
       {4, "Har",  " H6",  " C6",  " C5",  " N1",  "",    0.93,   0.0,   0.0, 0},
       {4, "Har",  " H5",  " C5",  " C4",  " C6",  "",    0.93,   0.0,   0.0, 0},
-      {3, "Hpol", "2H4",  " N4",  " C4",  " N3",  "",    0.87,-120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
-      {3, "Hpol", "1H4",  " N4",  " C4",  " N3",  "",    0.87, 120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
-      {7, "Hpol", " H42", " N4",  "",     "",     "",    0.87,   0.0,   0.0, BONDBUMPFLAG},
-      {7, "Hpol", " H41", " N4",  "",     "",     "",    0.87,   0.0,   0.0, BONDBUMPFLAG},
-      {3, "Hpol", " H42",  " N4",  " C4",  " N3",  "",    0.87,-120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
-      {3, "Hpol", " H41",  " N4",  " C4",  " N3",  "",    0.87, 120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
+      {3, "Hpol", "2H4",  " N4",  " C4",  " N3",  "",    0.86,-120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
+      {3, "Hpol", "1H4",  " N4",  " C4",  " N3",  "",    0.86, 120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
+      {7, "Hpol", " H42", " N4",  "",     "",     "",    0.86,   0.0,   0.0, BONDBUMPFLAG},
+      {7, "Hpol", " H41", " N4",  "",     "",     "",    0.86,   0.0,   0.0, BONDBUMPFLAG},
+      {3, "Hpol", " H42",  " N4",  " C4",  " N3",  "",    0.86,-120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
+      {3, "Hpol", " H41",  " N4",  " C4",  " N3",  "",    0.86, 120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
       {1, "H",    " H1*", " C1*", " O4*", " C2*", " N1", 0.97,   0.0,   0.0, USEOLDNAMES},
       {1, "H",    " H1'", " C1'", " O4'", " C2'", " N1", 0.97,   0.0,   0.0, XPLORNAME},
       {1, "H",    " H1'", " C1*", " O4*", " C2*", " N1", 0.97,   0.0,   0.0, USENEWNAMES},
@@ -921,13 +921,13 @@ HydrogenPlanTable::HydrogenPlanTable() {
   }
   {
     static const addPlan_args args[] = {
-      {3, "Hpol", "2H2",  " N2",  " C2",  " N1",  "",    0.87,-120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
-      {3, "Hpol", "1H2",  " N2",  " C2",  " N1",  "",    0.87, 120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
-      {7, "Hpol", " H22", " N2",  "",     "",     "",    0.87,   0.0,   0.0, BONDBUMPFLAG},
-      {7, "Hpol", " H21", " N2",  "",     "",     "",    0.87,   0.0,   0.0, BONDBUMPFLAG},
-      {3, "Hpol", " H22",  " N2",  " C2",  " N1",  "",    0.87,-120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
-      {3, "Hpol", " H21",  " N2",  " C2",  " N1",  "",    0.87, 120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
-      {4, "Ha+p", " H1",  " N1",  " C6",  " C2",  "",    0.87,   0.0,   0.0, BONDBUMPFLAG},
+      {3, "Hpol", "2H2",  " N2",  " C2",  " N1",  "",    0.86,-120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
+      {3, "Hpol", "1H2",  " N2",  " C2",  " N1",  "",    0.86, 120.0, 180.0, USEOLDNAMES|XPLORNAME|BONDBUMPFLAG},
+      {7, "Hpol", " H22", " N2",  "",     "",     "",    0.86,   0.0,   0.0, BONDBUMPFLAG},
+      {7, "Hpol", " H21", " N2",  "",     "",     "",    0.86,   0.0,   0.0, BONDBUMPFLAG},
+      {3, "Hpol", " H22",  " N2",  " C2",  " N1",  "",    0.86,-120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
+      {3, "Hpol", " H21",  " N2",  " C2",  " N1",  "",    0.86, 120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
+      {4, "Ha+p", " H1",  " N1",  " C6",  " C2",  "",    0.86,   0.0,   0.0, BONDBUMPFLAG},
       {4, "Har",  " H8",  " C8",  " N7",  " N9",  "",    0.93,   0.0,   0.0, 0},
       {1, "H",    " H1*", " C1*", " O4*", " C2*", " N9", 0.97,   0.0,   0.0, USEOLDNAMES},
       {1, "H",    " H1'", " C1'", " O4'", " C2'", " N9", 0.97,   0.0,   0.0, XPLORNAME},
@@ -1054,12 +1054,12 @@ HydrogenPlanTable::HydrogenPlanTable() {
   }
   {
     static const addPlan_args args[] = {
-      {3, "Hpol", " H2", " N", "- C", "- O", "", 0.87, 120.0,   0.0, XPLORNAME|BONDBUMPFLAG},
-      {3, "Hpol", " HN1", " N", "- C", "- O", "", 0.87, 120.0, 180.0, XPLORNAME|BONDBUMPFLAG},
-      {3, "Hpol", " H2", " N", "- C", "- O", "", 0.87, 120.0,   0.0, USENEWNAMES|BONDBUMPFLAG},
-      {3, "Hpol", " HN1", " N", "- C", "- O", "", 0.87, 120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
-      {3, "Hpol", "2HN",  " N", "- C", "- O", "", 0.87, 120.0,   0.0, USEOLDNAMES|BONDBUMPFLAG},
-      {3, "Hpol", "1HN",  " N", "- C", "- O", "", 0.87, 120.0, 180.0, USEOLDNAMES|BONDBUMPFLAG},
+      {3, "Hpol", " H2", " N", "- C", "- O", "", 0.86, 120.0,   0.0, XPLORNAME|BONDBUMPFLAG},
+      {3, "Hpol", " HN1", " N", "- C", "- O", "", 0.86, 120.0, 180.0, XPLORNAME|BONDBUMPFLAG},
+      {3, "Hpol", " H2", " N", "- C", "- O", "", 0.86, 120.0,   0.0, USENEWNAMES|BONDBUMPFLAG},
+      {3, "Hpol", " HN1", " N", "- C", "- O", "", 0.86, 120.0, 180.0, USENEWNAMES|BONDBUMPFLAG},
+      {3, "Hpol", "2HN",  " N", "- C", "- O", "", 0.86, 120.0,   0.0, USEOLDNAMES|BONDBUMPFLAG},
+      {3, "Hpol", "1HN",  " N", "- C", "- O", "", 0.86, 120.0, 180.0, USEOLDNAMES|BONDBUMPFLAG},
       {0,0,0,0,0,0,0,0,0,0,0}
     };
     insertStdResH("NH2", "", args);
@@ -1073,12 +1073,12 @@ HydrogenPlanTable::HydrogenPlanTable() {
       {3, "H", "3H", " CH3", " N",   "- C", "", 0.97, 109.5,  60.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
       {3, "H", "2H", " CH3", " N",   "- C", "", 0.97, 109.5, -60.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
       {3, "H", "1H", " CH3", " N",   "- C", "", 0.97, 109.5, 180.0, USEOLDNAMES|XPLORNAME|ROTATEONDEMAND},
-      {4, "Hpol", "2HN",   " N",   " CH3", "- C", "", 0.87,   0.0,   0.02,USEOLDNAMES|XPLORNAME},
+      {4, "Hpol", "2HN",   " N",   " CH3", "- C", "", 0.86,   0.0,   0.02,USEOLDNAMES|XPLORNAME},
 //??  {4, "Hpol", "1HN",   " N",   " CH3", "- C", "", 0.87,   0.0,   0.02,USEOLDNAMES|XPLORNAME},
       {3, "H", " H3", " CH3", " N",   "- C", "", 0.97, 109.5,  60.0, USENEWNAMES|ROTATEONDEMAND},
       {3, "H", " H2", " CH3", " N",   "- C", "", 0.97, 109.5, -60.0, USENEWNAMES|ROTATEONDEMAND},
       {3, "H", " H1", " CH3", " N",   "- C", "", 0.97, 109.5, 180.0, USENEWNAMES|ROTATEONDEMAND},
-      {4, "Hpol", " HN2",   " N",   " CH3", "- C", "", 0.87,   0.0,   0.02, USENEWNAMES},
+      {4, "Hpol", " HN2",   " N",   " CH3", "- C", "", 0.86,   0.0,   0.02, USENEWNAMES},
 //??  {4, "Hpol", " HN1",   " N",   " CH3", "- C", "", 0.87,   0.0,   0.02, USEOLDNAMES|XPLORNAME},
       {0,0,0,0,0,0,0,0,0,0,0}
     };
