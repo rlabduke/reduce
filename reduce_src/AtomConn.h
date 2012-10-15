@@ -112,7 +112,7 @@ public:
    const ElementInfo& elem() const { return _elem;  }
          float dist() const { return _dist;  }
 int hasFeature(int f) const { return _flags & f; }
-
+int addFeature(int f)       { _flags = _flags | f; return _flags; } // add feature for aromatic ring - Aram 07/18/12
 bool placeH(const std::vector<Point3d>& loc, Point3d& hpos) const;
 
    static Point3d calcLoc(int locType,
