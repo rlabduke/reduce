@@ -96,8 +96,6 @@ bool ShowOrientScore          = FALSE;
 bool StringInput              = FALSE;
 bool ShowCharges              = FALSE;
 
-int MaxAromRingDih    = 10;   // max dihedral angle in planarity check for aromatic rings  120724 - Aram
-
 int MinNTermResNo     = 1;   // how high can a resno be for n-term?
 int ModelToProcess    = 1;   // which model to work on, 
                              // >0 is a model to work on  041113
@@ -632,9 +630,6 @@ char* parseCommandLine(int argc, char **argv) {
 	       cerr << "no mapping info after -SEGIDmap flag" << endl;
 	    }
 	 }
-	 else if((n = compArgStr(p+1, "MAXAromdih", 1))){ // - Aram 07/24/12
-	    MaxAromRingDih = parseInteger(p, n+1, 10);
-	 }
 	 else if((n = compArgStr(p+1, "Nterm", 1))){
 	    MinNTermResNo = parseInteger(p, n+1, 10);
 	 }
@@ -790,7 +785,6 @@ void reduceHelp(bool showAll) { /*help*/
   if (showAll) {
    cerr << "                  (same as: -OH -ROTEXOH -HIS -FLIP)" << endl;
    cerr << "-Keep             keep bond lengths as found" << endl;
-   cerr << "-MAXAromdih#      dihedral angle cutoff for aromatic ring planarity check (default="<< MaxAromRingDih <<")" << endl; // - Aram 07/24/12
    cerr << "-NBonds#          remove dots if cause within n bonds (default="<< NBondCutoff <<")" << endl;
    cerr << "-Model#           which model to process (default="<< ModelToProcess <<")" << endl;
    cerr << "-Nterm#           max number of nterm residue (default="<<MinNTermResNo<<")" << endl;
@@ -988,7 +982,6 @@ void reduceChanges(bool showAll) { /*changes*/
    cerr  << "08/21/08 - jjh          added -CHARGEs flag to control charge state output - off by default" << endl;
    cerr  << "11/06/09 - jjh         added -FLIP and -NOFLIP flag" << endl;
    cerr  << "11/18/11 - jjh         Overhauled handling of alternate conformers" << endl;
-   cerr  << "08/15/12 - aram        added -MAXAromdih cutoff to support rotating aromatic methyls" << endl;
    cerr  << endl;
    exit(1);
 }
@@ -1302,46 +1295,6 @@ bool isConnected(ResBlk* a, ResBlk* b) {
    return FALSE;
 }
 
-// is the hydrogen atom in methyl group stemmed from aromatic ring? - Aram 07/18/12
-bool isAromMethyl(ResConn& ct, const atomPlacementPlan& pp, ResBlk& theRes, const char* resname) {
-
-	std::list<std::string> temp = ct.findRingBondedToMethyl(pp.name(), resname);
-	int AROMATIC_RING_DIHEDRAL = MaxAromRingDih;
-	
-	if (temp.empty()) {
-		return FALSE;
-	}
-	
-	std::list<std::string>::const_iterator it = temp.begin();
-	std::vector<PDBrec*> r_vec;
-	r_vec.reserve(temp.size());
-	
-	// std::cout << std::endl << "resname: " << resname << ", atomname: " << pp.name() << "." << theRes.firstRec().atomname();
-	while (it != temp.end()) {
-		std::list<PDBrec*> r_list;
-		theRes.get(*it, r_list);
-		PDBrec* rec = *r_list.begin(); // Do not consider alt configulation for now
-		r_vec.push_back(rec);
-		// std::cout << " " << *it << "(" << r_vec[r_vec.size()-1]->loc() << ")";
-		++it;
-	}
-	// std::cout << std::endl;
-	
-	for (int i = 0; i < r_vec.size(); i++) { // check dihedral angles starting from each atom in the ring
-		int i0=i, i1=(i+1)%r_vec.size(), i2=(i+2)%r_vec.size(), i3=(i+3)%r_vec.size();
-		double dih = dihedral(r_vec[i0]->loc(), r_vec[i1]->loc(), r_vec[i2]->loc(), r_vec[i3]->loc());
-		while (dih < 0) dih += 360;
-		while (dih >= 180) dih -= 180;
-		if ( (dih > AROMATIC_RING_DIHEDRAL) && (dih < (180.0 - AROMATIC_RING_DIHEDRAL)) ) {
-			// std::cout << "    dihedral test failed: " << r_vec[i]->atomname() << " (" << dih << ")" << std::endl;
-			return FALSE;
-		} else {
-			// std::cout << ", " << dih;
-		}		
-	}
-	
-	return TRUE;
-}
 void analyzeRes(CTab& hetdatabase, ResBlk* pb, ResBlk* cb, ResBlk* nb,
 				AtomPositions& xyz, std::list<PDBrec*>& waters, 
 				std::vector<std::string>& fixNotes, std::list<PDBrec*>& rlst) {
@@ -1452,14 +1405,6 @@ void analyzeRes(CTab& hetdatabase, ResBlk* pb, ResBlk* cb, ResBlk* nb,
 	StdResH *srh = StdResH::HydPlanTbl().get(resname);
 	if (srh) {
 		std::list<atomPlacementPlan*> temp = srh->plans();
-		
-		// for aromatic methyls - Aram 07/23/12
-		for(std::list<atomPlacementPlan*>::const_iterator iter = temp.begin(); iter != temp.end(); ++iter) {
-			std::string conn2atom = (*iter)->conn(1);
-			bool Arom = StdResH::ResXtraInfo().atomHasAttrib(resname, conn2atom, AROMATICFLAG);
-			if (Arom) (*iter)->addFeature(AROMATICFLAG);
-		}
-			
 		app.splice(app.end(), temp);
 	}
 
@@ -1468,13 +1413,6 @@ void analyzeRes(CTab& hetdatabase, ResBlk* pb, ResBlk* cb, ResBlk* nb,
 		ResConn *ct = hetdatabase.findTable(resname);
 		if (ct) {
 			std::list<atomPlacementPlan*> temp = ct->genHplans(resname.c_str());
-			
-			// for aromatic methyls - Aram 07/18/12
-			for(std::list<atomPlacementPlan*>::const_iterator iter = temp.begin(); iter != temp.end(); ++iter) {
-				bool AromMethyl = isAromMethyl(*ct, **iter, *cb, resname.c_str());
-				if (AromMethyl) (*iter)->addFeature(AROMATICFLAG);
-			}
-			
 			app.splice(app.end(), temp);
 		}
 		else {
@@ -1522,7 +1460,7 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 				else if ( (pp.hasFeature(ROTATEFLAG) &&
 					(DemandRotExisting || RotExistingOH))
 					|| (pp.hasFeature(ROTATEONDEMAND) &&
-					(DemandRotExisting || DemandRotNH3 || pp.hasFeature(AROMATICFLAG))) ) {
+					(DemandRotExisting || DemandRotNH3)) ) {
 
 					char hac = o->alt();
 					PDBrec r0atom, r1atom, r2atom;        // find connecting atoms
@@ -1530,21 +1468,13 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 						r0atom, r1atom, r2atom);
 
 					if (connatomcount == 3) {
-						// for heme methyls - Aram 05/31/12
-						if ((DemandRotExisting && pp.hasFeature(ROTATEONDEMAND) 
-							&& pp.hasFeature(AROMATICFLAG))) {
-							xyz.insertRotAromMethyl(*o, r0atom, r1atom, r2atom);
-							//std::cout << " in genHydrogens " << o->resname() << pp.name() << std::endl;
-						} else {
-							xyz.insertRot(*o, r0atom, r1atom, r2atom,
-								(DemandRotExisting || RotExistingOH),
-								DemandRotNH3,
-								(  (DemandRotExisting && DemandRotAllMethyls
-								&& pp.hasFeature(ROTATEONDEMAND))
-								|| (DemandRotExisting && OKProcessMetMe
-								&& pp.hasFeature(ROTATEFLAG))) );
-						}
-						
+						xyz.insertRot(*o, r0atom, r1atom, r2atom,
+							(DemandRotExisting || RotExistingOH),
+							DemandRotNH3,
+							(  (DemandRotExisting && DemandRotAllMethyls
+							&& pp.hasFeature(ROTATEONDEMAND))
+							|| (DemandRotExisting && OKProcessMetMe
+							&& pp.hasFeature(ROTATEFLAG))) );
 					}
 
 					if (StandardizeRHBondLengths) {
@@ -1803,23 +1733,14 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 
 						if ( pp.hasFeature(ROTATEFLAG)
 							||  (pp.hasFeature(ROTATEONDEMAND)
-							&& (DemandRotAllMethyls || DemandRotNH3 || pp.hasFeature(AROMATICFLAG)) )     ) {
-							// for heme methyls - Aram 05/31/12
-							if ((pp.hasFeature(ROTATEONDEMAND) && pp.hasFeature(AROMATICFLAG))) {
-								//std::cout << " in genHydrogens_noHyd " << newHatom->resname() << pp.name() << std::endl;
-								xyz.insertRotAromMethyl(*newHatom,
-									*(rvv[0][std::min(j, nconf[0]-1)]),
-									*(rvv[1][std::min(j, nconf[1]-1)]),
-									*(rvv[2][std::min(j, nconf[2]-1)]));
-							} else {
-								xyz.insertRot(*newHatom,
-									*(rvv[0][std::min(j, nconf[0]-1)]),
-									*(rvv[1][std::min(j, nconf[1]-1)]),
-									*(rvv[2][std::min(j, nconf[2]-1)]),
-									TRUE, DemandRotNH3,
-									((DemandRotAllMethyls && pp.hasFeature(ROTATEONDEMAND))
-									|| (OKProcessMetMe && pp.hasFeature(ROTATEFLAG))) );
-							}
+							&& (DemandRotAllMethyls || DemandRotNH3) )     ) {
+							xyz.insertRot(*newHatom,
+								*(rvv[0][counter[0]]),
+								*(rvv[1][counter[1]]),
+								*(rvv[2][counter[2]]),
+								TRUE, DemandRotNH3,
+								((DemandRotAllMethyls && pp.hasFeature(ROTATEONDEMAND))
+								|| (OKProcessMetMe && pp.hasFeature(ROTATEFLAG))) );
 						}
 						if (DemandFlipAllHNQs && (!resAlts.empty())) {
 							xyz.insertFlip(newHatom, resAlts);

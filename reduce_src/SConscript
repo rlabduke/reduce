@@ -36,5 +36,4 @@ exe = env.Program(
     "CliqueList.cpp",
     "AtomDescr.cpp",
     "PDBrec.cpp",
-    "MoveableNode.cpp",
-    "RotAromMethyl.cpp"])
+    "MoveableNode.cpp"])
