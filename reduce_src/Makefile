@@ -21,7 +21,7 @@ CFLAGS = $(OPT) $(DEBUG) $(PROG_FLGS) $(DICT_LOC) $(DICT_LOCOLD)\
 LFLAGS = -L$(PDBHOME) -lpdb++ -L$(TOOLHOME) -ltoolclasses -lm
 
 OBJLIST = GraphToHoldScores.o reduce.o CTab.o ElementInfo.o StdResH.o ResBlk.o AtomConn.o \
-            AtomPositions.o DotSph.o Mover.o RotMethyl.o RotDonor.o \
+            AtomPositions.o DotSph.o Mover.o RotMethyl.o RotAromMethyl.o RotDonor.o \
             FlipMemo.o CliqueList.o AtomDescr.o PDBrec.o MoveableNode.o hybrid_36_c.o\
             
 
@@ -101,6 +101,11 @@ RotMethyl.o: $(PDBHOME)/pdb++.h $(TOOLHOME)/Point3d.h \
 	 AtomPositions.h BumperPoint.h CliqueList.h DotSph.h \
 	 ElementInfo.h LocBlk.h Mover.h PDBrec.h ResBlk.h RotMethyl.cpp \
 	 RotMethyl.h neighbors.cpp neighbors.h
+RotAromMethyl.o: $(PDBHOME)/pdb++.h $(TOOLHOME)/Point3d.h \
+	 $(TOOLHOME)/utility.cpp $(TOOLHOME)/utility.h \
+	 AtomPositions.h BumperPoint.h CliqueList.h DotSph.h \
+	 ElementInfo.h LocBlk.h Mover.h PDBrec.h ResBlk.h RotAromMethyl.cpp \
+	 RotAromMethyl.h neighbors.cpp neighbors.h
 StdResH.o: $(TOOLHOME)/Point3d.h \
 	 $(TOOLHOME)/utility.cpp $(TOOLHOME)/utility.h AtomConn.h \
 	 ElementInfo.h StdResH.cpp StdResH.h
