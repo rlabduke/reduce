@@ -1,0 +1,40 @@
+reduce: version 3.14 08/21/2008, Copyright 1997-2008, J. Michael Word
+Processing file: "/home/verma/current/data/bryan/PDBdownloads/1THX.pdb"
+Database of HETATM connections: "/usr/local/reduce_wwPDB_het_dict.txt"
+Processing only 'A' conformations.
+VDW dot density = 16/A^2
+Orientation penalty scale = 1 (100%)
+Eliminate contacts within 3 bonds.
+Ignore atoms with |occupancy| <= 0.01 during adjustments.
+Waters ignored if B-Factor >= 40 or |occupancy| < 0.66
+Aromatic rings in amino acids accept hydrogen bonds.
+Building or keeping OH & SH Hydrogens.
+Rotating NH3 Hydrogens.
+Processing Met methyls.
+Before: P 21 21 21 40.480000 39.780000 60.080000
+Received space group type P 21 21 21
+After: P 1 375.300000 318.370000 367.080000
+Received space group type P 1
+ Singles(size 12): A   1 SER N   : A   2 LYS NZ  : A  18 LYS NZ  : A  38 MET CE  
+  : A  54 LYS NZ  : A  57 LYS NZ  : A  68 LYS NZ  : A  69 LYS NZ  : A  71 LYS NZ  
+  : A  82 LYS NZ  : A  96 LYS NZ  : A  98 LYS NZ  
+ orientation 4: A   1 SER N   :NH3+   -121: bump=0.000, HB=0.141, total=0.141
+ orientation 3: A   2 LYS NZ  :NH3+    151: bump=-9.575, HB=0.000, total=-9.575, BADBUMP
+ orientation 2: A  18 LYS NZ  :NH3+   -155: bump=-9.500, HB=0.000, total=-9.500, BADBUMP
+ orientation 3: A  38 MET CE  :methyl  140: bump=0.000, HB=0.000, total=0.000
+ orientation 4: A  54 LYS NZ  :NH3+   -125: bump=-9.636, HB=5.536, total=-4.100, BADBUMP
+ orientation 4: A  57 LYS NZ  :NH3+   -120: bump=-13.622, HB=2.235, total=-11.386, BADBUMP
+ orientation 4: A  68 LYS NZ  :NH3+   -141: bump=-9.569, HB=0.000, total=-9.569, BADBUMP
+ orientation 4: A  69 LYS NZ  :NH3+   -131: bump=-9.718, HB=1.100, total=-8.618, BADBUMP
+ orientation 3: A  71 LYS NZ  :NH3+    173: bump=-9.627, HB=0.000, total=-9.627, BADBUMP
+ orientation 2: A  82 LYS NZ  :NH3+   -150: bump=-9.518, HB=0.000, total=-9.518, BADBUMP
+ orientation 4: A  96 LYS NZ  :NH3+   -105: bump=-9.603, HB=0.000, total=-9.603, BADBUMP
+ orientation 2: A  98 LYS NZ  :NH3+   -137: bump=-10.310, HB=0.000, total=-10.310, BADBUMP
+Found 328 hydrogens (148 hets)
+Standardized 380 hydrogens (148 hets)
+Added 695 hydrogens (0 hets)
+Removed 0 hydrogens (0 hets)
+Adjusted 12 group(s)
+If you publish work which uses reduce, please cite:
+Word, et. al. (1999) J. Mol. Biol. 285, 1735-1747.
+For more information see http://kinemage.biochem.duke.edu

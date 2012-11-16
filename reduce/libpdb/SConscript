@@ -1,0 +1,17 @@
+Import("reduce_scons_env")
+
+env = reduce_scons_env.Clone()
+env.Append(
+  CXXFLAGS=[
+    "-DBOOLPREDEFINED",
+    "-DHASSSCANFEXTERN"])
+env.StaticLibrary(
+  target=["#reduce/lib/pdb++"],
+  source=[
+    "pdb_read.cpp",
+    "pdb_sprntf.cpp",
+    "pdb_sscanf.cpp",
+    "pdb_chars.cpp",
+    "pdb_type.cpp",
+    "pdb++.cpp",
+    "pdbinput.cpp"])

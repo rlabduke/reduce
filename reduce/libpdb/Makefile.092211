@@ -1,0 +1,62 @@
+#  This Makefile for Reduce was adopted from the gcc makefile, it will 
+#  generate a MACH-O executable for MacOSX containing binaries for both
+#  i386 (intel) and powerpc cpus, which is called an universal binary.  
+#  It requires installation of the Apple Developer package, XCode.
+#  Standard C libraries and header files are in /Developer/SDKs/MacOSX10.4u.sdk
+#  To use, replace the libpdb makefile with this makefile (likewise for
+#  the reduce_src and toolclasses directories, and then type "make" in the 
+#  directory above reduce_src.
+#  
+#  On BSD machines, RANLIB should be 'ranlib'
+#  On System V machines, RANLIB should be ':'
+#  
+
+SHELL    = /bin/sh
+RANLIB   = ranlib
+CXX      = g++
+OPT      = -O
+DEBUG    = $(CXXDEBUGFLAGS)
+PROG_FLGS   = -isysroot /Developer/SDKs/MacOSX10.5.sdk -arch i386
+CFLAGS   = $(OPT) $(DEBUG) $(PROG_FLGS) -DBOOLPREDEFINED -DHASSSCANFEXTERN
+LIBRARY  = pdb++
+LIBARCH  = lib$(LIBRARY).a
+OBJS     = pdb_read.o pdb_sprntf.o pdb_sscanf.o pdb_chars.o \
+           pdb_type.o pdb++.o pdbinput.o
+SRCS     = pdb_read.cpp pdb_sprntf.cppc pdb_sscanf.cpp pdb_chars.cpp \
+           pdb_type.cpp pdb++.cppc pdbinput.cpp
+
+
+.SUFFIXES: .cpp
+
+.cpp.o:
+	$(CXX) $(CFLAGS) -c $< -o $@
+
+all:     $(LIBARCH)
+
+install: $(LIBARCH)
+	@echo ""
+
+$(LIBARCH): $(OBJS)
+	@echo "Loading $(LIBARCH) ... "
+	@ar cru $(LIBARCH) $(OBJS)
+	@$(RANLIB) $(LIBARCH)
+	@echo "done"
+
+clean:
+	@rm -f $(OBJS)
+
+spotless:
+	@rm -f $(OBJS) $(LIBARCH)
+
+
+# DO NOT DELETE THIS LINE -- make depend uses it
+pdb++.o:      pdb++.cpp pdb++.h
+pdb_chars.o:  pdb++.h pdb_chars.cpp pdbrun5_write.i pdbrun6_write.i \
+              write_format.i
+pdb_read.o:   pdb++.h pdb_read.cpp pdbrun5_read.i pdbrun6_read.i \
+              read_format.i
+pdb_sprntf.o: pdb++.h pdb_sprntf.cpp
+pdb_sscanf.o: pdb++.h pdb_sscanf.cpp
+pdb_type.o:   pdb++.h pdb_type.cpp
+pdbinput.o:   pdb++.h pdbinput.cpp
+# DO NOT DELETE THIS 2nd LINE -- make depend uses it
