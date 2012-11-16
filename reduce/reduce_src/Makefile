@@ -17,7 +17,7 @@ PROG_FLGS   = -DAROMATICS_ACCEPT_HBONDS \
 
 CFLAGS = $(OPTS) $(DEBUG) $(PROG_FLGS) $(DICT_LOC)\
          -I$(PDBHOME) -I$(TOOLHOME) -I$(CCTBXHOME) -I$(BOOSTHOME) -I$(GENFILES)\
-         -Wall
+#         -Wall
 
 LFLAGS = -L$(PDBHOME) -lpdb++ -L$(TOOLHOME) -ltoolclasses -lm -L$(LIBCCTBX) -lcctbx -lcctbx_sgtbx_asu
 
