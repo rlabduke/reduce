@@ -1,14 +1,15 @@
 TOOLHOME    =../toolclasses
 PDBHOME     =../libpdb
 
-CRYSTAL_CODE_DIR=/home/verma/temp_installs
+CRYSTAL_CODE_DIR=/Users/jheadd/phenix/sources
+CRYSTAL_BUILD_DIR=/Users/jheadd/phenix/build
 CCTBXHOME   =${CRYSTAL_CODE_DIR}/cctbx_project/
 BOOSTHOME   =${CRYSTAL_CODE_DIR}/boost
-GENFILES    =${CRYSTAL_CODE_DIR}/scons/include
-LIBCCTBX    =${CRYSTAL_CODE_DIR}/scons/lib 
+GENFILES    =${CRYSTAL_BUILD_DIR}/include
+LIBCCTBX    =${CRYSTAL_BUILD_DIR}/lib
 
 INSTALLHOME =..
-DICT_HOME   =/usr/local/reduce_wwPDB_het_dict.txt
+DICT_HOME   =/Users/jheadd/phenix/symReduce/reduce_wwPDB_het_dict.txt
 DICT_LOC    = -DHET_DICTIONARY='"$(DICT_HOME)"'
 PROG_FLGS   = -DAROMATICS_ACCEPT_HBONDS \
               -DCHARFUNCMACROS \
@@ -22,9 +23,8 @@ CFLAGS = $(OPTS) $(DEBUG) $(PROG_FLGS) $(DICT_LOC)\
 LFLAGS = -L$(PDBHOME) -lpdb++ -L$(TOOLHOME) -ltoolclasses -lm -L$(LIBCCTBX) -lcctbx -lcctbx_sgtbx_asu
 
 OBJLIST = GraphToHoldScores.o CTab.o ElementInfo.o StdResH.o ResBlk.o AtomConn.o \
-            AtomPositions.o DotSph.o Mover.o RotMethyl.o RotDonor.o space_group.o \
+            AtomPositions.o DotSph.o Mover.o RotMethyl.o RotAromMethyl.o RotDonor.o space_group.o \
             FlipMemo.o CliqueList.o AtomDescr.o PDBrec.o MoveableNode.o hybrid_36_c.o\
-            
 
 CXX		= g++
 
@@ -39,7 +39,7 @@ all:    reduce
 reduce: $(OBJLIST) reduce.o
 	$(CXX) -o $@ $(OBJLIST) reduce.o $(LFLAGS)
 
-neighborList.o: neighborList.cpp 
+neighborList.o: neighborList.cpp
 	$(CXX) -c neighborList.cpp $(CFLAGS)
 
 clean:
@@ -68,7 +68,7 @@ CliqueList.o: $(PDBHOME)/pdb++.h \
 	 $(TOOLHOME)/Point3d.h $(TOOLHOME)/utility.cpp \
 	 $(TOOLHOME)/utility.h BumperPoint.h CliqueList.cpp \
 	 CliqueList.h DotSph.h ElementInfo.h Mover.h PDBrec.h \
-	 
+
 DotSph.o: $(TOOLHOME)/Point3d.h \
 	 $(TOOLHOME)/utility.cpp $(TOOLHOME)/utility.h DotSph.cpp \
 	 DotSph.h
@@ -79,14 +79,14 @@ FlipMemo.o: $(PDBHOME)/pdb++.h $(TOOLHOME)/Point3d.h \
 	 $(TOOLHOME)/utility.cpp $(TOOLHOME)/utility.h AtomConn.h \
 	 AtomPositions.h BumperPoint.h CliqueList.h DotSph.h \
 	 ElementInfo.h FlipMemo.cpp FlipMemo.h Mover.h PDBrec.h \
-	 ResBlk.h 
+	 ResBlk.h
 GraphToHoldScores.o: GraphToHoldScores.h GraphToHoldScores.cpp AtomPositions.h \
     AtomDescr.h
 hybrid_36_c.o: hybrid_36_c.c hybrid_36_c.h
 Mover.o: $(PDBHOME)/pdb++.h $(TOOLHOME)/Point3d.h \
 	 $(TOOLHOME)/utility.cpp $(TOOLHOME)/utility.h \
 	 BumperPoint.h DotSph.h ElementInfo.h Mover.cpp Mover.h \
-	 PDBrec.h ResBlk.h neighborList.h 
+	 PDBrec.h ResBlk.h neighborList.h
 MoveableNode.o: MoveableNode.cpp MoveableNode.h AtomDescr.h \
     GraphToHoldScores.h AtomPositions.h
 PDBrec.o: $(PDBHOME)/pdb++.h \
@@ -99,12 +99,17 @@ RotDonor.o: $(PDBHOME)/pdb++.h $(TOOLHOME)/Point3d.h \
 	 $(TOOLHOME)/utility.cpp $(TOOLHOME)/utility.h \
 	 AtomPositions.h BumperPoint.h CliqueList.h DotSph.h \
 	 ElementInfo.h FlipMemo.h Mover.h PDBrec.h ResBlk.h \
-	 RotDonor.cpp RotDonor.h 
+	 RotDonor.cpp RotDonor.h
 RotMethyl.o: $(PDBHOME)/pdb++.h $(TOOLHOME)/Point3d.h \
 	 $(TOOLHOME)/utility.cpp $(TOOLHOME)/utility.h \
 	 AtomPositions.h BumperPoint.h CliqueList.h DotSph.h \
 	 ElementInfo.h Mover.h PDBrec.h ResBlk.h RotMethyl.cpp \
-	 RotMethyl.h 
+	 RotMethyl.h
+RotAromMethyl.o: $(PDBHOME)/pdb++.h $(TOOLHOME)/Point3d.h \
+	 $(TOOLHOME)/utility.cpp $(TOOLHOME)/utility.h \
+	 AtomPositions.h BumperPoint.h CliqueList.h DotSph.h \
+	 ElementInfo.h LocBlk.h Mover.h PDBrec.h ResBlk.h RotAromMethyl.cpp \
+	 RotAromMethyl.h neighbors.cpp neighbors.h
 StdResH.o: $(TOOLHOME)/Point3d.h \
 	 $(TOOLHOME)/utility.cpp $(TOOLHOME)/utility.h AtomConn.h \
 	 ElementInfo.h StdResH.cpp StdResH.h

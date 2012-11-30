@@ -185,22 +185,26 @@ void StandardElementTable::LayoutTable() {
 // Covalent and ionic radii from
 // Advanced Inorganic Chemistry, Cotton & Wilkinson, 1962, p93.
 
+// changes in hydrogen VDW radii made to accompany changes in hydrogen bond-lengths in StdResH.cpp
 //    atno                          explRad implRad covRad mageColors flags
-insert( 0, "?",  "unknown",            1.00, 0.00, 0.00, "magenta", 0);
+insert( 0, "?",  "unknown",            1.05, 0.00, 0.00, "magenta", 0);
 insert( 0, "ignore", "ignore",         0.00, 0.00, 0.00, "magenta", IGNORE);
 
-insert( 1, "H",  "hydrogen",           1.17, 0.00, 0.30, "grey",   0);
-insert( 1, "Har","hydrogen(aromatic)", 1.00, 0.00, 0.30, "grey",   0);
-insert( 1, "Hpol","hydrogen(polar)",   1.00, 0.00, 0.30, "grey",   DONOR_ATOM);
+insert( 1, "H",  "hydrogen",           1.22, 0.00, 0.30, "grey",   0);
+// wba 100514  to 1.22 from 1.17
+insert( 1, "Har","hydrogen(aromatic)", 1.05, 0.00, 0.30, "grey",   0);
+// wba 100514  to 1.05 from 1.00
+insert( 1, "Hpol","hydrogen(polar)",   1.05, 0.00, 0.30, "grey",   DONOR_ATOM);
+// wba 100514  to 1.05 from 1.00
 insert( 1, "Ha+p",
-         "hydrogen(aromatic&polar)",   1.00, 0.00, 0.30, "grey",   DONOR_ATOM);
-	 
+         "hydrogen(aromatic&polar)",   1.05, 0.00, 0.30, "grey",   DONOR_ATOM);
+// wba 100514  to 1.05 from 1.00
 insert( 1, "HOd",
-         "hydrogen(omnidirectional)",  1.00, 0.00, 0.30, "grey",   DONOR_ATOM|HB_ONLY_DUMMY);
-
-insert( 6, "C",  "carbon",             1.75, 1.90, 0.77, "white",  0);
+         "hydrogen(omnidirectional)",  1.05, 0.00, 0.30, "grey",   DONOR_ATOM|HB_ONLY_DUMMY);
+// wba 100514  to 1.05 from 1.00
+insert( 6, "C",  "carbon",             1.70, 1.90, 0.77, "white",  0);
 insert( 6, "Car","carbon(aromatic)",   1.75, 1.90, 0.77, "white",  ACCEPTOR_ATOM);
-insert( 6, "C=O","carbon(carbonyl)",   1.65, 1.80, 0.77, "white",  0); //** seems to help
+insert( 6, "C=O","carbon(carbonyl)",   1.70, 1.80, 0.77, "white",  0); //** seems to help
 insert( 7, "N",  "nitrogen",           1.55, 1.70, 0.70, "sky",    0);
 insert( 7, "Nacc","nitrogen(acceptor)",1.55, 1.70, 0.70, "sky",    ACCEPTOR_ATOM);
 insert( 8, "O",  "oxygen",             1.40, 1.50, 0.66, "red",    ACCEPTOR_ATOM);

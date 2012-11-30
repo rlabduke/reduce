@@ -33,7 +33,7 @@ using std::fseek;
 #include "AtomConn.h"
 #include <list>
 #include <map>
-
+#include <stack>
 // -----------------------------------------
 //  atom connections for a given residue
 // -----------------------------------------
@@ -56,6 +56,9 @@ public:
 	   else
 		   return NULL;
    }
+   // To find out there's a ring bonded to given H atom of methyl group (aromatic ring candidate) - Aram 07/09/12
+   std::list<std::string> findRingBondedToMethyl(const std::string &atomname,const char* resname) const;
+   
    atomPlacementPlan* planHplacement(const std::string &atomname,const char* resname) const;
 
    // Be careful, std::list must be copied.

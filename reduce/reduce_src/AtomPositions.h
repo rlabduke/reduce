@@ -83,7 +83,9 @@ public:
    void insertRot(const PDBrec& hr, const PDBrec& c1,
                   const PDBrec& c2, const PDBrec& c3,
 		  bool doOHSH, bool doNH3, bool doMethyl);
-
+		  
+   void insertRotAromMethyl(const PDBrec& hr, const PDBrec& c1,
+                  const PDBrec& c2, const PDBrec& c3); // for Arom methyls - Aram 08/13/12
    std::list<char> insertFlip(const ResBlk& rblk);
    void      insertFlip(PDBrec* hr, std::list<char> alts_list);
 

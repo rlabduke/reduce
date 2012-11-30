@@ -1,0 +1,69 @@
+#  This Makefile for Reduce was adopted from the gcc makefile, it will 
+#  generate a MACH-O executable for MacOSX i386 (intel 32 bit chipset).
+#  It requires installation of the Apple Developer package, XCode in its
+#  default location: something like /Developer/SDKs/MacOSX10.6.sdk
+#  Modify the SDK location and/or the -arch flag (use x86_64 for
+#  intel 64 bit executable, i386 for intel 32 bit) to suit your computer.
+#  To compile Reduce, use one of the two methods:
+#  Method 1: Replace the contents of the three "Makefile" with the contents
+#  of the three "Makefile.macOSX"; the filename should be "Makefile" (no 
+#  extension part).  Then type "make" from the command line in the parent directory.
+#  Method 2: Leave "Makefile.macOSX" names as is.  Compile the two libraries 
+#  before compiling the Reduce executable by entering in turn the libpdb
+#  subdirectory ('cd libpdb') and using the command 'make -f Makefile.macOSX'.
+#  Then do the toolclasses library and finally the reduce_src subdirectory, using 
+#  the same 'make -f Makefile.macOSX' command.
+#  
+#  On BSD machines, RANLIB should be 'ranlib'
+#  On System V machines, RANLIB should be ':'
+#  
+
+SHELL    = /bin/sh
+RANLIB   = ranlib
+CXX      = g++
+OPT      = -O
+DEBUG    = $(CXXDEBUGFLAGS)
+PROG_FLGS   = -isysroot /Developer/SDKs/MacOSX10.6.sdk -arch x86_64 -arch i386
+CFLAGS   = $(OPT) $(DEBUG) $(PROG_FLGS) -DBOOLPREDEFINED -DHASSSCANFEXTERN
+LIBRARY  = pdb++
+LIBARCH  = lib$(LIBRARY).a
+OBJS     = pdb_read.o pdb_sprntf.o pdb_sscanf.o pdb_chars.o \
+           pdb_type.o pdb++.o pdbinput.o
+SRCS     = pdb_read.cpp pdb_sprntf.cppc pdb_sscanf.cpp pdb_chars.cpp \
+           pdb_type.cpp pdb++.cppc pdbinput.cpp
+
+
+.SUFFIXES: .cpp
+
+.cpp.o:
+	$(CXX) $(CFLAGS) -c $< -o $@
+
+all:     $(LIBARCH)
+
+install: $(LIBARCH)
+	@echo ""
+
+$(LIBARCH): $(OBJS)
+	@echo "Loading $(LIBARCH) ... "
+	@ar cru $(LIBARCH) $(OBJS)
+	@$(RANLIB) $(LIBARCH)
+	@echo "done"
+
+clean:
+	@rm -f $(OBJS)
+
+spotless:
+	@rm -f $(OBJS) $(LIBARCH)
+
+
+# DO NOT DELETE THIS LINE -- make depend uses it
+pdb++.o:      pdb++.cpp pdb++.h
+pdb_chars.o:  pdb++.h pdb_chars.cpp pdbrun5_write.i pdbrun6_write.i \
+              write_format.i
+pdb_read.o:   pdb++.h pdb_read.cpp pdbrun5_read.i pdbrun6_read.i \
+              read_format.i
+pdb_sprntf.o: pdb++.h pdb_sprntf.cpp
+pdb_sscanf.o: pdb++.h pdb_sscanf.cpp
+pdb_type.o:   pdb++.h pdb_type.cpp
+pdbinput.o:   pdb++.h pdbinput.cpp
+# DO NOT DELETE THIS 2nd LINE -- make depend uses it

@@ -89,7 +89,7 @@ void resetMarks(std::list< std::pair<PDBrec*,Point3d> >& lst) {
 bool visableAltConf(const PDBrec& a, bool onlyA) {
    const char aalt = a.alt();
    bool returnvalue = (aalt == ' ' || aalt == 'A' || aalt == 'a' || !onlyA);
-	//std::cerr << "visiableAltConf: " << a.recName() << " "  << returnvalue;
+	//std::cerr << "visiableAltConf: " << a.recName() << " "  << returnvalue << std::endl;
 	return returnvalue;
 }
 
@@ -101,7 +101,8 @@ bool interactingConfs(const PDBrec& a, const PDBrec& b, bool onlyA) {
 
 // are a and b alternative locations for the same residue?
 bool diffAltLoc(const PDBrec& a, const PDBrec& b) {
-   return a.resno() == b.resno() && a.insCode() == b.insCode()
+   //return a.resno() == b.resno() && a.insCode() == b.insCode()
+   return a.insCode() == b.insCode()
        && strcmp(a.chain(), b.chain()) == 0 
        && a.alt() != b.alt() && a.alt() != ' ' && b.alt() != ' ';
 }

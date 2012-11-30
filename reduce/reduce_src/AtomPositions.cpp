@@ -52,6 +52,7 @@ using std::exp;
 #include "DisjointSets.h"
 #include "StdResH.h"
 #include "RotMethyl.h"
+#include "RotAromMethyl.h" // for Arom methyls - Aram 08/13/12
 #include "RotDonor.h"
 #include "FlipMemo.h"
 #include "PDBrec.h"
@@ -279,6 +280,55 @@ void AtomPositions::insertRot(const PDBrec& hr,
 		}
 		else {
 			cerr<<"*error* insertRot(hr, "<< m->type() <<")"<<endl;
+		}
+	}
+}
+
+// ---------------------------------------------------------------
+// for Arom methyls - Aram 08/13/12
+void AtomPositions::insertRotAromMethyl(const PDBrec& hr,
+                const PDBrec& c1, const PDBrec& c2, const PDBrec& c3) {
+	
+	if ((! visableAltConf(hr, _onlyA))
+		|| (! visableAltConf(c1, _onlyA))
+		|| (! visableAltConf(c2, _onlyA))) { return; }
+
+	char descrbuf[30];
+
+	::sprintf(descrbuf, "%-2.2s%4s%c%-3.3s%-4.4s%c",
+		hr.chain(), hr.Hy36resno(), hr.insCode(),
+		hr.resname(), c1.atomname(), hr.alt());
+	std::string descr = descrbuf;
+
+	const double dang = dihedral(hr.loc(), c1.loc(), c2.loc(), c3.loc());
+
+// cerr << "AtomPositions::insertRotAromMethyl(dang=" << dang << ") "
+//      << hr.chain() << " " <<  hr.resno() << hr.insCode()
+//      << " " << hr.resname() << " " << hr.atomname() <<  hr.alt() << endl;
+
+	std::map<std::string, Mover*>::const_iterator iter = _motionDesc.find(descr);
+	Mover *m;
+	if (iter != _motionDesc.end())
+		m = iter->second;
+	else
+		m = NULL;
+
+	if (m == NULL) {
+		if (c1.elem().atno() == 6) {
+			m = new RotAromMethyl(c1.loc(), c2.loc(), dang, c1);
+			_motionDesc.insert(std::make_pair(descr, m));
+		}
+		else {
+			cerr<<"*error* insertRotAromMethyl(heavy atom("<<
+				c1.recName()<<") not Carbon)"<<endl;
+		}
+	}
+	if (m != NULL) {
+		if (m->type() == Mover::ROTATE_METHYL){
+			((RotMethyl*)m)->insertHatom(hr);
+		}
+		else {
+			cerr<<"*error* insertRotAromMethyl(hr, "<< m->type() <<")"<<endl;
 		}
 	}
 }
