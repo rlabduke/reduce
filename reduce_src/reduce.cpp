@@ -11,7 +11,7 @@
 // in any way and (2) any modified versions of the program are
 // also available for free.
 //               ** Absolutely no Warranty **
-// Copyright (C) 1999-2011 J. Michael Word
+// Copyright (C) 1999-2013 J. Michael Word
 // **************************************************************
 //
 //  reduceChanges now contains the CHANGELOG or history info
@@ -24,9 +24,9 @@
 #endif
 
 static const char *versionString =
-     "reduce: version 3.17 09/04/2012, Copyright 1997-2012, J. Michael Word";
+     "reduce: version 3.18 01/10/2013, Copyright 1997-2013, J. Michael Word";
 
-static const char *shortVersion    = "reduce.3.17.120904";
+static const char *shortVersion    = "reduce.3.18.130110";
 static const char *referenceString =
                        "Word, et. al. (1999) J. Mol. Biol. 285, 1735-1747.";
 static const char *electronicReference = "http://kinemage.biochem.duke.edu";
@@ -531,7 +531,7 @@ char* parseCommandLine(int argc, char **argv) {
 	    RotExistingOH      = TRUE;
 	    DemandFlipAllHNQs  = TRUE;
          }
-         else if(n = compArgStr(p+1, "NOBUILD", 7)){
+         else if((n = compArgStr(p+1, "NOBUILD", 7))){
             PenaltyMagnitude = parseReal(p, n+1, 10, PenaltyMagnitude);
             if(PenaltyMagnitude < 0){
               cerr << "!!ERROR!!" << endl;
@@ -992,6 +992,7 @@ void reduceChanges(bool showAll) { /*changes*/
    cerr  << "08/15/12 - aram        added -MAXAromdih cutoff to support rotating aromatic methyls" << endl;
    cerr  << "2012/08/23 - lnd & vbc New, shorter, H bond distances and van der Waals - version 3.17" << endl;
    cerr  << "2012/09/05 - gjk       New, shorter, H bond distances and van der Waals for nucleic acids" << endl;
+   cerr  << "2013/01/10 - jjh       Remove N-H atom from N-terminal residue of amino acid chain" << endl;
    cerr  << endl;
    exit(1);
 }
@@ -1406,6 +1407,13 @@ void analyzeRes(CTab& hetdatabase, ResBlk* pb, ResBlk* cb, ResBlk* nb,
 		else if (ctype == NTERM_RES) {
 			bool ispro = resname.find("PRO") != std::string::npos;
 			hn = StdResH::HydPlanTbl().get(ispro?"nt-pro":"nt-amide");
+			//Trim N-H atom if present in input model for N-terminal amino JJH 130110
+			std::list<PDBrec*> cr_list;
+		    cb->get(" H", cr_list);
+		    if (cr_list.size() > 0) {
+		      std::cerr << "Removing redundant N-terminal N-H hydrogen atom from input model." << std::endl;
+		      dropHydrogens(cr_list);
+		    }
 		}
 		else if (ctype == FRAGMENT_RES) { // don't create NH
                         if (NeutralTermini) {
@@ -1509,7 +1517,6 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 			for (std::list<PDBrec*>::iterator it = ourHydrogens.begin(); it != ourHydrogens.end(); ++it) {
 				o = *it;
 				doNotAdjustSC = FALSE;
-
 				if (pp.hasFeature(NOO2PRIMEFLAG) && o2prime) {
 					// skip pp record (should find another with the same name)
 				}
