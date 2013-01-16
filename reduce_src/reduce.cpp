@@ -24,9 +24,9 @@
 #endif
 
 static const char *versionString =
-     "reduce: version 3.18 01/10/2013, Copyright 1997-2013, J. Michael Word";
+     "reduce: version 3.20 01/16/2013, Copyright 1997-2013, J. Michael Word";
 
-static const char *shortVersion    = "reduce.3.18.130110";
+static const char *shortVersion    = "reduce.3.20.130116";
 static const char *referenceString =
                        "Word, et. al. (1999) J. Mol. Biol. 285, 1735-1747.";
 static const char *electronicReference = "http://kinemage.biochem.duke.edu";
@@ -95,6 +95,7 @@ bool ShowCliqueTicks          = TRUE;
 bool ShowOrientScore          = FALSE;
 bool StringInput              = FALSE;
 bool ShowCharges              = FALSE;
+bool UseNuclearDistances      = FALSE; //jjh 130111
 
 int MaxAromRingDih    = 10;   // max dihedral angle in planarity check for aromatic rings  120724 - Aram
 
@@ -720,6 +721,9 @@ char* parseCommandLine(int argc, char **argv) {
 	 else if((n = compArgStr(p+1, "LIMITsearch", 5))){
 	    ExhaustiveLimit = parseInteger(p, n+1, 10);
 	 }
+	 else if((n = compArgStr(p+1, "NUClear", 3))){
+	   UseNuclearDistances = TRUE;
+	 }
 	 else if(compArgStr(p+1, "Help", 1)){ // has to be after all the other -HXXXs
 	    reduceHelp(TRUE);
 	 }
@@ -762,6 +766,8 @@ void reduceHelp(bool showAll) { /*help*/
 
   if (showAll) {
    cerr << endl;
+   cerr << "-NUClear          use nuclear X-H distances rather than default" << endl;
+   cerr << "                  electron cloud distances" << endl;
    cerr << "-NOOH             remove hydrogens on OH and SH groups" << endl;
    cerr << "-OH               add hydrogens on OH and SH groups (default)" << endl;
    cerr << endl;
@@ -993,6 +999,8 @@ void reduceChanges(bool showAll) { /*changes*/
    cerr  << "2012/08/23 - lnd & vbc New, shorter, H bond distances and van der Waals - version 3.17" << endl;
    cerr  << "2012/09/05 - gjk       New, shorter, H bond distances and van der Waals for nucleic acids" << endl;
    cerr  << "2013/01/10 - jjh       Remove N-H atom from N-terminal residue of amino acid chain" << endl;
+   cerr  << "2013/01/16 - jjh       Added -NUCLEAR flag, which uses nuclear distances/vdW rather" << endl;
+   cerr  << "                         the default electron cloud distances/vdW for H placement" << endl;
    cerr  << endl;
    exit(1);
 }
@@ -1557,8 +1565,8 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 					}
 
 					if (StandardizeRHBondLengths) {
-						stdBondLen(pp.dist(), *o,
-							firstAtoms, pp.elem());
+					  stdBondLen(pp.dist(), *o,
+					    firstAtoms, pp.elem());
 					}
 					if ((connatomcount > 2) &&
 						! okToPlaceHydHere(*o, pp, r0atom, r2atom,
@@ -1578,8 +1586,8 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 						r0atom, r1atom, r2atom);
 
 					if (StandardizeRHBondLengths) {
-						stdBondLen(pp.dist(), *o,
-							firstAtoms, pp.elem());
+					  stdBondLen(pp.dist(), *o,
+					    firstAtoms, pp.elem());
 					}
 					if ((connatomcount > 2) &&
 						! okToPlaceHydHere(*o, pp, r0atom, r2atom,
@@ -2236,7 +2244,7 @@ void findAndStandardize(const char* name, const char* resname,
 				std::list<PDBrec*> ourHydrogens;
 				theRes.get(pp->name(), ourHydrogens);
 				for (std::list<PDBrec*>::iterator it = ourHydrogens.begin(); it != ourHydrogens.end(); ++it) {
-					stdBondLen(pp->dist(), **it, firstAtoms, pp->elem());
+				  stdBondLen(pp->dist(), **it, firstAtoms, pp->elem());
 				}
 			}
 		}

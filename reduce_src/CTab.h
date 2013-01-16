@@ -14,7 +14,7 @@
 // **************************************************************
 
 #if defined(_MSC_VER)
-#pragma warning(disable:4786) 
+#pragma warning(disable:4786)
 #endif
 
 #ifndef CTAB_H
@@ -34,6 +34,9 @@ using std::fseek;
 #include <list>
 #include <map>
 #include <stack>
+
+extern bool UseNuclearDistances; //defined in reduce.cpp JJH
+
 // -----------------------------------------
 //  atom connections for a given residue
 // -----------------------------------------
@@ -58,7 +61,7 @@ public:
    }
    // To find out there's a ring bonded to given H atom of methyl group (aromatic ring candidate) - Aram 07/09/12
    std::list<std::string> findRingBondedToMethyl(const std::string &atomname,const char* resname) const;
-   
+
    atomPlacementPlan* planHplacement(const std::string &atomname,const char* resname) const;
 
    // Be careful, std::list must be copied.
@@ -99,8 +102,8 @@ private:
 class CTab {
 public:
 	CTab(const std::string& dbfile, int szest);
-	virtual ~CTab() { 
-		if (_fp) ::fclose(_fp); 
+	virtual ~CTab() {
+		if (_fp) ::fclose(_fp);
 		for (std::map<std::string, FileLoc*>::const_iterator i = _filedict.begin(); i != _filedict.end(); ++i)
 			delete i->second;
 		for (std::map<std::string, ResConn*>::const_iterator j = _rescache.begin(); j != _rescache.end(); ++j)

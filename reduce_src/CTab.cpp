@@ -14,9 +14,9 @@
 // **************************************************************
 
 #if defined(_MSC_VER)
-#pragma warning(disable:4786) 
-#pragma warning(disable:4305) 
-#pragma warning(disable:4800) 
+#pragma warning(disable:4786)
+#pragma warning(disable:4305)
+#pragma warning(disable:4800)
 #endif
 
 #include <iostream>
@@ -40,7 +40,7 @@ std::list<std::string> ResConn::findRingBondedToMethyl(const std::string &atomna
 
 	ElementInfo *e = ElementInfo::StdElemTbl().lookupPDBatom(atomname.c_str(), resname);
 	if (e && e->isHydrogen()) { // start only from hydrogens
-		
+
 		std::stack<AtomConn*> stkAtoms;
 		std::stack<int> stkAtomsDepth;
 		std::vector<bool> visited(_atomConn.size());
@@ -49,31 +49,31 @@ std::list<std::string> ResConn::findRingBondedToMethyl(const std::string &atomna
 		// initialize all nodes to false
 		for (int i=0; i < visited.size(); i++)
 			visited.at(i)=false;
-		
+
 		AtomConn *hc = get(atomname);
 		if (hc && hc->num_conn() > 0)  {
-			
+
 			std::string x1name = hc->conn(0); // heavy atom
 			AtomConn *x1c = get(x1name);
 			int x1cDepth = 0;
-			
+
 			ElementInfo *x1e = ElementInfo::StdElemTbl().lookupPDBatom(x1name.c_str(), resname);
 			if (x1c && x1e->atno()==6) { // Test to see if this hydrogen is in methyl group
 				std::string xc = "";
 				for (int i = x1c->num_conn()-1; i >= 0; i--) {
 					ElementInfo *xe = ElementInfo::StdElemTbl().lookupPDBatom(x1c->conn(i).c_str(), resname);
-					
+
 					if (xe && xe->isHydrogen()) { // Count number of hydrogen atoms
 						++nh;
 					}
-					
+
 					if (xe && !xe->isHydrogen()) { // heavy atom
 						xc = x1c->conn(i);
 					}
 				}
-				
+
 				//std::cout << std::endl << "nh: " << nh << " xc: " << xc;
-				
+
 				if (nh == 3) {
 					visited[x1c->order()]=true;
 					AtomConn *x2c = get(xc);
@@ -82,30 +82,30 @@ std::list<std::string> ResConn::findRingBondedToMethyl(const std::string &atomna
 					x1name = xc;
 				}
 			}
-			
+
 			while (!stkAtoms.empty()) {
-				x1c = stkAtoms.top();				
+				x1c = stkAtoms.top();
 				x1cDepth = stkAtomsDepth.top();
 				stkAtoms.pop();
 				stkAtomsDepth.pop();
-				
+
 				if ( x1c && x1c->num_conn() > 1    // Atom exists and has more than 1 connected atoms (other than it's parent)
 					 && x1cDepth < 7 )  {		   // only report 5 or 6 member rings
-				
+
 					// std::cout << std::endl << "here: " << x1c->order() << x1c->name() << "-" << x1cDepth;
 					visited[x1c->order()]=true;
 					if (L.size() > x1cDepth-1)
 						L.resize(x1cDepth-1);
 					std::string xparent = L.empty() ? "NONE" : L.back();
 					L.push_back(x1c->name());
-					
+
 					for (int i = x1c->num_conn()-1; i >= 0; i--) {
 						std::string xc = x1c->conn(i);
 						if (xparent != xc) {
 							if (xc == x1name) { // Found cycle
 								return L;
 							}
-							
+
 							AtomConn *x2c = get(xc);
 							if (x2c && !visited[x2c->order()]) {
 								// std::cout << "(x2c: " << x2c->order() << x2c->name();
@@ -114,16 +114,17 @@ std::list<std::string> ResConn::findRingBondedToMethyl(const std::string &atomna
 							}
 						}
 					}
-				}				
+				}
 			}
 		}
 	}
-	
+
 	std::list<std::string> emptyList;
 	return emptyList;
 }
 
-atomPlacementPlan* ResConn::planHplacement(const std::string &atomname, const char* resname) const {
+atomPlacementPlan* ResConn::planHplacement(const std::string &atomname,
+                                           const char* resname) const {
    int nn = 0, nh = 0, whichH = 0, type = 0, flags = 0;
    float dist = 0.0, ang1 = 0.0, ang2 = 0.0;
 
@@ -150,17 +151,42 @@ atomPlacementPlan* ResConn::planHplacement(const std::string &atomname, const ch
 	    }
 
 	    ElementInfo *x1e = ElementInfo::StdElemTbl().lookupPDBatom(x1name.c_str(), resname);
-	    dist = 1.1; // default X-H distance
+	    // default X-H distance
+	    if (UseNuclearDistances) {
+	      dist = 1.09;
+	    }
+	    else{
+	      dist = 0.97;
+	    }
 	    bool polarH = FALSE;
 	    if (x1e) {
-	       if (x1e->atno()==7 || x1e->atno()==8) { // N & O
-		  dist = 1.0;
-		  polarH = TRUE;
-	       }
-	       if (x1e->atno()==16) { // S
-		  dist = 1.3;
-		  polarH = TRUE;
-	       }
+	      if (x1e->atno()==7) { // N
+	        if (UseNuclearDistances) {
+		      dist = 1.02; // nuclear
+		    }
+		    else {
+		      dist = 0.86; // electron cloud
+		    }
+	        polarH = TRUE;
+	      }
+	      else if (x1e->atno()==8) { // O
+		    if (UseNuclearDistances) {
+		      dist = 0.98; // nuclear
+		    }
+		    else {
+		      dist = 0.85; // electron cloud
+		    }
+	        polarH = TRUE;
+	      }
+	      else if (x1e->atno()==16) { // S
+		    if (UseNuclearDistances) {
+		      dist = 1.3; // nuclear
+		    }
+		    else {
+		      dist = 1.2; // electron cloud
+		    }
+		    polarH = TRUE;
+	      }
 	    }
 
 	    type = 0;
@@ -182,7 +208,7 @@ atomPlacementPlan* ResConn::planHplacement(const std::string &atomname, const ch
 			   if (!xxe || !(xxe->isHydrogen())) {
 				   names.addConn(xxc);
 			      if (x1c->num_conn() == 4) {
-				 type = 3; 
+				 type = 3;
 				 ang1 = 109.5;
 				 ang2 = (whichH == 1) ? 180.0
 				      : (whichH == 2) ? 60.0 : -60.0;
@@ -199,7 +225,7 @@ atomPlacementPlan* ResConn::planHplacement(const std::string &atomname, const ch
 				 }
 			      }
 			      else if (x1c->num_conn() == 3) {
-				 type = 3; 
+				 type = 3;
 				 ang1 = 120.0;
 				 ang2 = (whichH == 1) ? 0.0 : 180.0;
 			      }
@@ -208,7 +234,7 @@ atomPlacementPlan* ResConn::planHplacement(const std::string &atomname, const ch
 				    type = 6; // linear (triple-bond)
 				 }
 				 else {
-				    type = 3; 
+				    type = 3;
 				    ang1 = 109.5;
 				    ang2 = 180.0;
 				    if (polarH) {
@@ -270,9 +296,10 @@ atomPlacementPlan* ResConn::planHplacement(const std::string &atomname, const ch
 std::list<atomPlacementPlan*> ResConn::genHplans(const char* resname) {
 	std::list<atomPlacementPlan*> plans;
 	std::map<std::string, AtomConn*>::const_iterator i = _atomConn.begin();
-	
+
 	while (i != _atomConn.end()) {
-		atomPlacementPlan *p = planHplacement(i->first, resname);
+		atomPlacementPlan *p = planHplacement(i->first,
+		                                      resname);
 		if (p) {
 			plans.push_front(p); // store a copy of this part of the plan
 		}
