@@ -1824,15 +1824,24 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 							// for heme methyls - Aram 05/31/12
 							if ((pp.hasFeature(ROTATEONDEMAND) && pp.hasFeature(AROMATICFLAG))) {
 								//std::cout << " in genHydrogens_noHyd " << newHatom->resname() << pp.name() << std::endl;
-								xyz.insertRotAromMethyl(*newHatom,
+								/*xyz.insertRotAromMethyl(*newHatom,
 									*(rvv[0][std::min(j, nconf[0]-1)]),
 									*(rvv[1][std::min(j, nconf[1]-1)]),
-									*(rvv[2][std::min(j, nconf[2]-1)]));
+									*(rvv[2][std::min(j, nconf[2]-1)]));*/
+								// 130122 - JJH, tracking alternates fix
+								xyz.insertRotAromMethyl(*newHatom,
+									*(rvv[0][counter[0]]),
+									*(rvv[1][counter[1]]),
+									*(rvv[2][counter[2]]));
 							} else {
 								xyz.insertRot(*newHatom,
-									*(rvv[0][std::min(j, nconf[0]-1)]),
+									/**(rvv[0][std::min(j, nconf[0]-1)]),
 									*(rvv[1][std::min(j, nconf[1]-1)]),
-									*(rvv[2][std::min(j, nconf[2]-1)]),
+									*(rvv[2][std::min(j, nconf[2]-1)]),*/
+									// 130122 - JJH, tracking alternates fix
+									*(rvv[0][counter[0]]),
+									*(rvv[1][counter[1]]),
+									*(rvv[2][counter[2]]),
 									TRUE, DemandRotNH3,
 									((DemandRotAllMethyls && pp.hasFeature(ROTATEONDEMAND))
 									|| (OKProcessMetMe && pp.hasFeature(ROTATEFLAG))) );
