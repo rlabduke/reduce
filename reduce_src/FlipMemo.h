@@ -14,7 +14,7 @@
 // **************************************************************
 
 #if defined(_MSC_VER)
-#pragma warning(disable:4786) 
+#pragma warning(disable:4786)
 #endif
 
 #ifndef FLIPMEMO_H
@@ -54,7 +54,7 @@ struct ProtonLoc_t {
    const char* rname;
    const char* aname;
    int type, anum, c1, c2, c3;
-   float dist, ang, dh;
+   float dist_ecloud, dist_nuclear, ang, dh;
 };
 struct BondLimits_t {
    int anum, b1, b2, b3;
@@ -85,7 +85,7 @@ public:
                          AtomPositions &xyz, DotSphManager& dotBucket);
    virtual int makebumpers(std::multimap<LocBlk, BumperPoint*>& bbins,
                            int n, float& maxVDWrad);
-   virtual std::list<AtomDescr> getAtDescOfAllPos(float &maxVDWrad);                        
+   virtual std::list<AtomDescr> getAtDescOfAllPos(float &maxVDWrad);
    virtual const PDBrec& exampleAtom() const { return _wrkAtom[1]; }
 
    virtual int numOrientations(
@@ -119,7 +119,7 @@ public:
    static bool isHBDonorOrAcceptorFlipped(const PDBrec& a, bool useXplorNames, bool useOldNames, bool bbModel);
 
    virtual void setHydAngle(double, AtomPositions &) {/*do nothing*/}
-   
+
    virtual void dropBondedFromBumpingListForPDBrec( std::list< PDBrec * > & bumping, PDBrec* atom, int nBondCutoff  ) const;
 private:
    double orientationPenalty(float pmag) const;
