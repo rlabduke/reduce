@@ -174,7 +174,7 @@ atomPlacementPlan* ResConn::planHplacement(const std::string &atomname,
 		      dist = 0.98; // nuclear
 		    }
 		    else {
-		      dist = 0.85; // electron cloud
+		      dist = 0.84; // electron cloud
 		    }
 	        polarH = TRUE;
 	      }
