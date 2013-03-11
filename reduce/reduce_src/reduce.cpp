@@ -529,7 +529,7 @@ char* parseCommandLine(int argc, char **argv) {
 	    DemandFlipAllHNQs  = TRUE;
          }
          else if((n = compArgStr(p+1, "NOBUILD", 7))){
-            PenaltyMagnitude = parseReal(p, n+1, 10);
+            PenaltyMagnitude = parseReal(p, n+1, 10, PenaltyMagnitude);
          // PenaltyMagnitude = 200;      9999 in molprobity
             BuildHisHydrogens  = TRUE;
             SaveOHetcHydrogens = TRUE;
@@ -646,43 +646,43 @@ char* parseCommandLine(int argc, char **argv) {
 	    ProcessConnHydOnHets = FALSE;
 	 }
 	 else if((n = compArgStr(p+1, "DENSity", 4))){
-	    VdwDotDensity = parseReal(p, n+1, 10);
+	    VdwDotDensity = parseReal(p, n+1, 10, VdwDotDensity);
 	 }
 	 else if((n = compArgStr(p+1, "PENalty", 3))){
-	    PenaltyMagnitude = parseReal(p, n+1, 10);
+	    PenaltyMagnitude = parseReal(p, n+1, 10, PenaltyMagnitude);
 	 }
 	 else if((n = compArgStr(p+1, "RADius", 3))){
-	    ProbeRadius = parseReal(p, n+1, 10);
+	    ProbeRadius = parseReal(p, n+1, 10, ProbeRadius);
 	 }
 	 else if((n = compArgStr(p+1, "NBonds", 2))){
 	    NBondCutoff = parseInteger(p, n+1, 10);
 	 }
 	 else if((n = compArgStr(p+1, "OCCcutoff", 3))){
-	    OccupancyCutoff = parseReal(p, n+1, 10);
+	    OccupancyCutoff = parseReal(p, n+1, 10, OccupancyCutoff);
 	 }
 	 else if((n = compArgStr(p+1, "H2OBcutoff", 4))){
 	    WaterBcutoff = 1.0 * parseInteger(p, n+1, 10);
 	 }
 	 else if((n = compArgStr(p+1, "H2OOCCcutoff", 6))){
-	    WaterOCCcutoff = parseReal(p, n+1, 10);
+	    WaterOCCcutoff = parseReal(p, n+1, 10, WaterOCCcutoff);
 	 }
 	 else if((n = compArgStr(p+1, "HBREGcutoff", 5))){
-	    MinRegHBgap = parseReal(p, n+1, 10);
+	    MinRegHBgap = parseReal(p, n+1, 10, MinRegHBgap);
 	 }
 	 else if((n = compArgStr(p+1, "HBCHargedcutoff", 4))){
-	    MinChargedHBgap = parseReal(p, n+1, 10);
+	    MinChargedHBgap = parseReal(p, n+1, 10, MinChargedHBgap);
 	 }
 	 else if((n = compArgStr(p+1, "BADBumpcutoff", 4))){
-	    BadBumpGapCut = parseReal(p, n+1, 10);
+	    BadBumpGapCut = parseReal(p, n+1, 10, BadBumpGapCut);
 	 }
 	 else if((n = compArgStr(p+1, "NONMETALBump", 9))){
-	    NonMetalBumpBias = parseReal(p, n+1, 10);
+	    NonMetalBumpBias = parseReal(p, n+1, 10, NonMetalBumpBias);
 	 }
 	 else if((n = compArgStr(p+1, "METALBump", 6))){
-	    MetalBumpBias = parseReal(p, n+1, 10);
+	    MetalBumpBias = parseReal(p, n+1, 10, MetalBumpBias);
 	 }
          else if((n = compArgStr(p+1, "GAPERROR", 8))){
-            GapWidth = parseReal(p, n+1, 10);
+            GapWidth = parseReal(p, n+1, 10, GapWidth);
             if (GapWidth > 1.4) {
                cerr << "Max allowed HalfGapWidth is 1.4" << endl;
                exit(1);
