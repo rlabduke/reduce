@@ -24,8 +24,8 @@
 #endif
 
 static const char *versionString =
-     "reduce: version 3.17 09/04/2012, Copyright 1997-2012, J. Michael Word";
-static const char *shortVersion    = "reduce.3.17.120904";
+     "reduce: version 3.21 02/19/2013, Copyright 1997-2013, J. Michael Word";
+static const char *shortVersion    = "reduce.3.21.130219";
 static const char *referenceString =
                        "Word, et. al. (1999) J. Mol. Biol. 285, 1735-1747.";
 static const char *electronicReference = "http://kinemage.biochem.duke.edu";
@@ -106,6 +106,7 @@ bool ShowCliqueTicks          = TRUE;
 bool ShowOrientScore          = FALSE;
 bool StringInput              = FALSE;
 bool ShowCharges              = FALSE;
+bool UseNuclearDistances      = FALSE; //jjh 130111
 
 int MaxAromRingDih    = 10;   // max dihedral angle in planarity check for aromatic rings  120724 - Aram
 
@@ -527,7 +528,7 @@ char* parseCommandLine(int argc, char **argv) {
 	    RotExistingOH      = TRUE;
 	    DemandFlipAllHNQs  = TRUE;
          }
-         else if(n = compArgStr(p+1, "NOBUILD", 7)){
+         else if((n = compArgStr(p+1, "NOBUILD", 7))){
             PenaltyMagnitude = parseReal(p, n+1, 10);
          // PenaltyMagnitude = 200;      9999 in molprobity
             BuildHisHydrogens  = TRUE;
@@ -750,6 +751,8 @@ void reduceHelp(bool showAll) { /*help*/
    cerr << "-Trim             remove (rather than add) hydrogens" << endl;
   if (showAll) {
    cerr << endl;
+   cerr << "-NUClear          use nuclear X-H distances rather than default" << endl;
+   cerr << "                  electron cloud distances" << endl;
    cerr << "-NOOH             remove hydrogens on OH and SH groups" << endl;
    cerr << "-OH               add hydrogens on OH and SH groups (default)" << endl;
    cerr << endl;
@@ -979,6 +982,11 @@ void reduceChanges(bool showAll) { /*changes*/
    cerr  << "08/15/12 - aram        added -MAXAromdih cutoff to support rotating aromatic methyls" << endl;
    cerr  << "2012/08/23 - lnd & vbc New, shorter, H bond distances and van der Waals - version 3.17" << endl;
    cerr  << "2012/09/05 - gjk       New, shorter, H bond distances and van der Waals for nucleic acids" << endl;
+   cerr  << "2013/01/10 - jjh       Remove N-H atom from N-terminal residue of amino acid chain" << endl;
+   cerr  << "2013/01/16 - jjh       Added -NUCLEAR flag, which uses nuclear distances/vdW rather" << endl;
+   cerr  << "                         the default electron cloud distances/vdW for H placement" << endl;
+   cerr  << "2013/01/22 - jjh       fixed handling of group rotation for alternates" << endl;
+   cerr  << "2013/02/19 - wba       updated version number and date" << endl;
    cerr  << endl;
    exit(1);
 }
@@ -1446,6 +1454,13 @@ void analyzeRes(CTab& hetdatabase, ResBlk* pb, ResBlk* cb, ResBlk* nb,
 		else if (ctype == NTERM_RES) {
 			bool ispro = resname.find("PRO") != std::string::npos;
 			hn = StdResH::HydPlanTbl().get(ispro?"nt-pro":"nt-amide");
+			//Trim N-H atom if present in input model for N-terminal amino JJH 130110
+			std::list<PDBrec*> cr_list;
+		    cb->get(" H", cr_list);
+		    if (cr_list.size() > 0) {
+		      std::cerr << "Removing redundant N-terminal N-H hydrogen atom from input model." << std::endl;
+		      dropHydrogens(cr_list);
+		    }
 		}
 		else if (ctype == FRAGMENT_RES) { // don't create NH
                         if (NeutralTermini) {
@@ -1549,7 +1564,6 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 			for (std::list<PDBrec*>::iterator it = ourHydrogens.begin(); it != ourHydrogens.end(); ++it) {
 				o = *it;
 				doNotAdjustSC = FALSE;
-
 				if (pp.hasFeature(NOO2PRIMEFLAG) && o2prime) {
 					// skip pp record (should find another with the same name)
 				}
@@ -1590,8 +1604,8 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 					}
 
 					if (StandardizeRHBondLengths) {
-						stdBondLen(pp.dist(), *o,
-							firstAtoms, pp.elem());
+					  stdBondLen(pp.dist(), *o,
+					    firstAtoms, pp.elem());
 					}
 					if ((connatomcount > 2) &&
 						! okToPlaceHydHere(*o, pp, r0atom, r2atom,
@@ -1611,8 +1625,8 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 						r0atom, r1atom, r2atom);
 
 					if (StandardizeRHBondLengths) {
-						stdBondLen(pp.dist(), *o,
-							firstAtoms, pp.elem());
+					  stdBondLen(pp.dist(), *o,
+					    firstAtoms, pp.elem());
 					}
 					if ((connatomcount > 2) &&
 						! okToPlaceHydHere(*o, pp, r0atom, r2atom,
@@ -1849,15 +1863,24 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 							// for heme methyls - Aram 05/31/12
 							if ((pp.hasFeature(ROTATEONDEMAND) && pp.hasFeature(AROMATICFLAG))) {
 								//std::cout << " in genHydrogens_noHyd " << newHatom->resname() << pp.name() << std::endl;
-								xyz.insertRotAromMethyl(*newHatom,
+								/*xyz.insertRotAromMethyl(*newHatom,
 									*(rvv[0][std::min(j, nconf[0]-1)]),
 									*(rvv[1][std::min(j, nconf[1]-1)]),
-									*(rvv[2][std::min(j, nconf[2]-1)]));
+									*(rvv[2][std::min(j, nconf[2]-1)]));*/
+								// 130122 - JJH, tracking alternates fix
+								xyz.insertRotAromMethyl(*newHatom,
+									*(rvv[0][counter[0]]),
+									*(rvv[1][counter[1]]),
+									*(rvv[2][counter[2]]));
 							} else {
 								xyz.insertRot(*newHatom,
-									*(rvv[0][std::min(j, nconf[0]-1)]),
+									/**(rvv[0][std::min(j, nconf[0]-1)]),
 									*(rvv[1][std::min(j, nconf[1]-1)]),
-									*(rvv[2][std::min(j, nconf[2]-1)]),
+									*(rvv[2][std::min(j, nconf[2]-1)]),*/
+									// 130122 - JJH, tracking alternates fix
+									*(rvv[0][counter[0]]),
+									*(rvv[1][counter[1]]),
+									*(rvv[2][counter[2]]),
 									TRUE, DemandRotNH3,
 									((DemandRotAllMethyls && pp.hasFeature(ROTATEONDEMAND))
 									|| (OKProcessMetMe && pp.hasFeature(ROTATEFLAG))) );
@@ -2273,7 +2296,7 @@ void findAndStandardize(const char* name, const char* resname,
 				std::list<PDBrec*> ourHydrogens;
 				theRes.get(pp->name(), ourHydrogens);
 				for (std::list<PDBrec*>::iterator it = ourHydrogens.begin(); it != ourHydrogens.end(); ++it) {
-					stdBondLen(pp->dist(), **it, firstAtoms, pp->elem());
+				  stdBondLen(pp->dist(), **it, firstAtoms, pp->elem());
 				}
 			}
 		}

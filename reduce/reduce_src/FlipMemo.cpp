@@ -29,6 +29,8 @@ using std::toupper;
 #include "AtomConn.h"
 #include "AtomPositions.h"
 
+extern bool UseNuclearDistances; //defined in reduce.cpp JJH
+
 const char* FlipMemo::_pointName[FMnumFlipRes+1]
                                 [FMmaxAtomSlots+1] = {
 {"HIS", " ND1", " CD2", " CE1", " NE2",         // all atoms needed to det.
@@ -36,7 +38,7 @@ const char* FlipMemo::_pointName[FMnumFlipRes+1]
 	" CB", " CA", " HA", " N", " C", "1HB", "2HB", // PDBv2.3 - USEOLD
 	" HD1", " HD2", " HE1", " HE2"},
 {"HIS", " ND1", " CD2", " CE1", " NE2",         // PDBv3.0 - USENEW
-        " HD1", " HD2", " HE1", " HE2", " CG",  
+        " HD1", " HD2", " HE1", " HE2", " CG",
         " CB", " CA", " HA", " N", " C", " HB2", " HB3",
         " HD1", " HD2", " HE1", " HE2"},
 {"ASN", " OD1", " ND2", "1HD2", "2HD2", " CG",        // Not Xplor = PDBv2.3 - USEOLD
@@ -81,15 +83,15 @@ const ResFlipInfo_t FlipMemo::_resFlip[FMnumFlipRes+1] = {
 };
 
 const ProtonLoc_t FlipMemo::_protLoc[FMnumNewLocs+1] = {
- {"HIS", " HD1", 4, 17, 2, 9, 4, 0.86,   0.0,   0.0},
- {"HIS", " HD2", 4, 18, 1, 3, 9, 0.93,   0.0,   0.0},
- {"HIS", " HE1", 4, 19, 4, 2, 3, 0.93,   0.0,   0.0},
- {"HIS", " HE2", 4, 20, 3, 4, 1, 0.86,   0.0,   0.0},
- {"ASN", "1HD2", 3, 13, 1, 5, 2, 0.86, 120.0, 180.0},
- {"ASN", "2HD2", 3, 14, 1, 5, 2, 0.86, 120.0,   0.0},
- {"GLN", "1HE2", 3, 13, 1, 5, 2, 0.86, 120.0, 180.0},
- {"GLN", "2HE2", 3, 14, 1, 5, 2, 0.86, 120.0,   0.0},
- { NULL,   NULL, 0,  0, 0, 0, 0, 0.0,   0.0,   0.0}
+ {"HIS", " HD1", 4, 17, 2, 9, 4, 0.86, 1.02,   0.0,   0.0},
+ {"HIS", " HD2", 4, 18, 1, 3, 9, 0.93, 1.08,   0.0,   0.0},
+ {"HIS", " HE1", 4, 19, 4, 2, 3, 0.93, 1.08,   0.0,   0.0},
+ {"HIS", " HE2", 4, 20, 3, 4, 1, 0.86, 1.02,   0.0,   0.0},
+ {"ASN", "1HD2", 3, 13, 1, 5, 2, 0.86, 1.02, 120.0, 180.0},
+ {"ASN", "2HD2", 3, 14, 1, 5, 2, 0.86, 1.02, 120.0,   0.0},
+ {"GLN", "1HE2", 3, 13, 1, 5, 2, 0.86, 1.02, 120.0, 180.0},
+ {"GLN", "2HE2", 3, 14, 1, 5, 2, 0.86, 1.02, 120.0,   0.0},
+ { NULL,   NULL, 0,  0, 0, 0, 0, 0.0,  0.0,    0.0,   0.0}
 };
 
 const BondLimits_t FlipMemo::_bondedLimits[FnumScoreableAtoms] = {
@@ -317,15 +319,21 @@ void FlipMemo::finalize(int, bool, bool, bool, AtomPositions &, DotSphManager&) 
 		}
 
 		// finally, we generate the alternate positions for flipped H atoms
-
+        double cur_dist;
 		for(int ppi=_resFlip[_resType].fromPP;
         ppi < _resFlip[_resType].fromPP+_resFlip[_resType].numPP; ppi++) {
-			
+
+            if (UseNuclearDistances) {
+              cur_dist = _protLoc[ppi].dist_nuclear;
+            }
+            else {
+              cur_dist = _protLoc[ppi].dist_ecloud;
+            }
 			_origLoc[_protLoc[ppi].anum] = atomPlacementPlan::calcLoc(
 				_protLoc[ppi].type,         _origLoc[_protLoc[ppi].c1],
 				_origLoc[_protLoc[ppi].c2], _origLoc[_protLoc[ppi].c3],
 				_origLoc[0], // *place holder* not referenced for types 3&4
-				_protLoc[ppi].dist, _protLoc[ppi].ang, _protLoc[ppi].dh);
+				cur_dist, _protLoc[ppi].ang, _protLoc[ppi].dh);
 		}
 	}
 }
@@ -376,29 +384,29 @@ std::list<AtomDescr> FlipMemo::getAtDescOfAllPos(float &maxVDWrad)
 //	 		if (_wrkAtom[f2].vdwRad() > maxVDWrad) { maxVDWrad = _wrkAtom[f2].vdwRad(); }
 //      }
 //   }
-   const int offO = _fromO;                                                                                                                               
-   if (_resFlip[_resType].numBmpr < _resFlip[_resType].numScore)                                                                                          
+   const int offO = _fromO;
+   if (_resFlip[_resType].numBmpr < _resFlip[_resType].numScore)
 			for (int ai = _resFlip[_resType].numScore; ai > _resFlip[_resType].numBmpr; ai--){
-		     //cerr << "TEST new getAtDescOfAllPos: " << AtomDescr(_origLoc[ai], _wrkAtom[ai].resno(), _wrkAtom[ai].vdwRad()) << endl;                 
+		     //cerr << "TEST new getAtDescOfAllPos: " << AtomDescr(_origLoc[ai], _wrkAtom[ai].resno(), _wrkAtom[ai].vdwRad()) << endl;
 		     AtomDescr ad(_origLoc[ai], _wrkAtom[ai].resno(), _wrkAtom[ai].vdwRad());
 		     ad.setOriginalAtomPtr( &( _wrkAtom[ ai ] ));
 		     theList.push_back(ad);
 		   }
-   for (int j=0; j < numOrientations(Mover::LOW_RES); j++)                                                                                                
-   {                                                                                                                                                      
-   	for(int ai=1; ai <= _resFlip[_resType].numBmpr; ai++) {                                                                                             
-   		if (_atomOrient[j+offO][ai] != 0) {                                                                                                              
+   for (int j=0; j < numOrientations(Mover::LOW_RES); j++)
+   {
+   	for(int ai=1; ai <= _resFlip[_resType].numBmpr; ai++) {
+   		if (_atomOrient[j+offO][ai] != 0) {
    			//cerr <<  "TEST new getAtDescOfAllPos: " << AtomDescr(_origLoc[_atomOrient[j+offO][ai]], _wrkAtom[ai].resno(), _wrkAtom[ai].vdwRad()) << endl;
-   			AtomDescr ad(_origLoc[_atomOrient[j+offO][ai]], _wrkAtom[ai].resno(), _wrkAtom[ai].vdwRad());                                 
-   			ad.setOriginalAtomPtr( &( _wrkAtom[ ai ]));        
+   			AtomDescr ad(_origLoc[_atomOrient[j+offO][ai]], _wrkAtom[ai].resno(), _wrkAtom[ai].vdwRad());
+   			ad.setOriginalAtomPtr( &( _wrkAtom[ ai ]));
    			theList.push_back(ad);
-   		}                                                                                                                                                
-   	}                                                                                                                                                   
+   		}
+   	}
    }
    theList.sort();
-	theList.unique();   
+	theList.unique();
    return theList;
-	
+
 }
 
 bool FlipMemo::setOrientation(int oi, AtomPositions &xyz, SearchStrategy ss) {
@@ -449,7 +457,7 @@ bool FlipMemo::setOrientation(int oi, AtomPositions &xyz, SearchStrategy ss) {
 
 std::string FlipMemo::describeOrientation() const {
    const int oi = orientation();
-   const char *dscr = 
+   const char *dscr =
        ((! valid()) || (oi < 0) || (oi >= _numO))
       ? "" : _orientDescr[oi + _fromO];
    return dscr;
@@ -471,11 +479,11 @@ bool FlipMemo::markFlipAtoms() {
    return TRUE;
 }
 
-double FlipMemo::determineScore(AtomPositions &xyz,	DotSphManager& dotBucket, 
+double FlipMemo::determineScore(AtomPositions &xyz,	DotSphManager& dotBucket,
 								int nBondCutoff, float probeRadius, float pmag,
-								double& penalty, float &bumpScore, float &hbScore, 
+								double& penalty, float &bumpScore, float &hbScore,
 								bool& hasBadBump) {
-	
+
 	bumpScore  = 0.0;
 	hbScore    = 0.0;
 	hasBadBump = FALSE;
@@ -492,13 +500,13 @@ double FlipMemo::determineScore(AtomPositions &xyz,	DotSphManager& dotBucket,
 
 		if (locAtom(j, thisAtom)) {
 			std::list<PDBrec*> bnded = neighbors(j, nBondCutoff);
-			
+
 			//std::cerr << "Scoring atom: " << j << " " << thisAtom.getAtomDescr() << std::endl;
 			//for (std::list< PDBrec* >::iterator iter = bnded.begin(); iter != bnded.end(); ++iter )
 			//{
 			//	std::cerr << "bonded for FlipMemo: " << nBondCutoff << " " << (*iter)->getAtomDescr() << std::endl;
 			//}
-			
+
 			double val = xyz.atomScore(thisAtom, thisAtom.loc(),
 				thisAtom.vdwRad() + probeRadius + maxVDWrad,
 				//apl procrastinate nearby list computation until AtomPositions decides to score
@@ -588,7 +596,7 @@ std::list<PDBrec*> FlipMemo::neighbors(int na, int nbdist) const {
 	return nbhd;
 }
 
-void FlipMemo::altCodes(const ResBlk& rblk,	bool useXplorNames, bool useOldNames, bool bbModel, 
+void FlipMemo::altCodes(const ResBlk& rblk,	bool useXplorNames, bool useOldNames, bool bbModel,
 						std::list<char>& sch) {
 	char ch, buf[10];
 	int rt = 0, k = 0, cursor = 0;
@@ -676,19 +684,19 @@ bool FlipMemo::isHBDonorOrAcceptorFlipped(const PDBrec& a, bool useXplorNames, b
 void FlipMemo::dropBondedFromBumpingListForPDBrec(
 		std::list< PDBrec * > & bumping,
 		PDBrec* atom,
-		int nBondCutoff 
+		int nBondCutoff
 ) const
 {
 	//std::cerr << "Dropping bonded from bumping list for " << atom->getAtomDescr() << std::endl;
-	//for ( std::list< PDBrec * >::iterator iter = bumping.begin(); 
+	//for ( std::list< PDBrec * >::iterator iter = bumping.begin();
 	//	iter != bumping.end(); ++iter )
 	//{
 	//	std::cerr << "Bumping: " << nBondCutoff << " " << (*iter)->getAtomDescr() << std::endl;
 	//}
-	
+
 	int atom_number = findAtom( atom );
 	//std::cerr << "Atom number: " << atom_number << std::endl;
-	
+
 	std::list<PDBrec*> bnded = neighbors(atom_number, nBondCutoff);
 	for (std::list< PDBrec* >::iterator iter = bumping.begin();
 		iter != bumping.end(); )
@@ -703,7 +711,7 @@ void FlipMemo::dropBondedFromBumpingListForPDBrec(
 			constiter != bnded.end(); ++constiter)
 		{
 			//std::cerr << "Compairing against: " << (*constiter)->getAtomDescr() << std::endl;
-			
+
 			if ( (*constiter)->getAtomDescr() == (*iter)->getAtomDescr() )
 			{
 				bumping.erase( iter );

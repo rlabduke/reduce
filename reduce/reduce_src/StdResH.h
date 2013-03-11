@@ -16,8 +16,8 @@
 // **************************************************************
 
 #if defined(_MSC_VER)
-#pragma warning(disable:4786) 
-#pragma warning(disable:4800) 
+#pragma warning(disable:4786)
+#pragma warning(disable:4800)
 #endif
 
 #ifndef STDRESH_H
@@ -27,6 +27,8 @@
 #include <list>
 #include <map>
 #include "ElementInfo.h"
+
+extern bool UseNuclearDistances; //defined in reduce.cpp JJH
 
 // types of hydrogens-
 // 1: HXR3 - requires just 4 atom centers
@@ -84,7 +86,7 @@ public:
 		   return i->second;
 	   else
 		   return NULL;
-//	   return _restbl.get(resName); 
+//	   return _restbl.get(resName);
    }
 
 private:
@@ -96,7 +98,7 @@ private:
    struct addPlan_args {
      int type; const char* elem; const char *hname;
      const char *c1; const char *c2; const char *c3; const char *c4;
-     double dist; double ang1; double ang2; int flags;
+     double dist_xray; double dist_nuclear; double ang1; double ang2; int flags;
    };
 
    void
@@ -118,7 +120,7 @@ public:
 	   std::map<std::string, int>::const_iterator i = _atomAttributes.find(resName + ":" + atomName);
 	   if (i != _atomAttributes.end())
 		   return i->second & attr;
-	   else 
+	   else
 		   return FALSE;
 //      int *p = _atomAttributes.get(makeKey(resName, atomName));
 //      return (p == NULL) ? FALSE : ((*p) & attr);
@@ -128,7 +130,7 @@ public:
 	   std::map<std::string, int>::const_iterator i = _atomAttributes.find(s1 + ":" + s2);
 	   if (i != _atomAttributes.end())
 		   return i->second != 0;
-	   else 
+	   else
 		   return FALSE;
 //      int *p = _atomAttributes.get(makeKey(s1, s2));
 //      return (p == NULL) ? FALSE : ((*p) != 0);

@@ -13,7 +13,7 @@
 // **************************************************************
 
 #if defined(_MSC_VER)
-#pragma warning(disable:4786) 
+#pragma warning(disable:4786)
 #endif
 
 #ifndef ELEMENTINFO_H
@@ -51,6 +51,7 @@ using std::strlen;
 #define HS_RESNAMES \
  "currently there are none RMI 070711"
 
+extern bool UseNuclearDistances; //defined in reduce.cpp JJH
 
 class StandardElementTable;
 
@@ -115,7 +116,7 @@ public:
    // deep copy
    ElementInfo duplicate() {
       ElementInfo retval(atno(), atomName(), fullName(),
-			explRad(), implRad(), covRad(), color(), _rep->_flags);
+        explRad(), implRad(), covRad(), color(), _rep->_flags);
       return retval;
    }
 
@@ -137,7 +138,19 @@ public:
    int   atno()     const { return _rep->_atno; }
    char* atomName() const { return _rep->_name; }
    char* fullName() const { return _rep->_fullName; }
-   float explRad()  const { return _rep->_eRad; }
+   // 130114 - adjustments for nuclear distances JJH
+   float explRad()  const {
+     if (UseNuclearDistances) {
+       if ( (std::strcmp(_rep->_name, "H")    == 0) ||
+            (std::strcmp(_rep->_name, "Har")  == 0) ||
+            (std::strcmp(_rep->_name, "Hpol") == 0) ||
+            (std::strcmp(_rep->_name, "Ha+p") == 0) ||
+            (std::strcmp(_rep->_name, "HOd")  == 0) ){
+         return (_rep->_eRad - 0.05);
+       }
+     }
+     return _rep->_eRad;
+   }
    float implRad()  const { return _rep->_iRad; }
    float covRad()   const { return _rep->_covRad; }
    char* color()    const { return _rep->_color; }
