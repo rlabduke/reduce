@@ -2,12 +2,23 @@
 # reduce top level Makefile
 #
 
-SUBDIRS = toolclasses libpdb reduce_src
+SUBDIRS1 = toolclasses libpdb reduce_src
+SUBDIRS2 = toolclasses libpdb nosym_reduce_src
+SUBDIRS = toolclasses libpdb reduce_src nosym_reduce_src
 
 all:
 	@case '${MFLAGS}' in *[ik]*) set +e;; esac; \
 	echo "Start Compling:"
-	for i in $(SUBDIRS) ;\
+	for i in $(SUBDIRS1) ;\
+	do \
+		(cd $$i ; echo "making" all "in $(CURRENT_DIR)/$$i..."; \
+			$(MAKE) $(MFLAGS) 'CXXDEBUGFLAGS=$(CXXDEBUGFLAGS)' all); \
+	done
+
+nosym:
+	@case '${MFLAGS}' in *[ik]*) set +e;; esac; \
+	echo "Start Compling:"
+	for i in $(SUBDIRS2) ;\
 	do \
 		(cd $$i ; echo "making" all "in $(CURRENT_DIR)/$$i..."; \
 			$(MAKE) $(MFLAGS) 'CXXDEBUGFLAGS=$(CXXDEBUGFLAGS)' all); \

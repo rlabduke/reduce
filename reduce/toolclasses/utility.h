@@ -97,7 +97,7 @@ double clampAngle(double a, int min=-180);
 int compArgStr(const char *str, const char *arg, int n);
 
 int parseInteger(const char *str, int start, int len);
-double parseReal(const char *str, int start, int len);
+double parseReal(const char *str, int start, int len, double initalValue);
 
 // column/fixed field formatted io routines from pdb++ classes
 int column_sscanf(const char *, const char *, ...);
