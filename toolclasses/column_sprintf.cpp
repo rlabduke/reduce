@@ -299,7 +299,7 @@ outfloat(double value, int width, int nplace, char fill_char, int left_justify,
 	int	negative;
 
 	negative = value < 0.0 ? 1 : 0;
-		
+
 	if (negative)
 		value = -value;
 
@@ -350,11 +350,12 @@ outfloat(double value, int width, int nplace, char fill_char, int left_justify,
 	} else {
 		for (to = place; to >= p; to--)
 			*to = fill_char;
-		if (negative)
+		if (negative) {
 			if (fill_char == ' ')
 				*place = '-';
 			else
 				*p = '-';
+		}
 	}
 
 	return p + width;
