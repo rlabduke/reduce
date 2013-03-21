@@ -1332,6 +1332,12 @@ bool isAromMethyl(ResConn& ct, const atomPlacementPlan& pp, ResBlk& theRes, cons
 	// std::cout << std::endl << "resname: " << resname << ", atomname: " << pp.name() << "." << theRes.firstRec().atomname();
 	while (it != temp.end()) {
 		std::list<PDBrec*> r_list;
+		// if atom does not exist, do not test dihedral
+		if (!theRes.contains(*it)) {
+		  cerr <<"WARNING: No " << *it << " atom! Cannot determine if "
+		       << pp.name() << " is part of an aromatic methyl." << endl;
+		  return FALSE;
+		}
 		theRes.get(*it, r_list);
 		PDBrec* rec = *r_list.begin(); // Do not consider alt configulation for now
 		r_vec.push_back(rec);
