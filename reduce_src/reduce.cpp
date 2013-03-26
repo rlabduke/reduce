@@ -24,9 +24,9 @@
 #endif
 
 static const char *versionString =
-     "reduce: version 3.21 02/19/2013, Copyright 1997-2013, J. Michael Word";
+     "reduce: version 3.21 03/26/2013, Copyright 1997-2013, J. Michael Word";
 
-static const char *shortVersion    = "reduce.3.21.130219";
+static const char *shortVersion    = "reduce.3.21.130326";
 static const char *referenceString =
                        "Word, et. al. (1999) J. Mol. Biol. 285, 1735-1747.";
 static const char *electronicReference = "http://kinemage.biochem.duke.edu";
@@ -1003,6 +1003,7 @@ void reduceChanges(bool showAll) { /*changes*/
    cerr  << "                         the default electron cloud distances/vdW for H placement" << endl;
    cerr  << "2013/01/22 - jjh       fixed handling of group rotation for alternates" << endl;
    cerr  << "2013/02/19 - wba       updated version number and date" << endl;
+   cerr  << "2013/03/26 - jjh       fixed bugs related to aromatic methyl rotations" << endl;
    cerr  << endl;
    exit(1);
 }
@@ -1348,7 +1349,13 @@ bool isAromMethyl(ResConn& ct, const atomPlacementPlan& pp, ResBlk& theRes, cons
 
 	for (int i = 0; i < r_vec.size(); i++) { // check dihedral angles starting from each atom in the ring
 		int i0=i, i1=(i+1)%r_vec.size(), i2=(i+2)%r_vec.size(), i3=(i+3)%r_vec.size();
+		//cerr << r_vec[i0]->atomname() << r_vec[i1]->atomname() << r_vec[i2]->atomname() << r_vec[i3]->atomname() << endl;
+		//cerr << r_vec[i0]->loc() << r_vec[i1]->loc() << r_vec[i2]->loc() << r_vec[i3]->loc() << endl;
 		double dih = dihedral(r_vec[i0]->loc(), r_vec[i1]->loc(), r_vec[i2]->loc(), r_vec[i3]->loc());
+		//need to check for this? - JJH 130326
+		/*if (std::isnan(dih)) {
+		  cerr << "problem with dihedral" << endl;
+		}*/
 		while (dih < 0) dih += 360;
 		while (dih >= 180) dih -= 180;
 		if ( (dih > AROMATIC_RING_DIHEDRAL) && (dih < (180.0 - AROMATIC_RING_DIHEDRAL)) ) {
