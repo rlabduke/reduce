@@ -24,9 +24,9 @@
 #endif
 
 static const char *versionString =
-     "reduce: version 3.21 03/26/2013, Copyright 1997-2013, J. Michael Word";
+     "reduce: version 3.22 03/27/2013, Copyright 1997-2013, J. Michael Word";
 
-static const char *shortVersion    = "reduce.3.21.130326";
+static const char *shortVersion    = "reduce.3.22.130327";
 static const char *referenceString =
                        "Word, et. al. (1999) J. Mol. Biol. 285, 1735-1747.";
 static const char *electronicReference = "http://kinemage.biochem.duke.edu";
@@ -1004,6 +1004,8 @@ void reduceChanges(bool showAll) { /*changes*/
    cerr  << "2013/01/22 - jjh       fixed handling of group rotation for alternates" << endl;
    cerr  << "2013/02/19 - wba       updated version number and date" << endl;
    cerr  << "2013/03/26 - jjh       fixed bugs related to aromatic methyl rotations" << endl;
+   cerr  << "2013/03/27 - jjh v3.22 fixed bug where number of brute force node searches" << endl;
+   cerr  << "                        exceeded the system size of an int type" << endl;
    cerr  << endl;
    exit(1);
 }
