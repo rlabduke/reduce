@@ -16,7 +16,7 @@
 // **************************************************************
 
 #if defined(_MSC_VER)
-#pragma warning(disable:4800) 
+#pragma warning(disable:4800)
 #endif
 
 #ifndef PDBREC_H
@@ -40,6 +40,8 @@
 const int   NameModifiedFlag = (1 << 1);
 const int NegativeChargeFlag = (1 << 2);
 const int PositiveChargeFlag = (1 << 3);
+
+extern bool UseSEGIDasChain; //jjh 130503, defined in reduce.cpp
 
 #define WATER_RESNAMES \
  ":HOH:DOD:H2O:D2O:WAT:TIP:SOL:MTO:hoh:dod:h2o:d2o:wat:tip:sol:mto:"
@@ -119,7 +121,7 @@ public:
 	   }
 	   _i = a._i;
 	   _rep = a._rep;
-	   return *this; 
+	   return *this;
    }
 
    void clone(PDBrec* p, bool setmark = FALSE);
@@ -167,19 +169,28 @@ public:
 
    const char* atomname() const { return _rep->_r.atom.name;               }
    const char* Hy36Num()  const { return _rep->_r.atom.serialNum;          }
-   int  atomno()          const { 
-      int n; 
+   int  atomno()          const {
+      int n;
       const char* errmsg = hy36decode(5,  _rep->_r.atom.serialNum, 5, &n);
-      return n; 
-      //if (errmsg) throw std::runtime_error(errmsg); 
+      return n;
+      //if (errmsg) throw std::runtime_error(errmsg);
    }
    const char*  resname() const { return _rep->_r.atom.residue.name;       }
    char insCode()         const { return _rep->_r.atom.residue.insertCode; }
-   const char* chain()    const { return _rep->_r.atom.residue.chainId;    }
+   const char* chain()    const {
+     if (UseSEGIDasChain) {
+       //std::cerr << "Using SEGID as chain" << std::endl;
+       return _rep->_r.atom.segID;
+     }
+     else {
+       return _rep->_r.atom.residue.chainId;
+     }
+   }
    char one_char_chain()  const { return _rep->_r.atom.residue.chainId[1]; }
+   const char* segid_as_chain() const { return _rep->_r.atom.segID;        }
    char alt()             const { return _rep->_r.atom.altLoc;             }
    const char* Hy36resno()const { return _rep->_r.atom.residue.seqNum;     }
-   int  resno()           const { 
+   int  resno()           const {
       int n;
       const char* errmsg = hy36decode(4,  _rep->_r.atom.residue.seqNum, 4, &n);
       return n;
@@ -204,16 +215,16 @@ public:
       _rep->_r.atom.name[4] = '\0';
    }
 
-   void atomno(int n)              { 
+   void atomno(int n)              {
       const char* errmsg = hy36decode(5,  _rep->_r.atom.serialNum, 5, &n);
       //if (errmsg) throw std::runtime_error(errmsg);
    }
-   void Hy36Num(int n)         { 
-      char result[6]; 
-      const char* errmsg = hy36encode(5, n, result); 
-      strncpy(_rep->_r.atom.serialNum, result,6); 
+   void Hy36Num(int n)         {
+      char result[6];
+      const char* errmsg = hy36encode(5, n, result);
+      strncpy(_rep->_r.atom.serialNum, result,6);
       //_rep->_r.atom.serialNum[6] = '\0'; // RMI i don't know why, but this seems to need to be comment out
-      //if (errmsg) throw std::runtime_error(errmsg); 
+      //if (errmsg) throw std::runtime_error(errmsg);
    }
    void alt(char a)                { _rep->_r.atom.altLoc = a;         }
    void occupancy(float o)         { _rep->_r.atom.occupancy = o;      }
@@ -231,7 +242,7 @@ public:
       strncpy(_rep->_r.atom.annotation,a,10);
       _rep->_r.atom.annotation[10] = '\0';
    }
-   void terAtomno(int n)           { 
+   void terAtomno(int n)           {
       const char* errmsg = hy36decode(5,  _rep->_r.atom.serialNum, 5, &n);
       //if (errmsg) throw std::runtime_error(errmsg);
    }
@@ -249,8 +260,8 @@ public:
    bool   isHydrogen() const { return _rep->_e.isHydrogen(); }
 
    bool isWater() const;
-  
-   bool isHe() const; 
+
+   bool isHe() const;
 
    bool isHf() const;
 

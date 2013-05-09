@@ -27,6 +27,8 @@
 #include "AtomDescr.h"
 #include "GraphToHoldScores.h"
 
+extern bool UseSEGIDasChain; //jjh 130503, defined in reduce.cpp
+
 class AtomPositions {
 public:
    AtomPositions(int nblocks, bool onlyA, bool xplor, bool old, bool bbmodel, int nbCutoff,
@@ -36,7 +38,7 @@ public:
 		  float pmag, float occCutoff,
 		  bool verbose, bool showOrientScore,
 		  bool cliqueTicks, std::ostream& os)
-      : _onlyA(onlyA), _useXplorNames(xplor), _useOldNames(old), _bbModel(bbmodel), 
+      : _onlyA(onlyA), _useXplorNames(xplor), _useOldNames(old), _bbModel(bbmodel),
 	_nBondCutoff(nbCutoff),
 	_min_regular_hb_cutoff(minRegHBcut),
 	_min_charged_hb_cutoff(minChargedHBcut),
@@ -49,7 +51,7 @@ public:
 	_cliqueTicks(cliqueTicks), _os(os),
 	scoreAtomsAndDotsInAtomsToScoreVector_( false ),
 	scoreAtomsInAtomsInHighOrderOverlapList_( false ),
-	atoms_to_score_ptr_(0), atoms_in_high_order_overlap_ptr_(0), 
+	atoms_to_score_ptr_(0), atoms_in_high_order_overlap_ptr_(0),
 	_clqOfInt( false ) {}
 
   ~AtomPositions() {
@@ -78,7 +80,7 @@ public:
    void insertRot(const PDBrec& hr, const PDBrec& c1,
                   const PDBrec& c2, const PDBrec& c3,
 		  bool doOHSH, bool doNH3, bool doMethyl);
-		  
+
    void insertRotAromMethyl(const PDBrec& hr, const PDBrec& c1,
                   const PDBrec& c2, const PDBrec& c3); // for Arom methyls - Aram 08/13/12
    std::list<char> insertFlip(const ResBlk& rblk);
@@ -94,7 +96,7 @@ public:
    int orientClique(const std::list<MoverPtr>& clique, int limit); // returns -1 if abandoned
    int exhaustiveSearchOfClique(const std::list<MoverPtr>& clique);
 
-   void describeChanges(std::list<PDBrec*>& records, 
+   void describeChanges(std::list<PDBrec*>& records,
 	   std::list<PDBrec*>::iterator& infoPtr, std::vector<std::string>& notes);
 
    int numChanges() const { return _motionDesc.size(); }
@@ -108,7 +110,7 @@ public:
 		const DotSph& dots, float prRadius, bool onlyBumps,
 		float &bumpSubScore, float &hbSubScore, bool &hasBadBump);
 
-	//double determineScoreForMoverIn3WayOverlap( 
+	//double determineScoreForMoverIn3WayOverlap(
 	//	std::list< AtomDescr > * atomsIn3WayOverlap,
 	//	Mover* mover
 	//);
@@ -116,19 +118,19 @@ public:
 	void CollectBumping(const AtomDescr& ad, std::list<PDBrec*>& bumping);
    float & getMaxFoundVDWRad() { return _maxVDWFound;}
    int getNBondCutoff() const {return _nBondCutoff;}
-   
+
    float determineScoreForMover(
    	Mover* mover,
    	std::vector< std::pair< AtomDescr, DotsForAtom * > >  & atoms_to_score,
    	double & penalty
    );
-   
+
    //float scoreMoverInHighOrderOverlap(
 	//	std::list< AtomDescr > & atomsInHighOrderOverlap,
 	//	Mover * mover );
-   
+
 	bool outputNotice() const {return _outputNotice;}
-	
+
 private:
    AtomPositions(const AtomPositions& a);            // can't copy
    AtomPositions& operator=(const AtomPositions& a); // can't assign
@@ -140,7 +142,7 @@ private:
    const bool                _onlyA;
    const bool                _useXplorNames;
    const bool                _useOldNames;
-   const bool		     _bbModel; 
+   const bool		     _bbModel;
    const int                 _nBondCutoff;
    const float               _min_regular_hb_cutoff;
    const float               _min_charged_hb_cutoff;
@@ -154,30 +156,30 @@ private:
    const bool                _cliqueTicks;
    std::ostream&             _os;
 	float	_maxVDWFound;
-   
+
    bool
-	initializeCliqueMovers( 
-		std::list< Mover* > const & clique, 
+	initializeCliqueMovers(
+		std::list< Mover* > const & clique,
 		std::vector< Mover* > & item,
 		int const numItems
 	);
-	
+
 	void
-	setNumStatesForNodes( 
-		std::vector< Mover* > & item, 
+	setNumStatesForNodes(
+		std::vector< Mover* > & item,
 		int const numItems,
 		std::vector< int > & num_states,
 		std::vector< std::vector< float > > & penalties
 	);
 
-	
+
 private:
-	
+
 	bool scoreAtomsAndDotsInAtomsToScoreVector_;
 	bool scoreAtomsInAtomsInHighOrderOverlapList_;
 	std::vector< std::pair< AtomDescr, DotsForAtom * > > * atoms_to_score_ptr_;
 	std::list< AtomDescr > * atoms_in_high_order_overlap_ptr_;
-	
+
 	int  _clqDots;				//ANDREW: for keeping track of how many dots go into the score for a network
 	int  _bgDots;				//ANDREW: used only when the flag DEBUGDOTCOUNTS is set.
 	bool _clqOfInt;			//ANDREW: this will let me detect once whether the clique I'm examining is the one I'm interested in
@@ -185,7 +187,7 @@ private:
 
 
 public:
-   int SearchClique(std::list<MoverPtr> clique, int time_limit); 
-   
+   int SearchClique(std::list<MoverPtr> clique, int time_limit);
+
 };
 #endif

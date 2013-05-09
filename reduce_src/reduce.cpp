@@ -24,9 +24,9 @@
 #endif
 
 static const char *versionString =
-     "reduce: version 3.22 03/27/2013, Copyright 1997-2013, J. Michael Word";
+     "reduce: version 3.23 05/9/2013, Copyright 1997-2013, J. Michael Word";
 
-static const char *shortVersion    = "reduce.3.22.130327";
+static const char *shortVersion    = "reduce.3.23.130509";
 static const char *referenceString =
                        "Word, et. al. (1999) J. Mol. Biol. 285, 1735-1747.";
 static const char *electronicReference = "http://kinemage.biochem.duke.edu";
@@ -96,6 +96,7 @@ bool ShowOrientScore          = FALSE;
 bool StringInput              = FALSE;
 bool ShowCharges              = FALSE;
 bool UseNuclearDistances      = FALSE; //jjh 130111
+bool UseSEGIDasChain          = FALSE; //jjh 130503
 
 int MaxAromRingDih    = 10;   // max dihedral angle in planarity check for aromatic rings  120724 - Aram
 
@@ -160,6 +161,7 @@ void reduceHelp(bool showAll);
 void reduceChanges(bool showAll);
 std::istream& inputRecords(std::istream& is, std::list<PDBrec*>& records);
 std::ostream& outputRecords(std::ostream& os, const std::list<PDBrec*>& records);
+void checkSEGIDs(std::list<PDBrec*>& rlst);
 void dropHydrogens(std::list<PDBrec*>& records);
 void reduceList(CTab& db, std::list<PDBrec*>& records,
 				AtomPositions& xyz, std::vector<std::string>& fixNotes);
@@ -268,6 +270,8 @@ void processPDBfile(std::istream& ifs, char *pdbFile, std::ostream& ofs) {
    std::list<PDBrec*> records;
 
    inputRecords(ifs, records);       // read all the PDB records in the file
+
+   checkSEGIDs(records);
 
    if (RemoveHydrogens) {
       dropHydrogens(records);
@@ -1006,6 +1010,7 @@ void reduceChanges(bool showAll) { /*changes*/
    cerr  << "2013/03/26 - jjh       fixed bugs related to aromatic methyl rotations" << endl;
    cerr  << "2013/03/27 - jjh v3.22 fixed bug where number of brute force node searches" << endl;
    cerr  << "                        exceeded the system size of an int type" << endl;
+   cerr  << "2013/05/09 - jjh v3.23 support for segid instead of chainid added" << endl;
    cerr  << endl;
    exit(1);
 }
@@ -1026,6 +1031,32 @@ std::ostream& outputRecords(std::ostream& os, const std::list<PDBrec*>& l) {
   }
 */
   return os;
+}
+
+// check input records for SEGIDs only, use instead of chainID
+void checkSEGIDs(std::list<PDBrec*>& rlst) {
+  int full_chain_ctr = 0;
+  int full_segid_ctr = 0;
+  typedef std::list<PDBrec*>::iterator pdb_iter;
+  for (pdb_iter it = rlst.begin(); it != rlst.end(); ) {
+    PDBrec* r = *it;
+    //currently only checks atom records - is this enough?
+    if (r->type() == PDB::ATOM) {
+      if (strcmp(r->chain(), "") != 0) {
+        full_chain_ctr++;
+      }
+      if (strcmp(r->segidLabel(), "") != 0) {
+        full_segid_ctr++;
+      }
+    }
+    it++;
+  }
+  //cerr << "full_chain_ctr = " << full_chain_ctr << endl;
+  //cerr << "full_segid_ctr = " << full_segid_ctr << endl;
+  if ( (full_chain_ctr == 0) && (full_segid_ctr > 0) ) {
+    //cerr << "Using SEGID as chain" << endl;
+    UseSEGIDasChain = TRUE;
+  }
 }
 
 // input a list of PDB records
