@@ -494,6 +494,9 @@ ElementInfo* StandardElementTable::lookupPDBatom(const char* name, const char* r
       case 'G': elementName = fixAtomName(name,resname,1) ? "Hg" : "H"; break;
       case 'O': elementName = fixAtomName(name,resname,1) ? "Ho" : "H"; break;
       case 'S': elementName = fixAtomName(name,resname,1) ? "Hs" : "H"; break;
+      case '5': if( (buf[2] == '\'') && (buf[3] == '\'') ){
+                  elementName = "H"; break; // deal with H5'' in RNA/DNA backbone
+                }
       case 'H': elementName = "H"; break; // hopefully to get rid of warnings for pdb v3 names
       case 'D': elementName = "H"; break; // hopefully to get rid of warnings for pdb v3 names
 //      case 'E': elementName = "He"; emitWarning = TRUE;break;

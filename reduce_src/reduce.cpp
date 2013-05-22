@@ -24,9 +24,9 @@
 #endif
 
 static const char *versionString =
-     "reduce: version 3.23 05/9/2013, Copyright 1997-2013, J. Michael Word";
+     "reduce: version 3.23 05/21/2013, Copyright 1997-2013, J. Michael Word";
 
-static const char *shortVersion    = "reduce.3.23.130509";
+static const char *shortVersion    = "reduce.3.23.130521";
 static const char *referenceString =
                        "Word, et. al. (1999) J. Mol. Biol. 285, 1735-1747.";
 static const char *electronicReference = "http://kinemage.biochem.duke.edu";
@@ -1011,6 +1011,7 @@ void reduceChanges(bool showAll) { /*changes*/
    cerr  << "2013/03/27 - jjh v3.22 fixed bug where number of brute force node searches" << endl;
    cerr  << "                        exceeded the system size of an int type" << endl;
    cerr  << "2013/05/09 - jjh v3.23 support for segid instead of chainid added" << endl;
+   cerr  << "2013/05/20 - jjh       fixed -trim handling of H5'' atom in RNA" << endl;
    cerr  << endl;
    exit(1);
 }
