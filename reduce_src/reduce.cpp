@@ -24,9 +24,9 @@
 #endif
 
 static const char *versionString =
-     "reduce: version 3.23 05/21/2013, Copyright 1997-2013, J. Michael Word";
+     "reduce: version 3.24 07/05/2013, Copyright 1997-2013, J. Michael Word";
 
-static const char *shortVersion    = "reduce.3.23.130521";
+static const char *shortVersion    = "reduce.3.24.130705";
 static const char *referenceString =
                        "Word, et. al. (1999) J. Mol. Biol. 285, 1735-1747.";
 static const char *electronicReference = "http://kinemage.biochem.duke.edu";
@@ -163,6 +163,7 @@ std::istream& inputRecords(std::istream& is, std::list<PDBrec*>& records);
 std::ostream& outputRecords(std::ostream& os, const std::list<PDBrec*>& records);
 void checkSEGIDs(std::list<PDBrec*>& rlst);
 void dropHydrogens(std::list<PDBrec*>& records);
+void invalidateRecords(std::list<PDBrec*>& rlst);
 void reduceList(CTab& db, std::list<PDBrec*>& records,
 				AtomPositions& xyz, std::vector<std::string>& fixNotes);
 void scanAndGroupRecords(std::list<PDBrec*>& rlst, AtomPositions& xyz,
@@ -1012,6 +1013,8 @@ void reduceChanges(bool showAll) { /*changes*/
    cerr  << "                        exceeded the system size of an int type" << endl;
    cerr  << "2013/05/09 - jjh v3.23 support for segid instead of chainid added" << endl;
    cerr  << "2013/05/20 - jjh       fixed -trim handling of H5'' atom in RNA" << endl;
+   cerr  << "2013/07/05 - jjh v3.24 fixed handling of ANISOU records when SEGIDs in use," << endl;
+   cerr  << "                        and fixed removal of redundant N-terminal H atoms" << endl;
    cerr  << endl;
    exit(1);
 }
@@ -1180,6 +1183,26 @@ void renumberAndReconnect(std::list<PDBrec*>& rlst) {
 	}
 }
 
+void invalidateRecords(std::list<PDBrec*>& rlst) {
+  typedef std::list<PDBrec*>::iterator pdb_iter;
+  for (pdb_iter it = rlst.begin(); it != rlst.end(); ) {
+    PDBrec* r = *it;
+    if (r->type() == PDB::ATOM) {
+	  if (r->isHydrogen()) {
+        Tally._H_removed++;
+      }
+    }
+    else if (r->type() == PDB::HETATM) {
+      if (r->isHydrogen()) {
+        Tally._H_removed++;
+        Tally._H_HET_removed++;
+      }
+    }
+    r->invalidateRecord();
+    it++;
+  }
+}
+
 void dropHydrogens(std::list<PDBrec*>& rlst) {
   typedef std::list<PDBrec*>::iterator pdb_iter;
 	for (pdb_iter it = rlst.begin(); it != rlst.end(); ) {
@@ -1260,6 +1283,7 @@ void scanAndGroupRecords(std::list<PDBrec*>& rlst, AtomPositions& xyz,
 void reduceList(CTab& hetdatabase, std::list<PDBrec*>& rlst,
 				AtomPositions& xyz, std::vector<std::string>& fixNotes) {
 	std::list<PDBrec*>::iterator it = rlst.begin();
+	std::list<PDBrec*>::iterator it_backup;
 	ResBlk *pb = NULL, *cb = NULL, *nb = NULL;
 	std::list<PDBrec*> waters;
 
@@ -1469,7 +1493,7 @@ void analyzeRes(CTab& hetdatabase, ResBlk* pb, ResBlk* cb, ResBlk* nb,
 		    cb->get(" H", cr_list);
 		    if (cr_list.size() > 0) {
 		      std::cerr << "Removing redundant N-terminal N-H hydrogen atom from input model." << std::endl;
-		      dropHydrogens(cr_list);
+		      invalidateRecords(cr_list);
 		    }
 		}
 		else if (ctype == FRAGMENT_RES) { // don't create NH

@@ -178,12 +178,24 @@ public:
    const char*  resname() const { return _rep->_r.atom.residue.name;       }
    char insCode()         const { return _rep->_r.atom.residue.insertCode; }
    const char* chain()    const {
-     if (UseSEGIDasChain) {
-       //std::cerr << "Using SEGID as chain" << std::endl;
-       return _rep->_r.atom.segID;
+     if (_rep->_r.type() == PDB::ATOM || _rep->_r.type() == PDB::HETATM) {
+       if (UseSEGIDasChain) {
+         //std::cerr << "Using SEGID as chain" << std::endl;
+         return _rep->_r.atom.segID;
+       }
+       else {
+         return _rep->_r.atom.residue.chainId;
+       }
      }
-     else {
-       return _rep->_r.atom.residue.chainId;
+     else if (_rep->_r.type() == PDB::SIGATM || _rep->_r.type() == PDB::ANISOU
+	       || _rep->_r.type() == PDB::SIGUIJ) {
+       if (UseSEGIDasChain) {
+         //std::cerr << "Using SEGID as chain" << std::endl;
+         return _rep->_r.anisou.segID;
+       }
+       else {
+         return _rep->_r.anisou.residue.chainId;
+       }
      }
    }
    char one_char_chain()  const { return _rep->_r.atom.residue.chainId[1]; }
