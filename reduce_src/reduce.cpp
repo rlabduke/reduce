@@ -1016,6 +1016,7 @@ void reduceChanges(bool showAll) { /*changes*/
    cerr  << "2013/07/05 - jjh v3.24 fixed handling of ANISOU records when SEGIDs in use," << endl;
    cerr  << "                        and fixed removal of redundant N-terminal H atoms" << endl;
    cerr  << "2013/07/11 - jjh       fixed calculation of neighbor atoms with invalidated records" << endl;
+   cerr  << "2013/07/11 - jjh       fixed enforcement of time limit for clique search" << endl;
    cerr  << endl;
    exit(1);
 }

@@ -197,6 +197,14 @@ public:
          return _rep->_r.anisou.residue.chainId;
        }
      }
+     else {
+       if (UseSEGIDasChain) {
+         return _rep->_r.atom.segID;
+       }
+       else {
+         return _rep->_r.atom.residue.chainId;
+       }
+     }
    }
    char one_char_chain()  const { return _rep->_r.atom.residue.chainId[1]; }
    const char* segid_as_chain() const { return _rep->_r.atom.segID;        }

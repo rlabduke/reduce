@@ -980,10 +980,11 @@ int AtomPositions::SearchClique(std::list<MoverPtr> clique, int limit)
 
 		NodeAndEdgeManager* theNaEManager = NodeAndEdgeManager::getInstance();
 		theNaEManager->InitializeNetwork(gths);
-		if ( firstOptimization )
-		{
-			theNaEManager->setTimeLimit( timeLimit );
-		}
+		//if ( firstOptimization )
+		//{
+		//	theNaEManager->setTimeLimit( timeLimit );
+		//}
+		theNaEManager->setTimeLimit( timeLimit );
 		abandonedOptimization = theNaEManager->computeOptimalNetworkConfiguration();
 		//theNaEManager->bruteForceOriginalGraph();
 
