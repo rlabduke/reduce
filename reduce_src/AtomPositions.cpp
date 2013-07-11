@@ -502,9 +502,9 @@ void AtomPositions::finalizeMovers() {
 		if (m != NULL) {
 
 			m->descr(it->first);
-			//_os << "FinalizeMovers: #res " << rn << " is " << m->descr() << endl;
+			//cerr << "FinalizeMovers: #res " << rn << " is " << m->descr() << endl;
 			m->finalize(_nBondCutoff, _useXplorNames, _useOldNames, _bbModel, *this, _dotBucket);
-			//_os << "FinalizeMovers: #res " << rn << " is " << m->descr() << endl;
+			//cerr << "FinalizeMovers: #res " << rn << " is " << m->descr() << endl;
 		}
 		++rn;
 		++it;

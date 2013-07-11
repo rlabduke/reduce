@@ -38,10 +38,12 @@ void bondedList(const PDBrec& a, std::list<PDBrec*>& nearby, int nbnds,
 	PDBrec* rec = NULL;
 	for (std::list<PDBrec*>::const_iterator it = nearby.begin(); it != nearby.end(); ++it) {
 		rec = *it;
-		if (rec->mark() >= 1 && rec->mark() <= nbnds) {
+		if (rec->valid()) {
+		  if (rec->mark() >= 1 && rec->mark() <= nbnds) {
 			PDBrec* temp = new PDBrec(*rec);
 			bondedAtoms->push_front(temp);
-		}
+		  }
+        }
 	}
 }
 
@@ -54,7 +56,8 @@ void countBonds(const PDBrec& src, const std::list<PDBrec*>& nearby,
 	PDBrec* rec = NULL;
 	for (std::list<PDBrec*>::const_iterator targ = nearby.begin(); targ != nearby.end(); ++targ) {
 		rec = *targ;
-		if ( (rec->mark() < 1 || rec->mark() > distcount)
+		if (rec->valid()) {
+		  if ( (rec->mark() < 1 || rec->mark() > distcount)
 			&& ! diffAltLoc(src, *rec) ) {
 
 			bool isnear   = withinCovalentDist(src, *rec,  0.2);
@@ -67,6 +70,7 @@ void countBonds(const PDBrec& src, const std::list<PDBrec*>& nearby,
 			else {
 				remainder.push_front(rec);
 			}
+		  }
 		}
 	}
 	if (distcount < maxcnt) {
@@ -100,7 +104,7 @@ bool interactingConfs(const PDBrec& a, const PDBrec& b, bool onlyA) {
 bool diffAltLoc(const PDBrec& a, const PDBrec& b) {
    //return a.resno() == b.resno() && a.insCode() == b.insCode()
    return a.insCode() == b.insCode()
-       && strcmp(a.chain(), b.chain()) == 0 
+       && strcmp(a.chain(), b.chain()) == 0
        && a.alt() != b.alt() && a.alt() != ' ' && b.alt() != ' ';
 }
 

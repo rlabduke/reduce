@@ -26,8 +26,8 @@
 #include <cstring>
 #include <cstdlib>
 #include <iostream>
-using std::cerr; 
-using std::endl; 
+using std::cerr;
+using std::endl;
 using std::strcpy;
 using std::exit;
 #include <sstream>
@@ -51,15 +51,15 @@ RotAromMethyl::RotAromMethyl(const Point3d& a, const Point3d& b,
    validateMemo();
 }
 
-void RotAromMethyl::finalize(int nBondCutoff, bool useXplorNames, bool useOldNames, bool bbModel, 
+void RotAromMethyl::finalize(int nBondCutoff, bool useXplorNames, bool useOldNames, bool bbModel,
 						 AtomPositions &xyz, DotSphManager& dotBucket) {
 
 	if (isComplete()) {
 
 		// pre-build lists of bonded atoms
-		
+
 		const double approxNbondDistLimit = 3.0 + 0.5*nBondCutoff; // just a rule of thumb
-		
+
 		_rot.push_front(&_heavyAtom);
 		for(std::list<PDBrec*>::const_iterator alst = _rot.begin(); alst != _rot.end(); ++alst) {
 			const PDBrec* thisAtom = *alst;
@@ -97,12 +97,12 @@ std::list<AtomDescr> RotAromMethyl::getAtDescOfAllPos(float &maxVDWrad) {
 	AtomDescr ad_heavy(_heavyAtom.loc(), _heavyAtom.resno(), _heavyAtom.vdwRad());
 	ad_heavy.setOriginalAtomPtr( & _heavyAtom );
 	theList.push_back(ad_heavy);  // ANDREW: appending _heavyAtom to the getBumpersOfAllPos function
-	
+
 	PDBrec* hyds = NULL;
 	for (std::list<PDBrec*>::const_iterator it = _rot.begin(); it != _rot.end(); ++it) {
 		hyds = *it;
-		Point3d initHydPoint = hyds->loc();                                                                                               
-		for (int i = 0; i < numOrientations(Mover::LOW_RES); i++)                     
+		Point3d initHydPoint = hyds->loc();
+		for (int i = 0; i < numOrientations(Mover::LOW_RES); i++)
 		{
 			double theta = orientationAngle(i, Mover::LOW_RES);
 			AtomDescr ad_h(initHydPoint.rotate(theta - _angle, _p2, _p1), _heavyAtom.resno(), hyds->vdwRad());
@@ -127,7 +127,7 @@ int RotAromMethyl::numOrientations(SearchStrategy ss) const {
 
 bool RotAromMethyl::isDefaultO(int oi, SearchStrategy ss) const {
    if (ss!=Mover::LOW_RES) { oi = orientation(Mover::LOW_RES); }
-   return ((oi == 0) && 
+   return ((oi == 0) &&
            (abs(clampAngle(START_ANGLE - angle())) < 1.0));
 }
 
@@ -168,8 +168,8 @@ double RotAromMethyl::orientationAngle(int oi, SearchStrategy ss) const {
 			}
 		}
 	}
-	
-	// cout << "orientationAngle oi:" << oi << ", START_ANGLE:" << START_ANGLE << ", delta:" << delta << ", step:" << 
+
+	// cout << "orientationAngle oi:" << oi << ", START_ANGLE:" << START_ANGLE << ", delta:" << delta << ", step:" <<
 		// ((oi+1)>>1) * ((oi&1) ? 1.0 : -1.0) * ROUGH_STEP << endl;
 
 	const double a = START_ANGLE + delta +
@@ -218,8 +218,8 @@ double RotAromMethyl::scoreThisAngle(AtomPositions &xyz, DotSphManager& dotBucke
 		bool subBadBump    = FALSE;
 		const PDBrec* thisAtom = *alst;
 
-		double val = xyz.atomScore(*thisAtom, thisAtom->loc(), 
-			thisAtom->vdwRad() + probeRadius + maxVDWrad, 
+		double val = xyz.atomScore(*thisAtom, thisAtom->loc(),
+			thisAtom->vdwRad() + probeRadius + maxVDWrad,
 			//apl procrastinate nearby list computation until AtomPositions decides to score
 			*(_bnded[i]), dotBucket.fetch(thisAtom->vdwRad()), probeRadius, FALSE,
 			bumpSubScore, hbSubScore, subBadBump);
@@ -313,7 +313,7 @@ void RotAromMethyl::dropBondedFromBumpingListForPDBrec(
 		std::list< PDBrec* >::iterator iter_next = iter;
 		//std::cerr << "Comparing: " << (*iter) << " " << (*iter)->getAtomDescr() << std::endl;
 		++iter_next;
-		
+
 		for (std::list< PDBrec* >::const_iterator constiter = _bnded[ atom_id]->begin();
 			constiter != _bnded[ atom_id]->end(); ++constiter)
 		{
@@ -325,7 +325,7 @@ void RotAromMethyl::dropBondedFromBumpingListForPDBrec(
 			}
 		}
 		iter = iter_next;
-	}	
+	}
 
 }
 
@@ -336,7 +336,7 @@ int RotAromMethyl::findAtom( PDBrec* atom ) const
 	{
 		return 0;
 	}
-	
+
 	int countAtomsSeen = 1;
 	for (std::list< PDBrec * >::const_iterator iter = _rot.begin(); iter != _rot.end(); ++iter)
 	{
@@ -350,7 +350,7 @@ int RotAromMethyl::findAtom( PDBrec* atom ) const
 	{
 		std::cerr << "_rot: " << *iter << std::endl;
 	}
-   
+
 	exit(1);
         return 0; // to avoid warnings
 }

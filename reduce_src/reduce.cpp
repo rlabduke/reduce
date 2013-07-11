@@ -24,9 +24,9 @@
 #endif
 
 static const char *versionString =
-     "reduce: version 3.24 07/05/2013, Copyright 1997-2013, J. Michael Word";
+     "reduce: version 3.24 07/11/2013, Copyright 1997-2013, J. Michael Word";
 
-static const char *shortVersion    = "reduce.3.24.130705";
+static const char *shortVersion    = "reduce.3.24.130711";
 static const char *referenceString =
                        "Word, et. al. (1999) J. Mol. Biol. 285, 1735-1747.";
 static const char *electronicReference = "http://kinemage.biochem.duke.edu";
@@ -1015,6 +1015,7 @@ void reduceChanges(bool showAll) { /*changes*/
    cerr  << "2013/05/20 - jjh       fixed -trim handling of H5'' atom in RNA" << endl;
    cerr  << "2013/07/05 - jjh v3.24 fixed handling of ANISOU records when SEGIDs in use," << endl;
    cerr  << "                        and fixed removal of redundant N-terminal H atoms" << endl;
+   cerr  << "2013/07/11 - jjh       fixed calculation of neighbor atoms with invalidated records" << endl;
    cerr  << endl;
    exit(1);
 }
