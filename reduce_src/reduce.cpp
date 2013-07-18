@@ -24,9 +24,9 @@
 #endif
 
 static const char *versionString =
-     "reduce: version 3.24 07/11/2013, Copyright 1997-2013, J. Michael Word";
+     "reduce: version 3.24 07/18/2013, Copyright 1997-2013, J. Michael Word";
 
-static const char *shortVersion    = "reduce.3.24.130711";
+static const char *shortVersion    = "reduce.3.24.130718";
 static const char *referenceString =
                        "Word, et. al. (1999) J. Mol. Biol. 285, 1735-1747.";
 static const char *electronicReference = "http://kinemage.biochem.duke.edu";
@@ -97,6 +97,7 @@ bool StringInput              = FALSE;
 bool ShowCharges              = FALSE;
 bool UseNuclearDistances      = FALSE; //jjh 130111
 bool UseSEGIDasChain          = FALSE; //jjh 130503
+bool ProcessedFirstModel      = FALSE; //jjh 130718
 
 int MaxAromRingDih    = 10;   // max dihedral angle in planarity check for aromatic rings  120724 - Aram
 
@@ -1017,6 +1018,8 @@ void reduceChanges(bool showAll) { /*changes*/
    cerr  << "                        and fixed removal of redundant N-terminal H atoms" << endl;
    cerr  << "2013/07/11 - jjh       fixed calculation of neighbor atoms with invalidated records" << endl;
    cerr  << "2013/07/11 - jjh       fixed enforcement of time limit for clique search" << endl;
+   cerr  << "2013/07/18 - jjh       fixed handling of multiple models when first model" << endl;
+   cerr  << "                        is not model 1" << endl;
    cerr  << endl;
    exit(1);
 }
@@ -1067,68 +1070,67 @@ void checkSEGIDs(std::list<PDBrec*>& rlst) {
 
 // input a list of PDB records
 std::istream& inputRecords(std::istream& is, std::list<PDBrec*>& records) {
-	PDB inputbuffer;
-	bool active = TRUE;
-	bool modelactive = FALSE;  //041113
+  PDB inputbuffer;
+  bool active = TRUE;
+  bool modelactive = FALSE;  //041113
 
-	while ((is >> inputbuffer).gcount() > 0) {
-		PDBrec* rec = new PDBrec(inputbuffer);
-		bool drop = FALSE;
+  while ((is >> inputbuffer).gcount() > 0) {
+    PDBrec* rec = new PDBrec(inputbuffer);
+    bool drop = FALSE;
 
-		switch (rec->type()) {
-		case PDB::MODEL:
-			if (ModelToProcess == rec->modelNum()) {
-				active = TRUE;
-				modelactive = TRUE; //041113
-			}
-			else {
-				active = FALSE;
-				if(modelactive) //041113
-            	{
-        	       modelactive = FALSE;
-    	           if(ModelSpecified > 0) {ModelNext = 0;} /*only do one*/
-	               else {ModelNext = rec->modelNum();} /*next after one just done*/
-	            }
-				if (Verbose) {
-					//cerr << "NOTE: skipping model " << rec->modelNum() << endl;
-					if(ModelSpecified > 0)
-					{
-						cerr << "Model " << ModelToProcess << " specified, skipping model " << rec->modelNum() << endl; //041113
-					}
-					else
-					{
-						cerr << "Processing Model " << ModelToProcess << ", for now skipping model " << rec->modelNum() << endl; //041113
-					}
-			}
-		}
-		break;
-		case PDB::ENDMDL:
-			if (! active) { drop = TRUE; active = TRUE; }
-			break;
-		case PDB::MASTER: drop = TRUE; break; // forget the checksum record
-		case PDB::CONECT: if (! KeepConnections) { drop = TRUE; } break;
-		case PDB::ATOM: case PDB::HETATM:
-			if (active && !drop) {
-				if (rec->atomNameModified()) {
-					Tally._num_renamed++;
-				}
-				rec->MapSEGIDtoChain();
-			}
-			break;
-		default:
-			break;
-		}
+    switch (rec->type()) {
+      case PDB::MODEL:
+        if (!ProcessedFirstModel) {
+          ModelToProcess = rec->modelNum();
+          ProcessedFirstModel = TRUE;
+        }
+        if (ModelToProcess == rec->modelNum()) {
+          active = TRUE;
+          modelactive = TRUE; //041113
+        }
+        else {
+          active = FALSE;
+          if(modelactive) {//041113
+            modelactive = FALSE;
+            if(ModelSpecified > 0) {ModelNext = 0;} /*only do one*/
+            else {ModelNext = rec->modelNum();} /*next after one just done*/
+          }
+          if (Verbose) {
+            //cerr << "NOTE: skipping model " << rec->modelNum() << endl;
+            if(ModelSpecified > 0) {
+              cerr << "Model " << ModelToProcess << " specified, skipping model " << rec->modelNum() << endl; //041113
+            }
+            else {
+              cerr << "Processing Model " << ModelToProcess << ", for now skipping model " << rec->modelNum() << endl; //041113
+            }
+          }
+        }
+        break;
+      case PDB::ENDMDL:
+        if (! active) { drop = TRUE; active = TRUE; }
+        break;
+      case PDB::MASTER: drop = TRUE; break; // forget the checksum record
+      case PDB::CONECT: if (! KeepConnections) { drop = TRUE; } break;
+      case PDB::ATOM: case PDB::HETATM:
+        if (active && !drop) {
+          if (rec->atomNameModified()) {
+            Tally._num_renamed++;
+          }
+          rec->MapSEGIDtoChain();
+        }
+        break;
+      default:
+        break;
+    }
 
-		if (active && !drop)
-		{
-			records.push_back(rec);
-		}
-		else
-		{
-			delete rec; rec = 0;
-		}
-	}
-	return is;
+    if (active && !drop) {
+      records.push_back(rec);
+    }
+    else {
+      delete rec; rec = 0;
+    }
+  }
+  return is;
 }
 
 void renumberAndReconnect(std::list<PDBrec*>& rlst) {
