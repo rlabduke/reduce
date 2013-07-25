@@ -24,9 +24,9 @@
 #endif
 
 static const char *versionString =
-     "reduce: version 3.24 07/18/2013, Copyright 1997-2013, J. Michael Word";
+     "reduce: version 3.24 07/24/2013, Copyright 1997-2013, J. Michael Word";
 
-static const char *shortVersion    = "reduce.3.24.130718";
+static const char *shortVersion    = "reduce.3.24.130724";
 static const char *referenceString =
                        "Word, et. al. (1999) J. Mol. Biol. 285, 1735-1747.";
 static const char *electronicReference = "http://kinemage.biochem.duke.edu";
@@ -501,256 +501,256 @@ char *getOptionsOnTheMac() {
 #endif
 
 char* parseCommandLine(int argc, char **argv) {
-   char *pdbfile = NULL;
-   int nfile = 0, n;
+  char *pdbfile = NULL;
+  int nfile = 0, n;
 
-   establishHetDictionaryFileName();
+  establishHetDictionaryFileName();
 
-   if (argc <= 1) {
-      reduceHelp(FALSE);
-   }
-   for (int i = 1; i < argc; i++) {
-      char *p = argv[i];
-      if (p[0] == '-') {
-	 if (p[1] == '\0') {
-	    nfile = 1;
-	    pdbfile = NULL; // i.e. standard input
-	 }
-	 else if(compArgStr(p+1, "STRING", 6)){
-         StringInput = TRUE;
-     }
-     else if(compArgStr(p+1, "FLIP", 4)){
-       BuildHisHydrogens  = TRUE;
-	   SaveOHetcHydrogens = TRUE;
-	   RotExistingOH      = TRUE;
-	   DemandFlipAllHNQs  = TRUE;
-     }
-     else if(compArgStr(p+1, "NOFLIP", 6)){
-       PenaltyMagnitude=9999;
-       BuildHisHydrogens  = TRUE;
-	   SaveOHetcHydrogens = TRUE;
-	   RotExistingOH      = TRUE;
-	   DemandFlipAllHNQs  = TRUE;
-     }
-     else if(compArgStr(p+1, "BUILD", 5)){
-	    BuildHisHydrogens  = TRUE;
-	    SaveOHetcHydrogens = TRUE;
-	    RotExistingOH      = TRUE;
-	    DemandFlipAllHNQs  = TRUE;
-         }
-         else if((n = compArgStr(p+1, "NOBUILD", 7))){
-            PenaltyMagnitude = parseReal(p, n+1, 10, PenaltyMagnitude);
-            if(PenaltyMagnitude < 0){
-              cerr << "!!ERROR!!" << endl;
-              cerr << "Penalty Magnitude for -NOBUILD must be > 0" << endl << endl;
-              reduceHelp(FALSE);
-            }
-         // PenaltyMagnitude = 200;      9999 in molprobity
-            BuildHisHydrogens  = TRUE;
-            SaveOHetcHydrogens = TRUE;
-            RotExistingOH      = TRUE;  //  not used in molprobity
-            DemandFlipAllHNQs  = TRUE;
-         }
-	 else if((n = compArgStr(p+1, "Version", 1))){
-	    cerr << shortVersion << endl;
-	    exit(1);
-	 }
-	 else if((n = compArgStr(p+1, "Changes", 1))) {
-     	     reduceChanges(TRUE);
-         }
-	 else if((n = compArgStr(p+1, "Quiet", 1))){
-	    Verbose = FALSE;
-	 }
-	 else if((n = compArgStr(p+1, "NOTICKs", 6))){
-	    ShowCliqueTicks = FALSE;
-	 }
-	 else if((n = compArgStr(p+1, "SHOWSCore", 6))){
-	    ShowOrientScore = TRUE;
-	 }
-	 else if((n = compArgStr(p+1, "NOCon", 3))){
-	    KeepConnections = FALSE;
-	 }
-	 else if((n = compArgStr(p+1, "NOROTMET", 8))){
-	    OKProcessMetMe = FALSE;
-	 }
-	 else if((n = compArgStr(p+1, "NOADJust", 5))){
-	    OKtoAdjust = FALSE;
-	 }
-	 else if((n = compArgStr(p+1, "HIS", 3))){
-	    BuildHisHydrogens = TRUE;
-	 }
-	 else if((n = compArgStr(p+1, "OH", 2))){
-	    SaveOHetcHydrogens = TRUE;
-	 }
-	 else if((n = compArgStr(p+1, "NOOH", 4))){
-	    SaveOHetcHydrogens = FALSE;
-	 }
-	 else if((n = compArgStr(p+1, "Xplor", 1)) && !UseOldNames){
-	    UseXplorNames = TRUE;
-	 }
-         else if((n = compArgStr(p+1, "Xplor", 1)) && UseOldNames){
-            cerr << "Cannot use both -Xplor and -OLDpdb flags" << endl;
-            exit(1);
-	 }
-	 else if((n = compArgStr(p+1, "OLDpdb", 3)) && ! UseXplorNames){
-	    UseOldNames = TRUE;
-	    DBfilename = HET_DICTOLD;
-	 }
-         else if((n = compArgStr(p+1, "OLDpdb", 3)) && UseXplorNames){
-	    cerr << "Cannot use both -Xplor and -OLDpdb flags" << endl;
-	    exit(1);
-	 }
-	 else if((n = compArgStr(p+1, "BBmodel", 2))){
-		BackBoneModel = TRUE;
-	 }
-	 else if((n = compArgStr(p+1, "Trim", 1))){
-	    RemoveHydrogens = TRUE;
-	 }
-	 else if((n = compArgStr(p+1, "Keep", 1))){
-	    StandardizeRHBondLengths = FALSE;
-	 }
-	 else if((n = compArgStr(p+1, "ALLMETHYLS", 10))){
-	    DemandRotAllMethyls = TRUE;
-	 }
-	 else if((n = compArgStr(p+1, "ROTEXist", 5))){
-	    DemandRotExisting = TRUE;
-	 }
-         else if((n = compArgStr(p+1, "ADDNHATGAP", 10))){
-            NeutralTermini = TRUE;
-         }
-	 else if((n = compArgStr(p+1, "ROTNH3", 6))){
-	    DemandRotNH3 = TRUE;
-	 }
-	 else if((n = compArgStr(p+1, "NOROTNH3", 8))){
-	    DemandRotNH3 = FALSE;
-	 }
-	 else if((n = compArgStr(p+1, "ROTEXOH", 7))){
-	    RotExistingOH = TRUE;
-	 }
-	 else if((n = compArgStr(p+1, "FLIPs", 4))){
-	    DemandFlipAllHNQs = TRUE;
-	 }
-	 else if((n = compArgStr(p+1, "SEGIDmap", 5))){
-	    if (++i < argc) {
-	       UseSEGIDtoChainMap = TRUE;
-	       PDBrec::InstallMapOfSEGIDstoChains(argv[i]);
-	    }
-	    else {
-	       cerr << "no mapping info after -SEGIDmap flag" << endl;
-	    }
-	 }
-	 else if((n = compArgStr(p+1, "MAXAromdih", 1))){ // - Aram 07/24/12
-	    MaxAromRingDih = parseInteger(p, n+1, 10);
-	 }
-	 else if((n = compArgStr(p+1, "Nterm", 1))){
-	    MinNTermResNo = parseInteger(p, n+1, 10);
-	 }
-	 else if((n = compArgStr(p+1, "Model", 1))){
-	    ModelToProcess = parseInteger(p, n+1, 10);
-	 }
-	 else if((n = compArgStr(p+1, "ONLTA", 5))){
-	    DoOnlyAltA = TRUE;
-	 }
-	 else if((n = compArgStr(p+1, "ALLALT", 6))){
-	    DoOnlyAltA = FALSE;
-	 }
-     else if((n = compArgStr(p+1, "CHARGEs", 6))){
+  if (argc <= 1) {
+    reduceHelp(FALSE);
+  }
+  for (int i = 1; i < argc; i++) {
+    char *p = argv[i];
+    if (p[0] == '-') {
+      if (p[1] == '\0') {
+        nfile = 1;
+        pdbfile = NULL; // i.e. standard input
+      }
+      else if(compArgStr(p+1, "STRING", 6)){
+        StringInput = TRUE;
+      }
+      else if(compArgStr(p+1, "FLIP", 4)){
+        BuildHisHydrogens  = TRUE;
+        SaveOHetcHydrogens = TRUE;
+        RotExistingOH      = TRUE;
+        DemandFlipAllHNQs  = TRUE;
+      }
+      else if(compArgStr(p+1, "NOFLIP", 6)){
+        PenaltyMagnitude=9999;
+        BuildHisHydrogens  = TRUE;
+        SaveOHetcHydrogens = TRUE;
+        RotExistingOH      = TRUE;
+        DemandFlipAllHNQs  = TRUE;
+      }
+      else if(compArgStr(p+1, "BUILD", 5)){
+        BuildHisHydrogens  = TRUE;
+        SaveOHetcHydrogens = TRUE;
+        RotExistingOH      = TRUE;
+        DemandFlipAllHNQs  = TRUE;
+      }
+      else if((n = compArgStr(p+1, "NOBUILD", 7))){
+        PenaltyMagnitude = parseReal(p, n+1, 10, PenaltyMagnitude);
+        if(PenaltyMagnitude < 0){
+          cerr << "!!ERROR!!" << endl;
+          cerr << "Penalty Magnitude for -NOBUILD must be > 0" << endl << endl;
+          reduceHelp(FALSE);
+        }
+        // PenaltyMagnitude = 200;      9999 in molprobity
+        BuildHisHydrogens  = TRUE;
+        SaveOHetcHydrogens = TRUE;
+        RotExistingOH      = TRUE;  //  not used in molprobity
+        DemandFlipAllHNQs  = TRUE;
+      }
+      else if((n = compArgStr(p+1, "Version", 1))){
+        cerr << shortVersion << endl;
+        exit(1);
+      }
+      else if((n = compArgStr(p+1, "Changes", 1))) {
+        reduceChanges(TRUE);
+      }
+      else if((n = compArgStr(p+1, "Quiet", 1))){
+        Verbose = FALSE;
+      }
+      else if((n = compArgStr(p+1, "NOTICKs", 6))){
+        ShowCliqueTicks = FALSE;
+      }
+      else if((n = compArgStr(p+1, "SHOWSCore", 6))){
+        ShowOrientScore = TRUE;
+      }
+      else if((n = compArgStr(p+1, "NOCon", 3))){
+        KeepConnections = FALSE;
+      }
+      else if((n = compArgStr(p+1, "NOROTMET", 8))){
+        OKProcessMetMe = FALSE;
+      }
+      else if((n = compArgStr(p+1, "NOADJust", 5))){
+        OKtoAdjust = FALSE;
+      }
+      else if((n = compArgStr(p+1, "HIS", 3))){
+        BuildHisHydrogens = TRUE;
+      }
+      else if((n = compArgStr(p+1, "OH", 2))){
+        SaveOHetcHydrogens = TRUE;
+      }
+      else if((n = compArgStr(p+1, "NOOH", 4))){
+        SaveOHetcHydrogens = FALSE;
+      }
+      else if((n = compArgStr(p+1, "Xplor", 1)) && !UseOldNames){
+        UseXplorNames = TRUE;
+      }
+      else if((n = compArgStr(p+1, "Xplor", 1)) && UseOldNames){
+        cerr << "Cannot use both -Xplor and -OLDpdb flags" << endl;
+        exit(1);
+      }
+      else if((n = compArgStr(p+1, "OLDpdb", 3)) && ! UseXplorNames){
+        UseOldNames = TRUE;
+        DBfilename = HET_DICTOLD;
+      }
+      else if((n = compArgStr(p+1, "OLDpdb", 3)) && UseXplorNames){
+        cerr << "Cannot use both -Xplor and -OLDpdb flags" << endl;
+        exit(1);
+      }
+      else if((n = compArgStr(p+1, "BBmodel", 2))){
+        BackBoneModel = TRUE;
+      }
+      else if((n = compArgStr(p+1, "Trim", 1))){
+        RemoveHydrogens = TRUE;
+      }
+      else if((n = compArgStr(p+1, "Keep", 1))){
+        StandardizeRHBondLengths = FALSE;
+      }
+      else if((n = compArgStr(p+1, "ALLMETHYLS", 10))){
+        DemandRotAllMethyls = TRUE;
+      }
+      else if((n = compArgStr(p+1, "ROTEXist", 5))){
+        DemandRotExisting = TRUE;
+      }
+      else if((n = compArgStr(p+1, "ADDNHATGAP", 10))){
+        NeutralTermini = TRUE;
+      }
+      else if((n = compArgStr(p+1, "ROTNH3", 6))){
+        DemandRotNH3 = TRUE;
+      }
+      else if((n = compArgStr(p+1, "NOROTNH3", 8))){
+        DemandRotNH3 = FALSE;
+      }
+      else if((n = compArgStr(p+1, "ROTEXOH", 7))){
+        RotExistingOH = TRUE;
+      }
+      /*else if((n = compArgStr(p+1, "FLIPs", 4))){
+        DemandFlipAllHNQs = TRUE;
+      }*/ //removed redundant "FLIPs" flag - JJH 130724
+      else if((n = compArgStr(p+1, "SEGIDmap", 5))){
+        if (++i < argc) {
+          UseSEGIDtoChainMap = TRUE;
+          PDBrec::InstallMapOfSEGIDstoChains(argv[i]);
+        }
+        else {
+          cerr << "no mapping info after -SEGIDmap flag" << endl;
+        }
+      }
+      else if((n = compArgStr(p+1, "MAXAromdih", 1))){ // - Aram 07/24/12
+        MaxAromRingDih = parseInteger(p, n+1, 10);
+      }
+      else if((n = compArgStr(p+1, "Nterm", 1))){
+        MinNTermResNo = parseInteger(p, n+1, 10);
+      }
+      else if((n = compArgStr(p+1, "Model", 1))){
+        ModelToProcess = parseInteger(p, n+1, 10);
+      }
+      else if((n = compArgStr(p+1, "ONLTA", 5))){
+        DoOnlyAltA = TRUE;
+      }
+      else if((n = compArgStr(p+1, "ALLALT", 6))){
+        DoOnlyAltA = FALSE;
+      }
+      else if((n = compArgStr(p+1, "CHARGEs", 6))){
         ShowCharges = TRUE;
-     }
-	 else if((n = compArgStr(p+1, "NOHETh", 5))){
-	    ProcessConnHydOnHets = FALSE;
-	 }
-	 else if((n = compArgStr(p+1, "DENSity", 4))){
-	    VdwDotDensity = parseReal(p, n+1, 10, VdwDotDensity);
-	 }
-	 else if((n = compArgStr(p+1, "PENalty", 3))){
-	    PenaltyMagnitude = parseReal(p, n+1, 10, PenaltyMagnitude);
-	 }
-	 else if((n = compArgStr(p+1, "RADius", 3))){
-	    ProbeRadius = parseReal(p, n+1, 10, ProbeRadius);
-	 }
-	 else if((n = compArgStr(p+1, "NBonds", 2))){
-	    NBondCutoff = parseInteger(p, n+1, 10);
-	 }
-	 else if((n = compArgStr(p+1, "OCCcutoff", 3))){
-	    OccupancyCutoff = parseReal(p, n+1, 10, OccupancyCutoff);
-	 }
-	 else if((n = compArgStr(p+1, "H2OBcutoff", 4))){
-	    WaterBcutoff = 1.0 * parseInteger(p, n+1, 10);
-	 }
-	 else if((n = compArgStr(p+1, "H2OOCCcutoff", 6))){
-	    WaterOCCcutoff = parseReal(p, n+1, 10, WaterOCCcutoff);
-	 }
-	 else if((n = compArgStr(p+1, "HBREGcutoff", 5))){
-	    MinRegHBgap = parseReal(p, n+1, 10, MinRegHBgap);
-	 }
-	 else if((n = compArgStr(p+1, "HBCHargedcutoff", 4))){
-	    MinChargedHBgap = parseReal(p, n+1, 10, MinChargedHBgap);
-	 }
-	 else if((n = compArgStr(p+1, "BADBumpcutoff", 4))){
-	    BadBumpGapCut = parseReal(p, n+1, 10, BadBumpGapCut);
-	 }
-	 else if((n = compArgStr(p+1, "NONMETALBump", 9))){
-	    NonMetalBumpBias = parseReal(p, n+1, 10, NonMetalBumpBias);
-	 }
-	 else if((n = compArgStr(p+1, "METALBump", 6))){
-	    MetalBumpBias = parseReal(p, n+1, 10, MetalBumpBias);
-	 }
-         else if((n = compArgStr(p+1, "GAPERROR", 8))){
-            GapWidth = parseReal(p, n+1, 10, GapWidth);
-            if (GapWidth > 1.4) {
-               cerr << "Max allowed HalfGapWidth is 1.4" << endl;
-               exit(1);
-            }
-         }
-	 else if((n = compArgStr(p+1, "REFerence", 3))){
-	    cerr << "Please cite: " << referenceString << endl;
-	    cerr << "For more information see " << electronicReference << endl;
-	    exit(1);
-	 }
-	 else if((n = compArgStr(p+1, "FIX", 3))){
-	    if (++i < argc) {
-			OFile = argv[i];
-	    }
-	    else {
-	       cerr << "no filename after -FIX flag" << endl;
-	    }
-	 }
-	 else if((n = compArgStr(p+1, "DB", 2))){
-	    if (++i < argc) {
-	       DBfilename = argv[i];
-	    }
-	    else {
-	       cerr << "no filename after -DB flag" << endl;
-	    }
-	 }
-	 else if((n = compArgStr(p+1, "LIMITsearch", 5))){
-	    ExhaustiveLimit = parseInteger(p, n+1, 10);
-	 }
-	 else if((n = compArgStr(p+1, "NUClear", 3))){
-	   UseNuclearDistances = TRUE;
-	 }
-	 else if(compArgStr(p+1, "Help", 1)){ // has to be after all the other -HXXXs
-	    reduceHelp(TRUE);
-	 }
-	 else {
-	    cerr << "unrecognized flag, \"" << p << "\", ignored." << endl;
-	 }
       }
-      else if (StringInput == TRUE){
-          pdbfile = p;
-          nfile = 1;
+      else if((n = compArgStr(p+1, "NOHETh", 5))){
+        ProcessConnHydOnHets = FALSE;
       }
-      else if (nfile <= 0) {
-	    pdbfile = p;
-	    nfile = 1;
+      else if((n = compArgStr(p+1, "DENSity", 4))){
+        VdwDotDensity = parseReal(p, n+1, 10, VdwDotDensity);
+      }
+      else if((n = compArgStr(p+1, "PENalty", 3))){
+        PenaltyMagnitude = parseReal(p, n+1, 10, PenaltyMagnitude);
+      }
+      else if((n = compArgStr(p+1, "RADius", 3))){
+        ProbeRadius = parseReal(p, n+1, 10, ProbeRadius);
+      }
+      else if((n = compArgStr(p+1, "NBonds", 2))){
+        NBondCutoff = parseInteger(p, n+1, 10);
+      }
+      else if((n = compArgStr(p+1, "OCCcutoff", 3))){
+        OccupancyCutoff = parseReal(p, n+1, 10, OccupancyCutoff);
+      }
+      else if((n = compArgStr(p+1, "H2OBcutoff", 4))){
+        WaterBcutoff = 1.0 * parseInteger(p, n+1, 10);
+      }
+      else if((n = compArgStr(p+1, "H2OOCCcutoff", 6))){
+        WaterOCCcutoff = parseReal(p, n+1, 10, WaterOCCcutoff);
+      }
+      else if((n = compArgStr(p+1, "HBREGcutoff", 5))){
+        MinRegHBgap = parseReal(p, n+1, 10, MinRegHBgap);
+      }
+      else if((n = compArgStr(p+1, "HBCHargedcutoff", 4))){
+        MinChargedHBgap = parseReal(p, n+1, 10, MinChargedHBgap);
+      }
+      else if((n = compArgStr(p+1, "BADBumpcutoff", 4))){
+        BadBumpGapCut = parseReal(p, n+1, 10, BadBumpGapCut);
+      }
+      else if((n = compArgStr(p+1, "NONMETALBump", 9))){
+        NonMetalBumpBias = parseReal(p, n+1, 10, NonMetalBumpBias);
+      }
+      else if((n = compArgStr(p+1, "METALBump", 6))){
+        MetalBumpBias = parseReal(p, n+1, 10, MetalBumpBias);
+      }
+      else if((n = compArgStr(p+1, "GAPERROR", 8))){
+        GapWidth = parseReal(p, n+1, 10, GapWidth);
+        if (GapWidth > 1.4) {
+          cerr << "Max allowed HalfGapWidth is 1.4" << endl;
+          exit(1);
+        }
+      }
+      else if((n = compArgStr(p+1, "REFerence", 3))){
+        cerr << "Please cite: " << referenceString << endl;
+        cerr << "For more information see " << electronicReference << endl;
+        exit(1);
+      }
+      else if((n = compArgStr(p+1, "FIX", 3))){
+        if (++i < argc) {
+          OFile = argv[i];
+        }
+        else {
+          cerr << "no filename after -FIX flag" << endl;
+        }
+      }
+      else if((n = compArgStr(p+1, "DB", 2))){
+        if (++i < argc) {
+          DBfilename = argv[i];
+        }
+        else {
+          cerr << "no filename after -DB flag" << endl;
+        }
+      }
+      else if((n = compArgStr(p+1, "LIMITsearch", 5))){
+        ExhaustiveLimit = parseInteger(p, n+1, 10);
+      }
+      else if((n = compArgStr(p+1, "NUClear", 3))){
+        UseNuclearDistances = TRUE;
+      }
+      else if(compArgStr(p+1, "Help", 1)){ // has to be after all the other -HXXXs
+        reduceHelp(TRUE);
       }
       else {
-	 cerr << "unrecognized parameter, \"" << p << "\", ignored." << endl;
+        cerr << "unrecognized flag, \"" << p << "\", ignored." << endl;
       }
-   }
-   if (nfile != 1) { reduceHelp(FALSE); }
-   return pdbfile;
+    }
+    else if (StringInput == TRUE){
+      pdbfile = p;
+      nfile = 1;
+    }
+    else if (nfile <= 0) {
+      pdbfile = p;
+      nfile = 1;
+    }
+    else {
+      cerr << "unrecognized parameter, \"" << p << "\", ignored." << endl;
+    }
+  }
+  if (nfile != 1) { reduceHelp(FALSE); }
+  return pdbfile;
 }
 
 void reduceHelp(bool showAll) { /*help*/
@@ -778,7 +778,7 @@ void reduceHelp(bool showAll) { /*help*/
    cerr << "-OH               add hydrogens on OH and SH groups (default)" << endl;
    cerr << endl;
    cerr << "-HIS              create NH hydrogens on HIS rings" << endl;
-   cerr << "-FLIPs            allow complete ASN, GLN and HIS sidechains to flip" << endl;
+//   cerr << "-FLIPs            allow complete ASN, GLN and HIS sidechains to flip" << endl; - removed 130724 JJH
    cerr << "                        (usually used with -HIS)" << endl;
    cerr << "-NOHETh           do not attempt to add NH proton on Het groups" << endl;
 //   cerr << "-ADDNHATGAP            add \"amide\" hydrogen on chain breaks" <<endl;
@@ -1020,6 +1020,7 @@ void reduceChanges(bool showAll) { /*changes*/
    cerr  << "2013/07/11 - jjh       fixed enforcement of time limit for clique search" << endl;
    cerr  << "2013/07/18 - jjh       fixed handling of multiple models when first model" << endl;
    cerr  << "                        is not model 1" << endl;
+   cerr  << "2013/07/24 - jjh       cleaned up command line parsing function, removed redundant -FLIPs option" << endl;
    cerr  << endl;
    exit(1);
 }
