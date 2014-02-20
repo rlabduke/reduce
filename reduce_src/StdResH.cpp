@@ -27,7 +27,7 @@
 // "-C", "-O", "+N" refer to the prev and next residue
 
 // the following expected conversions are done in other modules
-// resname => key conversion ":HOH:DOD:H2O:D2O:WAT:TIP:SOL:MTO:" => "HOH"
+// resname => key conversion ":HOH:DOD:H2O:WAT:TIP:SOL:MTO:" => "HOH"
 // atoname => key conversion "?D??" => "?H??"
 
 #include "StdResH.h"

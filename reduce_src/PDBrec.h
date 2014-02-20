@@ -44,7 +44,7 @@ const int PositiveChargeFlag = (1 << 3);
 extern bool UseSEGIDasChain; //jjh 130503, defined in reduce.cpp
 
 #define WATER_RESNAMES \
- ":HOH:DOD:H2O:D2O:WAT:TIP:SOL:MTO:hoh:dod:h2o:d2o:wat:tip:sol:mto:"
+ ":HOH:DOD:H2O:WAT:TIP:SOL:MTO:hoh:dod:h2o:wat:tip:sol:mto:"
 
 /*#define HE_RESNAME \
 // currently there are none RMI 070711
