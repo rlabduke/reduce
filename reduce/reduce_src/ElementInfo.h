@@ -51,7 +51,7 @@ using std::strlen;
 #define HS_RESNAMES \
  "currently there are none RMI 070711"
 
-extern bool UseNuclearDistances; //defined in reduce.cpp JJH
+//extern bool UseNuclearDistances; //defined in reduce.cpp JJH
 
 class StandardElementTable;
 
@@ -139,7 +139,7 @@ public:
    char* atomName() const { return _rep->_name; }
    char* fullName() const { return _rep->_fullName; }
    // 130114 - adjustments for nuclear distances JJH
-   float explRad()  const {
+   /*float explRad()  const {
      if (UseNuclearDistances) {
        if ( (std::strcmp(_rep->_name, "H")    == 0) ||
             (std::strcmp(_rep->_name, "Har")  == 0) ||
@@ -150,7 +150,8 @@ public:
        }
      }
      return _rep->_eRad;
-   }
+   }*/
+   float explRad()  const { return _rep->_eRad; }
    float implRad()  const { return _rep->_iRad; }
    float covRad()   const { return _rep->_covRad; }
    char* color()    const { return _rep->_color; }
@@ -210,7 +211,7 @@ private:
 
    bool insert(int atno,
 		  const char* name, const char* fullName,
-		  float eRad, float iRad, float covRad,
+		  float eRad, float eRad_nuc, float iRad, float covRad,
 		  const char* color, int  flags);
 
    std::map<std::string, ElementInfo*> _index;

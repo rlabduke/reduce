@@ -1,29 +1,32 @@
-#  This Makefile for Reduce was adopted from the gcc makefile, it will 
-#  generate a MACH-O executable for MacOSX containing binaries for both
-#  i386 (intel) and powerpc cpus, which is called an universal binary.  
-#  It requires installation of the Apple Developer package, XCode.
-#  Standard C libraries and header files are in /Developer/SDKs/MacOSX10.4u.sdk
-#  To use, replace the libpdb makefile with this makefile (likewise for
-#  the reduce_src and toolclasses directories, and then type "make" in the 
-#  directory above reduce_src.
-#  
+#  Reduce Makefile for Mac OS X 10.8.x (Mountain Lion).
+#  Uses 10.8 SDK with compiler flag declaring exec to be backward compatible
+#  to Mac OS X 10.6 (Snow Leopard); -mmacosx-version-min=10.6
+#  Either (or both) Intel architecture flags can be used: -arch i386 to create
+#  a 32bit MACH-O exec, -arch x86_64 to create a 64bit MACH-O exec.
+
+#  The "toolclasses" and "libpdb" objects and libraries must be made before
+#  those of "src_reduce".
+#  Either copy the Makefile.macOSX to Makefile to run the standard make command;
+#  or use 'make -f Makefile.macOSX' in each subdirectory.
+
 #  On BSD machines, RANLIB should be 'ranlib'
 #  On System V machines, RANLIB should be ':'
-#  
 
-SHELL    = /bin/sh
-RANLIB   = ranlib
-CXX      = g++
-OPT      = -O
-DEBUG    = $(CXXDEBUGFLAGS)
-PROG_FLGS = -isysroot /Developer/SDKs/MacOSX10.4u.sdk -arch i386 -arch ppc
-CFLAGS   = $(OPT) $(DEBUG) $(PROG_FLGS) \
-           -DCHARFUNCMACROS -DINCTEMPLATEDEFNS \
-           -DBOOLPREDEFINED -DBRACKETOPERPARMS -DLISTFRIENDFIX
-LIBRARY  = toolclasses
-LIBARCH  = lib$(LIBRARY).a
-OBJS     = UseCount.o Point3d.o Stringclass.o Hash.o utility.o \
-           column_sprintf.o column_sscanf.o DisjointSets.o
+MIN_OS      = -mmacosx-version-min=10.6
+SDK_HOME    = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk
+SHELL       = /bin/sh
+RANLIB      = ranlib
+CXX         = g++
+OPT         = -O
+DEBUG       = $(CXXDEBUGFLAGS)
+PROG_FLGS   = -isysroot $(SDK_HOME) -arch x86_64 $(MIN_OS)
+            # -arch i386 $(MIN_OS)
+CFLAGS      = $(OPT) $(DEBUG) $(PROG_FLGS) -DCHARFUNCMACROS -DINCTEMPLATEDEFNS \
+              -DBOOLPREDEFINED -DBRACKETOPERPARMS -DLISTFRIENDFIX
+LIBRARY     = toolclasses
+LIBARCH     = lib$(LIBRARY).a
+OBJS        = UseCount.o Point3d.o Stringclass.o Hash.o utility.o \
+              column_sprintf.o column_sscanf.o DisjointSets.o
 
 
 .SUFFIXES: .cpp
@@ -31,12 +34,12 @@ OBJS     = UseCount.o Point3d.o Stringclass.o Hash.o utility.o \
 .cpp.o:
 	$(CXX) $(CFLAGS) -c $< -o $@
 
-all:    $(LIBARCH)
+all:	$(LIBARCH)
 
-install:   $(LIBARCH)
+install:	$(LIBARCH)
 	@echo ""
 
-$(LIBARCH): $(OBJS)
+$(LIBARCH):	$(OBJS)
 	@echo "Loading $(LIBARCH) ... "
 	@ar cru $(LIBARCH) $(OBJS)
 	@$(RANLIB) $(LIBARCH)

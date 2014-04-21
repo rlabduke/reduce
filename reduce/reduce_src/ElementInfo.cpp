@@ -13,8 +13,8 @@
 // **************************************************************
 
 #if defined(_MSC_VER)
-#pragma warning(disable:4786) 
-#pragma warning(disable:4305) 
+#pragma warning(disable:4786)
+#pragma warning(disable:4305)
 #endif
 
 #include <iostream>
@@ -40,6 +40,8 @@ using std::sprintf;
 #include "ElementInfo.h"
 #include "StdResH.h"
 //#include "PDBrec.h"
+
+extern bool UseNuclearDistances; //defined in reduce.cpp JJH
 
 const StandardElementTable * ElementInfo::TheStdElemTbl = NULL;
 
@@ -143,11 +145,11 @@ bool fixAtomName(const char* atomname, const char* resname,int position) {
    buf[i] = '\0';
         switch(buf[position]) {
            case 'E': return strstr(HE_RESNAMES, resn) != NULL;
-           case 'F': return strstr(HF_RESNAMES, resn) != NULL; 
+           case 'F': return strstr(HF_RESNAMES, resn) != NULL;
            case 'G': return strstr(HG_RESNAMES, resn) != NULL;
            case 'O': return strstr(HO_RESNAMES, resn) != NULL;
            case 'S': return strstr(HS_RESNAMES, resn) != NULL;
-        } 
+        }
    throw std::runtime_error("Internal Error: fixAtomName() " __FILE__);
 }
 
@@ -186,77 +188,68 @@ void StandardElementTable::LayoutTable() {
 // Advanced Inorganic Chemistry, Cotton & Wilkinson, 1962, p93.
 
 // changes in hydrogen VDW radii made to accompany changes in hydrogen bond-lengths in StdResH.cpp
-//    atno                          explRad implRad covRad mageColors flags
-insert( 0, "?",  "unknown",            1.05, 0.00, 0.00, "magenta", 0);
-insert( 0, "ignore", "ignore",         0.00, 0.00, 0.00, "magenta", IGNORE);
-
-insert( 1, "H",  "hydrogen",           1.22, 0.00, 0.30, "grey",   0);
-// wba 100514  to 1.22 from 1.17
-insert( 1, "Har","hydrogen(aromatic)", 1.05, 0.00, 0.30, "grey",   0);
-// wba 100514  to 1.05 from 1.00
-insert( 1, "Hpol","hydrogen(polar)",   1.05, 0.00, 0.30, "grey",   DONOR_ATOM);
-// wba 100514  to 1.05 from 1.00
-insert( 1, "Ha+p",
-         "hydrogen(aromatic&polar)",   1.05, 0.00, 0.30, "grey",   DONOR_ATOM);
-// wba 100514  to 1.05 from 1.00
-insert( 1, "HOd",
-         "hydrogen(omnidirectional)",  1.05, 0.00, 0.30, "grey",   DONOR_ATOM|HB_ONLY_DUMMY);
-// wba 100514  to 1.05 from 1.00
-insert( 6, "C",  "carbon",             1.70, 1.90, 0.77, "white",  0);
-insert( 6, "Car","carbon(aromatic)",   1.75, 1.90, 0.77, "white",  ACCEPTOR_ATOM);
-insert( 6, "C=O","carbon(carbonyl)",   1.70, 1.80, 0.77, "white",  0); //** seems to help
-insert( 7, "N",  "nitrogen",           1.55, 1.70, 0.70, "sky",    0);
-insert( 7, "Nacc","nitrogen(acceptor)",1.55, 1.70, 0.70, "sky",    ACCEPTOR_ATOM);
-insert( 8, "O",  "oxygen",             1.40, 1.50, 0.66, "red",    ACCEPTOR_ATOM);
-insert(15, "P",  "phosphorus",         1.80, 1.80, 1.10, "pink",   0);
-insert(16, "S",  "sulfur",             1.80, 1.90, 1.04, "yellow", ACCEPTOR_ATOM);
-insert(33, "As", "arsnic",             2.00, 2.10, 1.21, "grey",   0);
-insert(34, "Se", "selenium",           1.90, 2.00, 1.17, "green",  0);
-
-insert( 9, "F",  "fluorine",           1.30, 1.30, 0.58, "green",  ACCEPTOR_ATOM);
-insert(17, "Cl", "chlorine",           1.77, 1.77, 0.99, "green",  ACCEPTOR_ATOM);
-insert(35, "Br", "bromine",            1.95, 1.95, 1.14, "brown",  ACCEPTOR_ATOM);
-insert(53, "I",  "iodine",             2.10, 2.10, 1.33, "brown",  ACCEPTOR_ATOM);
+//    atno                          explRad explRad_nuc implRad covRad mageColors flags
+insert( 0, "?",  "unknown",            1.05, 1.05, 0.00, 0.00, "magenta", 0);
+insert( 0, "ignore", "ignore",         0.00, 0.00, 0.00, 0.00, "magenta", IGNORE);
+insert( 1, "H",  "hydrogen",           1.22, 1.17, 0.00, 0.30, "grey",   0);
+insert( 1, "Har","hydrogen(aromatic)", 1.05, 1.00, 0.00, 0.30, "grey",   0);
+insert( 1, "Hpol","hydrogen(polar)",   1.05, 1.00, 0.00, 0.30, "grey",   DONOR_ATOM);
+insert( 1, "Ha+p","hydrogen(aromatic&polar)", 1.05, 1.00, 0.00, 0.30, "grey",   DONOR_ATOM);
+insert( 1, "HOd","hydrogen(omnidirectional)", 1.05, 1.00, 0.00, 0.30, "grey",   DONOR_ATOM|HB_ONLY_DUMMY);
+insert( 6, "C",  "carbon",             1.70, 1.70, 1.90, 0.77, "white",  0);
+insert( 6, "Car","carbon(aromatic)",   1.75, 1.75, 1.90, 0.77, "white",  ACCEPTOR_ATOM);
+insert( 6, "C=O","carbon(carbonyl)",   1.70, 1.70, 1.80, 0.77, "white",  0); //** seems to help
+insert( 7, "N",  "nitrogen",           1.55, 1.55, 1.70, 0.70, "sky",    0);
+insert( 7, "Nacc","nitrogen(acceptor)",1.55, 1.55, 1.70, 0.70, "sky",    ACCEPTOR_ATOM);
+insert( 8, "O",  "oxygen",             1.40, 1.40, 1.50, 0.66, "red",    ACCEPTOR_ATOM);
+insert(15, "P",  "phosphorus",         1.80, 1.80, 1.80, 1.10, "pink",   0);
+insert(16, "S",  "sulfur",             1.80, 1.80, 1.90, 1.04, "yellow", ACCEPTOR_ATOM);
+insert(33, "As", "arsnic",             2.00, 2.00, 2.10, 1.21, "grey",   0);
+insert(34, "Se", "selenium",           1.90, 1.90, 2.00, 1.17, "green",  0);
+insert( 9, "F",  "fluorine",           1.30, 1.30, 1.30, 0.58, "green",  ACCEPTOR_ATOM);
+insert(17, "Cl", "chlorine",           1.77, 1.77, 1.77, 0.99, "green",  ACCEPTOR_ATOM);
+insert(35, "Br", "bromine",            1.95, 1.95, 1.95, 1.14, "brown",  ACCEPTOR_ATOM);
+insert(53, "I",  "iodine",             2.10, 2.10, 2.10, 1.33, "brown",  ACCEPTOR_ATOM);
 
  // for most common metals we use Pauling's ionic radii
  // "covalent radii" = ionic + 0.74 (i.e., oxygenVDW(1.4) - oxygenCov(0.66))
  // because the ionic radii are usually calculated from Oxygen-Metal distance
-insert( 3, "Li", "lithium",            0.60, 0.60, 1.34, "grey", METALIC_ATOM);
-insert(11, "Na", "sodium",             0.95, 0.95, 1.69, "grey", METALIC_ATOM);
-insert(13, "Al", "aluminum",           0.50, 0.50, 1.24, "grey", METALIC_ATOM);
-insert(19, "K",  "potassium",          1.33, 1.33, 2.07, "grey", METALIC_ATOM);
-insert(12, "Mg", "magnesium",          0.65, 0.65, 1.39, "grey", METALIC_ATOM);
-insert(20, "Ca", "calcium",            0.99, 0.99, 1.73, "grey", METALIC_ATOM);
-insert(25, "Mn", "manganese",          0.80, 0.80, 1.54, "grey", METALIC_ATOM);
-insert(26, "Fe", "iron",               0.74, 0.74, 1.48, "grey", METALIC_ATOM);
-insert(27, "Co", "cobolt",             0.70, 0.70, 1.44, "blue", METALIC_ATOM);
-insert(28, "Ni", "nickel",             0.66, 0.66, 1.40, "grey", METALIC_ATOM);
-insert(29, "Cu", "copper",             0.72, 0.72, 1.46,"orange",METALIC_ATOM);
-insert(30, "Zn", "zinc",               0.71, 0.71, 1.45, "grey", METALIC_ATOM);
-insert(37, "Rb", "rubidium",           1.48, 1.48, 2.22, "grey", METALIC_ATOM);
-insert(38, "Sr", "strontium",          1.10, 1.10, 1.84, "grey", METALIC_ATOM);
-insert(42, "Mo", "molybdenum",         0.93, 0.93, 1.67, "grey", METALIC_ATOM);
-insert(47, "Ag", "silver",             1.26, 1.26, 2.00, "white",METALIC_ATOM);
-insert(48, "Cd", "cadmium",            0.91, 0.91, 1.65, "grey", METALIC_ATOM);
-insert(49, "In", "indium",             0.81, 0.81, 1.55, "grey", METALIC_ATOM);
-insert(55, "Cs", "cesium",             1.69, 1.69, 2.43, "grey", METALIC_ATOM);
-insert(56, "Ba", "barium",             1.29, 1.29, 2.03, "grey", METALIC_ATOM);
-insert(79, "Au", "gold",               1.10, 1.10, 1.84, "gold", METALIC_ATOM);
-insert(80, "Hg", "mercury",            1.00, 1.00, 1.74, "grey", METALIC_ATOM);
-insert(81, "Tl", "thallium",           1.44, 1.44, 2.18, "grey", METALIC_ATOM);
-insert(82, "Pb", "lead",               0.84, 0.84, 1.58, "grey", METALIC_ATOM);
+insert( 3, "Li", "lithium",            0.60, 0.60, 0.60, 1.34, "grey", METALIC_ATOM);
+insert(11, "Na", "sodium",             0.95, 0.95, 0.95, 1.69, "grey", METALIC_ATOM);
+insert(13, "Al", "aluminum",           0.50, 0.50, 0.50, 1.24, "grey", METALIC_ATOM);
+insert(19, "K",  "potassium",          1.33, 1.33, 1.33, 2.07, "grey", METALIC_ATOM);
+insert(12, "Mg", "magnesium",          0.65, 0.65, 0.65, 1.39, "grey", METALIC_ATOM);
+insert(20, "Ca", "calcium",            0.99, 0.99, 0.99, 1.73, "grey", METALIC_ATOM);
+insert(25, "Mn", "manganese",          0.80, 0.80, 0.80, 1.54, "grey", METALIC_ATOM);
+insert(26, "Fe", "iron",               0.74, 0.74, 0.74, 1.48, "grey", METALIC_ATOM);
+insert(27, "Co", "cobolt",             0.70, 0.70, 0.70, 1.44, "blue", METALIC_ATOM);
+insert(28, "Ni", "nickel",             0.66, 0.66, 0.66, 1.40, "grey", METALIC_ATOM);
+insert(29, "Cu", "copper",             0.72, 0.72, 0.72, 1.46,"orange",METALIC_ATOM);
+insert(30, "Zn", "zinc",               0.71, 0.71, 0.71, 1.45, "grey", METALIC_ATOM);
+insert(37, "Rb", "rubidium",           1.48, 1.48, 1.48, 2.22, "grey", METALIC_ATOM);
+insert(38, "Sr", "strontium",          1.10, 1.10, 1.10, 1.84, "grey", METALIC_ATOM);
+insert(42, "Mo", "molybdenum",         0.93, 0.93, 0.93, 1.67, "grey", METALIC_ATOM);
+insert(47, "Ag", "silver",             1.26, 1.26, 1.26, 2.00, "white",METALIC_ATOM);
+insert(48, "Cd", "cadmium",            0.91, 0.91, 0.91, 1.65, "grey", METALIC_ATOM);
+insert(49, "In", "indium",             0.81, 0.81, 0.81, 1.55, "grey", METALIC_ATOM);
+insert(55, "Cs", "cesium",             1.69, 1.69, 1.69, 2.43, "grey", METALIC_ATOM);
+insert(56, "Ba", "barium",             1.29, 1.29, 1.29, 2.03, "grey", METALIC_ATOM);
+insert(79, "Au", "gold",               1.10, 1.10, 1.10, 1.84, "gold", METALIC_ATOM);
+insert(80, "Hg", "mercury",            1.00, 1.00, 1.00, 1.74, "grey", METALIC_ATOM);
+insert(81, "Tl", "thallium",           1.44, 1.44, 1.44, 2.18, "grey", METALIC_ATOM);
+insert(82, "Pb", "lead",               0.84, 0.84, 0.84, 1.58, "grey", METALIC_ATOM);
 
 // for other metals we use Shannon's ionic radii
 // Acta Crystallogr. (1975) A32, pg751.
-insert(23, "V",  "vanadium",           0.79, 0.79, 1.53, "grey", METALIC_ATOM);
-insert(24, "Cr", "chromium",           0.73, 0.73, 1.47, "grey", METALIC_ATOM);
-insert(52, "Te", "tellurium",          0.97, 0.97, 1.71, "grey", METALIC_ATOM);
-insert(62, "Sm", "samarium",           1.08, 1.08, 1.82, "grey", METALIC_ATOM);
-insert(64, "Gd", "gadolinium",         1.05, 1.05, 1.79, "grey", METALIC_ATOM);
-insert(70, "Yb", "ytterbium",          1.14, 1.14, 1.88, "grey", METALIC_ATOM);
-insert(74, "W",  "tungsten",           0.66, 0.66, 1.40, "grey", METALIC_ATOM);
-insert(78, "Pt", "platinum",           0.63, 0.63, 1.37, "grey", METALIC_ATOM);
-insert(92, "U",  "unanium",            1.03, 1.03, 1.77, "grey", METALIC_ATOM);
+insert(23, "V",  "vanadium",           0.79, 0.79, 0.79, 1.53, "grey", METALIC_ATOM);
+insert(24, "Cr", "chromium",           0.73, 0.73, 0.73, 1.47, "grey", METALIC_ATOM);
+insert(52, "Te", "tellurium",          0.97, 0.97, 0.97, 1.71, "grey", METALIC_ATOM);
+insert(62, "Sm", "samarium",           1.08, 1.08, 1.08, 1.82, "grey", METALIC_ATOM);
+insert(64, "Gd", "gadolinium",         1.05, 1.05, 1.05, 1.79, "grey", METALIC_ATOM);
+insert(70, "Yb", "ytterbium",          1.14, 1.14, 1.14, 1.88, "grey", METALIC_ATOM);
+insert(74, "W",  "tungsten",           0.66, 0.66, 0.66, 1.40, "grey", METALIC_ATOM);
+insert(78, "Pt", "platinum",           0.63, 0.63, 0.63, 1.37, "grey", METALIC_ATOM);
+insert(92, "U",  "unanium",            1.03, 1.03, 1.03, 1.77, "grey", METALIC_ATOM);
 
 // Cotton & Wilkinson and also-
 // L.E. Sutton (ed.) in Table of interatomic distances and configuration in molecules
@@ -264,66 +257,66 @@ insert(92, "U",  "unanium",            1.03, 1.03, 1.77, "grey", METALIC_ATOM);
 // London, UK, 1965 (as listed in web-elements by Mark Winter)
 //                   http://www.shef.ac.uk/chemistry/web-elements
 
-insert( 2, "He",  "helium",            1.60, 1.60, 0.00, "sky",             0);
-insert( 4, "Be",  "beryllium",         0.31, 0.31, 0.90, "grey", METALIC_ATOM);
-insert( 5, "B",   "boron",             0.20, 0.20, 0.86, "grey",            0);
-insert(10, "Ne",  "neon",              1.60, 1.60, 0.00, "pink",            0);
-insert(14, "Si",  "silicon",           2.10, 2.10, 1.17, "grey", METALIC_ATOM);
-insert(18, "Ar",  "argon",             1.89, 1.89, 0.00, "orange",          0);
-insert(21, "Sc",  "scandium",          0.68, 0.68, 0.44, "grey", METALIC_ATOM);
-insert(22, "Ti",  "titanium",          0.75, 0.75, 1.49, "grey", METALIC_ATOM);
-insert(31, "Ga",  "gallium",           0.53, 0.53, 1.27, "grey", METALIC_ATOM);
-insert(32, "Ge",  "germanium",         0.60, 0.60, 1.34, "grey", METALIC_ATOM);
-insert(36, "Kr",  "krypton",           2.01, 2.01, 1.15, "greentint",       0);
-insert(39, "Y",   "yttrium",           0.90, 0.90, 1.64, "grey", METALIC_ATOM);
-insert(40, "Zr",  "zirconium",         0.77, 0.77, 1.51, "grey", METALIC_ATOM);
-insert(50, "Sn",  "tin",               0.71, 0.71, 1.45, "grey", METALIC_ATOM);
-insert(51, "Sb",  "antimony",          2.20, 2.20, 1.41, "grey", METALIC_ATOM);
-insert(54, "Xe",  "xenon",             2.18, 2.18, 1.28, "magenta",         0);
-insert(57, "La",  "lanthanum",         1.03, 1.03, 1.77, "grey", METALIC_ATOM);
-insert(58, "Ce",  "cerium",            0.87, 0.87, 1.61, "grey", METALIC_ATOM);
-insert(87, "Fr",  "francium",          1.94, 1.94, 2.68, "grey", METALIC_ATOM);
-insert(88, "Ra",  "radium",            1.62, 1.62, 2.36, "grey", METALIC_ATOM);
-insert(90, "Th",  "thorium",           1.08, 1.08, 1.82, "grey", METALIC_ATOM);
+insert( 2, "He",  "helium",            1.60, 1.60, 1.60, 0.00, "sky",             0);
+insert( 4, "Be",  "beryllium",         0.31, 0.31, 0.31, 0.90, "grey", METALIC_ATOM);
+insert( 5, "B",   "boron",             0.20, 0.20, 0.20, 0.86, "grey",            0);
+insert(10, "Ne",  "neon",              1.60, 1.60, 1.60, 0.00, "pink",            0);
+insert(14, "Si",  "silicon",           2.10, 2.10, 2.10, 1.17, "grey", METALIC_ATOM);
+insert(18, "Ar",  "argon",             1.89, 1.89, 1.89, 0.00, "orange",          0);
+insert(21, "Sc",  "scandium",          0.68, 0.68, 0.68, 0.44, "grey", METALIC_ATOM);
+insert(22, "Ti",  "titanium",          0.75, 0.75, 0.75, 1.49, "grey", METALIC_ATOM);
+insert(31, "Ga",  "gallium",           0.53, 0.53, 0.53, 1.27, "grey", METALIC_ATOM);
+insert(32, "Ge",  "germanium",         0.60, 0.60, 0.60, 1.34, "grey", METALIC_ATOM);
+insert(36, "Kr",  "krypton",           2.01, 2.01, 2.01, 1.15, "greentint",       0);
+insert(39, "Y",   "yttrium",           0.90, 0.90, 0.90, 1.64, "grey", METALIC_ATOM);
+insert(40, "Zr",  "zirconium",         0.77, 0.77, 0.77, 1.51, "grey", METALIC_ATOM);
+insert(50, "Sn",  "tin",               0.71, 0.71, 0.71, 1.45, "grey", METALIC_ATOM);
+insert(51, "Sb",  "antimony",          2.20, 2.20, 2.20, 1.41, "grey", METALIC_ATOM);
+insert(54, "Xe",  "xenon",             2.18, 2.18, 2.18, 1.28, "magenta",         0);
+insert(57, "La",  "lanthanum",         1.03, 1.03, 1.03, 1.77, "grey", METALIC_ATOM);
+insert(58, "Ce",  "cerium",            0.87, 0.87, 0.87, 1.61, "grey", METALIC_ATOM);
+insert(87, "Fr",  "francium",          1.94, 1.94, 1.94, 2.68, "grey", METALIC_ATOM);
+insert(88, "Ra",  "radium",            1.62, 1.62, 1.62, 2.36, "grey", METALIC_ATOM);
+insert(90, "Th",  "thorium",           1.08, 1.08, 1.08, 1.82, "grey", METALIC_ATOM);
 
 // finally, we have a set of elements where the radii are unknown
 // so we use estimates and extrapolations based on web-elements data
-insert(41, "Nb",  "niobium",           0.86, 0.86, 1.40, "grey", METALIC_ATOM);
-insert(43, "Tc",  "technetium",        0.71, 0.71, 1.25, "grey", METALIC_ATOM);
-insert(44, "Ru",  "ruthenium",         0.82, 0.82, 1.36, "grey", METALIC_ATOM);
-insert(45, "Rh",  "rhodium",           0.76, 1.76, 1.30, "grey", METALIC_ATOM);
-insert(46, "Pd",  "palladium",         1.05, 1.05, 1.59, "grey", METALIC_ATOM);
-insert(59, "Pr",  "praseodymium",      1.11, 1.11, 1.65, "grey", METALIC_ATOM);
-insert(60, "Nd",  "neodymium",         1.10, 1.10, 1.64, "grey", METALIC_ATOM);
-insert(61, "Pm",  "promethium",        1.15, 1.15, 1.89, "grey", METALIC_ATOM);
-insert(63, "Eu",  "europium",          1.31, 1.31, 1.85, "grey", METALIC_ATOM);
-insert(65, "Tb",  "terbium",           1.05, 1.05, 1.59, "grey", METALIC_ATOM);
-insert(66, "Dy",  "dysprosium",        1.05, 1.05, 1.59, "grey", METALIC_ATOM);
-insert(67, "Ho",  "holmium",           1.04, 1.04, 1.58, "grey", METALIC_ATOM);
-insert(68, "Er",  "erbium",            1.03, 1.03, 1.57, "grey", METALIC_ATOM);
-insert(69, "Tm",  "thulium",           1.02, 1.02, 1.56, "grey", METALIC_ATOM);
-insert(71, "Lu",  "lutetium",          1.02, 1.02, 1.56, "grey", METALIC_ATOM);
-insert(72, "Hf",  "hafnium",           0.85, 0.85, 1.46, "grey", METALIC_ATOM);
-insert(73, "Ta",  "tantalum",          0.86, 0.86, 1.40, "grey", METALIC_ATOM);
-insert(75, "Re",  "rhenium",           0.77, 0.77, 1.31, "grey", METALIC_ATOM);
-insert(76, "Os",  "osmium",            0.78, 0.78, 1.32, "grey", METALIC_ATOM);
-insert(77, "Ir",  "iridium",           0.80, 0.80, 1.34, "grey", METALIC_ATOM);
-insert(83, "Bi",  "bismuth",           1.17, 1.17, 1.71, "grey", METALIC_ATOM);
-insert(84, "Po",  "polonium",          0.99, 0.99, 1.53, "grey", METALIC_ATOM);
-insert(85, "At",  "astatine",          0.91, 0.91, 1.45, "grey", METALIC_ATOM);
-insert(86, "Rn",  "radon",             2.50, 2.50, 1.25, "pinktint", 0);
-insert(89, "Ac",  "actinium",          1.30, 1.30, 2.00, "grey", METALIC_ATOM);
-insert(91, "Pa",  "protoactinium",     1.10, 1.10, 1.85, "grey", METALIC_ATOM);
-insert(93, "Np",  "neptunium",         1.00, 1.00, 1.72, "grey", METALIC_ATOM);
-insert(94, "Pu",  "plutonium",         1.00, 1.00, 1.67, "grey", METALIC_ATOM);
-insert(95, "Am",  "americium",         1.00, 1.00, 1.63, "grey", METALIC_ATOM);
-insert(96, "Cm",  "curium",            1.00, 1.00, 1.60, "grey", METALIC_ATOM);
-insert(97, "Bk",  "berkelium",         1.00, 1.00, 1.58, "grey", METALIC_ATOM);
-insert(98, "Cf",  "californium",       1.00, 1.00, 1.57, "grey", METALIC_ATOM);
-insert(99, "Es",  "einsteinium",       1.00, 1.00, 1.56, "grey", METALIC_ATOM);
-insert(100,"Fm",  "fermium",           1.00, 1.00, 1.55, "grey", METALIC_ATOM);
-insert(101,"Md",  "mendelevium",       1.00, 1.00, 1.55, "grey", METALIC_ATOM);
-insert(102,"No",  "nobelium",          1.00, 1.00, 1.55, "grey", METALIC_ATOM);
+insert(41, "Nb",  "niobium",           0.86, 0.86, 0.86, 1.40, "grey", METALIC_ATOM);
+insert(43, "Tc",  "technetium",        0.71, 0.71, 0.71, 1.25, "grey", METALIC_ATOM);
+insert(44, "Ru",  "ruthenium",         0.82, 0.82, 0.82, 1.36, "grey", METALIC_ATOM);
+insert(45, "Rh",  "rhodium",           0.76, 0.76, 1.76, 1.30, "grey", METALIC_ATOM);
+insert(46, "Pd",  "palladium",         1.05, 1.05, 1.05, 1.59, "grey", METALIC_ATOM);
+insert(59, "Pr",  "praseodymium",      1.11, 1.11, 1.11, 1.65, "grey", METALIC_ATOM);
+insert(60, "Nd",  "neodymium",         1.10, 1.10, 1.10, 1.64, "grey", METALIC_ATOM);
+insert(61, "Pm",  "promethium",        1.15, 1.15, 1.15, 1.89, "grey", METALIC_ATOM);
+insert(63, "Eu",  "europium",          1.31, 1.31, 1.31, 1.85, "grey", METALIC_ATOM);
+insert(65, "Tb",  "terbium",           1.05, 1.05, 1.05, 1.59, "grey", METALIC_ATOM);
+insert(66, "Dy",  "dysprosium",        1.05, 1.05, 1.05, 1.59, "grey", METALIC_ATOM);
+insert(67, "Ho",  "holmium",           1.04, 1.04, 1.04, 1.58, "grey", METALIC_ATOM);
+insert(68, "Er",  "erbium",            1.03, 1.03, 1.03, 1.57, "grey", METALIC_ATOM);
+insert(69, "Tm",  "thulium",           1.02, 1.02, 1.02, 1.56, "grey", METALIC_ATOM);
+insert(71, "Lu",  "lutetium",          1.02, 1.02, 1.02, 1.56, "grey", METALIC_ATOM);
+insert(72, "Hf",  "hafnium",           0.85, 0.85, 0.85, 1.46, "grey", METALIC_ATOM);
+insert(73, "Ta",  "tantalum",          0.86, 0.86, 0.86, 1.40, "grey", METALIC_ATOM);
+insert(75, "Re",  "rhenium",           0.77, 0.77, 0.77, 1.31, "grey", METALIC_ATOM);
+insert(76, "Os",  "osmium",            0.78, 0.78, 0.78, 1.32, "grey", METALIC_ATOM);
+insert(77, "Ir",  "iridium",           0.80, 0.80, 0.80, 1.34, "grey", METALIC_ATOM);
+insert(83, "Bi",  "bismuth",           1.17, 1.17, 1.17, 1.71, "grey", METALIC_ATOM);
+insert(84, "Po",  "polonium",          0.99, 0.99, 0.99, 1.53, "grey", METALIC_ATOM);
+insert(85, "At",  "astatine",          0.91, 0.91, 0.91, 1.45, "grey", METALIC_ATOM);
+insert(86, "Rn",  "radon",             2.50, 2.50, 2.50, 1.25, "pinktint", 0);
+insert(89, "Ac",  "actinium",          1.30, 1.30, 1.30, 2.00, "grey", METALIC_ATOM);
+insert(91, "Pa",  "protoactinium",     1.10, 1.10, 1.10, 1.85, "grey", METALIC_ATOM);
+insert(93, "Np",  "neptunium",         1.00, 1.00, 1.00, 1.72, "grey", METALIC_ATOM);
+insert(94, "Pu",  "plutonium",         1.00, 1.00, 1.00, 1.67, "grey", METALIC_ATOM);
+insert(95, "Am",  "americium",         1.00, 1.00, 1.00, 1.63, "grey", METALIC_ATOM);
+insert(96, "Cm",  "curium",            1.00, 1.00, 1.00, 1.60, "grey", METALIC_ATOM);
+insert(97, "Bk",  "berkelium",         1.00, 1.00, 1.00, 1.58, "grey", METALIC_ATOM);
+insert(98, "Cf",  "californium",       1.00, 1.00, 1.00, 1.57, "grey", METALIC_ATOM);
+insert(99, "Es",  "einsteinium",       1.00, 1.00, 1.00, 1.56, "grey", METALIC_ATOM);
+insert(100,"Fm",  "fermium",           1.00, 1.00, 1.00, 1.55, "grey", METALIC_ATOM);
+insert(101,"Md",  "mendelevium",       1.00, 1.00, 1.00, 1.55, "grey", METALIC_ATOM);
+insert(102,"No",  "nobelium",          1.00, 1.00, 1.00, 1.55, "grey", METALIC_ATOM);
 }
 
 StandardElementTable::~StandardElementTable() {
@@ -333,15 +326,28 @@ StandardElementTable::~StandardElementTable() {
 
 bool StandardElementTable::insert(int atno,
 		  const char* name, const char* fullName,
-		  float eRad, float iRad, float covRad,
+		  float eRad, float eRad_nuc, float iRad, float covRad,
 		  const char* color, int  flags) {
 
-   if (  eRad > _explMaxRad){ _explMaxRad =   eRad; }
-   if (  iRad > _implMaxRad){ _implMaxRad =   iRad; }
-   if (covRad >  _covMaxRad){  _covMaxRad = covRad; }
+   if (!UseNuclearDistances) {
+     if (    eRad > _explMaxRad){ _explMaxRad =       eRad; }
+   }
+   else {
+     if (eRad_nuc > _explMaxRad){ _explMaxRad =   eRad_nuc; }
+   }
+   if (    iRad > _implMaxRad){ _implMaxRad =       iRad; }
+   if (  covRad >  _covMaxRad){  _covMaxRad =     covRad; }
+
+   float eRad_current;
+   if (UseNuclearDistances) {
+     eRad_current = eRad_nuc;
+   }
+   else {
+     eRad_current = eRad;
+   }
 
    ElementInfo *ele = new ElementInfo(atno, name, fullName,
-			   eRad, iRad, covRad, color, flags);
+			   eRad_current, iRad, covRad, color, flags);
 
    _index.insert(std::make_pair(ele->atomName(), ele));
    return TRUE;
@@ -384,8 +390,8 @@ ElementInfo* StandardElementTable::lookupPDBatom(const char* name, const char* r
 	case 'G': elementName = fixAtomName(name,resname,2) ? "Hg" : "H"; break;
      	case 'O': elementName = fixAtomName(name,resname,2) ? "Ho" : "H"; break;
      	case 'S': elementName = fixAtomName(name,resname,2) ? "Hs" : "H"; break;
-	default :elementName = "H"; break; 
-	} break; 
+	default :elementName = "H"; break;
+	} break;
       case 'I': elementName = "I"; break;
       case 'K': elementName = "K"; break;
       case 'N': elementName = "N"; break;
@@ -420,7 +426,7 @@ ElementInfo* StandardElementTable::lookupPDBatom(const char* name, const char* r
       case 'K': elementName = "Bk"; break;
       case 'R': elementName = "Br"; break;
       } break;
-   case 'C': 
+   case 'C':
       switch(buf[1]) {
       case 'A': elementName = "Ca"; break;
       case 'C': elementName = "C";  emitWarning = TRUE;break;

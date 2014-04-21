@@ -18,7 +18,7 @@ def run(args):
     pdb = os.path.join(pdb_dir, pdbs[i_pdb])
     if (not os.path.isfile(pdb)): continue
     if (file_size(file_name=pdb) > 1000000): continue
-    cmd = "reduce/exe/reduce " + pdb
+    cmd = "./reduce " + pdb
     print cmd
     results = easy_run.fully_buffered(command=cmd)
     results.show_stderr()

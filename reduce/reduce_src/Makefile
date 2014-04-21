@@ -1,15 +1,15 @@
 TOOLHOME    =../toolclasses
 PDBHOME     =../libpdb
 
-CRYSTAL_CODE_DIR=/home/verma/temp_installs
-CRYSTAL_BUILD_DIR=/home/verma/temp_installs/scons
-CCTBXHOME   =${CRYSTAL_CODE_DIR}/cctbx_project/
+CRYSTAL_CODE_DIR=/home/austonst/HW/reduce/cctbx
+CRYSTAL_BUILD_DIR=/home/austonst/HW/reduce/cctbx/cctbx_build
+CCTBXHOME   =${CRYSTAL_CODE_DIR}/cctbx_sources/
 BOOSTHOME   =${CRYSTAL_CODE_DIR}/boost
 GENFILES    =${CRYSTAL_BUILD_DIR}/include
 LIBCCTBX    =${CRYSTAL_BUILD_DIR}/lib
 
 INSTALLHOME =..
-DICT_HOME   =/home/verma/data/reduce_wwPDB_het_dict.txt
+DICT_HOME   =/home/austonst/HW/reduce/reduce_wwPDB_het_dict.txt
 DICT_LOC    = -DHET_DICTIONARY='"$(DICT_HOME)"'
 PROG_FLGS   = -DAROMATICS_ACCEPT_HBONDS \
               -DCHARFUNCMACROS \

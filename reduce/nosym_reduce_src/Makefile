@@ -1,7 +1,7 @@
 TOOLHOME    =../toolclasses
 PDBHOME     =../libpdb
 INSTALLHOME =..
-DICT_HOME   =/usr/local/reduce_wwPDB_het_dict.txt
+DICT_HOME   =/home/austonst/HW/reduce/reduce_wwPDB_het_dict.txt
 DICT_OLD    =/usr/local/reduce_het_dict.txt
 DICT_LOC    = -DHET_DICTIONARY='"$(DICT_HOME)"'
 DICT_LOCOLD = -DHET_DICTOLD='"$(DICT_OLD)"'
