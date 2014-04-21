@@ -53,7 +53,7 @@ void PDBrec::getConect(int cvec[]) const {
    int n;
    const char* errmsg = hy36decode(5,  _rep->_r.conect.serialNum, 5, &n);
    //if (errmsg) throw std::runtime_error(errmsg);
-   cvec[0] = n; 
+   cvec[0] = n;
    errmsg = hy36decode(5,  _rep->_r.conect.covalent[0], 5, &n);
    //if (errmsg) throw std::runtime_error(errmsg);
    cvec[1] = n;
@@ -99,11 +99,11 @@ void PDBrec::getConect(int cvec[]) const {
 }
 
 void PDBrec::setConect(int cvec[]) {
-   char Hy36_cvec[11][6]; 
+   char Hy36_cvec[11][6];
    const char* errmsg = hy36encode(5,  cvec[0], Hy36_cvec[0]);
    Hy36_cvec[0][5]='\0';
-   strncpy(_rep->_r.conect.serialNum, Hy36_cvec[0], 6); 
-   _rep->_r.conect.serialNum[5]='0'; 
+   strncpy(_rep->_r.conect.serialNum, Hy36_cvec[0], 6);
+   _rep->_r.conect.serialNum[5]='0';
    //if (errmsg) throw std::runtime_error(errmsg);
 
    errmsg = hy36encode(5, cvec[1], Hy36_cvec[1]);
@@ -111,7 +111,7 @@ void PDBrec::setConect(int cvec[]) {
    strncpy(_rep->_r.conect.covalent[0], Hy36_cvec[1],6);
    _rep->_r.conect.covalent[0][5]='\0';
    //if (errmsg) throw std::runtime_error(errmsg);
- 
+
    errmsg = hy36encode(5, cvec[2], Hy36_cvec[2]);
    Hy36_cvec[2][5]='\0';
    strncpy(_rep->_r.conect.covalent[1], Hy36_cvec[2],6);
@@ -132,7 +132,7 @@ void PDBrec::setConect(int cvec[]) {
 
    errmsg = hy36encode(5, cvec[5], Hy36_cvec[5]);
    Hy36_cvec[5][5]='\0';
-   strncpy(_rep->_r.conect.bonds[0].hydrogen[0], Hy36_cvec[5],6); 
+   strncpy(_rep->_r.conect.bonds[0].hydrogen[0], Hy36_cvec[5],6);
    _rep->_r.conect.bonds[0].hydrogen[0][5]='\0';
    //if (errmsg) throw std::runtime_error(errmsg);
 
@@ -166,7 +166,7 @@ void PDBrec::setConect(int cvec[]) {
    _rep->_r.conect.bonds[1].salt[5]='\0';
    //if (errmsg) throw std::runtime_error(errmsg);
 
-//   _rep->_r.conect.serialNum            = cvec[0]; 
+//   _rep->_r.conect.serialNum            = cvec[0];
 //   _rep->_r.conect.covalent[0]          = cvec[1];
 //   _rep->_r.conect.covalent[1]          = cvec[2];
 //   _rep->_r.conect.covalent[2]          = cvec[3];
@@ -180,10 +180,19 @@ void PDBrec::setConect(int cvec[]) {
 }
 
 std::string PDBrec::recName() const {
-	char fmtbuf[30];
-	::sprintf(fmtbuf, "%-2.2s%4d%c%-3.3s%-4.4s%c",
+	char fmtbuf[32];
+	if (!UseSEGIDasChain) {
+	  //char fmtbuf[30];
+	  ::sprintf(fmtbuf, "%-2.2s%4d%c%-3.3s%-4.4s%c",
 		chain(), resno(), insCode(),
 		resname(), atomname(), alt());
+	}
+	else {
+	  //char fmtbuf[32];
+	  ::sprintf(fmtbuf, "%-4.4s%4d%c%-3.3s%-4.4s%c",
+		chain(), resno(), insCode(),
+		resname(), atomname(), alt());
+	}
 	return fmtbuf;
 }
 
@@ -269,8 +278,8 @@ void PDBrec::MapSEGIDtoChain() {
 }
 
 void PDBrec::SEGIDtoChain(const char *seg, char cdefault, char* dest) {
-   dest[0] = dest[1] = ' '; 
-   dest[2] = '\0'; 
+   dest[0] = dest[1] = ' ';
+   dest[2] = '\0';
    if (_MappingSEGIDtoChains && seg) {
       std::string s = FormatSegToChainKey(seg);
 	  std::map<std::string, char>::const_iterator i = _SEGtoChainMap.find(s);

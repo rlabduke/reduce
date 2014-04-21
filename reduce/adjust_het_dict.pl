@@ -1,14 +1,14 @@
-#!/usr/bin/perl 
+#!/usr/bin/perl
 
-open IN, "<$ARGV[0]"; 
-open OUT, ">$ARGV[1]"; 
+open IN, "<$ARGV[0]";
+open OUT, ">$ARGV[1]";
 
 while ($line=<IN>) {
 
 	if (substr($line, 0, 7) eq RESIDUE) {
-		if (substr($line, 10,3) =~ m/.. /) { substr($line, 10,3) =~ s/(..) / $1/; }
-		if (substr($line, 10,3) =~ m/.  /) { substr($line, 10,3) =~ s/(.)  /  $1/; }
-		print OUT $line;  
+		if (substr($line, 10,3) =~ m/\w\w\s/) { substr($line, 10,3) =~ s/(..) / $1/; }
+		if (substr($line, 10,3) =~ m/\w\s\s/) { substr($line, 10,3) =~ s/(.)  /  $1/; }
+		print OUT $line;
 	}
 
 	elsif (substr($line, 0, 6) eq CONECT) {
@@ -35,7 +35,7 @@ while ($line=<IN>) {
         	$conn_8=substr($line, 55, 4);
         	$conn_9=substr($line, 60, 4);
         	$conn_10=substr($line, 65, 4);
-		@line=split(" ", $line); 
+		@line=split(" ", $line);
         	if (length($line[1]) == 4) { $atom_name=$line[1]; }
         	if (length($line[3]) == 4) { $conn_1=$line[3]; }
         	if (length($line[4]) == 4) { $conn_2=$line[4]; }
@@ -52,7 +52,7 @@ while ($line=<IN>) {
 	else {print OUT $line;}
 }
 
-format OUT = 
+format OUT =
 @<<<<<<<<<<@<<< @>>>@<<< @<<< @<<< @<<< @<<< @<<< @<<< @<<< @<<< @<<<
-$line[0], $atom_name,$line[2],$conn_1, $conn_2, $conn_3, $conn_4, $conn_5, $conn_6, $conn_7, $conn_8, $conn_9, $conn_10 
+$line[0], $atom_name,$line[2],$conn_1, $conn_2, $conn_3, $conn_4, $conn_5, $conn_6, $conn_7, $conn_8, $conn_9, $conn_10
 .

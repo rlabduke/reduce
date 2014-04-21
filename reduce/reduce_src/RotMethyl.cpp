@@ -26,8 +26,8 @@
 #include <cstring>
 #include <cstdlib>
 #include <iostream>
-using std::cerr; 
-using std::endl; 
+using std::cerr;
+using std::endl;
 using std::strcpy;
 using std::exit;
 #endif
@@ -47,23 +47,25 @@ RotMethyl::RotMethyl(const Point3d& a, const Point3d& b,
    validateMemo();
 }
 
-void RotMethyl::finalize(int nBondCutoff, bool useXplorNames, bool useOldNames, bool bbModel, 
+void RotMethyl::finalize(int nBondCutoff, bool useXplorNames, bool useOldNames, bool bbModel,
 						 AtomPositions &xyz, DotSphManager& dotBucket) {
 
 	if (isComplete()) {
 
 		// pre-build lists of bonded atoms
-		
+
 		const double approxNbondDistLimit = 3.0 + 0.5*nBondCutoff; // just a rule of thumb
-		
+
 		_rot.push_front(&_heavyAtom);
 		for(std::list<PDBrec*>::const_iterator alst = _rot.begin(); alst != _rot.end(); ++alst) {
 			PDBrec* thisAtom = *alst;
-			std::list<PDBrec*>* temp = new std::list<PDBrec*>();
-			std::list< std::pair<PDBrec*, Point3d> > neighborList = xyz.get_neighbors(thisAtom->loc(), thisAtom->covRad(),
+			if (thisAtom->valid()) {
+			  std::list<PDBrec*>* temp = new std::list<PDBrec*>();
+			  std::list< std::pair<PDBrec*, Point3d> > neighborList = xyz.get_neighbors(thisAtom->loc(), thisAtom->covRad(),
 				approxNbondDistLimit);
-			bondedList(thisAtom, neighborList, nBondCutoff, _rot, temp);
-			_bnded.push_back(temp);
+			  bondedList(thisAtom, neighborList, nBondCutoff, _rot, temp);
+			  _bnded.push_back(temp);
+            }
 		}
 		_rot.pop_front();
 	}
@@ -92,13 +94,13 @@ std::list<AtomDescr> RotMethyl::getAtDescOfAllPos(float &maxVDWrad) {
 	AtomDescr ad_heavy(_heavyAtom.loc(), _heavyAtom.resno(), _heavyAtom.vdwRad());
 	ad_heavy.setOriginalAtomPtr( & _heavyAtom );
 	theList.push_back(ad_heavy);  // ANDREW: appending _heavyAtom to the getBumpersOfAllPos function
-	
+
 	PDBrec* hyds = NULL;
 	for (std::list<PDBrec*>::const_iterator it = _rot.begin(); it != _rot.end(); ++it) {
 		hyds = *it;
-		Point3d initHydPoint = hyds->loc();                                                                                               
-		for (int i = 0; i < numOrientations(Mover::LOW_RES); i++)                                                                                  
-		{                                                                                                                                          
+		Point3d initHydPoint = hyds->loc();
+		for (int i = 0; i < numOrientations(Mover::LOW_RES); i++)
+		{
 			double theta = orientationAngle(i, Mover::LOW_RES);
 			AtomDescr ad_h(initHydPoint.rotate(theta - _angle, _p2, _p1), _heavyAtom.resno(), hyds->vdwRad());
 			ad_h.setOriginalAtomPtr( hyds );
@@ -119,7 +121,7 @@ int RotMethyl::numOrientations(SearchStrategy ss) const {
 
 bool RotMethyl::isDefaultO(int oi, SearchStrategy ss) const {
    if (ss!=Mover::LOW_RES) { oi = orientation(Mover::LOW_RES); }
-   return ((oi == 0) && 
+   return ((oi == 0) &&
            (abs(clampAngle(START_ANGLE - angle())) < 1.0));
 }
 
@@ -205,8 +207,8 @@ double RotMethyl::scoreThisAngle(AtomPositions &xyz, DotSphManager& dotBucket,
 		bool subBadBump    = FALSE;
 		const PDBrec* thisAtom = *alst;
 
-		double val = xyz.atomScore(*thisAtom, thisAtom->loc(), 
-			thisAtom->vdwRad() + probeRadius + maxVDWrad, 
+		double val = xyz.atomScore(*thisAtom, thisAtom->loc(),
+			thisAtom->vdwRad() + probeRadius + maxVDWrad,
 			//apl procrastinate nearby list computation until AtomPositions decides to score
 			*(_bnded[i]), dotBucket.fetch(thisAtom->vdwRad()), probeRadius, FALSE,
 			bumpSubScore, hbSubScore, subBadBump);
@@ -300,7 +302,7 @@ void RotMethyl::dropBondedFromBumpingListForPDBrec(
 		std::list< PDBrec* >::iterator iter_next = iter;
 		//std::cerr << "Comparing: " << (*iter) << " " << (*iter)->getAtomDescr() << std::endl;
 		++iter_next;
-		
+
 		for (std::list< PDBrec* >::const_iterator constiter = _bnded[ atom_id]->begin();
 			constiter != _bnded[ atom_id]->end(); ++constiter)
 		{
@@ -312,7 +314,7 @@ void RotMethyl::dropBondedFromBumpingListForPDBrec(
 			}
 		}
 		iter = iter_next;
-	}	
+	}
 
 }
 
@@ -323,7 +325,7 @@ int RotMethyl::findAtom( PDBrec* atom ) const
 	{
 		return 0;
 	}
-	
+
 	int countAtomsSeen = 1;
 	for (std::list< PDBrec * >::const_iterator iter = _rot.begin(); iter != _rot.end(); ++iter)
 	{
@@ -337,7 +339,7 @@ int RotMethyl::findAtom( PDBrec* atom ) const
 	{
 		std::cerr << "_rot: " << *iter << std::endl;
 	}
-   
+
 	exit(1);
         return 0; // to avoid warnings
 }

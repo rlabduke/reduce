@@ -38,14 +38,17 @@ void bondedList(PDBrec *a, std::list< std::pair<PDBrec*, Point3d> >& nearby, int
 	PDBrec* rec = NULL;
 	for (std::list< std::pair<PDBrec*, Point3d> >::const_iterator it = nearby.begin(); it != nearby.end(); ++it) {
 		rec = it->first;
-		if (rec->mark() >= 1 && rec->mark() <= nbnds) {
+		if (rec->valid()) {
+		  if (rec->mark() >= 1 && rec->mark() <= nbnds) {
 			if (distanceSquared(rec->loc(),it->second) < 0.000001){ //Vishal: use TOL
 				PDBrec* temp = new PDBrec(*rec);
 				bondedAtoms->push_front(temp);
 			}
-		}
+		  }
+        }
 	}
 }
+
 
 void countBonds(std::pair<PDBrec*,Point3d> src, const std::list< std::pair<PDBrec*, Point3d> >& nearby,
 				int distcount, int maxcnt, std::list<PDBrec*>& atmList) {
@@ -57,7 +60,8 @@ void countBonds(std::pair<PDBrec*,Point3d> src, const std::list< std::pair<PDBre
 	for (std::list< std::pair<PDBrec*, Point3d> >::const_iterator targ = nearby.begin(); targ != nearby.end(); ++targ) {
 		rec = targ->first;
 		bool is_sym= (distanceSquared(rec->loc(),targ->second) > 0.00001); //Vishal: use TOL
-		if ( (rec->mark() < 1 || rec->mark() > distcount)
+		if (rec->valid()) {
+		  if ( (rec->mark() < 1 || rec->mark() > distcount)
 			&& ! diffAltLoc(*(src.first), *rec) ) {
 
 			bool isnear   = withinCovalentDist(src, *targ,  0.2);
@@ -70,6 +74,7 @@ void countBonds(std::pair<PDBrec*,Point3d> src, const std::list< std::pair<PDBre
 			else {
 				remainder.push_front(*targ);
 			}
+		  }
 		}
 	}
 	if (distcount < maxcnt) {
@@ -103,7 +108,7 @@ bool interactingConfs(const PDBrec& a, const PDBrec& b, bool onlyA) {
 bool diffAltLoc(const PDBrec& a, const PDBrec& b) {
    //return a.resno() == b.resno() && a.insCode() == b.insCode()
    return a.insCode() == b.insCode()
-       && strcmp(a.chain(), b.chain()) == 0 
+       && strcmp(a.chain(), b.chain()) == 0
        && a.alt() != b.alt() && a.alt() != ' ' && b.alt() != ' ';
 }
 

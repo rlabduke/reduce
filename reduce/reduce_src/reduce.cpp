@@ -24,9 +24,9 @@
 #endif
 
 static const char *versionString =
-     "reduce: version 3.22 03/27/2013, Copyright 1997-2013, J. Michael Word";
+     "reduce: version 3.24 07/24/2013, Copyright 1997-2013, J. Michael Word";
 
-static const char *shortVersion    = "reduce.3.22.130327";
+static const char *shortVersion    = "reduce.3.24.130724";
 static const char *referenceString =
                        "Word, et. al. (1999) J. Mol. Biol. 285, 1735-1747.";
 static const char *electronicReference = "http://kinemage.biochem.duke.edu";
@@ -108,6 +108,8 @@ bool ShowOrientScore          = FALSE;
 bool StringInput              = FALSE;
 bool ShowCharges              = FALSE;
 bool UseNuclearDistances      = FALSE; //jjh 130111
+bool UseSEGIDasChain          = FALSE; //jjh 130503
+bool ProcessedFirstModel      = FALSE; //jjh 130718
 
 int MaxAromRingDih    = 10;   // max dihedral angle in planarity check for aromatic rings  120724 - Aram
 
@@ -172,7 +174,9 @@ void reduceHelp(bool showAll);
 void reduceChanges(bool showAll);
 std::istream& inputRecords(std::istream& is, std::list<PDBrec*>& records);
 std::ostream& outputRecords(std::ostream& os, const std::list<PDBrec*>& records);
+void checkSEGIDs(std::list<PDBrec*>& rlst);
 void dropHydrogens(std::list<PDBrec*>& records);
+void invalidateRecords(std::list<PDBrec*>& rlst);
 void reduceList(CTab& db, std::list<PDBrec*>& records,
 				AtomPositions& xyz, std::vector<std::string>& fixNotes);
 void scanAndGroupRecords(std::list<PDBrec*>& rlst, AtomPositions& xyz,
@@ -265,6 +269,8 @@ void processPDBfile(std::istream& ifs, char *pdbFile, std::ostream& ofs) {
    std::list<PDBrec*> records;
 
    inputRecords(ifs, records);       // read all the PDB records in the file
+
+   checkSEGIDs(records);
 
    if (RemoveHydrogens) {
       dropHydrogens(records);
@@ -505,238 +511,238 @@ char *getOptionsOnTheMac() {
 #endif
 
 char* parseCommandLine(int argc, char **argv) {
-   char *pdbfile = NULL;
-   int nfile = 0, n;
+  char *pdbfile = NULL;
+  int nfile = 0, n;
 
-   establishHetDictionaryFileName();
+  establishHetDictionaryFileName();
 
-   if (argc <= 1) {
-      reduceHelp(FALSE);
-   }
-   for (int i = 1; i < argc; i++) {
-      char *p = argv[i];
-      if (p[0] == '-') {
-	 if (p[1] == '\0') {
-	    nfile = 1;
-	    pdbfile = NULL; // i.e. standard input
-	 }
-	 else if(compArgStr(p+1, "STRING", 6)){
-         StringInput = TRUE;
-     }
-     else if(compArgStr(p+1, "BUILD", 5)){
-	    BuildHisHydrogens  = TRUE;
-	    SaveOHetcHydrogens = TRUE;
-	    RotExistingOH      = TRUE;
-	    DemandFlipAllHNQs  = TRUE;
-         }
-         else if((n = compArgStr(p+1, "NOBUILD", 7))){
-            PenaltyMagnitude = parseReal(p, n+1, 10, PenaltyMagnitude);
-         // PenaltyMagnitude = 200;      9999 in molprobity
-            BuildHisHydrogens  = TRUE;
-            SaveOHetcHydrogens = TRUE;
-            RotExistingOH      = TRUE;  //  not used in molprobity
-            DemandFlipAllHNQs  = TRUE;
-         }
-	 else if((n = compArgStr(p+1, "Version", 1))){
-	    cerr << shortVersion << endl;
-	    exit(1);
-	 }
-	 else if((n = compArgStr(p+1, "Changes", 1))) {
-     	     reduceChanges(TRUE);
-         }
-	 else if((n = compArgStr(p+1, "Quiet", 1))){
-	    Verbose = FALSE;
-	 }
-	 else if((n = compArgStr(p+1, "NOTICKs", 6))){
-	    ShowCliqueTicks = FALSE;
-	 }
-	 else if((n = compArgStr(p+1, "SHOWSCore", 6))){
-	    ShowOrientScore = TRUE;
-	 }
-	 else if((n = compArgStr(p+1, "NOCon", 3))){
-	    KeepConnections = FALSE;
-	 }
-	 else if((n = compArgStr(p+1, "NOROTMET", 8))){
-	    OKProcessMetMe = FALSE;
-	 }
-	 else if((n = compArgStr(p+1, "NOADJust", 5))){
-	    OKtoAdjust = FALSE;
-	 }
-	 else if((n = compArgStr(p+1, "HIS", 3))){
-	    BuildHisHydrogens = TRUE;
-	 }
-	 else if((n = compArgStr(p+1, "OH", 2))){
-	    SaveOHetcHydrogens = TRUE;
-	 }
-	 else if((n = compArgStr(p+1, "NOOH", 4))){
-	    SaveOHetcHydrogens = FALSE;
-	 }
-	 else if((n = compArgStr(p+1, "Xplor", 1)) && !UseOldNames){
-	    UseXplorNames = TRUE;
-	 }
-         else if((n = compArgStr(p+1, "Xplor", 1)) && UseOldNames){
-            cerr << "Cannot use both -Xplor and -OLDpdb flags" << endl;
-            exit(1);
-	 }
-	 else if((n = compArgStr(p+1, "OLDpdb", 3)) && ! UseXplorNames){
-	    UseOldNames = TRUE;
-	    DBfilename = HET_DICTOLD;
-	 }
-         else if((n = compArgStr(p+1, "OLDpdb", 3)) && UseXplorNames){
-	    cerr << "Cannot use both -Xplor and -OLDpdb flags" << endl;
-	    exit(1);
-	 }
-	 else if((n = compArgStr(p+1, "BBmodel", 2))){
-		BackBoneModel = TRUE;
-	 }
-	 else if((n = compArgStr(p+1, "Trim", 1))){
-	    RemoveHydrogens = TRUE;
-	 }
-	 else if((n = compArgStr(p+1, "Keep", 1))){
-	    StandardizeRHBondLengths = FALSE;
-	 }
-	 else if((n = compArgStr(p+1, "ALLMETHYLS", 10))){
-	    DemandRotAllMethyls = TRUE;
-	 }
-	 else if((n = compArgStr(p+1, "ROTEXist", 5))){
-	    DemandRotExisting = TRUE;
-	 }
-         else if((n = compArgStr(p+1, "ADDNHATGAP", 10))){
-            NeutralTermini = TRUE;
-         }
-	 else if((n = compArgStr(p+1, "ROTNH3", 6))){
-	    DemandRotNH3 = TRUE;
-	 }
-	 else if((n = compArgStr(p+1, "NOROTNH3", 8))){
-	    DemandRotNH3 = FALSE;
-	 }
-	 else if((n = compArgStr(p+1, "ROTEXOH", 7))){
-	    RotExistingOH = TRUE;
-	 }
-	 else if((n = compArgStr(p+1, "FLIPs", 4))){
-	    DemandFlipAllHNQs = TRUE;
-	 }
-	 else if((n = compArgStr(p+1, "SEGIDmap", 5))){
-	    if (++i < argc) {
-	       UseSEGIDtoChainMap = TRUE;
-	       PDBrec::InstallMapOfSEGIDstoChains(argv[i]);
-	    }
-	    else {
-	       cerr << "no mapping info after -SEGIDmap flag" << endl;
-	    }
-	 }
-	 else if((n = compArgStr(p+1, "MAXAromdih", 1))){ // - Aram 07/24/12
-	    MaxAromRingDih = parseInteger(p, n+1, 10);
-	 }
-	 else if((n = compArgStr(p+1, "Nterm", 1))){
-	    MinNTermResNo = parseInteger(p, n+1, 10);
-	 }
-	 else if((n = compArgStr(p+1, "Model", 1))){
-	    ModelToProcess = parseInteger(p, n+1, 10);
-	 }
-	 else if((n = compArgStr(p+1, "ONLTA", 5))){
-	    DoOnlyAltA = TRUE;
-	 }
-	 else if((n = compArgStr(p+1, "ALLALT", 6))){
-	    DoOnlyAltA = FALSE;
-	 }
-     else if((n = compArgStr(p+1, "CHARGEs", 6))){
+  if (argc <= 1) {
+    reduceHelp(FALSE);
+  }
+  for (int i = 1; i < argc; i++) {
+    char *p = argv[i];
+    if (p[0] == '-') {
+      if (p[1] == '\0') {
+        nfile = 1;
+        pdbfile = NULL; // i.e. standard input
+      }
+      else if(compArgStr(p+1, "STRING", 6)){
+        StringInput = TRUE;
+      }
+      else if(compArgStr(p+1, "BUILD", 5)){
+        BuildHisHydrogens  = TRUE;
+        SaveOHetcHydrogens = TRUE;
+        RotExistingOH      = TRUE;
+        DemandFlipAllHNQs  = TRUE;
+      }
+      else if((n = compArgStr(p+1, "NOBUILD", 7))){
+        PenaltyMagnitude = parseReal(p, n+1, 10, PenaltyMagnitude);
+        // PenaltyMagnitude = 200;      9999 in molprobity
+        BuildHisHydrogens  = TRUE;
+        SaveOHetcHydrogens = TRUE;
+        RotExistingOH      = TRUE;  //  not used in molprobity
+        DemandFlipAllHNQs  = TRUE;
+      }
+      else if((n = compArgStr(p+1, "Version", 1))){
+        cerr << shortVersion << endl;
+        exit(1);
+      }
+      else if((n = compArgStr(p+1, "Changes", 1))) {
+        reduceChanges(TRUE);
+      }
+      else if((n = compArgStr(p+1, "Quiet", 1))){
+        Verbose = FALSE;
+      }
+      else if((n = compArgStr(p+1, "NOTICKs", 6))){
+        ShowCliqueTicks = FALSE;
+      }
+      else if((n = compArgStr(p+1, "SHOWSCore", 6))){
+        ShowOrientScore = TRUE;
+      }
+      else if((n = compArgStr(p+1, "NOCon", 3))){
+        KeepConnections = FALSE;
+      }
+      else if((n = compArgStr(p+1, "NOROTMET", 8))){
+        OKProcessMetMe = FALSE;
+      }
+      else if((n = compArgStr(p+1, "NOADJust", 5))){
+        OKtoAdjust = FALSE;
+      }
+      else if((n = compArgStr(p+1, "HIS", 3))){
+        BuildHisHydrogens = TRUE;
+      }
+      else if((n = compArgStr(p+1, "OH", 2))){
+        SaveOHetcHydrogens = TRUE;
+      }
+      else if((n = compArgStr(p+1, "NOOH", 4))){
+        SaveOHetcHydrogens = FALSE;
+      }
+      else if((n = compArgStr(p+1, "Xplor", 1)) && !UseOldNames){
+        UseXplorNames = TRUE;
+      }
+      else if((n = compArgStr(p+1, "Xplor", 1)) && UseOldNames){
+        cerr << "Cannot use both -Xplor and -OLDpdb flags" << endl;
+        exit(1);
+      }
+      else if((n = compArgStr(p+1, "OLDpdb", 3)) && ! UseXplorNames){
+        UseOldNames = TRUE;
+        DBfilename = HET_DICTOLD;
+      }
+      else if((n = compArgStr(p+1, "OLDpdb", 3)) && UseXplorNames){
+        cerr << "Cannot use both -Xplor and -OLDpdb flags" << endl;
+        exit(1);
+      }
+      else if((n = compArgStr(p+1, "BBmodel", 2))){
+        BackBoneModel = TRUE;
+      }
+      else if((n = compArgStr(p+1, "Trim", 1))){
+        RemoveHydrogens = TRUE;
+      }
+      else if((n = compArgStr(p+1, "Keep", 1))){
+        StandardizeRHBondLengths = FALSE;
+      }
+      else if((n = compArgStr(p+1, "ALLMETHYLS", 10))){
+        DemandRotAllMethyls = TRUE;
+      }
+      else if((n = compArgStr(p+1, "ROTEXist", 5))){
+        DemandRotExisting = TRUE;
+      }
+      else if((n = compArgStr(p+1, "ADDNHATGAP", 10))){
+        NeutralTermini = TRUE;
+      }
+      else if((n = compArgStr(p+1, "ROTNH3", 6))){
+        DemandRotNH3 = TRUE;
+      }
+      else if((n = compArgStr(p+1, "NOROTNH3", 8))){
+        DemandRotNH3 = FALSE;
+      }
+      else if((n = compArgStr(p+1, "ROTEXOH", 7))){
+        RotExistingOH = TRUE;
+      }
+      /*else if((n = compArgStr(p+1, "FLIPs", 4))){
+        DemandFlipAllHNQs = TRUE;
+      }*/ //removed redundant "FLIPs" flag - JJH 130724
+      else if((n = compArgStr(p+1, "SEGIDmap", 5))){
+        if (++i < argc) {
+          UseSEGIDtoChainMap = TRUE;
+          PDBrec::InstallMapOfSEGIDstoChains(argv[i]);
+        }
+        else {
+          cerr << "no mapping info after -SEGIDmap flag" << endl;
+        }
+      }
+      else if((n = compArgStr(p+1, "MAXAromdih", 1))){ // - Aram 07/24/12
+        MaxAromRingDih = parseInteger(p, n+1, 10);
+      }
+      else if((n = compArgStr(p+1, "Nterm", 1))){
+        MinNTermResNo = parseInteger(p, n+1, 10);
+      }
+      else if((n = compArgStr(p+1, "Model", 1))){
+        ModelToProcess = parseInteger(p, n+1, 10);
+      }
+      else if((n = compArgStr(p+1, "ONLTA", 5))){
+        DoOnlyAltA = TRUE;
+      }
+      else if((n = compArgStr(p+1, "ALLALT", 6))){
+        DoOnlyAltA = FALSE;
+      }
+      else if((n = compArgStr(p+1, "CHARGEs", 6))){
         ShowCharges = TRUE;
-     }
-	 else if((n = compArgStr(p+1, "NOHETh", 5))){
-	    ProcessConnHydOnHets = FALSE;
-	 }
-	 else if((n = compArgStr(p+1, "DENSity", 4))){
-	    VdwDotDensity = parseReal(p, n+1, 10, VdwDotDensity);
-	 }
-	 else if((n = compArgStr(p+1, "PENalty", 3))){
-	    PenaltyMagnitude = parseReal(p, n+1, 10, PenaltyMagnitude);
-	 }
-	 else if((n = compArgStr(p+1, "RADius", 3))){
-	    ProbeRadius = parseReal(p, n+1, 10, ProbeRadius);
-	 }
-	 else if((n = compArgStr(p+1, "NBonds", 2))){
-	    NBondCutoff = parseInteger(p, n+1, 10);
-	 }
-	 else if((n = compArgStr(p+1, "OCCcutoff", 3))){
-	    OccupancyCutoff = parseReal(p, n+1, 10, OccupancyCutoff);
-	 }
-	 else if((n = compArgStr(p+1, "H2OBcutoff", 4))){
-	    WaterBcutoff = 1.0 * parseInteger(p, n+1, 10);
-	 }
-	 else if((n = compArgStr(p+1, "H2OOCCcutoff", 6))){
-	    WaterOCCcutoff = parseReal(p, n+1, 10, WaterOCCcutoff);
-	 }
-	 else if((n = compArgStr(p+1, "HBREGcutoff", 5))){
-	    MinRegHBgap = parseReal(p, n+1, 10, MinRegHBgap);
-	 }
-	 else if((n = compArgStr(p+1, "HBCHargedcutoff", 4))){
-	    MinChargedHBgap = parseReal(p, n+1, 10, MinChargedHBgap);
-	 }
-	 else if((n = compArgStr(p+1, "BADBumpcutoff", 4))){
-	    BadBumpGapCut = parseReal(p, n+1, 10, BadBumpGapCut);
-	 }
-	 else if((n = compArgStr(p+1, "NONMETALBump", 9))){
-	    NonMetalBumpBias = parseReal(p, n+1, 10, NonMetalBumpBias);
-	 }
-	 else if((n = compArgStr(p+1, "METALBump", 6))){
-	    MetalBumpBias = parseReal(p, n+1, 10, MetalBumpBias);
-	 }
-         else if((n = compArgStr(p+1, "GAPERROR", 8))){
-            GapWidth = parseReal(p, n+1, 10, GapWidth);
-            if (GapWidth > 1.4) {
-               cerr << "Max allowed HalfGapWidth is 1.4" << endl;
-               exit(1);
-            }
-         }
-	 else if((n = compArgStr(p+1, "REFerence", 3))){
-	    cerr << "Please cite: " << referenceString << endl;
-	    cerr << "For more information see " << electronicReference << endl;
-	    exit(1);
-	 }
-	 else if((n = compArgStr(p+1, "FIX", 3))){
-	    if (++i < argc) {
-			OFile = argv[i];
-	    }
-	    else {
-	       cerr << "no filename after -FIX flag" << endl;
-	    }
-	 }
-	 else if((n = compArgStr(p+1, "DB", 2))){
-	    if (++i < argc) {
-	       DBfilename = argv[i];
-	    }
-	    else {
-	       cerr << "no filename after -DB flag" << endl;
-	    }
-	 }
-	 else if((n = compArgStr(p+1, "LIMITsearch", 5))){
-	    ExhaustiveLimit = parseInteger(p, n+1, 10);
-	 }
-	 else if(compArgStr(p+1, "NOSYM", 1)){
-	    NoSym=TRUE;
-	 }
-	 else if(compArgStr(p+1, "Help", 1)){ // has to be after all the other -HXXXs
-	    reduceHelp(TRUE);
-	 }
-	 else {
-	    cerr << "unrecognized flag, \"" << p << "\", ignored." << endl;
-	 }
       }
-      else if (StringInput == TRUE){
-          pdbfile = p;
-          nfile = 1;
+      else if((n = compArgStr(p+1, "NOHETh", 5))){
+        ProcessConnHydOnHets = FALSE;
       }
-      else if (nfile <= 0) {
-	    pdbfile = p;
-	    nfile = 1;
+      else if((n = compArgStr(p+1, "DENSity", 4))){
+        VdwDotDensity = parseReal(p, n+1, 10, VdwDotDensity);
+      }
+      else if((n = compArgStr(p+1, "PENalty", 3))){
+        PenaltyMagnitude = parseReal(p, n+1, 10, PenaltyMagnitude);
+      }
+      else if((n = compArgStr(p+1, "RADius", 3))){
+        ProbeRadius = parseReal(p, n+1, 10, ProbeRadius);
+      }
+      else if((n = compArgStr(p+1, "NBonds", 2))){
+        NBondCutoff = parseInteger(p, n+1, 10);
+      }
+      else if((n = compArgStr(p+1, "OCCcutoff", 3))){
+        OccupancyCutoff = parseReal(p, n+1, 10, OccupancyCutoff);
+      }
+      else if((n = compArgStr(p+1, "H2OBcutoff", 4))){
+        WaterBcutoff = 1.0 * parseInteger(p, n+1, 10);
+      }
+      else if((n = compArgStr(p+1, "H2OOCCcutoff", 6))){
+        WaterOCCcutoff = parseReal(p, n+1, 10, WaterOCCcutoff);
+      }
+      else if((n = compArgStr(p+1, "HBREGcutoff", 5))){
+        MinRegHBgap = parseReal(p, n+1, 10, MinRegHBgap);
+      }
+      else if((n = compArgStr(p+1, "HBCHargedcutoff", 4))){
+        MinChargedHBgap = parseReal(p, n+1, 10, MinChargedHBgap);
+      }
+      else if((n = compArgStr(p+1, "BADBumpcutoff", 4))){
+        BadBumpGapCut = parseReal(p, n+1, 10, BadBumpGapCut);
+      }
+      else if((n = compArgStr(p+1, "NONMETALBump", 9))){
+        NonMetalBumpBias = parseReal(p, n+1, 10, NonMetalBumpBias);
+      }
+      else if((n = compArgStr(p+1, "METALBump", 6))){
+        MetalBumpBias = parseReal(p, n+1, 10, MetalBumpBias);
+      }
+      else if((n = compArgStr(p+1, "GAPERROR", 8))){
+        GapWidth = parseReal(p, n+1, 10, GapWidth);
+        if (GapWidth > 1.4) {
+          cerr << "Max allowed HalfGapWidth is 1.4" << endl;
+          exit(1);
+        }
+      }
+      else if((n = compArgStr(p+1, "REFerence", 3))){
+        cerr << "Please cite: " << referenceString << endl;
+        cerr << "For more information see " << electronicReference << endl;
+        exit(1);
+      }
+      else if((n = compArgStr(p+1, "FIX", 3))){
+        if (++i < argc) {
+          OFile = argv[i];
+        }
+        else {
+          cerr << "no filename after -FIX flag" << endl;
+        }
+      }
+      else if((n = compArgStr(p+1, "DB", 2))){
+        if (++i < argc) {
+          DBfilename = argv[i];
+        }
+        else {
+          cerr << "no filename after -DB flag" << endl;
+        }
+      }
+      else if((n = compArgStr(p+1, "LIMITsearch", 5))){
+        ExhaustiveLimit = parseInteger(p, n+1, 10);
+      }
+      else if(compArgStr(p+1, "NOSYM", 1)){
+        NoSym=TRUE;
+      }
+      else if(compArgStr(p+1, "Help", 1)){ // has to be after all the other -HXXXs
+        reduceHelp(TRUE);
       }
       else {
-	 cerr << "unrecognized parameter, \"" << p << "\", ignored." << endl;
+        cerr << "unrecognized flag, \"" << p << "\", ignored." << endl;
       }
-   }
-   if (nfile != 1) { reduceHelp(FALSE); }
-   return pdbfile;
+    }
+    else if (StringInput == TRUE){
+      pdbfile = p;
+      nfile = 1;
+    }
+    else if (nfile <= 0) {
+      pdbfile = p;
+      nfile = 1;
+    }
+    else {
+      cerr << "unrecognized parameter, \"" << p << "\", ignored." << endl;
+    }
+  }
+  if (nfile != 1) { reduceHelp(FALSE); }
+  return pdbfile;
 }
 
 void reduceHelp(bool showAll) { /*help*/
@@ -991,6 +997,14 @@ void reduceChanges(bool showAll) { /*changes*/
    cerr  << "2013/03/26 - jjh       fixed bugs related to aromatic methyl rotations" << endl;
    cerr  << "2013/03/27 - jjh v3.22 fixed bug where number of brute force node searches" << endl;
    cerr  << "                        exceeded the system size of an int type" << endl;
+   cerr  << "2013/05/09 - jjh v3.23 support for segid instead of chainid added" << endl;
+   cerr  << "2013/05/20 - jjh       fixed -trim handling of H5'' atom in RNA" << endl;
+   cerr  << "2013/07/05 - jjh v3.24 fixed handling of ANISOU records when SEGIDs in use," << endl;
+   cerr  << "                        and fixed removal of redundant N-terminal H atoms" << endl;
+   cerr  << "2013/07/11 - jjh       fixed calculation of neighbor atoms with invalidated records" << endl;
+   cerr  << "2013/07/11 - jjh       fixed enforcement of time limit for clique search" << endl;
+   cerr  << "2013/07/18 - jjh       fixed handling of multiple models when first model" << endl;
+   cerr  << "                        is not model 1" << endl;
    cerr  << endl;
    exit(1);
 }
@@ -1013,82 +1027,107 @@ std::ostream& outputRecords(std::ostream& os, const std::list<PDBrec*>& l) {
   return os;
 }
 
+// check input records for SEGIDs only, use instead of chainID
+void checkSEGIDs(std::list<PDBrec*>& rlst) {
+  int full_chain_ctr = 0;
+  int full_segid_ctr = 0;
+  typedef std::list<PDBrec*>::iterator pdb_iter;
+  for (pdb_iter it = rlst.begin(); it != rlst.end(); ) {
+    PDBrec* r = *it;
+    //currently only checks atom records - is this enough?
+    if (r->type() == PDB::ATOM) {
+      if (strcmp(r->chain(), "") != 0) {
+        full_chain_ctr++;
+      }
+      if (strcmp(r->segidLabel(), "") != 0) {
+        full_segid_ctr++;
+      }
+    }
+    it++;
+  }
+  //cerr << "full_chain_ctr = " << full_chain_ctr << endl;
+  //cerr << "full_segid_ctr = " << full_segid_ctr << endl;
+  if ( (full_chain_ctr == 0) && (full_segid_ctr > 0) ) {
+    //cerr << "Using SEGID as chain" << endl;
+    UseSEGIDasChain = TRUE;
+  }
+}
+
 // input a list of PDB records
 std::istream& inputRecords(std::istream& is, std::list<PDBrec*>& records) {
-	PDB inputbuffer;
-	bool active = TRUE;
-	bool modelactive = FALSE;  //041113
+  PDB inputbuffer;
+  bool active = TRUE;
+  bool modelactive = FALSE;  //041113
 
-	while ((is >> inputbuffer).gcount() > 0) {
-		PDBrec* rec = new PDBrec(inputbuffer);
-		bool drop = FALSE;
+  while ((is >> inputbuffer).gcount() > 0) {
+    PDBrec* rec = new PDBrec(inputbuffer);
+    bool drop = FALSE;
 
-		if (inputbuffer.type() == PDB::CRYST1){
-                        IS_A_CRYSTAL=true;
-                        cryst1.a=inputbuffer.cryst1.a;
-                        cryst1.b=inputbuffer.cryst1.b;
-                        cryst1.c=inputbuffer.cryst1.c;
-                        cryst1.alpha=inputbuffer.cryst1.alpha;
-                        cryst1.beta=inputbuffer.cryst1.beta;
-                        cryst1.gamma=inputbuffer.cryst1.gamma;
-                        strcpy(cryst1.spaceGrp,inputbuffer.cryst1.spaceGrp);
-                }
-                else{
-			switch (rec->type()) {
-			case PDB::MODEL:
-				if (ModelToProcess == rec->modelNum()) {
-					active = TRUE;
-					modelactive = TRUE; //041113
-				}
-				else {
-					active = FALSE;
-					if(modelactive) //041113
-			{
-			       modelactive = FALSE;
-			   if(ModelSpecified > 0) {ModelNext = 0;} /*only do one*/
-			       else {ModelNext = rec->modelNum();} /*next after one just done*/
-			    }
-					if (Verbose) {
-						//cerr << "NOTE: skipping model " << rec->modelNum() << endl;
-						if(ModelSpecified > 0)
-						{
-							cerr << "Model " << ModelToProcess << " specified, skipping model " << rec->modelNum() << endl; //041113
-						}
-						else
-						{
-							cerr << "Processing Model " << ModelToProcess << ", for now skipping model " << rec->modelNum() << endl; //041113
-						}
-				}
-			}
-			break;
-			case PDB::ENDMDL:
-				if (! active) { drop = TRUE; active = TRUE; }
-				break;
-			case PDB::MASTER: drop = TRUE; break; // forget the checksum record
-			case PDB::CONECT: if (! KeepConnections) { drop = TRUE; } break;
-			case PDB::ATOM: case PDB::HETATM:
-				if (active && !drop) {
-					if (rec->atomNameModified()) {
-						Tally._num_renamed++;
-					}
-					rec->MapSEGIDtoChain();
-				}
-				break;
-			default:
-				break;
-			}
-		}
+    if (inputbuffer.type() == PDB::CRYST1){
+      IS_A_CRYSTAL=true;
+      cryst1.a=inputbuffer.cryst1.a;
+      cryst1.b=inputbuffer.cryst1.b;
+      cryst1.c=inputbuffer.cryst1.c;
+      cryst1.alpha=inputbuffer.cryst1.alpha;
+      cryst1.beta=inputbuffer.cryst1.beta;
+      cryst1.gamma=inputbuffer.cryst1.gamma;
+      strcpy(cryst1.spaceGrp,inputbuffer.cryst1.spaceGrp);
+    }
+    else {
+      switch (rec->type()) {
+        case PDB::MODEL:
+          if (!ProcessedFirstModel) {
+            ModelToProcess = rec->modelNum();
+            ProcessedFirstModel = TRUE;
+          }
+          if (ModelToProcess == rec->modelNum()) {
+            active = TRUE;
+            modelactive = TRUE; //041113
+          }
+          else {
+            active = FALSE;
+            if(modelactive) {//041113
+              modelactive = FALSE;
+              if(ModelSpecified > 0) {ModelNext = 0;} /*only do one*/
+              else {ModelNext = rec->modelNum();} /*next after one just done*/
+            }
+            if (Verbose) {
+              //cerr << "NOTE: skipping model " << rec->modelNum() << endl;
+              if(ModelSpecified > 0) {
+                cerr << "Model " << ModelToProcess << " specified, skipping model " << rec->modelNum() << endl; //041113
+              }
+              else {
+                cerr << "Processing Model " << ModelToProcess << ", for now skipping model " << rec->modelNum() << endl; //041113
+              }
+            }
+          }
+          break;
+        case PDB::ENDMDL:
+          if (! active) { drop = TRUE; active = TRUE; }
+          break;
+        case PDB::MASTER: drop = TRUE; break; // forget the checksum record
+        case PDB::CONECT: if (! KeepConnections) { drop = TRUE; } break;
+        case PDB::ATOM: case PDB::HETATM:
+          if (active && !drop) {
+            if (rec->atomNameModified()) {
+              Tally._num_renamed++;
+            }
+            rec->MapSEGIDtoChain();
+          }
+          break;
+        default:
+          break;
+      }
+    }
 
-		if (active && !drop)
-		{
-			records.push_back(rec);
-		}
-		else
-		{
-			delete rec; rec = 0;
-		}
-	}
-	return is;
+    if (active && !drop) {
+      records.push_back(rec);
+    }
+    else {
+      delete rec; rec = 0;
+    }
+  }
+  return is;
 }
 
 void renumberAndReconnect(std::list<PDBrec*>& rlst) {
@@ -1143,6 +1182,26 @@ void renumberAndReconnect(std::list<PDBrec*>& rlst) {
 	else {
 		renumberAtoms(rlst);
 	}
+}
+
+void invalidateRecords(std::list<PDBrec*>& rlst) {
+  typedef std::list<PDBrec*>::iterator pdb_iter;
+  for (pdb_iter it = rlst.begin(); it != rlst.end(); ) {
+    PDBrec* r = *it;
+    if (r->type() == PDB::ATOM) {
+	  if (r->isHydrogen()) {
+        Tally._H_removed++;
+      }
+    }
+    else if (r->type() == PDB::HETATM) {
+      if (r->isHydrogen()) {
+        Tally._H_removed++;
+        Tally._H_HET_removed++;
+      }
+    }
+    r->invalidateRecord();
+    it++;
+  }
 }
 
 void dropHydrogens(std::list<PDBrec*>& rlst) {
@@ -1266,6 +1325,7 @@ void scanAndGroupRecords(std::list<PDBrec*>& rlst, AtomPositions& xyz,
 void reduceList(CTab& hetdatabase, std::list<PDBrec*>& rlst,
 				AtomPositions& xyz, std::vector<std::string>& fixNotes) {
 	std::list<PDBrec*>::iterator it = rlst.begin();
+	std::list<PDBrec*>::iterator it_backup;
 	ResBlk *pb = NULL, *cb = NULL, *nb = NULL;
 	std::list<PDBrec*> waters;
 
@@ -1475,7 +1535,7 @@ void analyzeRes(CTab& hetdatabase, ResBlk* pb, ResBlk* cb, ResBlk* nb,
 		    cb->get(" H", cr_list);
 		    if (cr_list.size() > 0) {
 		      std::cerr << "Removing redundant N-terminal N-H hydrogen atom from input model." << std::endl;
-		      dropHydrogens(cr_list);
+		      invalidateRecords(cr_list);
 		    }
 		}
 		else if (ctype == FRAGMENT_RES) { // don't create NH

@@ -30,7 +30,7 @@ while ($line=<IN>) {
 	$contains_oxygen=0;  
 	for ($i=0; $i <= scalar(@formula_split); $i++) {
 		$line_part=$formula_split[$i]; 
-		if ($resn eq "ADP") { print $line_part."\n"; }
+#		if ($resn eq "ADP") { print $line_part."\n"; }
 		if ($line_part =~ /P/ && $line_part !~ /P[A-Z]/) {
 			$contains_phosphorus=1; 
 		}
@@ -38,7 +38,7 @@ while ($line=<IN>) {
                         $contains_oxygen=1;
                 }
 	}
-if ($resn eq "ADP") { print $contains_phosphorus.$contains_oxygen."\n"; }
+#if ($resn eq "ADP") { print $contains_phosphorus.$contains_oxygen."\n"; }
 
 	if ($contains_oxygen==1 && $contains_phosphorus==1) {
 		for ($i=0; $i <= scalar(%residue_hash); $i++) {
