@@ -1,15 +1,19 @@
 TOOLHOME    =../toolclasses
 PDBHOME     =../libpdb
 
+# This section should be modified for each individual system
+# CRYSTAL_BUILD_DIR should point to the location of the cctbx build
+# CCTBXHOME should point to the root of the cctbx source
+# DICT_HOME should point to the location of the het dictionary file
+
 CRYSTAL_CODE_DIR=/home/austonst/HW/reduce/cctbx
 CRYSTAL_BUILD_DIR=/home/austonst/HW/reduce/cctbx/cctbx_build
 CCTBXHOME   =${CRYSTAL_CODE_DIR}/cctbx_sources/
-BOOSTHOME   =${CRYSTAL_CODE_DIR}/boost
 GENFILES    =${CRYSTAL_BUILD_DIR}/include
 LIBCCTBX    =${CRYSTAL_BUILD_DIR}/lib
+DICT_HOME   =/home/austonst/HW/reduce/reduce_wwPDB_het_dict.txt
 
 INSTALLHOME =..
-DICT_HOME   =/home/austonst/HW/reduce/reduce_wwPDB_het_dict.txt
 DICT_LOC    = -DHET_DICTIONARY='"$(DICT_HOME)"'
 PROG_FLGS   = -DAROMATICS_ACCEPT_HBONDS \
               -DCHARFUNCMACROS \
@@ -17,7 +21,7 @@ PROG_FLGS   = -DAROMATICS_ACCEPT_HBONDS \
               -DLISTFRIENDFIX -DINCTEMPLATEDEFNS
 
 CFLAGS = $(OPTS) $(DEBUG) $(PROG_FLGS) $(DICT_LOC)\
-         -I$(PDBHOME) -I$(TOOLHOME) -I$(CCTBXHOME) -I$(BOOSTHOME) -I$(GENFILES)\
+         -I$(PDBHOME) -I$(TOOLHOME) -I$(CCTBXHOME) -I$(GENFILES)\
 #         -Wall
 
 LFLAGS = -L$(PDBHOME) -lpdb++ -L$(TOOLHOME) -ltoolclasses -lm -L$(LIBCCTBX) -lcctbx -lcctbx_sgtbx_asu

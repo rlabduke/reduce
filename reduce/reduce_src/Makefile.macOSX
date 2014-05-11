@@ -1,52 +1,54 @@
-#  Reduce Makefile for Mac OS X 10.8.x (Mountain Lion).
-#  Uses 10.8 SDK with compiler flag declaring exec to be backward compatible
-#  to Mac OS X 10.6 (Snow Leopard); -mmacosx-version-min=10.6
-#  Either (or both) Intel architecture flags can be used: -arch i386 to create
-#  a 32bit MACH-O exec, -arch x86_64 to create a 64bit MACH-O exec.
+TOOLHOME    =../toolclasses
+PDBHOME     =../libpdb
 
-#  The "toolclasses" and "libpdb" objects and libraries must be made before
-#  those of "src_reduce".
-#  Either copy the Makefile.macOSX to Makefile to run the standard make command;
-#  or use 'make -f Makefile.macOSX' in each subdirectory.
+# This section should be modified for each individual system
+# CRYSTAL_BUILD_DIR should point to the location of the cctbx build
+# CCTBXHOME should point to the root of the cctbx source
+# DICT_HOME should point to the location of the het dictionary file
+# MAC_OPTS should contain the options specific for OSX
 
-MIN_OS      = -mmacosx-version-min=10.6
-SDK_HOME    = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk
-TOOLHOME    = ../toolclasses
-PDBHOME     = ../libpdb
-INSTALLHOME = ..
-DICT_HOME   = /usr/local/reduce_wwPDB_het_dict.txt
-DICT_OLD    = /usr/local/reduce_het_dict.txt
+CRYSTAL_CODE_DIR =/home/austonst/HW/reduce/cctbx
+CRYSTAL_BUILD_DIR =/home/austonst/HW/reduce/cctbx/cctbx_build
+CCTBXHOME   =${CRYSTAL_CODE_DIR}/cctbx_sources/
+GENFILES    =${CRYSTAL_BUILD_DIR}/include
+LIBCCTBX    =${CRYSTAL_BUILD_DIR}/lib
+DICT_HOME   =/home/austonst/HW/reduce/reduce_wwPDB_het_dict.txt
+MAC_SDK_HOME    =/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk
+MAC_ARCH    =x86_64
+MAC_OPTS    =-isysroot ${MAC_SDK_HOME} -arch ${MAC_ARCH} -mmacosx-version-min=10.6 
+
+INSTALLHOME =..
 DICT_LOC    = -DHET_DICTIONARY='"$(DICT_HOME)"'
-DICT_LOCOLD = -DHET_DICTOLD='"$(DICT_OLD)"'
-PROG_FLGS   = -isysroot $(SDK_HOME) -arch x86_64 $(MIN_OS) \
-              -DAROMATICS_ACCEPT_HBONDS -DCHARFUNCMACROS -DBOOLPREDEFINED -DBRACKETOPERPARMS \
-              -DLEFT_JUSTIFY_NUC_RES_OK -DLISTFRIENDFIX -DINCTEMPLATEDEFNS
-#              -DOLD_CXX_DEFNS
-#              -DDEBUGLOOKFORTHREEWAYOVERLAP
-#              -DDEBUGMOVABLENODE -DDEBUGDOTCOUNTS
-#              -DMINPREDEFINED -DMAXPREDEFINED
-#
-CFLAGS      = $(OPT) $(DEBUG) $(PROG_FLGS) $(DICT_LOC) $(DICT_LOCOLD) \
-              -I$(PDBHOME) -I$(TOOLHOME)
-#              -Wall
-LFLAGS      = -lm -Wl,-syslibroot,$(SDK_HOME) -arch x86_64 $(MIN_OS) \
-              -L$(PDBHOME) -lpdb++ -L$(TOOLHOME) -ltoolclasses -lm
-OBJLIST     = GraphToHoldScores.o reduce.o CTab.o ElementInfo.o StdResH.o \
-              ResBlk.o AtomConn.o AtomPositions.o DotSph.o Mover.o \
-              RotMethyl.o RotAromMethyl.o RotDonor.o FlipMemo.o CliqueList.o AtomDescr.o \
-              PDBrec.o MoveableNode.o hybrid_36_c.o
-CXX         = g++
-OPT         = -O3
-DEBUG       = $(CXXDEBUGFLAGS)
+PROG_FLGS   = -DAROMATICS_ACCEPT_HBONDS \
+              -DCHARFUNCMACROS \
+	      -DBOOLPREDEFINED  -DBRACKETOPERPARMS -DLEFT_JUSTIFY_NUC_RES_OK \
+              -DLISTFRIENDFIX -DINCTEMPLATEDEFNS
 
+CFLAGS = $(OPTS) $(DEBUG) $(PROG_FLGS) $(MAC_OPTS) $(DICT_LOC)\
+         -I$(PDBHOME) -I$(TOOLHOME) -I$(CCTBXHOME) -I$(GENFILES)\
+#         -Wall
+
+LFLAGS = $(MAC_OPTS) -L$(PDBHOME) -lpdb++ -L$(TOOLHOME) -ltoolclasses -lm -L$(LIBCCTBX) -lcctbx -lcctbx_sgtbx_asu
+
+OBJLIST = GraphToHoldScores.o CTab.o ElementInfo.o StdResH.o ResBlk.o AtomConn.o \
+            AtomPositions.o DotSph.o Mover.o RotMethyl.o RotAromMethyl.o RotDonor.o space_group.o \
+            FlipMemo.o CliqueList.o AtomDescr.o PDBrec.o MoveableNode.o hybrid_36_c.o\
+
+CXX		= g++
 
 .cpp.o:
 	$(CXX) -c $*.cpp $(CFLAGS)
 
-all:     reduce
+OPT             = -O3
+DEBUG           = $(CXXDEBUGFLAGS)
 
-reduce:  $(OBJLIST)
-	$(CXX) -o $@ $(OBJLIST) $(LFLAGS)
+all:    reduce
+
+reduce: $(OBJLIST) reduce.o
+	$(CXX) -o $@ $(OBJLIST) reduce.o $(LFLAGS)
+
+neighborList.o: neighborList.cpp
+	$(CXX) -c neighborList.cpp $(CFLAGS)
 
 clean:
 	@rm -rf *.o *.ckp ii_files
@@ -55,73 +57,75 @@ install: reduce
 	mv reduce $(INSTALLHOME)
 	gunzip -c -d ../reduce_wwPDB_het_dict.txt.gz > $(DICT_HOME)
 
-
 # DO NOT DELETE THIS LINE -- make depend uses it
-AtomConn.o:      $(TOOLHOME)/Point3d.h $(TOOLHOME)/utility.cpp \
-                 $(TOOLHOME)/utility.h AtomConn.cpp AtomConn.h ElementInfo.h
-AtomDescr.o:     AtomDescr.cpp AtomDescr.h
+AtomConn.o: $(TOOLHOME)/Point3d.h $(TOOLHOME)/utility.cpp \
+         $(TOOLHOME)/utility.h AtomConn.cpp \
+	 AtomConn.h ElementInfo.h
+AtomDescr.o: AtomDescr.cpp AtomDescr.h
 AtomPositions.o: $(PDBHOME)/pdb++.h $(TOOLHOME)/DisjointSets.h \
-                 $(TOOLHOME)/Point3d.h $(TOOLHOME)/utility.cpp \
-                 $(TOOLHOME)/utility.h AtomConn.h AtomPositions.cpp \
-                 AtomPositions.h BumperPoint.h CliqueList.h DotSph.h \
-                 ElementInfo.h FlipMemo.h LocBlk.h Mover.h PDBrec.h ResBlk.h \
-                 RotDonor.h RotMethyl.h StdResH.h neighbors.cpp neighbors.h \
-                 AtomDescr.h MoveableNode.h GraphToHoldScores.h
-CTab.o:          $(TOOLHOME)/Point3d.h $(TOOLHOME)/utility.cpp \
-                 $(TOOLHOME)/utility.h AtomConn.h CTab.cpp CTab.h ElementInfo.h
-CliqueList.o:    $(PDBHOME)/pdb++.h $(TOOLHOME)/Point3d.h \
-                 $(TOOLHOME)/utility.cpp $(TOOLHOME)/utility.h BumperPoint.h \
-                 CliqueList.cpp CliqueList.h DotSph.h ElementInfo.h LocBlk.h \
-                 Mover.h PDBrec.h neighbors.cpp neighbors.h
-DotSph.o:        $(TOOLHOME)/Point3d.h $(TOOLHOME)/utility.cpp \
-                 $(TOOLHOME)/utility.h DotSph.cpp DotSph.h
-ElementInfo.o:   $(TOOLHOME)/Point3d.h $(TOOLHOME)/utility.cpp \
-                 $(TOOLHOME)/utility.h AtomConn.h ElementInfo.cpp \
-                 ElementInfo.h StdResH.h
-FlipMemo.o:      $(PDBHOME)/pdb++.h $(TOOLHOME)/Point3d.h \
-                 $(TOOLHOME)/utility.cpp $(TOOLHOME)/utility.h AtomConn.h \
-                 AtomPositions.h BumperPoint.h CliqueList.h DotSph.h \
-                 ElementInfo.h FlipMemo.cpp FlipMemo.h LocBlk.h Mover.h \
-                 PDBrec.h ResBlk.h neighbors.cpp neighbors.h
-GraphToHoldScores.o: GraphToHoldScores.h GraphToHoldScores.cpp \
-                     AtomPositions.h AtomDescr.h
+	 $(TOOLHOME)/Point3d.h $(TOOLHOME)/utility.cpp \
+	 $(TOOLHOME)/utility.h AtomConn.h AtomPositions.cpp \
+	 AtomPositions.h BumperPoint.h CliqueList.h DotSph.h \
+	 ElementInfo.h FlipMemo.h Mover.h PDBrec.h ResBlk.h \
+	 RotDonor.h RotMethyl.h StdResH.h \
+	 AtomDescr.h MoveableNode.h GraphToHoldScores.h neighborList.h
+CTab.o: $(TOOLHOME)/Point3d.h \
+	 $(TOOLHOME)/utility.cpp $(TOOLHOME)/utility.h AtomConn.h \
+	 CTab.cpp CTab.h ElementInfo.h
+CliqueList.o: $(PDBHOME)/pdb++.h \
+	 $(TOOLHOME)/Point3d.h $(TOOLHOME)/utility.cpp \
+	 $(TOOLHOME)/utility.h BumperPoint.h CliqueList.cpp \
+	 CliqueList.h DotSph.h ElementInfo.h Mover.h PDBrec.h \
+
+DotSph.o: $(TOOLHOME)/Point3d.h \
+	 $(TOOLHOME)/utility.cpp $(TOOLHOME)/utility.h DotSph.cpp \
+	 DotSph.h
+ElementInfo.o: $(TOOLHOME)/Point3d.h \
+	 $(TOOLHOME)/utility.cpp $(TOOLHOME)/utility.h AtomConn.h \
+	 ElementInfo.cpp ElementInfo.h StdResH.h
+FlipMemo.o: $(PDBHOME)/pdb++.h $(TOOLHOME)/Point3d.h \
+	 $(TOOLHOME)/utility.cpp $(TOOLHOME)/utility.h AtomConn.h \
+	 AtomPositions.h BumperPoint.h CliqueList.h DotSph.h \
+	 ElementInfo.h FlipMemo.cpp FlipMemo.h Mover.h PDBrec.h \
+	 ResBlk.h
+GraphToHoldScores.o: GraphToHoldScores.h GraphToHoldScores.cpp AtomPositions.h \
+    AtomDescr.h
 hybrid_36_c.o: hybrid_36_c.c hybrid_36_c.h
-Mover.o:         $(PDBHOME)/pdb++.h $(TOOLHOME)/Point3d.h \
-                 $(TOOLHOME)/utility.cpp $(TOOLHOME)/utility.h \
-                 BumperPoint.h DotSph.h ElementInfo.h LocBlk.h Mover.cpp \
-                 Mover.h PDBrec.h ResBlk.h neighbors.cpp neighbors.h
-MoveableNode.o:  MoveableNode.cpp MoveableNode.h AtomDescr.h \
-                 GraphToHoldScores.h AtomPositions.h
-PDBrec.o:        $(PDBHOME)/pdb++.h $(TOOLHOME)/Point3d.h \
-                 $(TOOLHOME)/utility.cpp $(TOOLHOME)/utility.h \
-                 ElementInfo.h AtomDescr.h PDBrec.cpp PDBrec.h hybrid_36_c.h
-ResBlk.o:        $(PDBHOME)/pdb++.h $(TOOLHOME)/Point3d.h \
-                 $(TOOLHOME)/utility.cpp $(TOOLHOME)/utility.h \
-                 ElementInfo.h PDBrec.h ResBlk.cpp ResBlk.h
-RotDonor.o:      $(PDBHOME)/pdb++.h $(TOOLHOME)/Point3d.h \
-                 $(TOOLHOME)/utility.cpp $(TOOLHOME)/utility.h \
-                 AtomPositions.h BumperPoint.h CliqueList.h DotSph.h \
-                 ElementInfo.h FlipMemo.h LocBlk.h Mover.h PDBrec.h ResBlk.h \
-                 RotDonor.cpp RotDonor.h neighbors.cpp neighbors.h
-RotMethyl.o:     $(PDBHOME)/pdb++.h $(TOOLHOME)/Point3d.h \
-                 $(TOOLHOME)/utility.cpp $(TOOLHOME)/utility.h \
-                 AtomPositions.h BumperPoint.h CliqueList.h DotSph.h \
-                 ElementInfo.h LocBlk.h Mover.h PDBrec.h ResBlk.h \
-                 RotMethyl.cpp RotMethyl.h neighbors.cpp neighbors.h
+Mover.o: $(PDBHOME)/pdb++.h $(TOOLHOME)/Point3d.h \
+	 $(TOOLHOME)/utility.cpp $(TOOLHOME)/utility.h \
+	 BumperPoint.h DotSph.h ElementInfo.h Mover.cpp Mover.h \
+	 PDBrec.h ResBlk.h neighborList.h
+MoveableNode.o: MoveableNode.cpp MoveableNode.h AtomDescr.h \
+    GraphToHoldScores.h AtomPositions.h
+PDBrec.o: $(PDBHOME)/pdb++.h \
+	 $(TOOLHOME)/Point3d.h $(TOOLHOME)/utility.cpp \
+	 $(TOOLHOME)/utility.h ElementInfo.h AtomDescr.h PDBrec.cpp PDBrec.h hybrid_36_c.h
+ResBlk.o: $(PDBHOME)/pdb++.h $(TOOLHOME)/Point3d.h \
+	 $(TOOLHOME)/utility.cpp $(TOOLHOME)/utility.h \
+	 ElementInfo.h PDBrec.h ResBlk.cpp ResBlk.h
+RotDonor.o: $(PDBHOME)/pdb++.h $(TOOLHOME)/Point3d.h \
+	 $(TOOLHOME)/utility.cpp $(TOOLHOME)/utility.h \
+	 AtomPositions.h BumperPoint.h CliqueList.h DotSph.h \
+	 ElementInfo.h FlipMemo.h Mover.h PDBrec.h ResBlk.h \
+	 RotDonor.cpp RotDonor.h
+RotMethyl.o: $(PDBHOME)/pdb++.h $(TOOLHOME)/Point3d.h \
+	 $(TOOLHOME)/utility.cpp $(TOOLHOME)/utility.h \
+	 AtomPositions.h BumperPoint.h CliqueList.h DotSph.h \
+	 ElementInfo.h Mover.h PDBrec.h ResBlk.h RotMethyl.cpp \
+	 RotMethyl.h
 RotAromMethyl.o: $(PDBHOME)/pdb++.h $(TOOLHOME)/Point3d.h \
-                 $(TOOLHOME)/utility.cpp $(TOOLHOME)/utility.h \
-                 AtomPositions.h BumperPoint.h CliqueList.h DotSph.h \
-                 ElementInfo.h LocBlk.h Mover.h PDBrec.h ResBlk.h RotAromMethyl.cpp \
-                 RotAromMethyl.h neighbors.cpp neighbors.h
-StdResH.o:       $(TOOLHOME)/Point3d.h $(TOOLHOME)/utility.cpp \
-                 $(TOOLHOME)/utility.h AtomConn.h \
-                 ElementInfo.h StdResH.cpp StdResH.h
-neighbors.o:     $(TOOLHOME)/Point3d.h $(TOOLHOME)/utility.cpp \
-                 $(TOOLHOME)/utility.h LocBlk.h \
-                 neighbors.cpp neighbors.h
-reduce.o:        $(PDBHOME)/pdb++.h $(TOOLHOME)/Point3d.h \
-                 $(TOOLHOME)/utility.cpp $(TOOLHOME)/utility.h AtomConn.h \
-                 AtomPositions.h BumperPoint.h CTab.h CliqueList.h DotSph.h \
-                 ElementInfo.h LocBlk.h Mover.h PDBrec.h ResBlk.h StdResH.h \
-                 neighbors.cpp neighbors.h reduce.cpp
+	 $(TOOLHOME)/utility.cpp $(TOOLHOME)/utility.h \
+	 AtomPositions.h BumperPoint.h CliqueList.h DotSph.h \
+	 ElementInfo.h LocBlk.h Mover.h PDBrec.h ResBlk.h RotAromMethyl.cpp \
+	 RotAromMethyl.h neighbors.cpp neighbors.h
+StdResH.o: $(TOOLHOME)/Point3d.h \
+	 $(TOOLHOME)/utility.cpp $(TOOLHOME)/utility.h AtomConn.h \
+	 ElementInfo.h StdResH.cpp StdResH.h
+reduce.o: $(PDBHOME)/pdb++.h $(TOOLHOME)/Point3d.h \
+	 $(TOOLHOME)/utility.cpp $(TOOLHOME)/utility.h AtomConn.h \
+	 AtomPositions.h BumperPoint.h CTab.h CliqueList.h DotSph.h \
+	 ElementInfo.h Mover.h PDBrec.h ResBlk.h StdResH.h \
+	 neighborList.h reduce.cpp
+space_group.o: $(CCTBXHOME)cctbx/sgtbx/space_group.cpp
+	$(CXX) -o $@ -c $^ $(CFLAGS)
 # DO NOT DELETE THIS 2nd LINE -- make depend uses it
