@@ -529,6 +529,19 @@ char* parseCommandLine(int argc, char **argv) {
       else if(compArgStr(p+1, "STRING", 6)){
         StringInput = TRUE;
       }
+      else if(compArgStr(p+1, "FLIP", 4)){
+        BuildHisHydrogens  = TRUE;
+        SaveOHetcHydrogens = TRUE;
+        RotExistingOH      = TRUE;
+        DemandFlipAllHNQs  = TRUE;
+      }
+      else if(compArgStr(p+1, "NOFLIP", 6)){
+        PenaltyMagnitude=9999;
+        BuildHisHydrogens  = TRUE;
+        SaveOHetcHydrogens = TRUE;
+        RotExistingOH      = TRUE;
+        DemandFlipAllHNQs  = TRUE;
+      }
       else if(compArgStr(p+1, "BUILD", 5)){
         BuildHisHydrogens  = TRUE;
         SaveOHetcHydrogens = TRUE;
@@ -537,6 +550,11 @@ char* parseCommandLine(int argc, char **argv) {
       }
       else if((n = compArgStr(p+1, "NOBUILD", 7))){
         PenaltyMagnitude = parseReal(p, n+1, 10, PenaltyMagnitude);
+        if(PenaltyMagnitude < 0){
+          cerr << "!!ERROR!!" << endl;
+          cerr << "Penalty Magnitude for -NOBUILD must be > 0" << endl << endl;
+          reduceHelp(FALSE);
+        }
         // PenaltyMagnitude = 200;      9999 in molprobity
         BuildHisHydrogens  = TRUE;
         SaveOHetcHydrogens = TRUE;
@@ -758,7 +776,11 @@ void reduceHelp(bool showAll) { /*help*/
 //   cerr << "(note: By default, HIS sidechain NH protons are not added. See -BUILD)" << endl;
    cerr << endl;
    cerr << "Suggested usage:" << endl;
+   cerr << "reduce -FLIP myfile.pdb > myfileFH.pdb (do NQH-flips)" << endl;
+   cerr << "reduce -NOFLIP myfile.pdb > myfileH.pdb (do NOT do NQH-flips)" << endl << endl;
    cerr << "Flags:" << endl;
+   cerr << "-FLIP             add H and rotate and flip NQH groups" << endl;
+   cerr << "-NOFLIP           add H and rotate groups with no NQH flips" << endl;
    cerr << "-Trim             remove (rather than add) hydrogens" << endl;
 
   if (showAll) {
