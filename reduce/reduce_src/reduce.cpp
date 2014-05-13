@@ -719,6 +719,9 @@ char* parseCommandLine(int argc, char **argv) {
       else if((n = compArgStr(p+1, "LIMITsearch", 5))){
         ExhaustiveLimit = parseInteger(p, n+1, 10);
       }
+      else if((n = compArgStr(p+1, "NUClear", 3))){
+        UseNuclearDistances = TRUE;
+      }
       else if(compArgStr(p+1, "NOSYM", 1)){
         NoSym=TRUE;
       }
@@ -754,8 +757,10 @@ void reduceHelp(bool showAll) { /*help*/
 //   cerr << "Adds hydrogens to a PDB format file and writes to standard output." << endl;
 //   cerr << "(note: By default, HIS sidechain NH protons are not added. See -BUILD)" << endl;
    cerr << endl;
+   cerr << "Suggested usage:" << endl;
    cerr << "Flags:" << endl;
    cerr << "-Trim             remove (rather than add) hydrogens" << endl;
+
   if (showAll) {
    cerr << endl;
    cerr << "-NUClear          use nuclear X-H distances rather than default" << endl;
@@ -764,7 +769,7 @@ void reduceHelp(bool showAll) { /*help*/
    cerr << "-OH               add hydrogens on OH and SH groups (default)" << endl;
    cerr << endl;
    cerr << "-HIS              create NH hydrogens on HIS rings" << endl;
-   cerr << "-FLIPs            allow complete ASN, GLN and HIS sidechains to flip" << endl;
+//   cerr << "-FLIPs            allow complete ASN, GLN and HIS sidechains to flip" << endl; - removed 130724 JJH
    cerr << "                        (usually used with -HIS)" << endl;
    cerr << "-NOHETh           do not attempt to add NH proton on Het groups" << endl;
 //   cerr << "-ADDNHATGAP            add \"amide\" hydrogen on chain breaks" <<endl;
@@ -984,6 +989,7 @@ void reduceChanges(bool showAll) { /*changes*/
    cerr  << "04/11/08 - jjh         Added -STRING flag to allow scripts in Perl/Python to pass a string to reduce for processing.  Output still directed to standard out." << endl;
    cerr  << "04/28/08 - jjh          fixed 4 character Deuterium recognition w/ PDB 3.0 names" << endl;
    cerr  << "08/21/08 - jjh          added -CHARGEs flag to control charge state output - off by default" << endl;
+   cerr  << "11/06/09 - jjh         added -FLIP and -NOFLIP flag" << endl;
    cerr  << "09/15/10 - wba         'reducer' versions are for evaluation of changes to H bond-distances" << endl;
    cerr  << "11/18/11 - jjh         Overhauled handling of alternate conformers" << endl;
    cerr  << "08/15/12 - aram        added -MAXAromdih cutoff to support rotating aromatic methyls" << endl;
@@ -1005,6 +1011,7 @@ void reduceChanges(bool showAll) { /*changes*/
    cerr  << "2013/07/11 - jjh       fixed enforcement of time limit for clique search" << endl;
    cerr  << "2013/07/18 - jjh       fixed handling of multiple models when first model" << endl;
    cerr  << "                        is not model 1" << endl;
+   cerr  << "2013/07/24 - jjh       cleaned up command line parsing function, removed redundant -FLIPs option" << endl;
    cerr  << endl;
    exit(1);
 }
@@ -1292,6 +1299,7 @@ void getBBox(std::list<PDBrec*>& rlst, Coord bbox[]){//, Coord box_center[]) {
 void scanAndGroupRecords(std::list<PDBrec*>& rlst, AtomPositions& xyz,
 						 std::list<PDBrec*>::iterator& startAtoms) {
 	bool foundStart = FALSE;
+
 	for (std::list<PDBrec*>::iterator it = rlst.begin(); it != rlst.end(); ++it) {
 		PDBrec* r = *it;
 		if (r->type() == PDB::ATOM) {
@@ -2104,6 +2112,7 @@ bool okToPlaceHydHere(const PDBrec& theHatom, const atomPlacementPlan& pp,
 											<< "-METALBump or -NONMETALBump." << endl;
 									}
 								}
+
 								if (skipthisH) {
 									recordSkipInfo(TRUE, fixNotes, theHatom, heavyAtom, c2batoms, "(NH2R)");
 									return FALSE; // don't add hyd.
