@@ -25,7 +25,9 @@
 #include "utility.h"
 #include "AtomDescr.h"
 #include "GraphToHoldScores.h"
+#if USE_SYM
 #include "neighborList.h"
+#endif
 
 extern bool UseSEGIDasChain; //jjh 130503, defined in reduce.cpp
 
@@ -54,33 +56,44 @@ public:
 	atoms_to_score_ptr_(0), atoms_in_high_order_overlap_ptr_(0),
 	_clqOfInt( false ) {}
 
-  ~AtomPositions() {
-	  for (std::map<std::string, Mover*>::const_iterator i = _motionDesc.begin(); i != _motionDesc.end(); ++i)
-		   delete i->second;
-	   std::for_each(_excludePoints.begin(), _excludePoints.end(), DeleteObject());
-  }
+  ~AtomPositions();
 
   int forceOrientations(const std::string& ofilename, std::vector<std::string>& notes);
 
-   void put(PDBrec* r) {
-	   PDBrec* temp = new PDBrec(*r);
- 	   _sym_neighbor_list.insert(temp);
-	   r->set_index(temp->index());
-   }
+  void put(PDBrec* r);
 
-   int ngbr_struct_size(){return _sym_neighbor_list.total_size();}
+#if USE_SYM
+   std::list< std::pair<PDBrec*,Point3d> > neighbors(const Point3d& p, Coord mindist, Coord maxdist);
+#else
+   std::list<PDBrec*> neighbors(const Point3d& p, Coord mindist, Coord maxdist);
+#endif
 
    // move atom to new xyz pos.
    void reposition(const Point3d& prev, const PDBrec& r);
 
-   std::list< std::pair<PDBrec*,Point3d> > get_neighbors(const Point3d& p,
-                         Coord mindist, Coord maxdist) {
-      return _sym_neighbor_list.get_neighbors(p, mindist, maxdist);
-   }
-
+#if USE_SYM
+   int ngbr_struct_size(){return _sym_neighbor_list.total_size();}
+   
    void print_all(std::ostream& out,std::ostream& pdbout){_sym_neighbor_list.print_all(out, pdbout);}
    void print_all_sym_ngbrs(float cutoff,std::ostream& pdbout){_sym_neighbor_list.print_all_sym_ngbrs(cutoff, pdbout);}
    //void add_all(std::ostream& out);
+   
+   void init_neighborList(scitbx::af::double6 cell, char* space_grp, Coord distance_cutoff, bool NoSym, Coord bbox[]){//, Coord box_center[]){
+	_sym_neighbor_list=NeighborList<PDBrec*>(cell, space_grp, distance_cutoff, NoSym, bbox);//, box_center);
+   }
+
+   void cubiclize(){
+	_sym_neighbor_list.cubiclize();
+   }
+
+  void get_unit_cell_params(double uparams[]){
+	_sym_neighbor_list.get_unit_cell_params(uparams);
+   }
+
+   void print(int seq, std::ostream &os){
+         _sym_neighbor_list.print(seq,os);
+   }
+#endif
 
    void insertRot(const PDBrec& hr, const PDBrec& c1,
                   const PDBrec& c2, const PDBrec& c3,
@@ -95,7 +108,11 @@ public:
 
    void finalizeMovers();
 
+#if USE_SYM
    CliqueList findCliques(scitbx::af::double6 cell, char* space_grp, Coord distance_cutoff) const;
+#else
+   CliqueList findCliques() const;
+#endif
 
    int orientSingles(const std::list<MoverPtr>& singles);
    int orientClique(const std::list<MoverPtr>& clique, int limit); // returns -1 if abandoned
@@ -120,7 +137,9 @@ public:
 	//	Mover* mover
 	//);
 
-//	void CollectBumping(const AtomDescr& ad, std::list<PDBrec*>& bumping);
+#if !USE_SYM
+   void CollectBumping(const AtomDescr& ad, std::list<PDBrec*>& bumping);
+#endif
    float & getMaxFoundVDWRad() { return _maxVDWFound;}
    int getNBondCutoff() const {return _nBondCutoff;}
 
@@ -135,29 +154,16 @@ public:
 	//	Mover * mover );
 
 	bool outputNotice() const {return _outputNotice;}
-	
-   void init_neighborList(scitbx::af::double6 cell, char* space_grp, Coord distance_cutoff, bool NoSym, Coord bbox[]){//, Coord box_center[]){
-	_sym_neighbor_list=NeighborList<PDBrec*>(cell, space_grp, distance_cutoff, NoSym, bbox);//, box_center);
-   }
-
-   void cubiclize(){
-	_sym_neighbor_list.cubiclize();
-   }
-
-  void get_unit_cell_params(double uparams[]){
-	_sym_neighbor_list.get_unit_cell_params(uparams);
-   }
-
-   void print(int seq, std::ostream &os){
-         _sym_neighbor_list.print(seq,os);
-   }
-
 
 private:
    AtomPositions(const AtomPositions& a);            // can't copy
    AtomPositions& operator=(const AtomPositions& a); // can't assign
 
+#if USE_SYM
    NeighborList<PDBrec*> _sym_neighbor_list;
+#else
+   std::multimap<LocBlk, PDBrec*> _xyzBlocks;
+#endif
    std::map<std::string, Mover*>       _motionDesc;
    std::list<BumperPoint*>          _excludePoints;
 

@@ -1,4 +1,4 @@
-// name: Mover.C
+// name: Mover.cpp
 // author: J. Michael Word
 // date written: 2/7/98
 // purpose: utility routines for bonding and geometric relationships
@@ -30,66 +30,11 @@ void Mover::trackFlipMaxScore(int f, double val, bool hasBadBump) {
    }
 }
 
-void bondedList(PDBrec *a, std::list< std::pair<PDBrec*, Point3d> >& nearby, int nbnds,
-				std::list<PDBrec*>& atmList, std::list<PDBrec*>* bondedAtoms) {
-	resetMarks(nearby);
-	countBonds(std::make_pair(a, a->loc()), nearby, 1, nbnds, atmList); // up to nbnds bonds away
+// bondedList() in sym/nosym subdirs
 
-	PDBrec* rec = NULL;
-	for (std::list< std::pair<PDBrec*, Point3d> >::const_iterator it = nearby.begin(); it != nearby.end(); ++it) {
-		rec = it->first;
-		if (rec->valid()) {
-		  if (rec->mark() >= 1 && rec->mark() <= nbnds) {
-			if (distanceSquared(rec->loc(),it->second) < 0.000001){ //Vishal: use TOL
-				PDBrec* temp = new PDBrec(*rec);
-				bondedAtoms->push_front(temp);
-			}
-		  }
-        }
-	}
-}
+// countBonds() in sym/nosym subdirs
 
-
-void countBonds(std::pair<PDBrec*,Point3d> src, const std::list< std::pair<PDBrec*, Point3d> >& nearby,
-				int distcount, int maxcnt, std::list<PDBrec*>& atmList) {
-
-	std::list< std::pair<PDBrec*, Point3d> > newlyMarked;
-	std::list< std::pair<PDBrec*, Point3d> > remainder;
-
-	PDBrec* rec = NULL;
-	for (std::list< std::pair<PDBrec*, Point3d> >::const_iterator targ = nearby.begin(); targ != nearby.end(); ++targ) {
-		rec = targ->first;
-		bool is_sym= (distanceSquared(rec->loc(),targ->second) > 0.00001); //Vishal: use TOL
-		if (rec->valid()) {
-		  if ( (rec->mark() < 1 || rec->mark() > distcount)
-			&& ! diffAltLoc(*(src.first), *rec) ) {
-
-			bool isnear   = withinCovalentDist(src, *targ,  0.2);
-			bool tooclose = withinCovalentDist(src, *targ, -0.5);
-
-			if (isnear && ! (is_sym || tooclose || impossibleCovalent(*(src.first), *rec, atmList))) {
-				rec->mark(distcount);
-				newlyMarked.push_front(*targ);
-			}
-			else {
-				remainder.push_front(*targ);
-			}
-		  }
-		}
-	}
-	if (distcount < maxcnt) {
-		for(std::list< std::pair<PDBrec*, Point3d> >::const_iterator it = newlyMarked.begin(); it != newlyMarked.end(); ++it) {
-			countBonds(*it, remainder, distcount+1, maxcnt, atmList);
-		}
-	}
-}
-
-// initialize the markers we use to determine bonding patterns
-void resetMarks(std::list< std::pair<PDBrec*,Point3d> >& lst) {
-	for (std::list< std::pair<PDBrec*, Point3d> >::const_iterator it = lst.begin(); it != lst.end(); ++it) {
-		it->first->mark(0);
-	}
-}
+// resetMarks() in sym/nosym subdirs
 
 bool visableAltConf(const PDBrec& a, bool onlyA) {
    const char aalt = a.alt();
@@ -112,11 +57,7 @@ bool diffAltLoc(const PDBrec& a, const PDBrec& b) {
        && a.alt() != b.alt() && a.alt() != ' ' && b.alt() != ' ';
 }
 
-int withinCovalentDist(std::pair<PDBrec*, Point3d> p, std::pair<PDBrec*, Point3d> q, double offset) {
-   double lim = p.first->covRad() + q.first->covRad() + offset;
-
-   return distanceSquared(p.second, q.second) <= (lim*lim);
-}
+// withinCovalentDist() in sym/nosym subdirs
 
 bool impossibleCovalent(const PDBrec& src, const PDBrec& targ, std::list<PDBrec*>& atmList) {
    if (src.isHydrogen() && targ.isHydrogen()) { return TRUE; }
@@ -136,18 +77,7 @@ bool impossibleCovalent(const PDBrec& src, const PDBrec& targ, std::list<PDBrec*
    return (! sameres(src, targ)) && (src.isHydrogen() || targ.isHydrogen());
 }
 
-bool foundInList(const PDBrec& a, Point3d p, const std::list<PDBrec*>& lst) {
-	//PDBrec a_copy=a;
-	//a_copy.newPDBrecRep();
-	//a_copy.loc(p);
-	if (distanceSquared(a.loc(),p) > 0.000001)
-		return FALSE;
-	for (std::list<PDBrec*>::const_iterator it = lst.begin(); it != lst.end(); ++it) {
-		if (a == **it){ return TRUE; }
-	}
-	//a_copy.delPDBrecRep();
-	return FALSE;
-}
+// foundInList() in sym/nosym subdirs
 
 // what is the gap between the VDW radii of atom a at point aloc
 // and atom b at point bloc?
@@ -161,17 +91,9 @@ double vdwGap(const PDBrec& a, const Point3d& aloc,
 
 // functions used to restrict annular rings of good dots around clashes
 
-bool annularDots(const Point3d& dot, const PDBrec& src, const PDBrec& targ, Point3d targ_loc, float probeRadius) {
-   return dot2srcCenter(dot, src, targ_loc) >
-      kissEdge2bullsEye(src.vdwRad(), targ.vdwRad(), probeRadius);
-}
+// annularDots() in sym/nosym subdirs
 
-double dot2srcCenter(const Point3d& dot, const PDBrec& src, Point3d targ_loc) {
-
-   const Point3d src2targVec = (targ_loc - src.loc()).scaleTo(src.vdwRad());
-   const Point3d srcSurfacePoint = src2targVec + src.loc();
-   return distance2(dot, srcSurfacePoint);
-}
+// dot2srcCenter() in sym/nosym subdirs
 
 double kissEdge2bullsEye(float ra, float rb, float rp) {
    return 2.0*ra*sqrt(rb*rp/((ra+rb)*(ra+rp)));

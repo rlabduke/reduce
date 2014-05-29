@@ -33,8 +33,10 @@
 #include "DotSph.h"
 #include "BumperPoint.h"
 #include "utility.h"
+#include "neighbors.h"
+#if USE_SYM
 #include "neighborList.h"
-
+#endif
 
 class AtomPositions;
 class Mover;
@@ -74,8 +76,13 @@ public:
    virtual bool markFlipAtoms() = 0;
    virtual void finalize(int nBondCutoff, bool useXplorNames, bool useOldNames, bool bbModel, AtomPositions &xyz, DotSphManager& dotBucket) = 0;
    virtual const PDBrec& exampleAtom() const = 0;
+#if USE_SYM
    virtual int makebumpers(NeighborList<BumperPoint*>& sym_bblks,
                            int n, float& maxVDWrad) = 0;
+#else
+   virtual int makebumpers(std::multimap<LocBlk, BumperPoint*>& bbins,
+                           int n, float& maxVDWrad) = 0;
+#endif
    virtual std::list<AtomDescr> getAtDescOfAllPos(float &maxVDWrad) = 0;
    virtual void setHydAngle(double newAng, AtomPositions &xyz) = 0;
 
@@ -184,24 +191,36 @@ private:
    Mover& operator=(const Mover& m);
 };
 
-//void bondedList(const PDBrec& a, std::list< std::pair<PDBrec*, Point3d> >& nearby, int nbnds,
-//		  std::list<PDBrec*>& atmList, std::list<PDBrec*>* bondedAtoms);
+#if USE_SYM
 void bondedList(PDBrec* a, std::list< std::pair<PDBrec*, Point3d> >& nearby, int nbnds,
 		  std::list<PDBrec*>& atmList, std::list<PDBrec*>* bondedAtoms);
 void countBonds(std::pair<PDBrec*, Point3d> src, const std::list< std::pair<PDBrec*, Point3d> >& nearby,
 	       int distcount, int maxcnt, std::list<PDBrec*>& atmList);
-//void resetMarks(std::list<PDBrec*>& lst);
 void resetMarks(std::list< std::pair<PDBrec*, Point3d> >& lst);
-bool visableAltConf(const PDBrec& a, bool onlyA);
-bool interactingConfs(const PDBrec& a, const PDBrec& b, bool onlyA);
-bool diffAltLoc(const PDBrec& a, const PDBrec& b);
 int withinCovalentDist(std::pair<PDBrec*, Point3d> p, std::pair<PDBrec*, Point3d> q, double offset);
-bool impossibleCovalent(const PDBrec& src, const PDBrec& targ, std::list<PDBrec*>& atmList);
-double vdwGap(const PDBrec& p, const Point3d& pp,
-              const PDBrec& q, const Point3d& qq);
 bool foundInList(const PDBrec& a, Point3d p, const std::list<PDBrec*>& lst);
 bool annularDots(const Point3d& dot, const PDBrec& src, const PDBrec& targ, Point3d targ_loc, float probeRadius);
 double dot2srcCenter(const Point3d& dot, const PDBrec& src, Point3d targ_loc);
+#else
+void bondedList(const PDBrec& a, std::list<PDBrec*>& nearby, int nbnds,
+		  std::list<PDBrec*>& atmList, std::list<PDBrec*>* bondedAtoms);
+void countBonds(const PDBrec& src, const std::list<PDBrec*>& nearby,
+	       int distcount, int maxcnt, std::list<PDBrec*>& atmList);
+void resetMarks(std::list<PDBrec*>& lst);
+int withinCovalentDist(const PDBrec& p, const PDBrec& q, double offset);
+bool foundInList(const PDBrec& a, const std::list<PDBrec*>& lst);
+bool annularDots(const Point3d& dot, const PDBrec& src, const PDBrec& targ, float probeRadius);
+double dot2srcCenter(const Point3d& dot, const PDBrec& src, const PDBrec& targ);
+#endif
+
+bool visableAltConf(const PDBrec& a, bool onlyA);
+bool interactingConfs(const PDBrec& a, const PDBrec& b, bool onlyA);
+bool diffAltLoc(const PDBrec& a, const PDBrec& b);
+
+bool impossibleCovalent(const PDBrec& src, const PDBrec& targ, std::list<PDBrec*>& atmList);
+double vdwGap(const PDBrec& p, const Point3d& pp,
+              const PDBrec& q, const Point3d& qq);
+
 double kissEdge2bullsEye(float ra, float rb, float rp);
 
 struct mpLess { 

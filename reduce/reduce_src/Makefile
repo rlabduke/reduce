@@ -1,7 +1,11 @@
 TOOLHOME    =../toolclasses
 PDBHOME     =../libpdb
 
+# Specify `make USE_SYM=false` to build a cctbx-free non-symmetry version
+USE_SYM=true
+
 # This section should be modified for each individual system
+# If not building with symmetry, cctbx directories can be ignored
 # CRYSTAL_BUILD_DIR should point to the location of the cctbx build
 # CCTBXHOME should point to the root of the cctbx source
 # DICT_HOME should point to the location of the het dictionary file
@@ -20,17 +24,34 @@ PROG_FLGS   = -DAROMATICS_ACCEPT_HBONDS \
 	      -DBOOLPREDEFINED  -DBRACKETOPERPARMS -DLEFT_JUSTIFY_NUC_RES_OK \
               -DLISTFRIENDFIX -DINCTEMPLATEDEFNS
 
-CFLAGS = $(OPTS) $(DEBUG) $(PROG_FLGS) $(DICT_LOC)\
-         -I$(PDBHOME) -I$(TOOLHOME) -I$(CCTBXHOME) -I$(GENFILES)\
-#         -Wall
-
+ifeq ($(USE_SYM),true)
+CFLAGS = $(OPTS) $(DEBUG) $(PROG_FLGS) $(DICT_LOC) -DUSE_SYM=$(USE_SYM)\
+         -I$(PDBHOME) -I$(TOOLHOME) -I$(CCTBXHOME) -I$(GENFILES)
 LFLAGS = -L$(PDBHOME) -lpdb++ -L$(TOOLHOME) -ltoolclasses -lm -L$(LIBCCTBX) -lcctbx -lcctbx_sgtbx_asu
+EXTRAOBJS = space_group.o sym/reduceSym.o sym/AtomPositionsSym.o sym/FlipMemoSym.o\
+            sym/MoverSym.o sym/RotAromMethylSym.o sym/RotMethylSym.o\
+            sym/RotDonorSym.o
+else
+CFLAGS = $(OPTS) $(DEBUG) $(PROG_FLGS) $(DICT_LOC) -DUSE_SYM=$(USE_SYM)\
+         -I$(PDBHOME) -I$(TOOLHOME) -I$(GENFILES)
+LFLAGS = -L$(PDBHOME) -lpdb++ -L$(TOOLHOME) -ltoolclasses -lm
+EXTRAOBJS = nosym/reduceNosym.o nosym/AtomPositionsNosym.o nosym/FlipMemoNosym.o\
+            nosym/MoverNosym.o nosym/RotAromMethylNosym.o nosym/RotMethylNosym.o\
+            nosym/RotDonorNosym.o
+endif
 
 OBJLIST = GraphToHoldScores.o CTab.o ElementInfo.o StdResH.o ResBlk.o AtomConn.o \
-            AtomPositions.o DotSph.o Mover.o RotMethyl.o RotAromMethyl.o RotDonor.o space_group.o \
-            FlipMemo.o CliqueList.o AtomDescr.o PDBrec.o MoveableNode.o hybrid_36_c.o\
+          AtomPositions.o DotSph.o Mover.o RotMethyl.o RotAromMethyl.o RotDonor.o\
+           FlipMemo.o CliqueList.o AtomDescr.o PDBrec.o MoveableNode.o\
+          hybrid_36_c.o
 
 CXX		= g++
+
+sym/%.o: sym/%.cpp
+	$(CXX) -c $< $(CFLAGS) -o $@
+
+nosym/%.o: nosym/%.cpp
+	$(CXX) -c $< $(CFLAGS) -o $@
 
 .cpp.o:
 	$(CXX) -c $*.cpp $(CFLAGS)
@@ -40,14 +61,14 @@ DEBUG           = $(CXXDEBUGFLAGS)
 
 all:    reduce
 
-reduce: $(OBJLIST) reduce.o
-	$(CXX) -o $@ $(OBJLIST) reduce.o $(LFLAGS)
+reduce: $(OBJLIST) $(EXTRAOBJS) reduce.o
+	$(CXX) -o $@ $(OBJLIST) $(EXTRAOBJS) reduce.o $(LFLAGS)
 
 neighborList.o: neighborList.cpp
 	$(CXX) -c neighborList.cpp $(CFLAGS)
 
 clean:
-	@rm -rf *.o *.ckp ii_files
+	@rm -rf sym/*.o nosym/*.o *.o *.ckp ii_files
 
 install: reduce
 	mv reduce $(INSTALLHOME)
