@@ -88,7 +88,7 @@ class NeighborList{
 			}
 			catch (cctbx::error e){
 				NoSym=true;
-				fprintf(stderr,"Unrecognized space group\n");
+				fprintf(stderr,"WARNING: Unrecognized space group\n");
 			}
 		}
 		if (NoSym) {

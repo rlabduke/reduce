@@ -377,6 +377,16 @@ void processPDBfile(std::istream& ifs, char *pdbFile, std::ostream& ofs) {
       std::list<PDBrec*>::iterator infoPtr = records.begin();
 
 #if USE_SYM
+      //If using symmetry, but not a crystal, fill up with dummy values
+      if (!IS_A_CRYSTAL)
+        {
+          std::cerr << "WARNING: No symmetry group specified in PDB file\n";
+          cryst1.a = cryst1.b = cryst1.c = cryst1.z = 1;
+          cryst1.alpha = cryst1.beta = cryst1.gamma = 90;
+          char p1[5] = "P 1";
+          strcpy(cryst1.spaceGrp, p1);
+        }
+      
       Coord bbox[3];//,box_center[3];
       getBBox(records, bbox);//, box_center);
       scitbx::af::double6 cell(cryst1.a,cryst1.b,cryst1.c,cryst1.alpha,cryst1.beta,cryst1.gamma);
