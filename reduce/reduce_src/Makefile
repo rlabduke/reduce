@@ -28,16 +28,10 @@ ifeq ($(USE_SYM),true)
 CFLAGS = $(OPTS) $(DEBUG) $(PROG_FLGS) $(DICT_LOC) -DUSE_SYM=$(USE_SYM)\
          -I$(PDBHOME) -I$(TOOLHOME) -I$(CCTBXHOME) -I$(GENFILES)
 LFLAGS = -L$(PDBHOME) -lpdb++ -L$(TOOLHOME) -ltoolclasses -lm -L$(LIBCCTBX) -lcctbx -lcctbx_sgtbx_asu
-EXTRAOBJS = space_group.o sym/reduceSym.o sym/AtomPositionsSym.o sym/FlipMemoSym.o\
-            sym/MoverSym.o sym/RotAromMethylSym.o sym/RotMethylSym.o\
-            sym/RotDonorSym.o
 else
 CFLAGS = $(OPTS) $(DEBUG) $(PROG_FLGS) $(DICT_LOC) -DUSE_SYM=$(USE_SYM)\
          -I$(PDBHOME) -I$(TOOLHOME) -I$(GENFILES)
 LFLAGS = -L$(PDBHOME) -lpdb++ -L$(TOOLHOME) -ltoolclasses -lm
-EXTRAOBJS = nosym/reduceNosym.o nosym/AtomPositionsNosym.o nosym/FlipMemoNosym.o\
-            nosym/MoverNosym.o nosym/RotAromMethylNosym.o nosym/RotMethylNosym.o\
-            nosym/RotDonorNosym.o
 endif
 
 OBJLIST = GraphToHoldScores.o CTab.o ElementInfo.o StdResH.o ResBlk.o AtomConn.o \
@@ -46,12 +40,6 @@ OBJLIST = GraphToHoldScores.o CTab.o ElementInfo.o StdResH.o ResBlk.o AtomConn.o
           hybrid_36_c.o
 
 CXX		= g++
-
-sym/%.o: sym/%.cpp
-	$(CXX) -c $< $(CFLAGS) -o $@
-
-nosym/%.o: nosym/%.cpp
-	$(CXX) -c $< $(CFLAGS) -o $@
 
 .cpp.o:
 	$(CXX) -c $*.cpp $(CFLAGS)
@@ -62,13 +50,10 @@ DEBUG           = $(CXXDEBUGFLAGS)
 all:    reduce
 
 reduce: $(OBJLIST) $(EXTRAOBJS) reduce.o
-	$(CXX) -o $@ $(OBJLIST) $(EXTRAOBJS) reduce.o $(LFLAGS)
-
-neighborList.o: neighborList.cpp
-	$(CXX) -c neighborList.cpp $(CFLAGS)
+	$(CXX) -o $@ $(OBJLIST) reduce.o $(LFLAGS)
 
 clean:
-	@rm -rf sym/*.o nosym/*.o *.o *.ckp ii_files
+	@rm -rf *.o *.ckp ii_files
 
 install: reduce
 	mv reduce $(INSTALLHOME)

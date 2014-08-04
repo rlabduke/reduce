@@ -47,9 +47,47 @@ RotMethyl::RotMethyl(const Point3d& a, const Point3d& b,
    validateMemo();
 }
 
-// finalize() in sym/nosym subdirs
+void RotMethyl::finalize(int nBondCutoff, bool useXplorNames, bool useOldNames, bool bbModel,
+						 AtomPositions &xyz, DotSphManager& dotBucket) {
 
-// makebumpers() in sym/nosym subdirs
+	if (isComplete()) {
+
+		// pre-build lists of bonded atoms
+
+		const double approxNbondDistLimit = 3.0 + 0.5*nBondCutoff; // just a rule of thumb
+
+		_rot.push_front(&_heavyAtom);
+		for(std::list<PDBrec*>::const_iterator alst = _rot.begin(); alst != _rot.end(); ++alst) {
+			PDBrec* thisAtom = *alst;
+			if (thisAtom->valid()) {
+			  std::list<PDBrec*>* temp = new std::list<PDBrec*>();
+			  std::list< PointWith<PDBrec*> > neighborList = xyz.neighbors(thisAtom->loc(), thisAtom->covRad(),
+				approxNbondDistLimit);
+			  bondedList(thisAtom, neighborList, nBondCutoff, _rot, temp);
+			  _bnded.push_back(temp);
+            }
+		}
+		_rot.pop_front();
+	}
+}
+
+int RotMethyl::makebumpers(NeighborList<BumperPoint*>& bblks,
+						   int rn, float& maxVDWrad) {
+	int an = 0;
+	const double dtheta = 10.0; // fineness of rotation angle scan
+	const double scanAngle = 60.0;
+	BumperPoint* bp;
+    for(std::list<PDBrec*>::const_iterator it = _rot.begin(); it != _rot.end(); ++it) {
+		PDBrec* a = *it;
+		for (double theta = -scanAngle; theta < scanAngle; theta += dtheta) {
+			Point3d p(a->loc().rotate(theta, _p2, _p1));
+			bp = new BumperPoint(p, rn, an++, a->vdwRad());
+			bblks.insert(bp, LocBlk(p));
+			if (a->vdwRad() > maxVDWrad) { maxVDWrad = a->vdwRad(); }
+		}
+	}
+	return an;
+}
 
 std::list<AtomDescr> RotMethyl::getAtDescOfAllPos(float &maxVDWrad) {
 	std::list<AtomDescr> theList;

@@ -25,9 +25,7 @@
 #include "utility.h"
 #include "AtomDescr.h"
 #include "GraphToHoldScores.h"
-#if USE_SYM
 #include "neighborList.h"
-#endif
 
 extern bool UseSEGIDasChain; //jjh 130503, defined in reduce.cpp
 
@@ -62,36 +60,32 @@ public:
 
   void put(PDBrec* r);
 
-#if USE_SYM
-   std::list< std::pair<PDBrec*,Point3d> > neighbors(const Point3d& p, Coord mindist, Coord maxdist);
-#else
-   std::list<PDBrec*> neighbors(const Point3d& p, Coord mindist, Coord maxdist);
-#endif
+   std::list< PointWith<PDBrec*> > neighbors(const Point3d& p, Coord mindist, Coord maxdist);
 
    // move atom to new xyz pos.
    void reposition(const Point3d& prev, const PDBrec& r);
 
 #if USE_SYM
-   int ngbr_struct_size(){return _sym_neighbor_list.total_size();}
+   int ngbr_struct_size(){return neighbor_list.total_size();}
    
-   void print_all(std::ostream& out,std::ostream& pdbout){_sym_neighbor_list.print_all(out, pdbout);}
-   void print_all_sym_ngbrs(float cutoff,std::ostream& pdbout){_sym_neighbor_list.print_all_sym_ngbrs(cutoff, pdbout);}
+   void print_all(std::ostream& out,std::ostream& pdbout){neighbor_list.print_all(out, pdbout);}
+   void print_all_sym_ngbrs(float cutoff,std::ostream& pdbout){neighbor_list.print_all_sym_ngbrs(cutoff, pdbout);}
    //void add_all(std::ostream& out);
    
    void init_neighborList(scitbx::af::double6 cell, char* space_grp, Coord distance_cutoff, bool NoSym, Coord bbox[]){//, Coord box_center[]){
-	_sym_neighbor_list=NeighborList<PDBrec*>(cell, space_grp, distance_cutoff, NoSym, bbox);//, box_center);
+	neighbor_list=NeighborList<PDBrec*>(cell, space_grp, distance_cutoff, NoSym, bbox);//, box_center);
    }
 
    void cubiclize(){
-	_sym_neighbor_list.cubiclize();
+	neighbor_list.cubiclize();
    }
 
   void get_unit_cell_params(double uparams[]){
-	_sym_neighbor_list.get_unit_cell_params(uparams);
+	neighbor_list.get_unit_cell_params(uparams);
    }
 
    void print(int seq, std::ostream &os){
-         _sym_neighbor_list.print(seq,os);
+         neighbor_list.print(seq,os);
    }
 #endif
 
@@ -137,9 +131,7 @@ public:
 	//	Mover* mover
 	//);
 
-#if !USE_SYM
    void CollectBumping(const AtomDescr& ad, std::list<PDBrec*>& bumping);
-#endif
    float & getMaxFoundVDWRad() { return _maxVDWFound;}
    int getNBondCutoff() const {return _nBondCutoff;}
 
@@ -159,11 +151,7 @@ private:
    AtomPositions(const AtomPositions& a);            // can't copy
    AtomPositions& operator=(const AtomPositions& a); // can't assign
 
-#if USE_SYM
-   NeighborList<PDBrec*> _sym_neighbor_list;
-#else
-   std::multimap<LocBlk, PDBrec*> _xyzBlocks;
-#endif
+   NeighborList<PDBrec*> neighbor_list;
    std::map<std::string, Mover*>       _motionDesc;
    std::list<BumperPoint*>          _excludePoints;
 

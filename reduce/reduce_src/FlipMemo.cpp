@@ -338,7 +338,27 @@ void FlipMemo::finalize(int, bool, bool, bool, AtomPositions &, DotSphManager&) 
 	}
 }
 
-// makebumpers() in sym/nosym subdirs
+int FlipMemo::makebumpers(NeighborList<BumperPoint*>& bblks, int rn, float& maxVDWrad) {
+	int i = 0, an = 0;
+	BumperPoint* bp;
+	if (_isComplete) {
+		for (i = 0; i < _resFlip[_resType].numBmpr; i++) { // regular
+			const int f1 = i + 1;
+			bp = new BumperPoint(_origLoc[f1], rn, an++, _wrkAtom[f1].vdwRad());
+			bblks.insert(bp, LocBlk(_origLoc[f1]));
+
+			if (_wrkAtom[f1].vdwRad() > maxVDWrad) { maxVDWrad = _wrkAtom[f1].vdwRad(); }
+		}
+		for (i = 0; i < _resFlip[_resType].numPP; i++) { // flipped
+			const int f2 = _resFlip[_resType].numPnts - i;
+			bp = new BumperPoint(_origLoc[f2], rn, an++, _wrkAtom[f2].vdwRad());
+			bblks.insert(bp, _origLoc[f2]);
+
+			if (_wrkAtom[f2].vdwRad() > maxVDWrad) { maxVDWrad = _wrkAtom[f2].vdwRad(); }
+		}
+	}
+	return an;
+}
 
 std::list<AtomDescr> FlipMemo::getAtDescOfAllPos(float &maxVDWrad)
 {

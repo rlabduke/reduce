@@ -1,13 +1,21 @@
+//This file contains the main sym/nosym differences, and while each version
+//has the same classes and interfaces, the actual functionality is different.
+//So in the end, this is pretty much two separate files in one.
+
 #include <cstdio>
 #include <list>
+#include <vector>
+#include "PointWith.h"
+
+#ifndef NEIGHBORLIST_H
+#define NEIGHBORLIST_H 1
+
+#if USE_SYM
 #include <cctbx/sgtbx/direct_space_asu/proto/direct_space_asu.h>
 #include <boost/shared_ptr.hpp> // necessary for pair_tables.h
 #include "point_neighbors.h"
 #include <cctbx/crystal/neighbors_simple.h>
 #include <utility>
-
-#ifndef NEIGHBORLIST_H
-#define NEIGHBORLIST_H 1
 
 typedef scitbx::vec3<double> double3;
 
@@ -130,7 +138,7 @@ class NeighborList{
 
 	}
 
-	void insert(L atom){
+	void insert(L atom, LocBlk loc){
 		atom->set_index(_atom_list.size());
 		_atom_list.push_back(atom);
 		Point3d site=atom->loc();
@@ -146,8 +154,8 @@ class NeighborList{
 		_cubiclized=true;
 	}
 
-	std::list< std::pair<L,Point3d> > get_neighbors(Point3d p, Coord min_range, Coord max_range=-1.0f){
-		std::list< std::pair<L, Point3d> > neighbors;
+	std::list<PointWith<L> > get_neighbors(Point3d p, Coord min_range, Coord max_range=-1.0f){
+		std::list<PointWith<L> > neighbors;
 //		if (_nosym)		// ************NOSYMCHANGES*************
 //			p=p+_offset_p3d;
 		cctbx::cartesian<> query(p.x(),p.y(),p.z());
@@ -173,7 +181,7 @@ class NeighborList{
 //				if (_nosym)		// ************NOSYMCHANGES*************
 //				neighbors.push_back(std::make_pair(_atom_list[(int)itr->ngbr_seq], Point3d(ngbr_trans[0],ngbr_trans[1],ngbr_trans[2])-_offset_p3d));
 //				else
-				neighbors.push_back(std::make_pair(_atom_list[(int)itr->ngbr_seq], Point3d(ngbr_trans[0],ngbr_trans[1],ngbr_trans[2])));
+				neighbors.push_back(PointWith<L>(_atom_list[(int)itr->ngbr_seq], Point3d(ngbr_trans[0],ngbr_trans[1],ngbr_trans[2])));
 			}
 		}
 		return neighbors;
@@ -313,4 +321,79 @@ class NeighborList{
 		delete[] atom_centers;
 	}
 };
+
+#else //if !USE_SYM
+
+template <class L>
+class NeighborList{
+
+     private:
+     std::multimap<LocBlk, L> _atoms;
+
+     public:
+     NeighborList() {}
+
+     NeighborList(Coord max_range) {}
+
+     ~NeighborList(){
+          for (typename std::multimap<LocBlk, L>::const_iterator it = _atoms.begin(); it != _atoms.end(); ++it)
+               delete it->second;
+     }
+
+     void clear_list(){}
+
+     void get_unit_cell_params(double uparams[]) {}
+
+     void init(std::vector<L> atoms) {}
+
+     void insert(L atom, LocBlk loc){
+          _atoms.insert(std::make_pair(loc, atom));
+     }
+
+     void cubiclize() {}
+
+     std::list<PointWith<L> > get_neighbors(Point3d p, Coord min_range, Coord max_range=-1.0f){
+          std::list<L> neigh = ::neighbors(p, min_range, max_range, _atoms);
+
+          std::list<PointWith<L> > neighWithPoints;
+          for (typename std::list<L>::iterator i = neigh.begin(); i != neigh.end(); i++)
+          {
+               neighWithPoints.push_back(PointWith<L>(*i));
+          }
+          return neighWithPoints;
+     }
+
+     typename std::multimap<LocBlk, L>::iterator find(LocBlk loc){
+          return _atoms.find(loc);
+     }
+
+     int find(L atom, Point3d p){
+          return -1;
+     }
+
+     typename std::multimap<LocBlk, L>::iterator begin() {
+          return _atoms.begin();
+     }
+
+     typename std::multimap<LocBlk, L>::iterator end() {
+          return _atoms.end();
+     }
+     
+     void erase(const typename std::multimap<LocBlk, L>::iterator& it){
+          _atoms.erase(it);
+     }
+
+     int total_size(){
+          return _atoms.size();
+     }
+
+     void print(int seq, std::ostream &os) {}
+	
+     void print_all(std::ostream& out, std::ostream& pdbout) {}
+
+     void print_all_sym_ngbrs(float cutoff, std::ostream& pdbout){}
+};
+
+#endif
+
 #endif

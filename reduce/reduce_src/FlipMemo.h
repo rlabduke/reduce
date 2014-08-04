@@ -83,13 +83,8 @@ public:
    virtual bool markFlipAtoms();
    virtual void finalize(int nBondCutoff, bool useXplorNames, bool useOldNames, bool bbModel,
                          AtomPositions &xyz, DotSphManager& dotBucket);
-#if USE_SYM
-   virtual int makebumpers(NeighborList<BumperPoint*>& sym_bblks,
+   virtual int makebumpers(NeighborList<BumperPoint*>& bblks,
                            int n, float& maxVDWrad);
-#else
-   virtual int makebumpers(std::multimap<LocBlk, BumperPoint*>& bbins,
-                           int n, float& maxVDWrad);
-#endif
    virtual std::list<AtomDescr> getAtDescOfAllPos(float &maxVDWrad);
    virtual const PDBrec& exampleAtom() const { return _wrkAtom[1]; }
 
