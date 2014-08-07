@@ -3,7 +3,7 @@
 #
 
 SUBDIRS1 = toolclasses libpdb reduce_src
-SUBDIRS = toolclasses libpdb reduce_src nosym_reduce_src
+SUBDIRS = toolclasses libpdb reduce_src
 
 all:
 	@case '${MFLAGS}' in *[ik]*) set +e;; esac; \
