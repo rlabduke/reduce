@@ -103,9 +103,9 @@ class NeighborList{
 //			_nosym=true;
 			strcpy(space_grp,"P 1");
 			spaceGrp=cctbx::sgtbx::space_group(cctbx::sgtbx::space_group_symbols(space_grp));
-			cell[0]=bbox[0]*10;
-			cell[1]=bbox[1]*10;
-			cell[2]=bbox[2]*10;
+			cell[0]=bbox[0];
+			cell[1]=bbox[1];
+			cell[2]=bbox[2];
 //			_offset[0]=cell[0]/2-box_center[0];
 //			_offset[1]=cell[1]/2-box_center[1];
 //			_offset[2]=cell[2]/2-box_center[2];
