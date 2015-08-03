@@ -156,12 +156,15 @@ struct SummaryStats {
 SummaryStats Tally;
 
 char* parseCommandLine(int argc, char **argv);
-void processPDBfile(std::istream& ifs, char *pdbFile, std::ostream& ofs);
+//SJ 08/03/2015 - replaced with new def of function, to make sure everything is printed in the end
+//void processPDBfile(std::istream& ifs, char *pdbFile, std::ostream& ofs);
+void processPDBfile(std::istream& ifs, char *pdbFile,std::list<std::list<PDBrec*> >& all_records);
 void establishHetDictionaryFileName(void);
 void reduceHelp(bool showAll);
 void reduceChanges(bool showAll);
 std::istream& inputRecords(std::istream& is, std::list<PDBrec*>& records);
 std::ostream& outputRecords(std::ostream& os, const std::list<PDBrec*>& records);
+std::ostream& outputRecords_all(std::ostream& os, const std::list<std::list<PDBrec*> >& all_records); //SJ 08/03/2015 for printing all models together
 void checkSEGIDs(std::list<PDBrec*>& rlst);
 void dropHydrogens(std::list<PDBrec*>& records);
 void invalidateRecords(std::list<PDBrec*>& rlst);
@@ -215,6 +218,8 @@ void recordSkipInfo(bool skipH, std::vector<std::string>& fixNotes,
 int main(int argc, char **argv) {
 
    char *pdbFile = parseCommandLine(argc, argv);
+    
+    std::list<std::list<PDBrec*> > all_records; // SJ 08/03/2015 added to keep all models before printing them
 
    if(pdbFile && StringInput == FALSE)
    {/*can do multiple passes by rewinding input file*/
@@ -222,7 +227,7 @@ int main(int argc, char **argv) {
       while(ModelToProcess) /* 041113 */
       {
          std::ifstream theinputstream(pdbFile); //declare each time, avoid rewind
-         processPDBfile(theinputstream, pdbFile, cout);
+         processPDBfile(theinputstream, pdbFile,all_records); // SJ - changed to match new def
          if(ModelSpecified) {ModelToProcess = 0;} /* did it, so quit */
          else if(ModelNext > 0)
          {
@@ -239,17 +244,30 @@ int main(int argc, char **argv) {
    /* pdbFile here is used to hold the string to be memory efficient */
    else if(StringInput == TRUE){
        std::istringstream is(pdbFile);
-       processPDBfile(is,NULL, cout);
+       processPDBfile(is,NULL,all_records); // SJ changed to match new def
    }
    else
    {/*presume stdin for pdb file info*/
-      processPDBfile(cin,            pdbFile, cout);
+      processPDBfile(cin,            pdbFile, all_records); // SJ changed to match new def
    }
+    
+    // SJ This is where the outputrecords should be called for all all_records.
+    //This function now prints and eventaully deletes all models
+    outputRecords_all(cout, all_records);
+    
+    if (Verbose) { // copied over from processPDBfile to here, will be printed only once
+     cerr << "If you publish work which uses reduce, please cite:"
+     << endl << referenceString << endl;
+     cerr << "For more information see " << electronicReference << endl;
+     }
+    
    return ReturnCodeGlobal;
 }
 //#endif
 
-void processPDBfile(std::istream& ifs, char *pdbFile, std::ostream& ofs) {
+void processPDBfile(std::istream& ifs, char *pdbFile, std::list<std::list<PDBrec*> >& all_records/*std::ostream& ofs*/) {
+    //SJ 08/03/2015 - changed the last argument of the function to pass the list of all records that need to be stored and output only in the end
+    
    if (Verbose) {
       cerr << versionString << endl;
       if (pdbFile) {
@@ -283,8 +301,9 @@ void processPDBfile(std::istream& ifs, char *pdbFile, std::ostream& ofs) {
 	    << Tally._H_HET_removed << " hets)" << endl;
       }
 
-      ofs << "USER  MOD "<< shortVersion <<" removed " << Tally._H_removed
-           << " hydrogens (" << Tally._H_HET_removed << " hets)" << endl;
+       //commented because printing has to be done in the end SJ 08/03/2015
+      //ofs << "USER  MOD "<< shortVersion <<" removed " << Tally._H_removed
+        //   << " hydrogens (" << Tally._H_HET_removed << " hets)" << endl;
    }
    else {
 	 if (Verbose) {
@@ -436,7 +455,7 @@ void processPDBfile(std::istream& ifs, char *pdbFile, std::ostream& ofs) {
 	 }
       }
 
-      ofs << "USER  MOD "<< shortVersion
+      /*ofs << "USER  MOD "<< shortVersion
            <<" H: found="<<Tally._H_found
            <<", std="<< Tally._H_standardized
            << ", add=" << Tally._H_added
@@ -445,26 +464,30 @@ void processPDBfile(std::istream& ifs, char *pdbFile, std::ostream& ofs) {
       if (Tally._num_renamed > 0) {
 	 ofs << "USER  MOD renamed " << Tally._num_renamed
 	      << " ambiguous 'A' atoms (marked in segID field)"<< endl;
-      }
-      if (UseSEGIDtoChainMap) {
+      }*/
+      
+       /*if (UseSEGIDtoChainMap) { TODO: commenting this out now, will figure out where it goes
          PDBrec::DumpSEGIDtoChainMap(ofs, "USER  MOD mapped ");
-      }
+      }*/
    }
 
    if (Tally._H_added || Tally._H_removed) {
       ;//renumberAndReconnect(records);
    }
 
-   // write out the results...
-   outputRecords(ofs, records);
+   // SJ 08/03/2015 - add records to all_records here.
+    all_records.push_back(records);
+    
+    // SJ 08/03/2015  - commneted all the lines from below, as printing and deletion will only happen once
+   //outputRecords(ofs, records);
 
-   if (Verbose) {
+   /*if (Verbose) {
       cerr << "If you publish work which uses reduce, please cite:"
            << endl << referenceString << endl;
       cerr << "For more information see " << electronicReference << endl;
-   }
+   }*/
 
-   std::for_each(records.begin(), records.end(), DeleteObject());
+  // std::for_each(records.begin(), records.end(), DeleteObject());
 }
 
 void establishHetDictionaryFileName(void) {
@@ -1025,13 +1048,47 @@ void reduceChanges(bool showAll) { /*changes*/
    exit(1);
 }
 
+// SJ 08/03/2015 for printing all records together
+std::ostream& outputRecords_all(std::ostream& os, const std::list <std::list<PDBrec*> >& l) {
+    
+    for (std::list<std::list<PDBrec*> >::const_iterator ptr = l.begin(); ptr != l.end(); ++ptr) {
+        
+        outputRecords(os,(const std::list<PDBrec*> &)*ptr); // print
+        
+    }
+}
+
 // output a list of PDB records
 std::ostream& outputRecords(std::ostream& os, const std::list<PDBrec*>& l) {
+    
+    //SJ: 08/03/2015 copied over from processPDBFile
+    if(RemoveHydrogens)
+    {
+        os << "USER  MOD "<< shortVersion <<" removed " << Tally._H_removed
+           << " hydrogens (" << Tally._H_HET_removed << " hets)" << endl;
+    }
+    else
+    {
+        os << "USER  MOD "<< shortVersion
+        <<" H: found="<<Tally._H_found
+        <<", std="<< Tally._H_standardized
+        << ", add=" << Tally._H_added
+        << ", rem=" << Tally._H_removed
+        << ", adj=" << Tally._num_adj << endl;
+        if (Tally._num_renamed > 0) {
+            os << "USER  MOD renamed " << Tally._num_renamed
+            << " ambiguous 'A' atoms (marked in segID field)"<< endl;
+        }
+    }
+
 	for (std::list<PDBrec*>::const_iterator ptr = l.begin(); ptr != l.end(); ++ptr) {
 		if ((*ptr)->valid())
 			os << (const PDBrec&)(**ptr) << endl;
 	}
-/*
+    
+    std::for_each(l.begin(), l.end(), DeleteObject());
+    
+    /*
 	DblLnkLstNode<PDBrec>(* ptr)(l._first);  // point to first node in list
 
   for (int i=0; i < l._num_elem; i++, ptr=l.linkNext(ptr)) {
