@@ -163,7 +163,7 @@ void establishHetDictionaryFileName(void);
 void reduceHelp(bool showAll);
 void reduceChanges(bool showAll);
 std::istream& inputRecords(std::istream& is, std::list<PDBrec*>& records);
-std::ostream& outputRecords(std::ostream& os, const std::list<PDBrec*>& records);
+std::ostream& outputRecords(std::ostream& os, const std::list<PDBrec*>& records, int model); // SJ 08/04/2015 added last argument to keep track of how many models have been printed.
 std::ostream& outputRecords_all(std::ostream& os, const std::list<std::list<PDBrec*> >& all_records); //SJ 08/03/2015 for printing all models together
 void checkSEGIDs(std::list<PDBrec*>& rlst);
 void dropHydrogens(std::list<PDBrec*>& records);
@@ -1051,41 +1051,65 @@ void reduceChanges(bool showAll) { /*changes*/
 // SJ 08/03/2015 for printing all records together
 std::ostream& outputRecords_all(std::ostream& os, const std::list <std::list<PDBrec*> >& l) {
     
+    int model=0; // keeping track of how many models are printed
     for (std::list<std::list<PDBrec*> >::const_iterator ptr = l.begin(); ptr != l.end(); ++ptr) {
         
-        outputRecords(os,(const std::list<PDBrec*> &)*ptr); // print
+        model++;
+        outputRecords(os,(const std::list<PDBrec*> &)*ptr, model); // print
         
     }
+    //TODO: Bug this is not working, so right now it is not printing stuff at the end.
+    //outputRecords(os,(const std::list<PDBrec*> &)l.front(), 0); // SJ - so that all records after the last ENDMDL are printed. model will be equal to 0, which means all models are printed and only the left over information needs to be printed. model = 0 is a little counterintuitive, but that is the only number I can think of that will work.
 }
 
 // output a list of PDB records
-std::ostream& outputRecords(std::ostream& os, const std::list<PDBrec*>& l) {
+std::ostream& outputRecords(std::ostream& os, const std::list<PDBrec*>& l, int model) {
     
-    //SJ: 08/03/2015 copied over from processPDBFile
-    if(RemoveHydrogens)
-    {
-        os << "USER  MOD "<< shortVersion <<" removed " << Tally._H_removed
-           << " hydrogens (" << Tally._H_HET_removed << " hets)" << endl;
-    }
-    else
-    {
-        os << "USER  MOD "<< shortVersion
-        <<" H: found="<<Tally._H_found
-        <<", std="<< Tally._H_standardized
-        << ", add=" << Tally._H_added
-        << ", rem=" << Tally._H_removed
-        << ", adj=" << Tally._num_adj << endl;
-        if (Tally._num_renamed > 0) {
-            os << "USER  MOD renamed " << Tally._num_renamed
-            << " ambiguous 'A' atoms (marked in segID field)"<< endl;
+    bool flag; // SJ 08/04/2015 to keep track of if this record has to be printed or not.
+    
+    if (model == 1) {
+        flag=true; // everything has to be printed if this is the first model
+        
+        //SJ: 08/03/2015 copied over from processPDBFile - to be printed only once
+        if(RemoveHydrogens)
+        {
+            os << "USER  MOD "<< shortVersion <<" removed " << Tally._H_removed
+            << " hydrogens (" << Tally._H_HET_removed << " hets)" << endl;
+        }
+        else
+        {
+            os << "USER  MOD "<< shortVersion
+            <<" H: found="<<Tally._H_found
+            <<", std="<< Tally._H_standardized
+            << ", add=" << Tally._H_added
+            << ", rem=" << Tally._H_removed
+            << ", adj=" << Tally._num_adj << endl;
+            if (Tally._num_renamed > 0) {
+                os << "USER  MOD renamed " << Tally._num_renamed
+                << " ambiguous 'A' atoms (marked in segID field)"<< endl;
+            }
         }
     }
-
-	for (std::list<PDBrec*>::const_iterator ptr = l.begin(); ptr != l.end(); ++ptr) {
-		if ((*ptr)->valid())
-			os << (const PDBrec&)(**ptr) << endl;
-	}
+    else
+        flag=false; //for all other models, print only what is within MODEL and ENDMDL
     
+    for (std::list<PDBrec*>::const_iterator ptr = l.begin(); ptr != l.end(); ++ptr) {
+        
+        if((*ptr)->type() == PDB::MODEL){
+            if(model != 0) // to make sure the last model is not printed again when the function is called to print the leftover stuff.
+               flag=true; // start printing (if not model == 1, in which case flag is already true)
+        }
+        
+		if ((*ptr)->valid() && flag) //print only if flag=true
+			os << (const PDBrec&)(**ptr) << endl;
+        
+        if ((*ptr)->type() == PDB::ENDMDL) {
+            if(model != 0)
+               flag=false;//stop printing anything else
+            else
+                flag=true; // to make sure the left over stuff is printed when model = 0
+        }
+	}
     std::for_each(l.begin(), l.end(), DeleteObject());
     
     /*
