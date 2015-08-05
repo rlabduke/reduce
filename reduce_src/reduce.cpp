@@ -466,7 +466,7 @@ void processPDBfile(std::istream& ifs, char *pdbFile, std::list<std::list<PDBrec
 	      << " ambiguous 'A' atoms (marked in segID field)"<< endl;
       }*/
       
-       /*if (UseSEGIDtoChainMap) { TODO: commenting this out now, will figure out where it goes
+       /*if (UseSEGIDtoChainMap) {
          PDBrec::DumpSEGIDtoChainMap(ofs, "USER  MOD mapped ");
       }*/
    }
@@ -1058,8 +1058,13 @@ std::ostream& outputRecords_all(std::ostream& os, const std::list <std::list<PDB
         outputRecords(os,(const std::list<PDBrec*> &)*ptr, model); // print
         
     }
-    //TODO: Bug this is not working, so right now it is not printing stuff at the end.
-    //outputRecords(os,(const std::list<PDBrec*> &)l.front(), 0); // SJ - so that all records after the last ENDMDL are printed. model will be equal to 0, which means all models are printed and only the left over information needs to be printed. model = 0 is a little counterintuitive, but that is the only number I can think of that will work.
+    
+    outputRecords(os,(const std::list<PDBrec*> &)l.back(), 0); // SJ - so that all records after the last ENDMDL are printed. model will be equal to 0, which means all models are printed and only the left over information needs to be printed. model = 0 is a little counterintuitive, but that is the only number I can think of that will work.
+    
+    for (std::list<std::list<PDBrec*> >::const_iterator ptr = l.begin(); ptr != l.end(); ++ptr) {
+        
+        std::for_each(ptr->begin(),ptr->end(),DeleteObject()); // delete records
+    }
 }
 
 // output a list of PDB records
@@ -1088,6 +1093,10 @@ std::ostream& outputRecords(std::ostream& os, const std::list<PDBrec*>& l, int m
                 os << "USER  MOD renamed " << Tally._num_renamed
                 << " ambiguous 'A' atoms (marked in segID field)"<< endl;
             }
+            
+            if (UseSEGIDtoChainMap) {
+               PDBrec::DumpSEGIDtoChainMap(os, "USER  MOD mapped ");
+            }
         }
     }
     else
@@ -1110,7 +1119,6 @@ std::ostream& outputRecords(std::ostream& os, const std::list<PDBrec*>& l, int m
                 flag=true; // to make sure the left over stuff is printed when model = 0
         }
 	}
-    std::for_each(l.begin(), l.end(), DeleteObject());
     
     /*
 	DblLnkLstNode<PDBrec>(* ptr)(l._first);  // point to first node in list
