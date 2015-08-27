@@ -432,8 +432,27 @@ bool FlipMemo::setOrientation(int oi, AtomPositions &xyz, SearchStrategy ss) {
   for(int ai=1; ai <= _resFlip[_resType].numBmpr; ai++) { // SJ - this is where the coordinates of the atoms are exchanged. The flip happens the second time this is called from AtomPositions::setOrientations. Coordinates are only exchanged, and not calculated. Don't have to do got O and N, for Hs they are done in the FlipMemo::Finalize();
        if (_atomOrient[oi+offO][ai] != 0) {
      	 Point3d lastloc = _wrkAtom[ai].loc();
-	 _wrkAtom[ai].revalidateRecord();
-	 _wrkAtom[ai].loc(_origLoc[_atomOrient[oi+offO][ai]]);
+	     _wrkAtom[ai].revalidateRecord();
+           
+           // SJ this is the statement where the flip happens
+        // _wrkAtom[ai].loc(_origLoc[_atomOrient[oi+offO][ai]]); //This is the original, replace by code between the two //****. uncomment this line and comment out code between the two //**** to get the original code
+           
+           // SJ 08/27/2015 - changing this for just ASN and GLN right now, when oi ==0, give the original only, when oi == 1 rotate it via 180 along Cb cg for ASN, cg, cd for GLN
+	 //****
+         if (oi == 0) {
+            // std::cout << "DEBUG oi == 0 " << oi << std::endl;
+              _wrkAtom[ai].loc(_origLoc[_atomOrient[oi+offO][ai]]); // oi ==0 means this is not the flipped orientation, keeping the original code for this
+         }
+         else {
+               // the two points around which the rotation has to happen - only for ASN and GLN. For HIS this will be different
+            // std::cout << "DEBUG oi == 1 " << oi << std::endl;
+             Point3d p1 = _origLoc[6]; // CG for GLN, CB for ASN - number from _pointName array at the top of this file
+             Point3d p2 = _origLoc[5]; // CD for GLN, CG for ASN - number from _pointName array at the top of this file
+             Point3d newLoc = _wrkAtom[ai].loc().rotate(180,p1,p2);
+             _wrkAtom[ai].loc(newLoc);
+         }
+     //****
+           
      xyz.reposition(lastloc, _wrkAtom[ai]);
 
 // *** notice: the D/A status of nitrogen and carbon are modified here ***
