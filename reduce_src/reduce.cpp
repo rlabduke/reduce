@@ -397,25 +397,29 @@ void processPDBfile(std::istream& ifs, char *pdbFile, std::list<std::list<PDBrec
       Tally._num_adj = 0;
 
       reduceList(hetdatabase, records, xyz, adjNotes);
-
+    
+     // SJ - All Hydrogens are generated at this time, but no flips and methyl rotations have happened.
+       
       if ((OKtoAdjust || ! OFile.empty()) && xyz.numChanges() > 0) {
-	 xyz.finalizeMovers();
+	      xyz.finalizeMovers();
       }
+       
+       
       if (! OFile.empty()) {
-	 Tally._num_adj += xyz.forceOrientations(OFile, adjNotes);
+          Tally._num_adj += xyz.forceOrientations(OFile, adjNotes);
       }
 
-      if (OKtoAdjust && xyz.numChanges() > 0) {
+     if (OKtoAdjust && xyz.numChanges() > 0) {
 
 	 CliqueList clst = xyz.findCliques();
 
 	 if (Verbose) { clst.describe(cerr); }
-
-// adjust singletons
+         
+ // adjust singletons
 
 	 Tally._num_adj += xyz.orientSingles(clst.singles());
-
-// adjust cliques
+         
+   // adjust cliques
 
 	 std::list< std::list<MoverPtr> > cc_list = clst.cliques();
 	//cerr << "start: " << cc_list.size() << endl;
@@ -1044,6 +1048,8 @@ void reduceChanges(bool showAll) { /*changes*/
    cerr  << "2013/07/18 - jjh       fixed handling of multiple models when first model" << endl;
    cerr  << "                        is not model 1" << endl;
    cerr  << "2013/07/24 - jjh       cleaned up command line parsing function, removed redundant -FLIPs option" << endl;
+   cerr  << "2015/08/19 - sj        fixed multimodel handling. Header now printed only once, and" << endl;
+   cerr  << "                       everything else not within MODEL ENDMDL printed in the end" << endl;
    cerr  << endl;
    exit(1);
 }
@@ -1072,7 +1078,7 @@ std::ostream& outputRecords(std::ostream& os, const std::list<PDBrec*>& l, int m
     
     bool flag; // SJ 08/04/2015 to keep track of if this record has to be printed or not.
     
-    if (model == 1) {
+    if (model == 1) { // this model does not necessarily correspond to the model number specified in the PDB file. This is just to keep internal records of how many models have been printed. See the for loop in the function above.
         flag=true; // everything has to be printed if this is the first model
         
         //SJ: 08/03/2015 copied over from processPDBFile - to be printed only once
@@ -1520,6 +1526,8 @@ bool isAromMethyl(ResConn& ct, const atomPlacementPlan& pp, ResBlk& theRes, cons
 
 	return TRUE;
 }
+
+//SJ - called for each residue
 void analyzeRes(CTab& hetdatabase, ResBlk* pb, ResBlk* cb, ResBlk* nb,
 				AtomPositions& xyz, std::list<PDBrec*>& waters,
 				std::vector<std::string>& fixNotes, std::list<PDBrec*>& rlst) {
@@ -1562,7 +1570,7 @@ void analyzeRes(CTab& hetdatabase, ResBlk* pb, ResBlk* cb, ResBlk* nb,
 	std::list<char> resAlts;
 	if (DemandFlipAllHNQs) { // resAlts will be non-empty for flipped residues
 		resAlts = xyz.insertFlip(*cb);
-	}
+    }
 
 	if (rec.hasProp(METALIC_ATOM)) { // save info from metals for analysis of flips&rots
 		xyz.manageMetals(*cb);
@@ -1574,8 +1582,8 @@ void analyzeRes(CTab& hetdatabase, ResBlk* pb, ResBlk* cb, ResBlk* nb,
 	// apl 2007/03/07 -- Bug fix: do not add hydrogens to "N" on non-amino acids
 	// prev: 	if (ProcessConnHydOnHets || StdResH::ResXtraInfo().match(resname, "AminoAcid")) {
 	//
-	if ( StdResH::ResXtraInfo().match(resname, "AminoAcid")) {
-		StdResH *hn = NULL;
+	if ( StdResH::ResXtraInfo().match(resname, "AminoAcid")) { // S.J. this if statement gets the plan for H atoms for the N atom and the Calpha atom given in the StdResH.cpp
+        StdResH *hn = NULL;
 		if (ctype == CONNECTED_RES) {
 			hn = StdResH::HydPlanTbl().get("amide");
 		}
@@ -1623,7 +1631,7 @@ void analyzeRes(CTab& hetdatabase, ResBlk* pb, ResBlk* cb, ResBlk* nb,
 		}
 	}
 
-	if (StdResH::ResXtraInfo().match(resname, "NucleicAcid")) {
+	if (StdResH::ResXtraInfo().match(resname, "NucleicAcid")) { // S.J. this does the same thing as above, but just for Nucleotc acids backbone atoms
 		StdResH *rpbb = StdResH::HydPlanTbl().get("ribose phosphate backbone");
 		if (rpbb && rpbb->exclude().find(resname.c_str()) == std::string::npos) {
 			std::list<atomPlacementPlan*> temp = rpbb->plans();
@@ -1634,13 +1642,14 @@ void analyzeRes(CTab& hetdatabase, ResBlk* pb, ResBlk* cb, ResBlk* nb,
 
 	// first look in the standard H table...
 
-	StdResH *srh = StdResH::HydPlanTbl().get(resname);
+    StdResH *srh = StdResH::HydPlanTbl().get(resname);
 	if (srh) {
-		std::list<atomPlacementPlan*> temp = srh->plans();
+        std::list<atomPlacementPlan*> temp = srh->plans(); // S.J. this has the hydrogen atom plans for this specific residue given in StdResH.cpp
 
 		// for aromatic methyls - Aram 07/23/12
 		for(std::list<atomPlacementPlan*>::const_iterator iter = temp.begin(); iter != temp.end(); ++iter) {
-			std::string conn2atom = (*iter)->conn(1);
+            
+            std::string conn2atom = (*iter)->conn(1);
 			bool Arom = StdResH::ResXtraInfo().atomHasAttrib(resname, conn2atom, AROMATICFLAG);
 			if (Arom) (*iter)->addFeature(AROMATICFLAG);
 		}
@@ -1669,25 +1678,27 @@ void analyzeRes(CTab& hetdatabase, ResBlk* pb, ResBlk* cb, ResBlk* nb,
 		}
 	}
 
-	// work through each atom placement plan
-	for(std::list<atomPlacementPlan*>::const_iterator iter = app.begin(); iter != app.end(); ++iter) {
-		genHydrogens(**iter, *cb, o2prime, xyz, resAlts, fixNotes, rlst);
+	// work through each atom placement plan - S.J. each atom placement plan is a potential H atom that needs to be added. The hydrogens that are already present are not looked at right now.
+    for(std::list<atomPlacementPlan*>::const_iterator iter = app.begin(); iter != app.end(); ++iter) {
+        genHydrogens(**iter, *cb, o2prime, xyz, resAlts, fixNotes, rlst);
 	}
 }
 
+//SJ - called for each potential hydrogen to be added to the residue
 void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 				  AtomPositions& xyz, std::list<char>& resAlts,
 				  std::vector<std::string>& fixNotes, std::list<PDBrec*>& rlst) {
 
 	std::list<PDBrec*> ourHydrogens;
-	theRes.get(pp.name(), ourHydrogens);
+	theRes.get(pp.name(), ourHydrogens); // S.J.- checks if this specific Hydrogen to be added is already present in the residue or not.
 	std::list<PDBrec*> firstAtoms;
 	theRes.get(pp.conn(0), firstAtoms);
-
-	bool doNotAdjustSC = FALSE;
+    
+    bool doNotAdjustSC = FALSE;
 	if (!firstAtoms.empty()) { // must connect to something!
 
-		if (!ourHydrogens.empty()) { // Hydrogen exists
+		if (!ourHydrogens.empty()) {// Hydrogen exists
+            
 			PDBrec* o = NULL;
 			for (std::list<PDBrec*>::iterator it = ourHydrogens.begin(); it != ourHydrogens.end(); ++it) {
 				o = *it;
@@ -1770,7 +1781,7 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 			}
 		}
 		else {
-			int i = 0, j = 0, k = 0;
+            int i = 0, j = 0, k = 0;
 
 			if (pp.hasFeature(NOO2PRIMEFLAG) && o2prime) {
 				return; // if o2* atom then we have RNA not DNA
@@ -1789,12 +1800,12 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
                                 ||   (( pp.hasFeature(USEOLDNAMES) && ! pp.hasFeature(   XPLORNAME)) && ! UseOldNames)
 				||   (( pp.hasFeature(USEOLDNAMES) &&   pp.hasFeature(   XPLORNAME))
 				&&   (! UseOldNames && ! UseXplorNames)) ) {
-                                return; // keep our naming conventions straight
-                        }
-                        if ( (pp.hasFeature(BACKBONEMODEL) &&   ! BackBoneModel)
-                                ||   (pp.hasFeature(   NOTBBMODEL) && ! BackBoneModel) ) {
-                                return; // keep our naming conventions straight
-                        }
+                return; // keep our naming conventions straight
+            }
+            if ( (pp.hasFeature(BACKBONEMODEL) &&   ! BackBoneModel)
+                ||   (pp.hasFeature(   NOTBBMODEL) && ! BackBoneModel) ) {
+                return; // keep our naming conventions straight
+            }
 
 
 

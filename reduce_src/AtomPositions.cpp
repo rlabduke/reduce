@@ -404,15 +404,15 @@ std::list<char> AtomPositions::insertFlip(const ResBlk& rblk) {
 	std::string key, descriptor;
 	char descrbuf[32];
 
-	for(std::list<char>::iterator alts = resAlts.begin(); alts != resAlts.end(); ++alts) {
+	for(std::list<char>::iterator alts = resAlts.begin(); alts != resAlts.end(); ++alts) { // SJ - for each alternate code
 		std::multimap<std::string, PDBrec*>::const_iterator pdbit = pdb.begin();
 		PDBrec* atsq = NULL;
 		while(pdbit != pdb.end()) {
 			key = pdbit->first;
 			if (key[0] == '-' || key[0] == '+') {++pdbit; continue; } // skip connectors
 
-			for (; pdbit != pdb.end() && pdbit->first == key; ++pdbit) {
-				atsq = pdbit->second;
+			for (; pdbit != pdb.end() && pdbit->first == key; ++pdbit) { // SJ for each atom in the residue - i.e. all pdb records for this atom - but looking at only the current altCode or " "
+                atsq = pdbit->second;
 				if ( visableAltConf(*atsq, _onlyA)
 					&&  (atsq->alt() == ' ' || atsq->alt() == *alts) ) {
 
@@ -427,15 +427,14 @@ std::list<char> AtomPositions::insertFlip(const ResBlk& rblk) {
 						atsq->resname(), "", (*alts));
 					}
 					descriptor = descrbuf;
-
-					std::map<std::string, Mover*>::const_iterator iter = _motionDesc.find(descriptor);
+                    
+                    std::map<std::string, Mover*>::const_iterator iter = _motionDesc.find(descriptor);
 					Mover *m = NULL;
 					if (iter != _motionDesc.end())
 						m = iter->second;
 
-					if (m == NULL) {
-
-						m = new FlipMemo(atsq->resname(), _useXplorNames, _useOldNames, _bbModel);
+					if (m == NULL) { // SJ - create a new mover for each residue and altCode
+                        m = new FlipMemo(atsq->resname(), _useXplorNames, _useOldNames, _bbModel);
 						m->descr( descriptor );
 						_motionDesc.insert(std::make_pair(descriptor, m));
 						//std::cerr << "FlipMemo constructed: " << descriptor << " " << m << std::endl;
@@ -444,7 +443,7 @@ std::list<char> AtomPositions::insertFlip(const ResBlk& rblk) {
 						cerr<<"*error* insertFlip(rblk, "<< m->type() <<")"<<endl;
 						return std::list<char>();
 					}
-					((FlipMemo*)m)->insertAtom(atsq);
+					((FlipMemo*)m)->insertAtom(atsq); // SJ insert all atoms of the residue with the corresponding altCode into the mover.
 
 				}
 			}
@@ -663,16 +662,16 @@ int AtomPositions::orientSingles(const std::list<MoverPtr>& singles) {
 	bool trialBadBump    = FALSE;
 
 //	while (singles) {
-	for (std::list<MoverPtr>::const_iterator iter = singles.begin(); iter != singles.end(); ++iter) {
+	for (std::list<MoverPtr>::const_iterator iter = singles.begin(); iter != singles.end(); ++iter) { // SJ - this is for every Mover, incase of flips this is for every residue and altCode
 //		MoverPtr m = *singles++;
 		MoverPtr m = *iter;
 		if (m && m->valid()) {
-			double prevPenalty = 0.0;
+            double prevPenalty = 0.0;
 			float theBumpScore = 0.0;
 			float theHBScore   = 0.0;
 			bool hasBadBump    = FALSE;
 			const int numLowResO = m->numOrientations();
-			m->setBestOrientation(0, LowestMoverScore, hasBadBump);
+            m->setBestOrientation(0, LowestMoverScore, hasBadBump); // SJ - initialising the bestOrientation
 
 			// try each orientation
 			for (i = 0; i < numLowResO; i++) {
@@ -710,7 +709,7 @@ int AtomPositions::orientSingles(const std::list<MoverPtr>& singles) {
 			if (m->orientation() != best) {
 				m->setOrientation(best, *this);
 			}
-			if (m->hasHires()) {
+			if (m->hasHires()) { // SJ - TODO: do not understand what is this High res, low res thing
 				const int numHiResO = m->numOrientations(Mover::HIGH_RES);
 				// try each high-res orientation
 				for (i = 0; i < numHiResO; i++) {

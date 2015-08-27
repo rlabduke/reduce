@@ -300,7 +300,8 @@ void FlipMemo::finalize(int, bool, bool, bool, AtomPositions &, DotSphManager&) 
 		// we copy each atom and save the old locations
 
 		for(int pi=1; pi <= _resFlip[_resType].numPnts; pi++) {
-			std::map<std::string, PDBrec*>::iterator iter = _resAtoms.find(_pointName[_resType][pi]);
+            std::map<std::string, PDBrec*>::iterator iter = _resAtoms.find(_pointName[_resType][pi]);
+            
 			bool found;
 			if (iter != _resAtoms.end()) {
 				_wrkAtom[pi] = *(iter->second);
@@ -329,6 +330,7 @@ void FlipMemo::finalize(int, bool, bool, bool, AtomPositions &, DotSphManager&) 
             else {
               cur_dist = _protLoc[ppi].dist_ecloud;
             }
+            
 			_origLoc[_protLoc[ppi].anum] = atomPlacementPlan::calcLoc(
 				_protLoc[ppi].type,         _origLoc[_protLoc[ppi].c1],
 				_origLoc[_protLoc[ppi].c2], _origLoc[_protLoc[ppi].c3],
@@ -427,12 +429,12 @@ bool FlipMemo::setOrientation(int oi, AtomPositions &xyz, SearchStrategy ss) {
 
    const int offO = _fromO;
 
-   for(int ai=1; ai <= _resFlip[_resType].numBmpr; ai++) {
-      if (_atomOrient[oi+offO][ai] != 0) {
-	 Point3d lastloc = _wrkAtom[ai].loc();
+  for(int ai=1; ai <= _resFlip[_resType].numBmpr; ai++) { // SJ - this is where the coordinates of the atoms are exchanged. The flip happens the second time this is called from AtomPositions::setOrientations. Coordinates are only exchanged, and not calculated. Don't have to do got O and N, for Hs they are done in the FlipMemo::Finalize();
+       if (_atomOrient[oi+offO][ai] != 0) {
+     	 Point3d lastloc = _wrkAtom[ai].loc();
 	 _wrkAtom[ai].revalidateRecord();
 	 _wrkAtom[ai].loc(_origLoc[_atomOrient[oi+offO][ai]]);
-	 xyz.reposition(lastloc, _wrkAtom[ai]);
+     xyz.reposition(lastloc, _wrkAtom[ai]);
 
 // *** notice: the D/A status of nitrogen and carbon are modified here ***
 	 if (_wrkAtom[ai].elem().atno() == 7) {
@@ -600,6 +602,7 @@ std::list<PDBrec*> FlipMemo::neighbors(int na, int nbdist) const {
 	return nbhd;
 }
 
+// SJ - this function checks if this residue is the type to be checked for flips, and puts the altcodes for the atoms to be involved in the argument sch. The type of residues to be flipped, and the involved atoms are stored in the class FlipMemo. Look at the top of this file.
 void FlipMemo::altCodes(const ResBlk& rblk,	bool useXplorNames, bool useOldNames, bool bbModel,
 						std::list<char>& sch) {
 	char ch, buf[10];
@@ -608,7 +611,8 @@ void FlipMemo::altCodes(const ResBlk& rblk,	bool useXplorNames, bool useOldNames
 
 	const char *resname = rblk.firstRec().resname();
 
-	for(rt = 0; _resFlip[rt].rname; rt++) {
+	for(rt = 0; _resFlip[rt].rname; rt++) { // SJ checks if the residue name is ASN, GLN, or HIS
+        
 	        if ( (strcmp(_resFlip[rt].rname, resname) == 0)
 	      		&& !(((_resFlip[rt].flags & USEOLDNAMES) && ! useOldNames)
 	        	|| ((_resFlip[rt].flags & XPLORNAME)  && ! useXplorNames)
@@ -617,7 +621,7 @@ void FlipMemo::altCodes(const ResBlk& rblk,	bool useXplorNames, bool useOldNames
 			break; // residue type is one of those we are concerned with
 		}
 	}
-	if (isInResidueSet) {
+	if (isInResidueSet) { // SJ - if the residue is ASN, GLN, or HIS
 		std::multimap<std::string, PDBrec*> pdb = rblk.atomIt();
 		std::string key;
 		std::multimap<std::string, PDBrec*>::const_iterator pdbit = pdb.begin();
@@ -628,14 +632,13 @@ void FlipMemo::altCodes(const ResBlk& rblk,	bool useXplorNames, bool useOldNames
 				atsq = pdbit->second;
 				bool foundname = FALSE;
 				for(int i=_resFlip[rt].fromScat;
-				i < _resFlip[rt].fromScat+_resFlip[rt].numScat; i++) {
-
-					if (strcmp(_pointName[rt][i], atsq->atomname()) == 0) {
-						foundname = TRUE;
+				i < _resFlip[rt].fromScat+_resFlip[rt].numScat; i++) { // SJ - for each atom that takes part in the flip
+                    if (strcmp(_pointName[rt][i], atsq->atomname()) == 0) {
+                        foundname = TRUE;
 						break;
 					}
 				}
-				if (foundname) {
+				if (foundname) { // SJ - look for alternate conformations code
 					ch = toupper(atsq->alt());
 					if (ch != ' ') {
 						dupalt = FALSE;
