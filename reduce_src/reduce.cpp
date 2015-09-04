@@ -98,7 +98,8 @@ bool ShowCharges              = FALSE;
 bool UseNuclearDistances      = FALSE; //jjh 130111
 bool UseSEGIDasChain          = FALSE; //jjh 130503
 bool ProcessedFirstModel      = FALSE; //jjh 130718
-
+bool GenerateFinalFlip        = TRUE; // SJ 09/04/2015 - to check if flips are being generated for scoring or the final PDB file
+                                      // should be FALSE if don't want to change how flips are scored, TRUE if want to change to how flips are scored.
 int MaxAromRingDih    = 10;   // max dihedral angle in planarity check for aromatic rings  120724 - Aram
 
 int MinNTermResNo     = 1;   // how high can a resno be for n-term?

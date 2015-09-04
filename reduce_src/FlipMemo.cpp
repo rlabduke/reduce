@@ -30,6 +30,7 @@ using std::toupper;
 #include "AtomPositions.h"
 
 extern bool UseNuclearDistances; //defined in reduce.cpp JJH
+extern bool GenerateFinalFlip; // defined in reduce.cpp for checking if flips are being generated for scoring or final PDB file
 
 const char* FlipMemo::_pointName[FMnumFlipRes+1]
                                 [FMmaxAtomSlots+1] = {
@@ -139,28 +140,28 @@ const int FlipMemo::_bondedSet[FnumScoreableAtoms]
 };
 
 const int FlipMemo::_atomOrient[FMnumFlipOrient]
-                               [FMmaxAtomSlots+1] = {
+                               [FMmaxAtomSlots+1] = { // SJ this is how the coordinates of the atoms are exchanged for flips
 #ifdef AROMATICS_ACCEPT_HBONDS
- {0, 1, 2, 3, 4, 0, 6, 7, 8, 9}, // HIS...
+ {0, 1, 2, 3, 4, 0, 6, 7, 8, 9}, // HIS... // SJ - when the number is 0 (apart from the first number) it means that atom does not exist - this is for HIS only with different protonation states
  {1, 1, 2, 3, 4, 5, 6, 7, 0, 9},
  {2, 1, 2, 3, 4, 5, 6, 7, 8, 9},
- {3, 2, 1, 4, 3, 0,18,19,20, 9},
- {4, 2, 1, 4, 3,17,18,19, 0, 9},
- {5, 2, 1, 4, 3,17,18,19,20, 9},
+ {3, 2, 1, 4, 3, 0,18,19,20, 9}, // SJ - flipped
+ {4, 2, 1, 4, 3,17,18,19, 0, 9}, // flipped
+ {5, 2, 1, 4, 3,17,18,19,20, 9}, // flipped
  {6, 1, 2, 3, 4, 0, 6, 7, 0, 9}, // rarely used double deprotonated states
- {7, 2, 1, 4, 3, 0,18,19, 0, 9},
+ {7, 2, 1, 4, 3, 0,18,19, 0, 9}, // flipped for rarely used double deprotonated states
 #else
  {0, 1, 2, 3, 4, 0, 6, 7, 8}, // HIS...
  {1, 1, 2, 3, 4, 5, 6, 7, 0},
  {2, 1, 2, 3, 4, 5, 6, 7, 8},
- {3, 2, 1, 4, 3, 0,18,19,20},
- {4, 2, 1, 4, 3,17,18,19, 0},
- {5, 2, 1, 4, 3,17,18,19,20},
+ {3, 2, 1, 4, 3, 0,18,19,20}, // flipped
+ {4, 2, 1, 4, 3,17,18,19, 0}, // flipped
+ {5, 2, 1, 4, 3,17,18,19,20}, // flipped
  {6, 1, 2, 3, 4, 0, 6, 7, 0}, // rarely used double deprotonated states
- {7, 2, 1, 4, 3, 0,18,19, 0},
+ {7, 2, 1, 4, 3, 0,18,19, 0}, // flipped for rarely used double deprotonated states
 #endif
- {0, 1, 2, 3, 4, 5},          // ASN, GLN...
- {1, 2, 1,13,14, 5}
+ {0, 1, 2, 3, 4, 5},          // ASN, GLN... // SJ - unflipped
+ {1, 2, 1,13,14, 5}                          // SJ - flipped - don't know what the 5 means at the end.
 };
 
 const int FlipMemo::_atomDAflags[FMnumFlipOrient]
@@ -415,6 +416,7 @@ std::list<AtomDescr> FlipMemo::getAtDescOfAllPos(float &maxVDWrad)
 
 }
 
+// SJ - called from AtomPositions:setOrientation to generate the unflipped and the flipped state
 bool FlipMemo::setOrientation(int oi, AtomPositions &xyz, SearchStrategy ss) {
    if (ss!=Mover::LOW_RES) { return TRUE; } // HIGH_RES uses current orientation
 
@@ -429,51 +431,71 @@ bool FlipMemo::setOrientation(int oi, AtomPositions &xyz, SearchStrategy ss) {
 
    const int offO = _fromO;
 
-  for(int ai=1; ai <= _resFlip[_resType].numBmpr; ai++) { // SJ - this is where the coordinates of the atoms are exchanged. The flip happens the second time this is called from AtomPositions::setOrientations. Coordinates are only exchanged, and not calculated. Don't have to do got O and N, for Hs they are done in the FlipMemo::Finalize();
+   for(int ai=1; ai <= _resFlip[_resType].numBmpr; ai++) {
        if (_atomOrient[oi+offO][ai] != 0) {
-     	 Point3d lastloc = _wrkAtom[ai].loc();
-	     _wrkAtom[ai].revalidateRecord();
            
-           // SJ this is the statement where the flip happens
-        // _wrkAtom[ai].loc(_origLoc[_atomOrient[oi+offO][ai]]); //This is the original, replace by code between the two //****. uncomment this line and comment out code between the two //**** to get the original code
+           Point3d lastloc = _wrkAtom[ai].loc();
+           _wrkAtom[ai].revalidateRecord();
            
-           // SJ 08/27/2015 - changing this for just ASN and GLN right now, when oi ==0, give the original only, when oi == 1 rotate it via 180 along Cb cg for ASN, cg, cd for GLN
-	 //****
-         if (oi == 0) {
-            // std::cout << "DEBUG oi == 0 " << oi << std::endl;
-              _wrkAtom[ai].loc(_origLoc[_atomOrient[oi+offO][ai]]); // oi ==0 means this is not the flipped orientation, keeping the original code for this
-         }
-         else {
-               // the two points around which the rotation has to happen - only for ASN and GLN. For HIS this will be different
-            // std::cout << "DEBUG oi == 1 " << oi << std::endl;
-             Point3d p1 = _origLoc[6]; // CG for GLN, CB for ASN - number from _pointName array at the top of this file
-             Point3d p2 = _origLoc[5]; // CD for GLN, CG for ASN - number from _pointName array at the top of this file
-             Point3d newLoc = _wrkAtom[ai].loc().rotate(180,p1,p2);
-             _wrkAtom[ai].loc(newLoc);
-         }
-     //****
+           // SJ - 09/04/2015 added the flag GenerateFinalFlip so that flips are scored the same way, but finally generated using the new method
+           if(!GenerateFinalFlip){// SJ - this is where the coordinates of the atoms are exchanged. Coordinates are only exchanged, and not recalculated for the heavy atoms, for Hs the coordinates are recalcualted for the flipped position in FlipMemo::Finalize(); This is just for scoring
            
-     xyz.reposition(lastloc, _wrkAtom[ai]);
+                _wrkAtom[ai].loc(_origLoc[_atomOrient[oi+offO][ai]]); // original line from the code
+           }
+           else if(GenerateFinalFlip){ // when GenerateFinalFlip is true - i.e. we are generating the final file and not scoring. TODO: have to figure out where to set this flag to true
+               std::cout << "DEBUG: I am here in flag true" << std::endl;
+               if(strcmp(_resFlip[_resType].rname,"ASN") == 0 || strcmp(_resFlip[_resType].rname,"GLN") == 0){
+                   // SJ 08/27/2015 - when oi ==0, give the original only, when oi == 1 rotate it via 180 along Cb cg for ASN, cg, cd for GLN
+                    if (oi == 0) { // oi ==0 means this is not the flipped orientation, got this from the array atomOrient at the top of this file
+                       _wrkAtom[ai].loc(_origLoc[_atomOrient[oi+offO][ai]]); // original line from the code before flip change
+                    }
+                    else {
+                        // the two points around which the rotation has to happen
+                        Point3d p1 = _origLoc[6]; // CG for GLN, CB for ASN - number from _pointName array at the top of this file
+                        Point3d p2 = _origLoc[5]; // CD for GLN, CG for ASN - number from _pointName array at the top of this file
+                        Point3d newLoc = _wrkAtom[ai].loc().rotate(180,p1,p2); // rotate the atom
+                        _wrkAtom[ai].loc(newLoc);
+                    }
+               }
+               else if (strcmp(_resFlip[_resType].rname,"HIS") == 0){
+                   // SJ - 09/04/2015 these oi's correspond to unflipped state - got this from the array atomOrient at the top of this file
+                   if (oi == 0 || oi == 1 || oi == 2 || oi == 6) {
+                       std::cout << "DEBUG no flip oi == " << oi << std::endl;
+                       _wrkAtom[ai].loc(_origLoc[_atomOrient[oi+offO][ai]]); // original line from the code before flip change
+                   }
+                   else{
+                       std::cout << "DEBUG flip oi == " << oi << std::endl;
+                       // the two points around which rotation has to happen
+                       std::cout << "The value of ai " << ai << std::endl;
+                       Point3d p1 = _origLoc[10]; // CB  - number from _pointName array at the top of this file
+                       Point3d p2 = _origLoc[9]; // CG  - number from _pointName array at the top of this file
+                       Point3d newLoc = _wrkAtom[ai].loc().rotate(180,p1,p2); // rotate the atom
+                       _wrkAtom[ai].loc(newLoc);
+                   }
+              }
+               
+           }
+           xyz.reposition(lastloc, _wrkAtom[ai]);
 
 // *** notice: the D/A status of nitrogen and carbon are modified here ***
-	 if (_wrkAtom[ai].elem().atno() == 7) {
-	    if (_atomDAflags[oi+offO][ai] < 0) {
-	       _wrkAtom[ai].elem(*eNacc);
-	    }
-	    else { _wrkAtom[ai].elem(*eN); }
-	 }
+           if (_wrkAtom[ai].elem().atno() == 7) {
+               if (_atomDAflags[oi+offO][ai] < 0) {
+                   _wrkAtom[ai].elem(*eNacc);
+               }
+               else { _wrkAtom[ai].elem(*eN); }
+           }
 #ifdef AROMATICS_ACCEPT_HBONDS
-	 else if (_wrkAtom[ai].elem().atno() == 6) {
-		_wrkAtom[ai].elem(*eC); // apl - 10/19/2006 - His carbons no longer aromatic
+           else if (_wrkAtom[ai].elem().atno() == 6) {
+               _wrkAtom[ai].elem(*eC); // apl - 10/19/2006 - His carbons no longer aromatic
 	    //if (_atomDAflags[oi+offO][ai] < 0) {
 	    //  _wrkAtom[ai].elem(*eCacc);
 	    //}
 	    //else { _wrkAtom[ai].elem(*eC); }
-	 }
+           }
 #endif
       }
       else { // switch off but do not rub out completely
-	 _wrkAtom[ai].partiallyInvalidateRecord();
+	     _wrkAtom[ai].partiallyInvalidateRecord();
       }
    }
    rememberOrientation(oi);
