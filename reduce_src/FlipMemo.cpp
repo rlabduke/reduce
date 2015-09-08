@@ -443,7 +443,6 @@ bool FlipMemo::setOrientation(int oi, AtomPositions &xyz, SearchStrategy ss) {
                 _wrkAtom[ai].loc(_origLoc[_atomOrient[oi+offO][ai]]); // original line from the code
            }
            else if(GenerateFinalFlip){ // when GenerateFinalFlip is true - i.e. we are generating the final file and not scoring. TODO: have to figure out where to set this flag to true
-               std::cout << "DEBUG: I am here in flag true" << std::endl;
                if(strcmp(_resFlip[_resType].rname,"ASN") == 0 || strcmp(_resFlip[_resType].rname,"GLN") == 0){
                    // SJ 08/27/2015 - when oi ==0, give the original only, when oi == 1 rotate it via 180 along Cb cg for ASN, cg, cd for GLN
                     if (oi == 0) { // oi ==0 means this is not the flipped orientation, got this from the array atomOrient at the top of this file
@@ -453,23 +452,20 @@ bool FlipMemo::setOrientation(int oi, AtomPositions &xyz, SearchStrategy ss) {
                         // the two points around which the rotation has to happen
                         Point3d p1 = _origLoc[6]; // CG for GLN, CB for ASN - number from _pointName array at the top of this file
                         Point3d p2 = _origLoc[5]; // CD for GLN, CG for ASN - number from _pointName array at the top of this file
-                        Point3d newLoc = _wrkAtom[ai].loc().rotate(180,p1,p2); // rotate the atom
+                        Point3d newLoc = _origLoc[ai].rotate(180,p1,p2); // rotate the original position of the atom
                         _wrkAtom[ai].loc(newLoc);
-                    }
+                     }
                }
                else if (strcmp(_resFlip[_resType].rname,"HIS") == 0){
                    // SJ - 09/04/2015 these oi's correspond to unflipped state - got this from the array atomOrient at the top of this file
                    if (oi == 0 || oi == 1 || oi == 2 || oi == 6) {
-                       std::cout << "DEBUG no flip oi == " << oi << std::endl;
                        _wrkAtom[ai].loc(_origLoc[_atomOrient[oi+offO][ai]]); // original line from the code before flip change
                    }
                    else{
-                       std::cout << "DEBUG flip oi == " << oi << std::endl;
                        // the two points around which rotation has to happen
-                       std::cout << "The value of ai " << ai << std::endl;
                        Point3d p1 = _origLoc[10]; // CB  - number from _pointName array at the top of this file
                        Point3d p2 = _origLoc[9]; // CG  - number from _pointName array at the top of this file
-                       Point3d newLoc = _wrkAtom[ai].loc().rotate(180,p1,p2); // rotate the atom
+                       Point3d newLoc = _origLoc[ai].rotate(180,p1,p2); // rotate the original position of the atom
                        _wrkAtom[ai].loc(newLoc);
                    }
               }
