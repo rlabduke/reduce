@@ -164,7 +164,7 @@ void reduceHelp(bool showAll);
 void reduceChanges(bool showAll);
 std::istream& inputRecords(std::istream& is, std::list<PDBrec*>& records);
 std::ostream& outputRecords(std::ostream& os, const std::list<PDBrec*>& records, int model); // SJ 08/04/2015 added last argument to keep track of how many models have been printed.
-std::ostream& outputRecords_all(std::ostream& os, const std::list<std::list<PDBrec*> >& all_records); //SJ 08/03/2015 for printing all models together
+void outputRecords_all(std::ostream& os, const std::list<std::list<PDBrec*> >& all_records); //SJ 08/03/2015 for printing all models together
 void checkSEGIDs(std::list<PDBrec*>& rlst);
 void dropHydrogens(std::list<PDBrec*>& records);
 void invalidateRecords(std::list<PDBrec*>& rlst);
@@ -1055,7 +1055,7 @@ void reduceChanges(bool showAll) { /*changes*/
 }
 
 // SJ 08/03/2015 for printing all records together
-std::ostream& outputRecords_all(std::ostream& os, const std::list <std::list<PDBrec*> >& l) {
+void outputRecords_all(std::ostream& os, const std::list <std::list<PDBrec*> >& l) {
     
     int model=0; // keeping track of how many models are printed
     for (std::list<std::list<PDBrec*> >::const_iterator ptr = l.begin(); ptr != l.end(); ++ptr) {
@@ -1071,6 +1071,8 @@ std::ostream& outputRecords_all(std::ostream& os, const std::list <std::list<PDB
         
         std::for_each(ptr->begin(),ptr->end(),DeleteObject()); // delete records
     }
+    
+    return;
 }
 
 // output a list of PDB records
