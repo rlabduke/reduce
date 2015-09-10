@@ -705,10 +705,11 @@ int AtomPositions::orientSingles(const std::list<MoverPtr>& singles) {
 			}
 
 			// remember and position to the best
-			const int best = m->bestOrientation();
+			const int best = m->bestOrientation(); // SJ - TODO - this is where the flag has to be set true and then false again as this is for each residue. 
 			if (m->orientation() != best) {
 				m->setOrientation(best, *this);
 			}
+            
 			if (m->hasHires()) { // SJ - TODO: do not understand what is this High res, low res thing
 				const int numHiResO = m->numOrientations(Mover::HIGH_RES);
 				// try each high-res orientation
@@ -1153,7 +1154,7 @@ int AtomPositions::SearchClique(std::list<MoverPtr> clique, int limit)
 	//reset clique into optimal configuration
 	for (i=0; i<numItems; i++)
 	{
-    item[i]->initOrientation(*this);
+    item[i]->initOrientation(*this); // SJ - TODO I think this is the place to set the GenerateFinalFlip flag to be true, but have to check. Looks like a waste of time if it is trying everything untill the best orientation.
 
 		for (j=0; j<optimal_state[i];j++)
 	   {

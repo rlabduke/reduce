@@ -494,6 +494,8 @@ bool FlipMemo::setOrientation(int oi, AtomPositions &xyz, SearchStrategy ss) {
 	     _wrkAtom[ai].partiallyInvalidateRecord();
       }
    }
+    
+// SJ - TODO: to make changes to all atoms in one go for the hinge and the docking, generatefinalflip check should be before the for loop. original code for generateFinalFlip is false. If it is true, then just call a function which will do everything. Will have to pass it oi and xyz.
    rememberOrientation(oi);
    return TRUE;
 }
