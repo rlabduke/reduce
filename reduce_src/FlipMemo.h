@@ -105,7 +105,11 @@ public:
       float &bumpScore, float &hbScore, bool& hasBadBump);
 
    void extendOrientations(bool val);
-
+    
+   bool RotHingeDock_Flip(int orientation, AtomPositions & xyz); // SJ - 09/10/2015 function to perform the three step flip.
+   void Standard_Flip(int orientation, AtomPositions & xyz); // SJ - 09/10/2015 function to perform the standard flip given the correct oritentation number
+   void InFlip_ModifyDAStatus(int, int, int); // SJ - 09/10/2015 function to modify the donor acceptor status of N and C atoms after flips have happened. Copied the original code from setOrientations and made a function because it has to called from multiple places.
+   
    void insertAtom(PDBrec* r);
 
    int numScoreAtoms() const {

@@ -420,84 +420,149 @@ std::list<AtomDescr> FlipMemo::getAtDescOfAllPos(float &maxVDWrad)
 bool FlipMemo::setOrientation(int oi, AtomPositions &xyz, SearchStrategy ss) {
    if (ss!=Mover::LOW_RES) { return TRUE; } // HIGH_RES uses current orientation
 
-   static const ElementInfo * eN    = ElementInfo::StdElemTbl().element("N");
+    // SJ - 09/10/2015 copied the static declarations to function InFlip_ModifyDAStatus
+   /*static const ElementInfo * eN    = ElementInfo::StdElemTbl().element("N");
    static const ElementInfo * eNacc = ElementInfo::StdElemTbl().element("Nacc");
 #ifdef AROMATICS_ACCEPT_HBONDS
    static const ElementInfo * eC    = ElementInfo::StdElemTbl().element("C");
    //static const ElementInfo * eCacc = ElementInfo::StdElemTbl().element("Car");
-#endif
+#endif*/
 
    if ((! _isComplete) || (oi < 0) || (oi >= _numO)) { return FALSE; }
 
-   const int offO = _fromO;
-
-   for(int ai=1; ai <= _resFlip[_resType].numBmpr; ai++) {
-       if (_atomOrient[oi+offO][ai] != 0) {
-           
-           Point3d lastloc = _wrkAtom[ai].loc();
-           _wrkAtom[ai].revalidateRecord();
-           
-           // SJ - 09/04/2015 added the flag GenerateFinalFlip so that flips are scored the same way, but finally generated using the new method
-           if(!GenerateFinalFlip){// SJ - this is where the coordinates of the atoms are exchanged. Coordinates are only exchanged, and not recalculated for the heavy atoms, for Hs the coordinates are recalcualted for the flipped position in FlipMemo::Finalize(); This is just for scoring
-           
-                _wrkAtom[ai].loc(_origLoc[_atomOrient[oi+offO][ai]]); // original line from the code
-           }
-           else if(GenerateFinalFlip){ // when GenerateFinalFlip is true - i.e. we are generating the final file and not scoring. TODO: have to figure out where to set this flag to true
-               if(strcmp(_resFlip[_resType].rname,"ASN") == 0 || strcmp(_resFlip[_resType].rname,"GLN") == 0){
-                   // SJ 08/27/2015 - when oi ==0, give the original only, when oi == 1 rotate it via 180 along Cb cg for ASN, cg, cd for GLN
-                    if (oi == 0) { // oi ==0 means this is not the flipped orientation, got this from the array atomOrient at the top of this file
-                       _wrkAtom[ai].loc(_origLoc[_atomOrient[oi+offO][ai]]); // original line from the code before flip change
-                    }
-                    else {
-                        // the two points around which the rotation has to happen
-                        Point3d p1 = _origLoc[6]; // CG for GLN, CB for ASN - number from _pointName array at the top of this file
-                        Point3d p2 = _origLoc[5]; // CD for GLN, CG for ASN - number from _pointName array at the top of this file
-                        Point3d newLoc = _origLoc[ai].rotate(180,p1,p2); // rotate the original position of the atom
-                        _wrkAtom[ai].loc(newLoc);
-                     }
-               }
-               else if (strcmp(_resFlip[_resType].rname,"HIS") == 0){
-                   // SJ - 09/04/2015 these oi's correspond to unflipped state - got this from the array atomOrient at the top of this file
-                   if (oi == 0 || oi == 1 || oi == 2 || oi == 6) {
-                       _wrkAtom[ai].loc(_origLoc[_atomOrient[oi+offO][ai]]); // original line from the code before flip change
-                   }
-                   else{
-                       // the two points around which rotation has to happen
-                       Point3d p1 = _origLoc[10]; // CB  - number from _pointName array at the top of this file
-                       Point3d p2 = _origLoc[9]; // CG  - number from _pointName array at the top of this file
-                       Point3d newLoc = _origLoc[ai].rotate(180,p1,p2); // rotate the original position of the atom
-                       _wrkAtom[ai].loc(newLoc);
-                   }
-              }
-               
-           }
-           xyz.reposition(lastloc, _wrkAtom[ai]);
-
-// *** notice: the D/A status of nitrogen and carbon are modified here ***
-           if (_wrkAtom[ai].elem().atno() == 7) {
-               if (_atomDAflags[oi+offO][ai] < 0) {
-                   _wrkAtom[ai].elem(*eNacc);
-               }
-               else { _wrkAtom[ai].elem(*eN); }
-           }
-#ifdef AROMATICS_ACCEPT_HBONDS
-           else if (_wrkAtom[ai].elem().atno() == 6) {
-               _wrkAtom[ai].elem(*eC); // apl - 10/19/2006 - His carbons no longer aromatic
-	    //if (_atomDAflags[oi+offO][ai] < 0) {
-	    //  _wrkAtom[ai].elem(*eCacc);
-	    //}
-	    //else { _wrkAtom[ai].elem(*eC); }
-           }
-#endif
-      }
-      else { // switch off but do not rub out completely
-	     _wrkAtom[ai].partiallyInvalidateRecord();
-      }
+    // SJ - 09/04/2015 added the flag GenerateFinalFlip so that flips are scored the same way, but finally generated using the new method
+   if(!GenerateFinalFlip){
+       
+       Standard_Flip(oi, xyz); // SJ - 09/10/2015 moved the original code from here to this function
    }
-    
-// SJ - TODO: to make changes to all atoms in one go for the hinge and the docking, generatefinalflip check should be before the for loop. original code for generateFinalFlip is false. If it is true, then just call a function which will do everything. Will have to pass it oi and xyz.
+   else if(GenerateFinalFlip){ // SJ - when GenerateFinalFlip is true - i.e. we are generating the final file and not scoring. TODO: have to figure out where to set GenerateFinalFlip flag to true
+       bool done = FALSE;
+       
+       if(strcmp(_resFlip[_resType].rname,"ASN") == 0 || strcmp(_resFlip[_resType].rname,"GLN") == 0){
+           if(oi == 0){ // oi ==0 means this is not the flipped orientation, got this from the array atomOrient at the top of this file
+               Standard_Flip(oi, xyz); // TODO: explain that even though this is called, it wont flip because of value of oi
+               done=TRUE;
+           }
+           else{
+              done = RotHingeDock_Flip(oi,xyz); // SJ - 09/10/2015 funciton to do the three step flip. After this funciton, the _wrkAtom will contain the new orientation.
+           }
+       }
+       else if (strcmp(_resFlip[_resType].rname,"HIS") == 0){
+           if (oi == 0 || oi == 1 || oi == 2 || oi == 6) {// SJ - 09/04/2015 these oi's correspond to unflipped state - got this from the array atomOrient at the top of this file
+               Standard_Flip(oi, xyz); // TODO: explain that even though this is called, it wont flip because of value of oi
+               done=TRUE;
+           }
+           else{
+               done = RotHingeDock_Flip(oi,xyz); // SJ - 09/10/2015 funciton to do the three step flip. After this funciton, the _wrkAtom will contain the new orientation.
+           }
+       }
+       
+       if(!done){
+           std::cerr << "Three Step Flip did not work for residue " << _resFlip[_resType].rname << " " << _wrkAtom[1].chain() << " " << _wrkAtom[1].resno() << ". Resorting to standard flip" << std::endl;
+           Standard_Flip(oi, xyz);
+       }
+   }
    rememberOrientation(oi);
    return TRUE;
+}
+
+// SJ - TODO explain more clearly
+/*SJ - 09/10/2015 function to do the standard flip, given the correct orientation. 
+ Copied the original code from setOrinetations here. 
+ This function will either flip or not flip depending on the value of the orientation passed. 
+ No need for explicit check for the orientation, as it is hardcoded in the atomOrient array on top of this file*/
+void FlipMemo::Standard_Flip(int orientation, AtomPositions & xyz)
+{
+    const int offO = _fromO;
+    
+    // SJ - this is where the coordinates of the atoms are exchanged. for Hs the coordinates have already been recalcualted and stored for the flipped position in FlipMemo::Finalize();
+    for(int ai=1; ai <= _resFlip[_resType].numBmpr; ai++) {
+        if (_atomOrient[orientation+offO][ai] != 0) { // SJ - if this atom exists in this orientation, basically for diff protonated states of HIS
+            Point3d lastloc = _wrkAtom[ai].loc();
+            _wrkAtom[ai].revalidateRecord();
+            _wrkAtom[ai].loc(_origLoc[_atomOrient[orientation+offO][ai]]); // SJ - atoms coordinates exchanged according to atomOrient array at the top of the file. atomOrient contains what atoms are to be swapped with what, according to the value of the oi that designates to flip or not to flip.
+            xyz.reposition(lastloc, _wrkAtom[ai]);
+            // *** notice: the D/A status of nitrogen and carbon are modified here ***
+            InFlip_ModifyDAStatus(ai,orientation,offO); // SJ - 09/10/2015 moved the original code from setOrientation to this function
+        }
+        else { // switch off but do not rub out completely
+            _wrkAtom[ai].partiallyInvalidateRecord();
+        }
+    }
+    return;
+}
+
+// SJ - 09/10/2015 function to do the three step flip
+bool FlipMemo::RotHingeDock_Flip(int orientation, AtomPositions & xyz)
+{
+    // TODO: Will have to make changes for sure to this before implementing hinge and docking, like lastLoc will have to be stored for everything, not on a case to case basis
+    
+    /**ROTATION**/
+    Point3d p1, p2, newLoc;
+    const int offO = _fromO;
+    
+    for(int ai=1; ai <= _resFlip[_resType].numBmpr; ai++) {
+        if (_atomOrient[orientation+offO][ai] != 0) { // SJ - if this atom exists in this orientation, basically for diff protonated states of HIS
+            Point3d lastloc = _wrkAtom[ai].loc(); // TODO: most likely these two lines will come out of the loop
+            _wrkAtom[ai].revalidateRecord();
+            
+            if(strcmp(_resFlip[_resType].rname,"ASN") == 0 || strcmp(_resFlip[_resType].rname,"GLN") == 0){
+                // the two points around which the rotation has to happen
+                p1 = _origLoc[6]; // CG for GLN, CB for ASN - number from _pointName array at the top of this file
+                p2 = _origLoc[5]; // CD for GLN, CG for ASN - number from _pointName array at the top of this file
+            }
+            else if (strcmp(_resFlip[_resType].rname,"HIS") == 0){
+                p1 = _origLoc[10]; // CB  - number from _pointName array at the top of this file
+                p2 = _origLoc[9]; // CG  - number from _pointName array at the top of this file
+            }
+            
+            newLoc = _origLoc[ai].rotate(180,p1,p2); // rotate the original position of the atom
+            /*if(newLoc == NULL) // rotation did not work, return FALSE, TODO: need to modify the criteria for failure
+                return FALSE;*/
+            _wrkAtom[ai].loc(newLoc);
+            
+            xyz.reposition(lastloc, _wrkAtom[ai]); // TODO: most likely these two lines will move out of the loop
+            // *** notice: the D/A status of nitrogen and carbon are modified here ***
+            InFlip_ModifyDAStatus(ai,orientation,offO); // SJ - 09/10/2015 moved the original code from setOrientation to this function
+        }
+        else { // switch off but do not rub out completely
+            _wrkAtom[ai].partiallyInvalidateRecord();
+        }
+    }
+    
+    /**HINGE**/
+    
+    /**DOCK**/
+    
+    return TRUE;
+}
+
+// SJ - 09/10/2015 function to modify the donor acceptor status of N and C atoms after flips have happened. Copied the original code from setOrientations and made a function because it has to called from multiple places.
+void FlipMemo::InFlip_ModifyDAStatus(int ai, int orientation, int offO){
+    
+    static const ElementInfo * eN    = ElementInfo::StdElemTbl().element("N");
+    static const ElementInfo * eNacc = ElementInfo::StdElemTbl().element("Nacc");
+#ifdef AROMATICS_ACCEPT_HBONDS
+    static const ElementInfo * eC    = ElementInfo::StdElemTbl().element("C");
+     //static const ElementInfo * eCacc = ElementInfo::StdElemTbl().element("Car");
+#endif
+    
+    if (_wrkAtom[ai].elem().atno() == 7) {
+        if (_atomDAflags[orientation+offO][ai] < 0) {
+            _wrkAtom[ai].elem(*eNacc);
+        }
+        else { _wrkAtom[ai].elem(*eN); }
+    }
+#ifdef AROMATICS_ACCEPT_HBONDS
+    else if (_wrkAtom[ai].elem().atno() == 6) {
+        _wrkAtom[ai].elem(*eC); // apl - 10/19/2006 - His carbons no longer aromatic
+        //if (_atomDAflags[oi+offO][ai] < 0) {
+        //  _wrkAtom[ai].elem(*eCacc);
+        //}
+        //else { _wrkAtom[ai].elem(*eC); }
+    }
+#endif
+    return;
 }
 
 std::string FlipMemo::describeOrientation() const {
