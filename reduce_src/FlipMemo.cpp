@@ -495,16 +495,28 @@ void FlipMemo::Standard_Flip(int orientation, AtomPositions & xyz)
 // SJ - 09/10/2015 function to do the three step flip
 bool FlipMemo::RotHingeDock_Flip(int orientation, AtomPositions & xyz)
 {
-    // TODO: Will have to make changes for sure to this before implementing hinge and docking, like lastLoc will have to be stored for everything, not on a case to case basis
+    Point3d newLoc, lastloc[FMmaxAtomSlots+1]; //used throughout the function
+    const int offO = _fromO;
+
+    Point3d p1, p2; // used for rotation
+    
+    Point3d a1,b1,c1,a2,b2,c2,normal1,normal2,rotaxis; // used for hinge motion
+    double angle=0, dotproduct=0;
+    
+    /**SETUP**/
+    for(int ai=1; ai <= _resFlip[_resType].numBmpr; ai++) { // TODO: This won't be numBumpr. We have to store all atoms
+        if (_atomOrient[orientation+offO][ai] != 0) {// SJ - if this atom exists in this orientation, basically for diff protonated states of HIS
+            lastloc[ai] = _wrkAtom[ai].loc(); // store the last location of the residue and validate the records.
+            _wrkAtom[ai].revalidateRecord();
+        }
+        else { // switch off but do not rub out completely
+            _wrkAtom[ai].partiallyInvalidateRecord();
+        }
+    }
     
     /**ROTATION**/
-    Point3d p1, p2, newLoc;
-    const int offO = _fromO;
-    
     for(int ai=1; ai <= _resFlip[_resType].numBmpr; ai++) {
-        if (_atomOrient[orientation+offO][ai] != 0) { // SJ - if this atom exists in this orientation, basically for diff protonated states of HIS
-            Point3d lastloc = _wrkAtom[ai].loc(); // TODO: most likely these two lines will come out of the loop
-            _wrkAtom[ai].revalidateRecord();
+        if (_atomOrient[orientation+offO][ai] != 0) {
             
             if(strcmp(_resFlip[_resType].rname,"ASN") == 0 || strcmp(_resFlip[_resType].rname,"GLN") == 0){
                 // the two points around which the rotation has to happen
@@ -520,19 +532,65 @@ bool FlipMemo::RotHingeDock_Flip(int orientation, AtomPositions & xyz)
             /*if(newLoc == NULL) // rotation did not work, return FALSE, TODO: need to modify the criteria for failure
                 return FALSE;*/
             _wrkAtom[ai].loc(newLoc);
-            
-            xyz.reposition(lastloc, _wrkAtom[ai]); // TODO: most likely these two lines will move out of the loop
-            // *** notice: the D/A status of nitrogen and carbon are modified here ***
-            InFlip_ModifyDAStatus(ai,orientation,offO); // SJ - 09/10/2015 moved the original code from setOrientation to this function
-        }
-        else { // switch off but do not rub out completely
-            _wrkAtom[ai].partiallyInvalidateRecord();
-        }
+       }
     }
     
     /**HINGE**/
     
+    //getting the points that define the plane for the terminal groups
+    if(strcmp(_resFlip[_resType].rname,"ASN") == 0 || strcmp(_resFlip[_resType].rname,"GLN") == 0){
+        //original coordinates - numbers got from _pointName array at the top of this file
+        a1 = _origLoc[5]; // CD for GLN, CG for ASN
+        b1 = _origLoc[1]; // OE1 for GLN, OD1 for ASN
+        c1 = _origLoc[2]; // NE2 for GLN, ND2 for ASN
+        //new coordinates
+        a2 = _wrkAtom[5].loc();
+        b2 = _wrkAtom[1].loc();
+        c2 = _wrkAtom[2].loc();
+    }
+    else if (strcmp(_resFlip[_resType].rname,"HIS") == 0){
+        //original coordinates - numbers got from _pointName array at the top of this file
+        a1 = _origLoc[9]; // CG
+        b1 = _origLoc[3]; // CE1
+        c1 = _origLoc[4]; // NE2
+        //new coordinates
+        a2 = _wrkAtom[9].loc();
+        b2 = _wrkAtom[3].loc();
+        c2 = _wrkAtom[4].loc();
+    }
+
+    //computing normal to the plane by cross product of the two vectors in the plane
+    normal1=cross(makeVec(b1, a1), makeVec(c1, a1)); // normal to original plane
+    normal2=cross(makeVec(b2, a2), makeVec(c2, a2)); // normal to new plane
+    normal1.normalize();
+    normal2.normalize();
+    
+    //rotation axis is the cross product of two normals, angle is acos of the dot product
+    rotaxis=cross(normal1,normal2);
+    angle=acos(dot(normal1,normal2))*180/PI;
+    angle=180-angle; // as the normals are facing each other, this needs to be corrected.
+    
+    //rotate the new coordinates about the rotaxis
+    for(int ai=1; ai <= _resFlip[_resType].numBmpr; ai++) {
+        if (_atomOrient[orientation+offO][ai] != 0) {
+            newLoc = _wrkAtom[ai].loc().rotate(angle,a1,a1+rotaxis); // as a1 is always on the line of intersection of the plane, i.e. rotation axis vector
+            //if(newLoc == NULL) // rotation did not work, return FALSE, TODO: need to modify the criteria for failure
+            // return FALSE;
+            _wrkAtom[ai].loc(newLoc);
+        }
+    }
+    
     /**DOCK**/
+    
+    /**FINAL STEPS**/ // These were done after the standard flip as well, so just following the same thing
+    for(int ai=1; ai <= _resFlip[_resType].numBmpr; ai++) { // TODO: This won't be numBumpr. We have to store all atoms
+        if (_atomOrient[orientation+offO][ai] != 0) {// SJ - if this atom exists in this orientation, basically for diff protonated states of HIS
+            xyz.reposition(lastloc[ai], _wrkAtom[ai]);
+            
+            // *** notice: the D/A status of nitrogen and carbon are modified here ***
+            InFlip_ModifyDAStatus(ai,orientation,offO); // SJ - 09/10/2015 moved the original code from setOrientation to this function
+        }
+    }
     
     return TRUE;
 }
