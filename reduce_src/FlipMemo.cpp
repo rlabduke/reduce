@@ -63,15 +63,29 @@ const char* FlipMemo::_pointName[FMnumFlipRes+1]
 {NULL, NULL}
 };
 
+// SJ - 09/15/2015 - Index of atoms in the above _pointName array (and hence the _origLoc array and the _wrkAtom array) involved in the three step flip. First number is the number of atoms
+const int FlipMemo::_dockAtomIndex[FMnumFlipRes][FMmaxAtomSlots+1] = {
+    {13, 10/*CB*/,9/*CG*/,3/*CE1*/,4/*NE2*/,11/*CA*/,1/*ND1*/,2/*CD2*/,5/*HD1*/,6/*HD2*/,7/*HE1*/,8/*HE2*/,15/*1HB*/,16/*2HB*/}, // HIS - PDBv2.3 - USEOLD
+    {13, 10/*CB*/,9/*CG*/,3/*CE1*/,4/*NE2*/,11/*CA*/,1/*ND1*/,2/*CD2*/,5/*HD1*/,6/*HD2*/,7/*HE1*/,8/*HE2*/,15/*HB2*/,16/*HB3*/}, // HIS - PDBv3.0 - USENEW
+    {9, 6/*CB*/,5/*CG*/,1/*OD1*/,2/*ND2*/,7/*CA*/,3/*1HD2*/,4/*2HD2*/,11/*1HB*/,12/*2HB*/}, // ASN - Not Xplor = PDBv2.3 - USEOLD
+    {9, 6/*CB*/,5/*CG*/,1/*OD1*/,2/*ND2*/,7/*CA*/,3/*HD21*/,4/*HD22*/,11/*1HB*/,12/*2HB*/}, // ASN - Xplor
+    {9, 6/*CB*/,5/*CG*/,1/*OD1*/,2/*ND2*/,7/*CA*/,3/*HD21*/,4/*HD22*/,11/*HB2*/,12/*HB3*/}, // ASN - PDBv3.0 - USENEW
+    {12, 6/*CG*/,5/*CD*/,1/*OE1*/,2/*NE2*/,8/*CA*/,3/*1HE2*/,4/*2HE2*/,7/*CB*/,9/*1HB*/,10/*2HB*/,11/*1HG*/,12/*2HG*/}, //GLN - Not Xplor = PDBv2.3 - USEOLD
+    {12, 6/*CG*/,5/*CD*/,1/*OE1*/,2/*NE2*/,8/*CA*/,3/*HE21*/,4/*HE22*/,7/*CB*/,9/*1HB*/,10/*2HB*/,11/*1HG*/,12/*2HG*/}, //GLN - Xplor
+    {12, 6/*CG*/,5/*CD*/,1/*OE1*/,2/*NE2*/,8/*CA*/,3/*HE21*/,4/*HE22*/,7/*CB*/,9/*HB2*/,10/*HB3*/,11/*HG2*/,12/*HG3*/} //GLN - PDBv3.0 - USENEW
+};
+
 const ResFlipInfo_t FlipMemo::_resFlip[FMnumFlipRes+1] = {
 // --- rname, fromO,numO,numXO, fromPP,numPP, from3B,numScore,numBmpr,numHeavy,
 // ---        fromScat,numScat, numPnts, flags
 
 #ifdef AROMATICS_ACCEPT_HBONDS
- {"HIS", 0,6,8, 0,4, 0,9,9,4, 1,9, 20,           0},
+// {"HIS", 0,6,8, 0,4, 0,9,9,4, 1,9, 20,           0},
+ {"HIS", 0,6,8, 0,4, 0,9,9,4, 1,9, 20, USEOLDNAMES}, // SJ - 09/16/2015 changed the last argument from 0 to USEOLDNAMES - was a bug - TODO have to check if it messes anything else up
  {"HIS", 0,6,8, 0,4, 0,9,9,4, 1,9, 20, USENEWNAMES},
 #else
- {"HIS", 0,6,8, 0,4, 0,8,8,4, 1,9, 20,           0},
+ //{"HIS", 0,6,8, 0,4, 0,9,9,4, 1,9, 20,           0},
+ {"HIS", 0,6,8, 0,4, 0,8,8,4, 1,9, 20, USEOLDNAMES}, // SJ - 09/16/2015 changed the last argument from 0 to USEOLDNAMES - was a bug - TODO have to check if it messes anything else up
  {"HIS", 0,6,8, 0,4, 0,9,9,4, 1,9, 20, USENEWNAMES},
 #endif
  {"ASN", 8,2,2, 4,2, 9,5,4,2, 1,5, 14, USEOLDNAMES},
@@ -251,15 +265,15 @@ FlipMemo::FlipMemo(const char *resname, bool useXplorNames, bool useOldNames, bo
    // and comparing the flags (use XPLOR names?)
    // if not found, the one we stop on is blank
 
-   for(_resType = 0; _resFlip[_resType].rname; _resType++) {
+    for(_resType = 0; _resFlip[_resType].rname; _resType++) {
       if ( (strcmp(_resFlip[_resType].rname, resname) == 0)
       && !(((_resFlip[_resType].flags & USEOLDNAMES) && ! useOldNames)
         || ((_resFlip[_resType].flags & XPLORNAME)  && ! useXplorNames)
 	|| ((_resFlip[_resType].flags & USENEWNAMES) && (useOldNames || useXplorNames))) ) {
-	 validateMemo();
-	 _fromO = _resFlip[_resType].fromO;
-	 _numO  = _resFlip[_resType].numO;
-	 break; // found it
+          validateMemo();
+          _fromO = _resFlip[_resType].fromO;
+          _numO  = _resFlip[_resType].numO;
+          break; // found it
       }
    }
 }
@@ -303,13 +317,13 @@ void FlipMemo::finalize(int, bool, bool, bool, AtomPositions &, DotSphManager&) 
 		for(int pi=1; pi <= _resFlip[_resType].numPnts; pi++) {
             std::map<std::string, PDBrec*>::iterator iter = _resAtoms.find(_pointName[_resType][pi]);
             
-			bool found;
+            bool found;
 			if (iter != _resAtoms.end()) {
 				_wrkAtom[pi] = *(iter->second);
 				found = TRUE;
 			}
 			else {
-				found = FALSE;
+                found = FALSE;
 			}
 //			bool found = _resAtoms.get(_pointName[_resType][pi], _wrkAtom[pi]);
 
@@ -495,18 +509,24 @@ void FlipMemo::Standard_Flip(int orientation, AtomPositions & xyz)
 // SJ - 09/10/2015 function to do the three step flip
 bool FlipMemo::RotHingeDock_Flip(int orientation, AtomPositions & xyz)
 {
-    Point3d newLoc, lastloc[FMmaxAtomSlots+1]; //used throughout the function
+    Point3d newLoc, lastloc[FMmaxAtomSlots+1];
     const int offO = _fromO;
 
-    Point3d p1, p2; // used for rotation
-    
-    Point3d a1,b1,c1,a2,b2,c2,normal1,normal2,rotaxis; // used for hinge motion
-    double angle=0, dotproduct=0;
+    Point3d p1,p2,p3,p4,a1,b1,c1,a2,b2,c2,normal1,normal2,rotaxis;
+    double rotangle=0;
     
     /**SETUP**/
-    for(int ai=1; ai <= _resFlip[_resType].numBmpr; ai++) { // TODO: This won't be numBumpr. We have to store all atoms
-        if (_atomOrient[orientation+offO][ai] != 0) {// SJ - if this atom exists in this orientation, basically for diff protonated states of HIS
-            lastloc[ai] = _wrkAtom[ai].loc(); // store the last location of the residue and validate the records.
+    
+    //storing the last location of all the atoms, and copying the original coordinates back into the working copy, because you have to flip from the original coordinates
+    for(int pi=1; pi <= _resFlip[_resType].numPnts; pi++) {
+        lastloc[pi] = _wrkAtom[pi].loc();
+        _wrkAtom[pi].loc(_origLoc[pi]);
+    }
+    
+    // revalidate the records for the atoms that are in this orientation, and invalidate the ones that are not.
+    // basically for diff protonated states of HIS - taken directly from the standard flip code
+    for(int ai=1; ai <= _resFlip[_resType].numBmpr; ai++) {
+        if (_atomOrient[orientation+offO][ai] != 0) {
             _wrkAtom[ai].revalidateRecord();
         }
         else { // switch off but do not rub out completely
@@ -515,18 +535,15 @@ bool FlipMemo::RotHingeDock_Flip(int orientation, AtomPositions & xyz)
     }
     
     /**ROTATION**/
+    
+    //getting the axis for the first 180 degree rotation
+    // indices from _dockAtomIndex array at the top of this file
+    p1 = _origLoc[_dockAtomIndex[_resType][1]]; //CG for GLN, CB for ASN, HIS
+    p2 = _origLoc[_dockAtomIndex[_resType][2]]; //CD for GLN, CG for ASN, HIS
+    
+    //rotate the atoms involved in the 180 degree roation
     for(int ai=1; ai <= _resFlip[_resType].numBmpr; ai++) {
         if (_atomOrient[orientation+offO][ai] != 0) {
-            
-            if(strcmp(_resFlip[_resType].rname,"ASN") == 0 || strcmp(_resFlip[_resType].rname,"GLN") == 0){
-                // the two points around which the rotation has to happen
-                p1 = _origLoc[6]; // CG for GLN, CB for ASN - number from _pointName array at the top of this file
-                p2 = _origLoc[5]; // CD for GLN, CG for ASN - number from _pointName array at the top of this file
-            }
-            else if (strcmp(_resFlip[_resType].rname,"HIS") == 0){
-                p1 = _origLoc[10]; // CB  - number from _pointName array at the top of this file
-                p2 = _origLoc[9]; // CG  - number from _pointName array at the top of this file
-            }
             
             newLoc = _origLoc[ai].rotate(180,p1,p2); // rotate the original position of the atom
             /*if(newLoc == NULL) // rotation did not work, return FALSE, TODO: need to modify the criteria for failure
@@ -538,27 +555,15 @@ bool FlipMemo::RotHingeDock_Flip(int orientation, AtomPositions & xyz)
     /**HINGE**/
     
     //getting the points that define the plane for the terminal groups
-    if(strcmp(_resFlip[_resType].rname,"ASN") == 0 || strcmp(_resFlip[_resType].rname,"GLN") == 0){
-        //original coordinates - numbers got from _pointName array at the top of this file
-        a1 = _origLoc[5]; // CD for GLN, CG for ASN
-        b1 = _origLoc[1]; // OE1 for GLN, OD1 for ASN
-        c1 = _origLoc[2]; // NE2 for GLN, ND2 for ASN
-        //new coordinates
-        a2 = _wrkAtom[5].loc();
-        b2 = _wrkAtom[1].loc();
-        c2 = _wrkAtom[2].loc();
-    }
-    else if (strcmp(_resFlip[_resType].rname,"HIS") == 0){
-        //original coordinates - numbers got from _pointName array at the top of this file
-        a1 = _origLoc[9]; // CG
-        b1 = _origLoc[3]; // CE1
-        c1 = _origLoc[4]; // NE2
-        //new coordinates
-        a2 = _wrkAtom[9].loc();
-        b2 = _wrkAtom[3].loc();
-        c2 = _wrkAtom[4].loc();
-    }
-
+    //original coordinates
+    a1 = _origLoc[_dockAtomIndex[_resType][2]]; // CD for GLN, CG for ASN, HIS
+    b1 = _origLoc[_dockAtomIndex[_resType][3]]; // OE1 for GLN, OD1 for ASN, CE1 for HIS
+    c1 = _origLoc[_dockAtomIndex[_resType][4]]; // NE2 for GLN, HIS, ND2 for ASN
+    //new coordinates
+    a2 = _wrkAtom[_dockAtomIndex[_resType][2]].loc();
+    b2 = _wrkAtom[_dockAtomIndex[_resType][3]].loc();
+    c2 = _wrkAtom[_dockAtomIndex[_resType][4]].loc();
+    
     //computing normal to the plane by cross product of the two vectors in the plane
     normal1=cross(makeVec(b1, a1), makeVec(c1, a1)); // normal to original plane
     normal2=cross(makeVec(b2, a2), makeVec(c2, a2)); // normal to new plane
@@ -567,13 +572,13 @@ bool FlipMemo::RotHingeDock_Flip(int orientation, AtomPositions & xyz)
     
     //rotation axis is the cross product of two normals, angle is acos of the dot product
     rotaxis=cross(normal1,normal2);
-    angle=acos(dot(normal1,normal2))*180/PI;
-    angle=180-angle; // as the normals are facing each other, this needs to be corrected.
+    rotangle=acos(dot(normal1,normal2))*180/PI; // converting to degrees
+    rotangle=180-rotangle; // as the normals are facing each other, this needs to be corrected.
     
-    //rotate the new coordinates about the rotaxis
+    //rotate the new coordinates of the atoms involved in the hinge about the rotaxis
     for(int ai=1; ai <= _resFlip[_resType].numBmpr; ai++) {
-        if (_atomOrient[orientation+offO][ai] != 0) {
-            newLoc = _wrkAtom[ai].loc().rotate(angle,a1,a1+rotaxis); // as a1 is always on the line of intersection of the plane, i.e. rotation axis vector
+        if (_atomOrient[orientation+offO][ai] != 0) { 
+            newLoc = _wrkAtom[ai].loc().rotate(rotangle,a1,a1+rotaxis); // as a1 is always on the line of intersection of the plane, i.e. rotation axis vector
             //if(newLoc == NULL) // rotation did not work, return FALSE, TODO: need to modify the criteria for failure
             // return FALSE;
             _wrkAtom[ai].loc(newLoc);
@@ -582,11 +587,61 @@ bool FlipMemo::RotHingeDock_Flip(int orientation, AtomPositions & xyz)
     
     /**DOCK**/
     
+    // first rotation - getting the points for the two vectors
+    p2 = _origLoc[_dockAtomIndex[_resType][5]]; // CA
+    p3 = _origLoc[_dockAtomIndex[_resType][4]]; // original ND2 for ASN, NE2 for GLN and HIS
+    p4 = _wrkAtom[_dockAtomIndex[_resType][3]].loc(); // mobile OD1 for ASN, OE1 for GLN, CE1 for HIS
+    
+    //axis is cross product of the vectors, angle is acos of dot product
+    rotaxis=cross(makeVec(p2,p3),makeVec(p2,p4));
+    rotangle=acos(dot(makeVec(p2,p3),makeVec(p2,p4)))*180/PI; // makeVec returns normalized vectors
+    rotangle=360-rotangle; // rotation has to be clockwise around the axis
+    
+    //rotating all the atoms that are included in the CA dock
+    //_dockAtomIndex[_resType][0] contains the number of atoms to rotate
+    
+    for(int i=1; i <= _dockAtomIndex[_resType][0]; i++){
+        
+        if(_wrkAtom[_dockAtomIndex[_resType][i]].valid()){ // if this atom has not be partiallyInvalidated for this orientation
+            newLoc = _wrkAtom[_dockAtomIndex[_resType][i]].loc().rotate(rotangle,p2,p2+rotaxis); // since the rotation has to be centered around the rotaxis passing through the CA
+            //if(newLoc == NULL) // rotation did not work, return FALSE, TODO: need to modify the criteria for failure
+            // return FALSE;
+            _wrkAtom[_dockAtomIndex[_resType][i]].loc(newLoc);
+        }
+    }
+    
+    //second rotation - getting the four points for the dihedral angle, p2 and p3 remains the same as above
+    p1=_wrkAtom[_dockAtomIndex[_resType][4]].loc(); // mobile ND2 for ASN, NE2 for GLN, HIS
+    p4=_origLoc[_dockAtomIndex[_resType][3]]; // original OD1 for ASN, OE1 for GLN, CE1 for HIS
+    
+    //angle is equal to the dihedral angle, rotation axis is p2->p3
+    rotangle=dihedral(p1,p2,p3,p4);
+    
+    //rotating all the atoms that are included in the CA dock
+    //_dockAtomIndex[_resType][0] contains the number of atoms to rotate
+    for(int i=1; i <= _dockAtomIndex[_resType][0]; i++){
+        
+        if(_wrkAtom[_dockAtomIndex[_resType][i]].valid()){ // if this atom has not be partiallyInvalidated for this orientation
+        
+            newLoc = _wrkAtom[_dockAtomIndex[_resType][i]].loc().rotate(rotangle,p2,p3);
+            //if(newLoc == NULL) // rotation did not work, return FALSE, TODO: need to modify the criteria for failure
+            // return FALSE;
+            _wrkAtom[_dockAtomIndex[_resType][i]].loc(newLoc);
+        }
+    }
+    
     /**FINAL STEPS**/ // These were done after the standard flip as well, so just following the same thing
-    for(int ai=1; ai <= _resFlip[_resType].numBmpr; ai++) { // TODO: This won't be numBumpr. We have to store all atoms
-        if (_atomOrient[orientation+offO][ai] != 0) {// SJ - if this atom exists in this orientation, basically for diff protonated states of HIS
-            xyz.reposition(lastloc[ai], _wrkAtom[ai]);
-            
+    
+    //reposition all the atoms for which the coordinates have changed
+    for(int i=1; i <= _dockAtomIndex[_resType][0]; i++){
+        
+        if(_wrkAtom[_dockAtomIndex[_resType][i]].valid()){ // if this atom has not be partiallyInvalidated for this orientation
+            xyz.reposition(lastloc[_dockAtomIndex[_resType][i]], _wrkAtom[_dockAtomIndex[_resType][i]]);
+        }
+    }
+    
+    for(int ai=1; ai <= _resFlip[_resType].numBmpr; ai++) {
+        if (_atomOrient[orientation+offO][ai] != 0) {
             // *** notice: the D/A status of nitrogen and carbon are modified here ***
             InFlip_ModifyDAStatus(ai,orientation,offO); // SJ - 09/10/2015 moved the original code from setOrientation to this function
         }

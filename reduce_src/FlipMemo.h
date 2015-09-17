@@ -155,5 +155,6 @@ private:
    static const char*         _orientDescr[FMnumFlipOrient];
    static const double        _orientationPenalty[FMnumFlipOrient];
    static const int           _oFlipState[FMnumFlipOrient];
+   static const int           _dockAtomIndex[FMnumFlipRes][FMmaxAtomSlots+1]; // SJ - 09/15/2015 - Index of atoms in the above _pointName array (and hence the _origLoc array and the _wrkAtom array) involved in the three step flip
 };
 #endif
