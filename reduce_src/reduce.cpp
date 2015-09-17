@@ -98,8 +98,9 @@ bool ShowCharges              = FALSE;
 bool UseNuclearDistances      = FALSE; //jjh 130111
 bool UseSEGIDasChain          = FALSE; //jjh 130503
 bool ProcessedFirstModel      = FALSE; //jjh 130718
-bool GenerateFinalFlip        = TRUE; // SJ 09/04/2015 - to check if flips are being generated for scoring or the final PDB file
-                                      // should be FALSE if don't want to change how flips are scored, TRUE if want to change to how flips are scored.
+bool GenerateFinalFlip        = FALSE; // SJ - 09/04/2015 for how flips are scored and applied, FALSE Standard flip
+                                        // TRUE - RotHingeDock Flip (as of now). Will be set true if -newflip flag is there
+                                        // TODO: Intended behaviour is to score using standard flip and output the RotHingeDock Flip. Have to figue out how to do that. Also have to figure out intended behavior with -fix flag
 int MaxAromRingDih    = 10;   // max dihedral angle in planarity check for aromatic rings  120724 - Aram
 
 int MinNTermResNo     = 1;   // how high can a resno be for n-term?
@@ -578,6 +579,9 @@ char* parseCommandLine(int argc, char **argv) {
         SaveOHetcHydrogens = TRUE;
         RotExistingOH      = TRUE;  //  not used in molprobity
         DemandFlipAllHNQs  = TRUE;
+      }
+      else if ((n = compArgStr(p+1,"NEWFLIP",7))){ // SJ - 09/17/2015 added to change the Generate Flip flag. See top of the file for implemented and intended behaviour
+          GenerateFinalFlip=TRUE;
       }
       else if((n = compArgStr(p+1, "Version", 1))){
         cerr << shortVersion << endl;
