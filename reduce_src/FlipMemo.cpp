@@ -489,20 +489,43 @@ void FlipMemo::Standard_Flip(int orientation, AtomPositions & xyz)
 {
     const int offO = _fromO;
     
+    Point3d lastloc[FMmaxAtomSlots+1];
+    
+    /**SETUP**/
+    //storing the last location of all the atoms, and copying the original coordinates back into the working copy, because you have to flip from the original coordinates
+    for(int pi=1; pi <= _resFlip[_resType].numPnts; pi++) {
+        lastloc[pi] = _wrkAtom[pi].loc();
+        _wrkAtom[pi].loc(_origLoc[pi]);
+    }
+    
+    /**FLIP**/
     // SJ - this is where the coordinates of the atoms are exchanged. for Hs the coordinates have already been recalcualted and stored for the flipped position in FlipMemo::Finalize();
     for(int ai=1; ai <= _resFlip[_resType].numBmpr; ai++) {
         if (_atomOrient[orientation+offO][ai] != 0) { // SJ - if this atom exists in this orientation, basically for diff protonated states of HIS
-            Point3d lastloc = _wrkAtom[ai].loc();
             _wrkAtom[ai].revalidateRecord();
             _wrkAtom[ai].loc(_origLoc[_atomOrient[orientation+offO][ai]]); // SJ - atoms coordinates exchanged according to atomOrient array at the top of the file. atomOrient contains what atoms are to be swapped with what, according to the value of the oi that designates to flip or not to flip.
-            xyz.reposition(lastloc, _wrkAtom[ai]);
-            // *** notice: the D/A status of nitrogen and carbon are modified here ***
-            InFlip_ModifyDAStatus(ai,orientation,offO); // SJ - 09/10/2015 moved the original code from setOrientation to this function
         }
         else { // switch off but do not rub out completely
             _wrkAtom[ai].partiallyInvalidateRecord();
         }
     }
+    
+    /**FINAL STEPS**/ // These were done after the standard flip in the original code as well, so just following the same thing
+    //reposition all the atoms for which the coordinates have changed
+    for(int i=1; i <= _dockAtomIndex[_resType][0]; i++){
+        
+        if(_wrkAtom[_dockAtomIndex[_resType][i]].valid()){ // if this atom has not be partiallyInvalidated for this orientation
+            xyz.reposition(lastloc[_dockAtomIndex[_resType][i]], _wrkAtom[_dockAtomIndex[_resType][i]]);
+        }
+    }
+    
+    for(int ai=1; ai <= _resFlip[_resType].numBmpr; ai++) {
+        if (_atomOrient[orientation+offO][ai] != 0) {
+            // *** notice: the D/A status of nitrogen and carbon are modified here ***
+            InFlip_ModifyDAStatus(ai,orientation,offO); // SJ - 09/10/2015 moved the original code from setOrientation to this function
+        }
+    }
+    
     return;
 }
 
@@ -630,7 +653,7 @@ bool FlipMemo::RotHingeDock_Flip(int orientation, AtomPositions & xyz)
         }
     }
     
-    /**FINAL STEPS**/ // These were done after the standard flip as well, so just following the same thing
+    /**FINAL STEPS**/ // These were done after the standard flip in the original code as well, so just following the same thing
     
     //reposition all the atoms for which the coordinates have changed
     for(int i=1; i <= _dockAtomIndex[_resType][0]; i++){
