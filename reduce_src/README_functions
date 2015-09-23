@@ -1,0 +1,82 @@
+Description of some functions in Reduce. Not all functions are described or mentioned here. All functions are preceeded by the class they are in. If not, then they do not belong to a class and are in the file reduce.cpp
+
+1. main()
+This is the main function. This function calls the following three functions:
+parseCommandLine() - reads all the command line flags and input files passed and sets the values of variables accordingly.
+processPDBFile() - this is the function which does everything. This is called for each model. After this function returns, the model is completely processed and stored.
+outputRecords_all() - this function is called to output the final PDB file, containing all the models. This function prints the header, then all the models, and anything not in the header and not within MODEL and ENDMDL records at the end.
+
+2. processPDBFile() 
+This function first declares a list of PDBRec* and calls
+inputRecords() - to read the PDB records. Although the entire file is passed to this function, it reads the header info, and the records in the specific model number it is told to process. If there is no model records, then it reads the entire PDB file.
+
+if the flag RemoveHydrogens is true (set by the -trim flag), it calls
+dropHydrogens() - to remove the hydrogens from the list of PDB records that were read in. This is done by calling the PDBRec::isHydrogen() for each PDb record and invalidating the PDB record if it returns true. (Note that the isHydrogen function calls ElementInfo::isHydrogen() that decides if this atom is a hydrogen or not based on the atomic number.) 
+
+if the flag RemoveHydrogens in false, then the databases are read (the element and hydrogen tables), and calls initializes an object of AtomPositions class.Then it calls the following functions:
+
+scanAndGroupRecords() - reads the records one at a time and adds the position information in the AtomPositions object. Also counts the number of hydrogens, hets etc.
+
+Then the following function is called:
+reduceList() - adds all the hydrogens. 
+After this function all the hydrogens have been added, but none of the flips or rotations have happened.
+
+If flips or rotations have to happen, then this is called 
+AtomPositions::finalizeMovers()
+After this function, all the movers are setup and the alternate hydrogen positions for the flips have been calculated. Only calculated and stored, they will be used later functions.
+
+If the -fix flag was present then, the following function is called:
+AtomPositions::forceOrientations()
+
+If flips or rotations are supposed to happen, then it finds the cliques by calling the following function:
+AtomPositions::findCliques()
+
+After finding the cliques, then the flips and rotations in the singles and cliques are done:
+AtomPositions::orientSingles()
+AtomPositions::orientClique() - this is called for each clique found
+After these functions are done, all the flips and rotations have been finalized.
+
+/* SJ - I am not sure why these functions are called. Have not looked into it*/
+CliqueList::formatClique()
+CliqueList::formatSingles()
+AtomPositions::describeChanges()
+
+After this the final list of PDBRec* are stored to be printed later.
+
+3. reduceList() 
+This reads the PDBRec* record by record and makes a ResBlk object that contains all the PDBRec* for that residue. For each ResBlk, the following function is called:
+analyzeRes()
+After this function returns, that residue has all the hydrogens added.
+
+4. analyzeRes() 
+This function works with the current residue, the prev residue and the next residue (all ResBlk objects). 
+If flips are to be done, then it calls the following function:
+AtomPositions::insertFlip()
+This function returns the different alternate conformation characters if the current residue is a His, Gln, or Asn. If only one conformation is present, it returns " ". It does not return anything if this is not a residue that has to be checked for flips. Also this function creates the FlipMemo class objects .
+
+After this a list of AtomPlacementPlan objects is initialized. Each atom placement plan object is for one potential hydorgen that can be added to this residue. This funciton checks the tables in StdResH class and creates an atom placement plan first for each hydorgen to be added to the backbone, then to specific side chains (amino acids in proteins, bases in RNA/DNA), and then checks the het dict (if the residye type is not a standard residue). 
+
+Then for each placement plan (basically for each potential hydrogen atom that can be added to the current residue), the following function is called:
+genHydrogens()
+After this funciton, the current residue has all hydrogens added.
+
+5. AtomPositions::insertFlip()
+First this funciton calls 
+FlipMemo::altCodes() - to get the alternate conformation code for the atoms that would be involved in the standard flip. If only one conformation, then it returns a " ", else it returns a list of alternate conformations code. It returns nothing if this residue is not His, Asn, or Gln.
+
+After this, this function creates a FlipMemo object for each of the alternate conformations code returned by the previous function and stores them to be used later. The FlipMemo object contains information about the residue, its PDBRec* etc.
+
+6. genHydrogens()
+This function first checks whether the hydrogen for which this function is called is already present in the residue or not. Here this is done based on the flags UseOldNames and UseNewNames and UseXplorNames. If the hydrogen is not present, then that hydrogen's coordinates are calculated and a new PDBRec record is created, and is added to the list of PDBRec* and to this ResBlk object. 
+Note: This function is where the bug about new name hydrogens being added even if the corresponding old name hydrogens are present occurs. This is because in the StdResH tables, there is no way of knowing which new hydrogen corresponds to which old hydrogen. So if the bug needs to be fixed, this is the function to do it.
+
+7. AtomPositions::finalizeMovers()
+This function is described just for the FlipMemo movers. 
+For each of the FlipMemo objects created earlier, this function calls:
+FlipMemo::finalize() - this makes a copy of the original coordinates of the atoms of the residue, and calculates the hyrogen positions for the flipped state of the residue (standard flip) and stores it along with the original coordnates.
+
+8. AtomPositions::orientSingles()
+
+
+9. AtomPositions::orientClique()
+

@@ -1,0 +1,31 @@
+Some of the classes in the Reduce Code:
+
+1. AtomConn - contains information for a atom, and its neighbors.
+
+2. AtomPlacementPlan - this contains the plan to place a new H. Inherited from AtomConn. Each hydrogen that has to be added has its own AtomPlacementPlan class object. This class has a function called placeH().
+
+3. AtomDescr - class to represent an atom, its location, residue number, radius etc. And this class contains an object of the class PDBrec that contains the original position of this atom.
+
+4. AtomPositions -  This is one of the main classes in reduce that keeps track of all the atom positions in the structure. It contains a list of XYZ blocks and the atoms contained in them, a list of Movers (see Movers class). Also all the scoring is done in functions in this class.
+
+5. CliqueList - this contains a list of Movers and if they are singles or belong to cliques.
+
+6. ResConn - contains objects of AtomConn class for each atom, and all other information about a residue. It has functions like planHplacement() and genHplans() that are called to place the new hydrogens.
+
+7. DotSphRep, DotSph, DotSphManager - these classes that contains all the information about probe dots used in reduce. This is used by AtomPositions class while scoring.
+
+8. ElementInfo, ElementInfoRep - this class contains the information about a given element type, atomic number, radii etc. This class has objects of the class StandardElementTable, and has a function called isHydrogen() that returns true or false is a atom is a hydrogen or not. 
+
+9. ElementTable, StandardElementTable - I think they contain info about each element type which is read in my reduce.
+
+10. Mover - This is one of the main classes in reduce. This is the base class for any types of movements in reduce (flips, rotating methyls, rotating donors). Contains some standard funcitons used by all the above movements. 
+
+11. FlipMemo - Inherited from Mover. Contains all the information and functions about how to do NQH flips. This class contains the hard coded arrays that tell reduce what atoms are moved, what atoms are exhanged with what during flips. 
+
+12. RotAromMethyl, RotDonor, RotMethyl - these classes are also inherited from Mover. Have all functions to do the respective rotations.
+
+13. PDBRec - class that contains information for each PDB record. (Header, MODEL, USER, ATOM etc). Each line in the PDB file is treated as a record. 
+
+14. ResBlk - this class contains a list of all objects of PDBRec class that are for all the atoms in this residue. 
+
+15. StdResH, HydrogenPlanTable - these classes contain all the information about what hydrogens are to be added for each residue type. This information is hard coded. This is where all the hydrogen atoms names etc are listed.    
