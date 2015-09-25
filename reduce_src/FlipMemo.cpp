@@ -30,7 +30,7 @@ using std::toupper;
 #include "AtomPositions.h"
 
 extern bool UseNuclearDistances; //defined in reduce.cpp JJH
-extern bool GenerateFinalFlip; // defined in reduce.cpp for checking if flips are being generated for scoring or final PDB file
+extern bool GenerateFinalFlip; // SJ - defined in reduce.cpp for checking if flips are being generated for scoring or final PDB file
 
 const char* FlipMemo::_pointName[FMnumFlipRes+1]
                                 [FMmaxAtomSlots+1] = {
@@ -432,7 +432,7 @@ std::list<AtomDescr> FlipMemo::getAtDescOfAllPos(float &maxVDWrad)
 
 // SJ - called from AtomPositions:setOrientation to generate the unflipped and the flipped state
 bool FlipMemo::setOrientation(int oi, AtomPositions &xyz, SearchStrategy ss) {
-   if (ss!=Mover::LOW_RES) { return TRUE; } // HIGH_RES uses current orientation
+    if (ss!=Mover::LOW_RES) { return TRUE; } // HIGH_RES uses current orientation
 
     // SJ - 09/10/2015 copied the static declarations to function InFlip_ModifyDAStatus
    /*static const ElementInfo * eN    = ElementInfo::StdElemTbl().element("N");
@@ -447,14 +447,14 @@ bool FlipMemo::setOrientation(int oi, AtomPositions &xyz, SearchStrategy ss) {
     // SJ - 09/04/2015 added the flag GenerateFinalFlip so that flips are scored the same way, but finally generated using the new method
    if(!GenerateFinalFlip){
        
-       Standard_Flip(oi, xyz); // SJ - 09/10/2015 moved the original code from here to this function
+       Rename_Flip(oi, xyz); // SJ - 09/10/2015 moved the original code from here to this function
    }
-   else if(GenerateFinalFlip){ // SJ - when GenerateFinalFlip is true - i.e. we are generating the final file and not scoring. TODO: have to figure out where to set GenerateFinalFlip flag to true
+   else if(GenerateFinalFlip){ // SJ - when GenerateFinalFlip is true - i.e. we are generating the final file and not scoring.
        bool done = FALSE;
        
        if(strcmp(_resFlip[_resType].rname,"ASN") == 0 || strcmp(_resFlip[_resType].rname,"GLN") == 0){
            if(oi == 0){ // oi ==0 means this is not the flipped orientation, got this from the array atomOrient at the top of this file
-               Standard_Flip(oi, xyz); // TODO: explain that even though this is called, it wont flip because of value of oi
+              // Rename_Flip(oi, xyz); // Nothing needs to be done, as this is not flipped, will already be in the best position when this funciton is called
                done=TRUE;
            }
            else{
@@ -463,7 +463,7 @@ bool FlipMemo::setOrientation(int oi, AtomPositions &xyz, SearchStrategy ss) {
        }
        else if (strcmp(_resFlip[_resType].rname,"HIS") == 0){
            if (oi == 0 || oi == 1 || oi == 2 || oi == 6) {// SJ - 09/04/2015 these oi's correspond to unflipped state - got this from the array atomOrient at the top of this file
-               Standard_Flip(oi, xyz); // TODO: explain that even though this is called, it wont flip because of value of oi
+             //  Rename_Flip(oi, xyz); // Nothing needs to be done, as this is not flipped, will already be in the best position when this funciton is called
                done=TRUE;
            }
            else{
@@ -472,8 +472,8 @@ bool FlipMemo::setOrientation(int oi, AtomPositions &xyz, SearchStrategy ss) {
        }
        
        if(!done){
-           std::cerr << "Three Step Flip did not work for residue " << _resFlip[_resType].rname << " " << _wrkAtom[1].chain() << " " << _wrkAtom[1].resno() << ". Resorting to standard flip" << std::endl;
-           Standard_Flip(oi, xyz);
+           std::cerr << "Three Step Flip did not work for residue " << _resFlip[_resType].rname << " " << _wrkAtom[1].chain() << " " << _wrkAtom[1].resno() << ". Resorting to renaming flip" << std::endl;
+           Rename_Flip(oi, xyz);
        }
    }
    rememberOrientation(oi);
@@ -485,40 +485,25 @@ bool FlipMemo::setOrientation(int oi, AtomPositions &xyz, SearchStrategy ss) {
  Copied the original code from setOrinetations here. 
  This function will either flip or not flip depending on the value of the orientation passed. 
  No need for explicit check for the orientation, as it is hardcoded in the atomOrient array on top of this file*/
-void FlipMemo::Standard_Flip(int orientation, AtomPositions & xyz)
+void FlipMemo::Rename_Flip(int orientation, AtomPositions & xyz)
 {
     const int offO = _fromO;
     
-    Point3d lastloc[FMmaxAtomSlots+1];
-    
-    /**SETUP**/
-    //storing the last location of all the atoms, and copying the original coordinates back into the working copy, because you have to flip from the original coordinates
-    for(int pi=1; pi <= _resFlip[_resType].numPnts; pi++) {
-        lastloc[pi] = _wrkAtom[pi].loc();
-        _wrkAtom[pi].loc(_origLoc[pi]);
-    }
-    
-    /**FLIP**/
+     /**FLIP**/
     // SJ - this is where the coordinates of the atoms are exchanged. for Hs the coordinates have already been recalcualted and stored for the flipped position in FlipMemo::Finalize();
     for(int ai=1; ai <= _resFlip[_resType].numBmpr; ai++) {
         if (_atomOrient[orientation+offO][ai] != 0) { // SJ - if this atom exists in this orientation, basically for diff protonated states of HIS
+            Point3d lastloc = _wrkAtom[ai].loc();
             _wrkAtom[ai].revalidateRecord();
             _wrkAtom[ai].loc(_origLoc[_atomOrient[orientation+offO][ai]]); // SJ - atoms coordinates exchanged according to atomOrient array at the top of the file. atomOrient contains what atoms are to be swapped with what, according to the value of the oi that designates to flip or not to flip.
+            xyz.reposition(lastloc,_wrkAtom[ai]);
         }
         else { // switch off but do not rub out completely
             _wrkAtom[ai].partiallyInvalidateRecord();
         }
     }
     
-    /**FINAL STEPS**/ // These were done after the standard flip in the original code as well, so just following the same thing
-    //reposition all the atoms for which the coordinates have changed
-    for(int i=1; i <= _dockAtomIndex[_resType][0]; i++){
-        
-        if(_wrkAtom[_dockAtomIndex[_resType][i]].valid()){ // if this atom has not be partiallyInvalidated for this orientation
-            xyz.reposition(lastloc[_dockAtomIndex[_resType][i]], _wrkAtom[_dockAtomIndex[_resType][i]]);
-        }
-    }
-    
+    // This was done after the original code as well, so just following the same thing
     for(int ai=1; ai <= _resFlip[_resType].numBmpr; ai++) {
         if (_atomOrient[orientation+offO][ai] != 0) {
             // *** notice: the D/A status of nitrogen and carbon are modified here ***
@@ -752,7 +737,7 @@ double FlipMemo::determineScore(AtomPositions &xyz,	DotSphManager& dotBucket,
 			//{
 			//	std::cerr << "bonded for FlipMemo: " << nBondCutoff << " " << (*iter)->getAtomDescr() << std::endl;
 			//}
-
+            
 			double val = xyz.atomScore(thisAtom, thisAtom.loc(),
 				thisAtom.vdwRad() + probeRadius + maxVDWrad,
 				//apl procrastinate nearby list computation until AtomPositions decides to score
@@ -760,6 +745,7 @@ double FlipMemo::determineScore(AtomPositions &xyz,	DotSphManager& dotBucket,
 				dotBucket.fetch(thisAtom.vdwRad()),
 				probeRadius, FALSE,
 				bumpSubScore, hbSubScore, subBadBump);
+            
 ///////////////////////////////////////////////////////////////////////////////////////////
 // Delete bnded!
 //			std::for_each(bnded.begin(), bnded.end(), DeleteObject());
@@ -770,7 +756,7 @@ double FlipMemo::determineScore(AtomPositions &xyz,	DotSphManager& dotBucket,
 			if (subBadBump) { hasBadBump = TRUE; }
 
 #ifdef DEBUGSUBSCORE
-			cerr << "\t:" << thisAtom.recName()
+            std::cerr << "\t:" << thisAtom.recName()
 				<<":"<< describeOrientation()
 				<< ": bump=" << bumpSubScore
 				<< ", HB=" << hbSubScore
@@ -778,7 +764,8 @@ double FlipMemo::determineScore(AtomPositions &xyz,	DotSphManager& dotBucket,
 				//      << ", tot=" << val
 				<< "\t"
 				//      << thisAtom.loc()
-				<< endl;
+            << std::endl;
+            
 #endif
 			scoreThisO += val;
 		}
@@ -797,6 +784,7 @@ void FlipMemo::insertAtom(PDBrec* r) {
 }
 
 // externally, we can refer to the atom num in the range [0..numScore)
+//SJ - this function puts the PDBRec for the specific atom (specified by na) in the outrec
 bool FlipMemo::locAtom(int na, PDBrec& outrec) const {
    bool rc = FALSE;
    if (_isComplete) {

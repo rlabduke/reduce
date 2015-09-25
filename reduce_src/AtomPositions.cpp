@@ -699,18 +699,19 @@ int AtomPositions::orientSingles(const std::list<MoverPtr>& singles) {
 					}
 					if (m->canFlip()) {
 						m->trackFlipMaxScore(m->flipState(), val, trialBadBump);
-					}
+                   	}
 				}
 				else { break; } // could not set orientation (we are done)
 			}
 
 			// remember and position to the best
-			const int best = m->bestOrientation(); // SJ - TODO - this is where the flag has to be set true and then false again as this is for each residue. 
-			if (m->orientation() != best) {
+			const int best = m->bestOrientation();
+            
+            if (m->orientation() != best) {
 				m->setOrientation(best, *this);
 			}
             
-			if (m->hasHires()) { // SJ - TODO: do not understand what is this High res, low res thing
+			if (m->hasHires()) {
 				const int numHiResO = m->numOrientations(Mover::HIGH_RES);
 				// try each high-res orientation
 				for (i = 0; i < numHiResO; i++) {
@@ -1154,7 +1155,7 @@ int AtomPositions::SearchClique(std::list<MoverPtr> clique, int limit)
 	//reset clique into optimal configuration
 	for (i=0; i<numItems; i++)
 	{
-    item[i]->initOrientation(*this); // SJ - TODO I think this is the place to set the GenerateFinalFlip flag to be true, but have to check. Looks like a waste of time if it is trying everything untill the best orientation.
+    item[i]->initOrientation(*this);
 
 		for (j=0; j<optimal_state[i];j++)
 	   {
@@ -1593,19 +1594,19 @@ double AtomPositions::atomScore(const PDBrec& a, const Point3d& p,
 
 	//apl now that AtomPositions has decided to score this atom, collect nearby-list
 	std::list<PDBrec*> nearby = this->neighbors( p, 0.001, nearbyRadius);
-
-	std::list<PDBrec*> bumping_list; // first we collect atoms actually interacting
+    
+    std::list<PDBrec*> bumping_list; // first we collect atoms actually interacting
 	PDBrec* rec = NULL;
 	for (std::list<PDBrec*>::const_iterator ni = nearby.begin(); ni != nearby.end(); ++ni) {
 		rec = *ni;
-		if (rec->valid() && (! rec->hasProp(IGNORE))
+        if (rec->valid() && (! rec->hasProp(IGNORE))
 			&& (abs(rec->occupancy()) > _occupancyCuttoff)
 			&& (! (a == *rec))
 			&& (interactingConfs(a, *rec, _onlyA))
 			&& ( vdwGap(a, p, *rec, rec->loc()) < pRad)
 			&& (! foundInList(*rec, exclude))) {
 			bumping_list.push_back(rec);
-		}
+        }
 	}
 
 

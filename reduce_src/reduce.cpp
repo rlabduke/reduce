@@ -98,9 +98,11 @@ bool ShowCharges              = FALSE;
 bool UseNuclearDistances      = FALSE; //jjh 130111
 bool UseSEGIDasChain          = FALSE; //jjh 130503
 bool ProcessedFirstModel      = FALSE; //jjh 130718
-bool GenerateFinalFlip        = FALSE; // SJ - 09/04/2015 for how flips are scored and applied, FALSE Standard flip
-                                        // TRUE - RotHingeDock Flip (as of now). Will be set true if -newflip flag is there
-                                        // TODO: Intended behaviour is to score using standard flip and output the RotHingeDock Flip. Have to figue out how to do that. Also have to figure out intended behavior with -fix flag
+bool RenameFlip               = FALSE; // SJ - 09/25/2015 - flag to specify if the final PDB file will have the coordinates according to
+                                       //the rename atoms flip (is the flag is TRUE) or the new rot hinge dock flip (if the flag is FALSE, this is default). Can be set to true by the -renameflip flag in the commandline.
+bool GenerateFinalFlip        = FALSE; // SJ - 09/04/2015 to keep track of when scoring and decision of flips finishes and when the final PDB
+                                       //coordinates are being generated. This is set to true after all the calculations are done, unless the RenameFlip flag is TRUE
+
 int MaxAromRingDih    = 10;   // max dihedral angle in planarity check for aromatic rings  120724 - Aram
 
 int MinNTermResNo     = 1;   // how high can a resno be for n-term?
@@ -270,6 +272,8 @@ int main(int argc, char **argv) {
 void processPDBfile(std::istream& ifs, char *pdbFile, std::list<std::list<PDBrec*> >& all_records/*std::ostream& ofs*/) {
     //SJ 08/03/2015 - changed the last argument of the function to pass the list of all records that need to be stored and output only in the end
     
+    GenerateFinalFlip=FALSE; // SJ 09/25/2015 - this has to be reset to FALSE, because for a new model the scoring and decision for flips has to be done using renaming the atoms and not the three step flip.
+    
    if (Verbose) {
       cerr << versionString << endl;
       if (pdbFile) {
@@ -435,11 +439,15 @@ void processPDBfile(std::istream& ifs, char *pdbFile, std::list<std::list<PDBrec
 	 }
 
 // record clique and singleton adjustments
+     
+     if(!RenameFlip)
+         GenerateFinalFlip=TRUE; // SJ 09/25/2015 - If the RenameFlip flag is False, that means that the coordinates in the PDB output should be with the rot hinge dock flip. Therefre this flag has to be set to be TRUE, so that the FlipMemo::setOrientation function does the three step flip now.
 
+     // SJ - 09/25/2015 - have changed the formatClique and formatSingles function to call FlipMemo::setOrientations to do the or hinge dock flip if the GenerateFinalFlip flag is TRUE
 	 for (int jj = 0; jj < clst.numCliques(); jj++) {
-	    clst.formatClique(adjNotes, jj);
+	    clst.formatClique(adjNotes, jj, xyz); // SJ - added the last argument, as this is needed to do the flip
 	 }
-	 clst.formatSingles(adjNotes);
+	 clst.formatSingles(adjNotes, xyz); // SJ - added the last argument, as this is needed to do the flip
 	 xyz.describeChanges(records, infoPtr, adjNotes);
       }
 
@@ -580,8 +588,8 @@ char* parseCommandLine(int argc, char **argv) {
         RotExistingOH      = TRUE;  //  not used in molprobity
         DemandFlipAllHNQs  = TRUE;
       }
-      else if ((n = compArgStr(p+1,"NEWFLIP",7))){ // SJ - 09/17/2015 added to change the Generate Flip flag. See top of the file for implemented and intended behaviour
-          GenerateFinalFlip=TRUE;
+      else if ((n = compArgStr(p+1,"RENAMEFLIP",10))){ // SJ - 09/25/2015 added to set the RenameFlip flag to TRUE. See top of the file for intended behavior of the flag
+          RenameFlip=TRUE;
       }
       else if((n = compArgStr(p+1, "Version", 1))){
         cerr << shortVersion << endl;

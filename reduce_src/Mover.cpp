@@ -18,6 +18,7 @@
 // ResBlk.h is included to define sameres()
 #include "ResBlk.h"
 
+/*SJ what does f!=0 inside [] mean? f!=0 is a check that returns a 0 if f is equal to  0 and returns a 1 if f is any other number. So if f that is passed to these two functions is 0, then the first element of the array is changed/referenced, if f is any number other than a 0, the second element of the array is changed/referenced */
 void Mover::resetFlipMaxScore(int f) {
      _flipMaxScore[f!=0] = LowestMoverScore;
    _flipMaxBadBump[f!=0] = FALSE;

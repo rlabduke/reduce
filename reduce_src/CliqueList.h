@@ -23,6 +23,7 @@
 #include <vector>
 
 class Mover;
+class AtomPositions; // SJ 09/25/2015
 typedef Mover* MoverPtr;
 
 class CliqueList {
@@ -52,8 +53,9 @@ public:
    int numSingletons() { return _singles.size(); }
 
    void describe(std::ostream& os) const;
-   void formatSingles(std::vector<std::string>& cliqueNotes) const;
-   void formatClique(std::vector<std::string>& cliqueNotes, int c) const;
+   void formatSingles(std::vector<std::string>& cliqueNotes, AtomPositions& xyz) const; // SJ - 09/25/2015  added the last argument as that is need for doing the final flip
+    void formatClique(std::vector<std::string>& cliqueNotes, int c, AtomPositions& xyz) const; // SJ - 09/25/2015  added the last argument as that is need for doing the final flip
+
 private:
 	std::list< std::list<MoverPtr> > _cliques;
 	std::list<MoverPtr>        _singles;

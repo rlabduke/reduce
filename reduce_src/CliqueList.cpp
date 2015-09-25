@@ -32,6 +32,8 @@ using std::sprintf;
 #include "CliqueList.h"
 #include "Mover.h"
 
+extern bool GenerateFinalFlip; // SJ - defined in reduce.cpp for checking if flips are being generated for scoring or final PDB file
+
 void CliqueList::describe(std::ostream& os) const {
    int i=0, j=0;
    os << " Singles(size " << _singles.size() << ")";
@@ -58,7 +60,8 @@ void CliqueList::sortSingletonsByDescr() {
    mpSeqSort(_singles);
 }
 
-void CliqueList::formatSingles(std::vector<std::string>& cliqueNotes) const {
+void CliqueList::formatSingles(std::vector<std::string>& cliqueNotes, AtomPositions& xyz) const { // SJ - 09/25/2015  added the last argument as that is need for doing the final flip
+
    char buf[200];
 
    for(std::list<MoverPtr>::const_iterator s = _singles.begin(); s != _singles.end(); ++s) {
@@ -70,24 +73,32 @@ void CliqueList::formatSingles(std::vector<std::string>& cliqueNotes) const {
 	    (*s)->initScore(),(((*s)->initHasBadBump())?"!":""));
       }
       else if ((*s)->canFlip()) {
-	 char classcode = ' ';
-	 if ((*s)->flipStateHasBadBump(0) && (*s)->flipStateHasBadBump(1)) {
-	    classcode = 'C';
-	 }
-	 else if (abs((*s)->flipMaxScore(0) - (*s)->flipMaxScore(1)) <= 0.5) {
-	    classcode = 'X';
-	 }
-	 else if ((*s)->flipState() != 0) {
-	    classcode = 'F';
-	 }
-	 else {
-	    classcode = 'K';
-	 }
-	 ::sprintf(buf, "USER  MOD Single :%s:%s:sc=%8.3g%c %c(o=%.2g%s,f=%.2g%s)",
-	    (*s)->descr().c_str(), (*s)->describeOrientation().c_str(),
-	    (*s)->bestScore(),(((*s)->bestHasBadBump())?'!':' '), classcode,
-	    (*s)->flipMaxScore(0),(((*s)->flipStateHasBadBump(0))?"!":""),
-	    (*s)->flipMaxScore(1),(((*s)->flipStateHasBadBump(1))?"!":""));
+          
+          // SJ - 09/25/2015 - added to do the rot hinge dock flip if the GenerateFinalFlip flag is true
+          if(GenerateFinalFlip){
+              
+              int orientation = (*s)->bestOrientation();
+              (*s)->setOrientation(orientation,xyz);
+          }
+          
+          char classcode = ' ';
+          if ((*s)->flipStateHasBadBump(0) && (*s)->flipStateHasBadBump(1)) {
+              classcode = 'C';
+          }
+          else if (abs((*s)->flipMaxScore(0) - (*s)->flipMaxScore(1)) <= 0.5) {
+              classcode = 'X';
+          }
+          else if ((*s)->flipState() != 0) {
+              classcode = 'F';
+          }
+          else {
+              classcode = 'K';
+          }
+          ::sprintf(buf, "USER  MOD Single :%s:%s:sc=%8.3g%c %c(o=%.2g%s,f=%.2g%s)",
+                    (*s)->descr().c_str(), (*s)->describeOrientation().c_str(),
+                    (*s)->bestScore(),(((*s)->bestHasBadBump())?'!':' '), classcode,
+                    (*s)->flipMaxScore(0),(((*s)->flipStateHasBadBump(0))?"!":""),
+                    (*s)->flipMaxScore(1),(((*s)->flipStateHasBadBump(1))?"!":""));
       }
       else {
 	 ::sprintf(buf, "USER  MOD Single :%s:%s:sc=%8.3g%c",
@@ -98,7 +109,8 @@ void CliqueList::formatSingles(std::vector<std::string>& cliqueNotes) const {
    }
 }
 
-void CliqueList::formatClique(std::vector<std::string>& cliqueNotes, int c) const {
+void CliqueList::formatClique(std::vector<std::string>& cliqueNotes, int c, AtomPositions& xyz) const { // SJ - 09/25/2015  added the last argument as that is need for doing the final flip
+
 	std::list<MoverPtr> s_list;
 	char buf[200];
 	int i = 0;
@@ -121,6 +133,14 @@ void CliqueList::formatClique(std::vector<std::string>& cliqueNotes, int c) cons
 					(*s)->initScore(),(((*s)->initHasBadBump())?"!":""));
 			}
 			else if ((*s)->canFlip()) {
+                
+                // SJ - 09/25/2015 - added to do the rot hinge dock flip if the GenerateFinalFlip flag is true
+                if(GenerateFinalFlip){
+                    
+                    int orientation = (*s)->bestOrientation();
+                    (*s)->setOrientation(orientation,xyz);
+                }
+                
 				char classcode = ' ';
 				if ((*s)->flipStateHasBadBump(0) && (*s)->flipStateHasBadBump(1)) {
 					classcode = 'C';
