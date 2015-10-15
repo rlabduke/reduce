@@ -485,8 +485,15 @@ bool FlipMemo::setOrientation(int oi, AtomPositions &xyz, SearchStrategy ss) {
  Copied the original code from setOrinetations here. 
  This function will either flip or not flip depending on the value of the orientation passed. 
  No need for explicit check for the orientation, as it is hardcoded in the atomOrient array on top of this file*/
-void FlipMemo::Rename_Flip(int orientation, AtomPositions & xyz)
+void FlipMemo::Rename_Flip(int orientation, AtomPositions & xyz) // SJ 10/14/2015 - making this function exactly like the old setOrientation()
 {
+    static const ElementInfo * eN    = ElementInfo::StdElemTbl().element("N");
+    static const ElementInfo * eNacc = ElementInfo::StdElemTbl().element("Nacc");
+#ifdef AROMATICS_ACCEPT_HBONDS
+    static const ElementInfo * eC    = ElementInfo::StdElemTbl().element("C");
+    //static const ElementInfo * eCacc = ElementInfo::StdElemTbl().element("Car");
+#endif
+
     const int offO = _fromO;
     
      /**FLIP**/
@@ -497,6 +504,23 @@ void FlipMemo::Rename_Flip(int orientation, AtomPositions & xyz)
             _wrkAtom[ai].revalidateRecord();
             _wrkAtom[ai].loc(_origLoc[_atomOrient[orientation+offO][ai]]); // SJ - atoms coordinates exchanged according to atomOrient array at the top of the file. atomOrient contains what atoms are to be swapped with what, according to the value of the oi that designates to flip or not to flip.
             xyz.reposition(lastloc,_wrkAtom[ai]);
+            
+            if (_wrkAtom[ai].elem().atno() == 7) {
+                if (_atomDAflags[orientation+offO][ai] < 0) {
+                    _wrkAtom[ai].elem(*eNacc);
+                }
+                else { _wrkAtom[ai].elem(*eN); }
+            }
+#ifdef AROMATICS_ACCEPT_HBONDS
+            else if (_wrkAtom[ai].elem().atno() == 6) {
+                _wrkAtom[ai].elem(*eC); // apl - 10/19/2006 - His carbons no longer aromatic
+                //if (_atomDAflags[oi+offO][ai] < 0) {
+                //  _wrkAtom[ai].elem(*eCacc);
+                //}
+                //else { _wrkAtom[ai].elem(*eC); }
+            }
+#endif
+
         }
         else { // switch off but do not rub out completely
             _wrkAtom[ai].partiallyInvalidateRecord();
@@ -504,12 +528,12 @@ void FlipMemo::Rename_Flip(int orientation, AtomPositions & xyz)
     }
     
     // This was done after the original code as well, so just following the same thing
-    for(int ai=1; ai <= _resFlip[_resType].numBmpr; ai++) {
+   /* for(int ai=1; ai <= _resFlip[_resType].numBmpr; ai++) {
         if (_atomOrient[orientation+offO][ai] != 0) {
             // *** notice: the D/A status of nitrogen and carbon are modified here ***
             InFlip_ModifyDAStatus(ai,orientation,offO); // SJ - 09/10/2015 moved the original code from setOrientation to this function
         }
-    }
+    }*/
     
     return;
 }

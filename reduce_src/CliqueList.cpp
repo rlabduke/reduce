@@ -77,7 +77,7 @@ void CliqueList::formatSingles(std::vector<std::string>& cliqueNotes, AtomPositi
           // SJ - 09/25/2015 - added to do the rot hinge dock flip if the GenerateFinalFlip flag is true
           if(GenerateFinalFlip){
               
-              int orientation = (*s)->bestOrientation();
+              int orientation = (*s)->orientation();
               (*s)->setOrientation(orientation,xyz);
           }
           
@@ -137,7 +137,7 @@ void CliqueList::formatClique(std::vector<std::string>& cliqueNotes, int c, Atom
                 // SJ - 09/25/2015 - added to do the rot hinge dock flip if the GenerateFinalFlip flag is true
                 if(GenerateFinalFlip){
                     
-                    int orientation = (*s)->bestOrientation();
+                    int orientation = (*s)->orientation();
                     (*s)->setOrientation(orientation,xyz);
                 }
                 
