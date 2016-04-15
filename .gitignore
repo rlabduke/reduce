@@ -1,0 +1,4 @@
+*~
+*.a
+*.o
+reduce_src/reduce
