@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 ###############################################################################
 #
 #  This script tests various functions of reduce. I encourage you to add tests
@@ -24,9 +26,9 @@ import os
 import subprocess
 
 hs = 'you must go in the tst script and change the %s variable to point to %s'
-reduce_exe = ''
+reduce_exe = '../reduce_src/reduce'
 assert os.path.exists(reduce_exe), hs % ('reduce_exe','a reduce executable')
-het_dict_path = ''
+het_dict_path = '../reduce_het_dict.txt'
 assert os.path.exists(het_dict_path),hs%('het_dict_path','reduce_het_dict.txt')
 
 __author__ = 'bhintze'
