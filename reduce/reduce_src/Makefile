@@ -13,7 +13,7 @@ USE_SYM=true
 CRYSTAL_CODE_DIR=/home/smlewis/cctbx_prebuilt/cctbx-installer-dev-649-intel-linux-2.6-x86_64-centos6
 CRYSTAL_BUILD_DIR=/home/smlewis/cctbx_prebuilt/cctbx-installer-dev-649-intel-linux-2.6-x86_64-centos6/build
 CCTBXHOME   =${CRYSTAL_CODE_DIR}/modules/cctbx_project
-GENFILES    =${CRYSTAL_BUILD_DIR}/include
+GENFILES    =${CRYSTAL_BUILD_DIR}/include/cctbx
 LIBCCTBX    =${CRYSTAL_BUILD_DIR}/lib
 DICT_HOME   =/home/smlewis/reduce/reduce_compilesym/reduce
 
