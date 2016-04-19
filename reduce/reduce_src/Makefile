@@ -13,7 +13,8 @@ USE_SYM=true
 CRYSTAL_CODE_DIR=/home/smlewis/cctbx_prebuilt/cctbx-installer-dev-649-intel-linux-2.6-x86_64-centos6
 CRYSTAL_BUILD_DIR=/home/smlewis/cctbx_prebuilt/cctbx-installer-dev-649-intel-linux-2.6-x86_64-centos6/build
 CCTBXHOME   =${CRYSTAL_CODE_DIR}/modules/cctbx_project
-GENFILES    =${CRYSTAL_BUILD_DIR}/include/cctbx
+GENFILES    =${CRYSTAL_BUILD_DIR}/include
+BOOSTINC    =${CRYSTAL_CODE_DIR}/modules/boost
 LIBCCTBX    =${CRYSTAL_BUILD_DIR}/lib
 DICT_HOME   =/home/smlewis/reduce/reduce_compilesym/reduce
 
@@ -26,7 +27,7 @@ PROG_FLGS   = -DAROMATICS_ACCEPT_HBONDS \
 
 ifeq ($(USE_SYM),true)
 CFLAGS = $(OPTS) $(DEBUG) $(PROG_FLGS) $(DICT_LOC) -DUSE_SYM=$(USE_SYM)\
-         -I$(PDBHOME) -I$(TOOLHOME) -I$(CCTBXHOME) -I$(GENFILES)
+         -I$(PDBHOME) -I$(TOOLHOME) -I$(CCTBXHOME) -I$(GENFILES) -I$(BOOSTINC)
 LFLAGS = -L$(PDBHOME) -lpdb++ -L$(TOOLHOME) -ltoolclasses -lm -L$(LIBCCTBX) -lcctbx -lcctbx_sgtbx_asu
 else
 CFLAGS = $(OPTS) $(DEBUG) $(PROG_FLGS) $(DICT_LOC) -DUSE_SYM=$(USE_SYM)\
