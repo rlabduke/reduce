@@ -1,0 +1,21 @@
+Import("reduce_scons_env")
+
+env = reduce_scons_env.Clone()
+env.Append(
+  CXXFLAGS=[
+    "-DCHARFUNCMACROS",
+    "-DINCTEMPLATEDEFNS",
+    "-DBOOLPREDEFINED",
+    "-DBRACKETOPERPARMS",
+    "-DLISTFRIENDFIX"])
+env.StaticLibrary(
+  target=["#reduce/lib/toolclasses"],
+  source=[
+    "UseCount.cpp",
+    "Point3d.cpp",
+    "Stringclass.cpp",
+    "Hash.cpp",
+    "utility.cpp",
+    "column_sprintf.cpp",
+    "column_sscanf.cpp",
+    "DisjointSets.cpp"])

@@ -1,0 +1,278 @@
+.\" Copyright 1994, U.C.S.F. Computer Graphics Laboratory
+.\" with modifications by J. Michael Word, Duke University
+.TH PDB++ 3
+.SH NAME
+pdb++ \- A C++ class for manipulating Brookhaven Protein DataBank records
+.SH SYNOPSIS
+.nf
+#include <pdb++.h>
+
+\&....
+	PDB	record;
+
+	while (cin >> record) {
+		switch (record.type()) {
+		case PDB::ATOM:
+			cout << record.atom.xyz[0] << ' ' << record.atom.xyz[0]
+				<< ' ' << record.atom.xyz[0] << endl;
+			....
+			break;
+		}
+	}
+\&....
+.fi
+.SH DESCRIPTION
+The routines listed above are available in the pdb++ library,
+.IR "-L/usr/local/lib/midas -lpdb++" .
+.PP
+The
+.B PDB
+class provides methods for parsing Brookhaven Protein DataBank (PDB) records
+(lines from a PDB file) into structures
+and expanding those structures back into PDB records.
+Rather than provide access functions for each possible field,
+the structure containing the parsed record is publicly available.
+The field names are listed in the header file.
+.PP
+The
+.B PDB 
+class has two enhancements to the Brookhaven Protein DataBank specification:
+four character residue names, and the PDBRUN set of scene annotation records.
+For character residue names work because
+everywhere in the specification a three character residue name appears,
+there is a blank afterwards.
+.SH "MEMBER CONSTANTS"
+.TP
+.B BufLen
+The maximum length of a generated PDB record string (including the null byte).
+.TP
+.B PDBRUNVersion
+The default version of the PDBRUN scene annotation records.
+.PP
+There are also constants for each known PDB record type
+.RI ( e.g. ,
+.BR ATOM ,
+.BR HETATM ,
+.IR etc. ),
+and the constant 
+.B UNKNOWN
+for an unknown PDB record.
+.PP
+The following constants are for each PDBRUN scene annotation record type:
+.BR USER_PDBRUN ,
+.BR USER_EYEPOS ,
+.BR USER_ATPOS ,
+.BR USER_WINDOW ,
+.BR USER_FOCUS ,
+.BR USER_VIEWPORT ,
+.BR USER_BGCOLOR ,
+.BR USER_ANGLE ,
+.BR USER_DISTANCE ,
+.BR USER_FILE ,
+.BR USER_MARKNAME ,
+.BR USER_MARK ,
+.BR USER_CNAME ,
+.BR USER_COLOR ,
+.BR USER_RADIUS ,
+.BR USER_OBJECT ,
+.BR USER_ENDOBJ ,
+.BR USER_CHAIN ,
+.BR USER_GFX_BEGIN ,
+.BR USER_GFX_END ,
+.BR USER_GFX_COLOR ,
+.BR USER_GFX_NORMAL ,
+.BR USER_GFX_VERTEX ,
+.BR USER_GFX_FONT ,
+.BR USER_GFX_TEXTPOS ,
+and
+.BR USER_GFX_LABEL .
+.PP
+The following constants are for the various graphics primitives supported
+in scenes:
+.BR GFX_UNKNOWN ,
+.BR GFX_POINTS ,
+.BR GFX_MARKERS ,
+.BR GFX_LINES ,
+.BR GFX_LINE_STRIP ,
+.BR GFX_LINE_LOOP ,
+.BR GFX_TRIANGLES ,
+.BR GFX_TRIANGLE_STRIP ,
+.BR GFX_TRIANGLE_FAN ,
+.BR GFX_QUADS ,
+.BR GFX_QUAD_STRIP ,
+and 
+.BR GFX_POLYGON .
+.SH "MEMBER TYPES"
+.TP
+typedef char \fBDate\fP[10]
+A text field containing a date, typically \fIday\fP\-\fImonth\fP\-\fIyear\fP,
+where
+.I day
+is numeric,
+.I month
+is a three-letter abbreviation,
+and
+.I year
+is the last two digits of the year.
+.TP
+typedef char \fBAName\fP[5]
+A PDB atom name, \fIe.g.\fP, NO2*.
+.TP
+typedef char \fBRName\fP[5]
+Residue name, \fIe.g.\fP, ALA.
+.TP
+typedef char \fBPName\fP[5]
+PDB name, \fIe.g.\fP, 9lyz.
+.TP
+typedef char \fBId\fP[4]
+Generic short id field.
+.TP
+typedef double \fBReal\fP
+Size of floating point numbers read and written.
+.TP
+struct \fBResidue\fP
+A \fBResidue\fP consists of a residue name (\fBname\fP),
+a chain identifier (\fBchainId\fP), a sequence number (\fBseqNum\fP),
+and an insertion code (\fBinsertCode\fP).
+.SH "MEMBER FUNCTIONS"
+.LP
+.BR pdb ()
+.br
+.BR pdb "(RecordType t)"
+.br
+.BR pdb "(const char *buf)"
+.RS
+Constructors.
+The first two above construct a zeroed instance of the given record type
+(default
+.BR UNKNOWN ).
+The last constructor above fills in all of the fields of the instance
+from the given PDB record text.
+.RE
+.TP
+RecordType \fBtype\fP() const
+Return the type of PDB instance.
+.TP
+void \fBtype\fP(RecordType t)
+Change the PDB record type of the instance
+and reinitialize all the fields to default values
+(zero in all cases except for an
+.BR ATOM 's
+occupancy which defaults to 1.0).
+.TP
+const char *\fBchars\fP() const;
+Return a string containing the PDB record in textual form.
+.TP
+static int \fBPdbrunInputVersion\fP()
+Return the current PDBRUN scene annotation version used to parse text records.
+.TP
+static int \fBPdbrunOutputVersion\fP()
+Return the current PDBRUN scene annotation version used to create text records.
+.TP
+static void \fBPdbrunInputVersion\fP(int v)
+Set the current PDBRUN scene annotation version used to parse text records.
+.TP
+static void \fBPdbrunOutputVersion\fP(int v)
+Set the current PDBRUN scene annotation version used to create text records.
+.TP
+static recordType \fBgetType\fP(const char *buf)
+Return the PDB record type for the given line of text.
+.TP
+static GfxType \fBgetGfxType\fP(const char *buf)
+.TP
+static const char *\fBgfxChars\fP(GfxType gt)
+.TP
+static int \fBsscanf\fP(const char *, const char *, ...)
+A version of
+.BR sscanf (3)
+whose format's behave like \s-2FORTRAN\s0 formats where field widths
+are sacrosanct.
+If the input line is short,
+then the rest of the fields are initialized to default values.
+Any literal characters in the format must match the input.
+The format characters are:
+space, ignore input character;
+.BR c ,
+character (array), default to a space;
+.BR d ,
+integer, default zero;
+.BR f ,
+double, default zero;
+.BR s ,
+get a C string, trailing spaces are stripped and it is null terminated,
+default an empty string.
+.B sscanf
+returns the number of input fields converted
+(may be less than expected if the input line is short)
+or \(mi1 if an error is found.
+.TP
+static int \fBsprintf\fP(char *, const char *, ...)
+A version of
+.BR sprintf (3)
+whose format's behave like \s-2FORTRAN\s0 formats where field widths
+are sacrosanct.
+Literal characters are copied as is.
+If the text or number to be printed is larger than the given field width,
+then the field is filled in with asterisks.
+The format characters are:
+.BR d ,
+integer;
+.BR D ,
+integer where zero is written as spaces;
+.BR s ,
+right-justified string (a negative field width left-justifies);
+.BR c ,
+character (array), zero characters are converted to spaces;
+.BR f ,
+floating point, normal
+.B printf
+precisions are used.
+.SH "I/O FUNCTIONS"
+.TP
+ostream &\fBoperator<<\fP(ostream &s, const PDB &p)
+Output the current PDB record on the given output stream.
+.TP
+istream &\fBoperator>>\fP(istream &s, PDB &p)
+Read a line from the given input stream and convert to a PDB record.
+.SH "SEE ALSO"
+``Protein Data Bank Atomic Coordinate and Bibliographic Entry Format Description,'' Febuary 1992,
+Brookhaven National Laboratory,
+the January 1993 Protein Data Bank Quarterly Newsletter,
+``Annotating PDB Files with Scene Information,''
+Gregory S. Couch, \fIet. al.\fP, (submitted for publication).
+.SH NOTES
+The subtype field of USERxx structure tells what the
+.I xx
+part was.
+The rest of the line, up to the card sequence portion, is the text field.
+.PP
+Due to the way Brookhaven encodes their files,
+atom names often have leading blanks and sometimes have embedded blanks.
+Residue names occasionally have leading blanks too.
+To be entirely consistent with the PDB format,
+the programmer should put those blanks in before using the
+.B chars
+member function.
+.SH BUGS
+Routines are needed to convert to and from PDB typesetting conventions in
+.BR COMPND ,
+.BR SOURCE ,
+.BR AUTHOR ,
+and
+.B JRNL
+records.
+.SH COPYRIGHT
+Copyright \(co 1994 The Regents of the University of California.
+All rights reserved.
+.PP
+Redistribution and use in source and binary forms are permitted
+provided that the above copyright notice and this paragraph are
+duplicated in all such forms and that any documentation,
+advertising materials, and other materials related to such
+distribution and use acknowledge that the software was developed
+by the University of California, San Francisco.  The name of the
+University may not be used to endorse or promote products derived
+from this software without specific prior written permission.
+THIS SOFTWARE IS PROVIDED ``AS IS'' AND WITHOUT ANY EXPRESS OR
+IMPLIED WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED
+WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.

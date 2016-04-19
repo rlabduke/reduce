@@ -1,0 +1,40 @@
+Import("reduce_scons_env", "env_etc")
+
+env = reduce_scons_env.Clone()
+env.Append(
+  CXXFLAGS=[
+    "-DAROMATICS_ACCEPT_HBONDS",
+    "-DCHARFUNCMACROS",
+    "-DBOOLPREDEFINED",
+    "-DBRACKETOPERPARMS",
+    "-DLEFT_JUSTIFY_NUC_RES_OK",
+    "-DLISTFRIENDFIX",
+    "-DINCTEMPLATEDEFNS"])
+if (env_etc.compiler != "win32_cl"):
+  env.Append(CXXFLAGS=[
+    """-DHET_DICTIONARY='"/usr/local/reduce_het_dict.txt"'"""])
+env.Append(CPPPATH=["#reduce/toolclasses", "#reduce/libpdb"])
+env.Append(LIBPATH=["#reduce/lib"])
+env.Prepend(LIBS=["toolclasses", "pdb++"])
+exe = env.Program(
+  target=["#reduce/exe/reduce"],
+  source=[
+    "hybrid_36_c.c",
+    "GraphToHoldScores.cpp",
+    "reduce.cpp",
+    "CTab.cpp",
+    "ElementInfo.cpp",
+    "StdResH.cpp",
+    "ResBlk.cpp",
+    "AtomConn.cpp",
+    "AtomPositions.cpp",
+    "DotSph.cpp",
+    "Mover.cpp",
+    "RotMethyl.cpp",
+    "RotDonor.cpp",
+    "FlipMemo.cpp",
+    "CliqueList.cpp",
+    "AtomDescr.cpp",
+    "PDBrec.cpp",
+    "MoveableNode.cpp",
+    "RotAromMethyl.cpp"])

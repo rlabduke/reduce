@@ -1,0 +1,21 @@
+import libtbx
+Import("env_base", "env_etc")
+
+reduce_scons_env = env_base.Clone(
+  LIBS=env_etc.libm)
+if (libtbx.manual_date_stamp < 20090819):
+  # XXX backward compatibility 2009-08-19
+  reduce_scons_env.Replace(CCFLAGS=env_etc.ccflags_base)
+  reduce_scons_env.Replace(CXXFLAGS=env_etc.cxxflags_base)
+
+env_etc.include_registry.append(
+  env=reduce_scons_env,
+  paths=env_etc.cctbx_common_includes)
+reduce_scons_env.Prepend(LIBS=["cctbx", "cctbx_sgtbx_asu"])
+reduce_scons_env.Append(CXXFLAGS=["-DUSE_SYM=1"])
+
+Export("reduce_scons_env")
+
+SConscript("toolclasses/SConscript")
+SConscript("libpdb/SConscript")
+SConscript("reduce_src/SConscript")

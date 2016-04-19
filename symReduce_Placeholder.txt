@@ -1,0 +1,4 @@
+file: symReduce_Placeholder.txt
+The purpose of this file is reside in the top level of the SVN reduce branch symReduce.
+This will then allow all source code and directory structure to be deleted without losing
+the top directory ^/reduce/branches/symReduce/.
