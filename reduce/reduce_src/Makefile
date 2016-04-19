@@ -10,12 +10,12 @@ USE_SYM=true
 # CCTBXHOME should point to the root of the cctbx source
 # DICT_HOME should point to the location of the het dictionary file
 
-CRYSTAL_CODE_DIR=/home/austonst/HW/reduce/cctbx
-CRYSTAL_BUILD_DIR=/home/austonst/HW/reduce/cctbx/cctbx_build
-CCTBXHOME   =${CRYSTAL_CODE_DIR}/cctbx_sources/
+CRYSTAL_CODE_DIR=/home/smlewis/cctbx_prebuilt/cctbx-installer-dev-649-intel-linux-2.6-x86_64-centos6
+CRYSTAL_BUILD_DIR=/home/smlewis/cctbx_prebuilt/cctbx-installer-dev-649-intel-linux-2.6-x86_64-centos6/build
+CCTBXHOME   =${CRYSTAL_CODE_DIR}/modules/cctbx_project
 GENFILES    =${CRYSTAL_BUILD_DIR}/include
 LIBCCTBX    =${CRYSTAL_BUILD_DIR}/lib
-DICT_HOME   =/home/austonst/HW/reduce/reduce_wwPDB_het_dict.txt
+DICT_HOME   =/home/smlewis/reduce/reduce_compilesym/reduce
 
 INSTALLHOME =..
 DICT_LOC    = -DHET_DICTIONARY='"$(DICT_HOME)"'
