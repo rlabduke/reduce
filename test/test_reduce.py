@@ -576,6 +576,22 @@ HETATM 7573  O   HOH B 407       6.633  88.635  66.643  1.00 11.41           O
 HETATM 7693  O   HOH B 527       3.491  85.743  61.660  1.00  4.12           O
 '''
 
+#theoretically this should flip when symmetry is detected
+sym_flip = '''
+CRYST1   14.000   11.000   14.000  90.00  90.00  90.00 P 21 21 21    8
+ATOM   1837  N   HIS B   4       0.0    -1.090   1.356  1.00  2.00           N
+ATOM   1838  CA  HIS B   4       0.0    -0.537   0.00   1.00  2.00           C
+ATOM   1839  C   HIS B   4       0.0     1.000   0.0    1.00  2.00           C
+ATOM   1840  O   HIS B   4       0.588   1.645  -0.904  1.00  2.00           O
+ATOM   1841  CB  HIS B   4      -1.212  -1.046  -0.789  1.00  2.00           C
+ATOM   1842  CG  HIS B   4      -1.164  -2.506  -1.107  1.00  2.00           C
+ATOM   1843  ND1 HIS B   4      -2.193  -3.37   -0.7915 1.00  2.00           N
+ATOM   1844  CD2 HIS B   4      -0.225  -3.252  -1.734  1.00  2.00           C
+ATOM   1845  CE1 HIS B   4      -1.880  -4.586  -1.198  1.00  2.00           C
+ATOM   1846  NE2 HIS B   4      -0.696  -4.541  -1.781  1.00  2.00           N
+HETATM 7693  O   HOH B 527      -2.263  -7.663  -4.291  1.00  4.12           O
+'''
+
 class TestReduce(unittest.TestCase) :
 
   def test_default_reduce(self) :
