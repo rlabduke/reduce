@@ -1063,7 +1063,8 @@ void reduceChanges(bool showAll) { /*changes*/
    cerr  << "2013/07/24 - jjh       cleaned up command line parsing function, removed redundant -FLIPs option" << endl;
    cerr  << "2015/08/19 - sj        fixed multimodel handling. Header now printed only once, and" << endl;
    cerr  << "                       everything else not within MODEL ENDMDL printed in the end" << endl;
-   cerr  << "2015/??    - v3.3, sj & cjw, New flip method to replace nqh_minimize" << endl;       
+   cerr  << "2015/??    - v3.3, sj & cjw, New flip method to replace nqh_minimize" << endl;
+   cerr  << "2015/??    - bjh       test system" << endl;
    cerr  << endl;
    exit(1);
 }
