@@ -24,9 +24,9 @@
 #endif
 
 static const char *versionString =
-     "reduce: version 3.24 07/24/2013, Copyright 1997-2013, J. Michael Word";
+     "reduce: version 3.3 04/22/2016, Copyright 1997-2013, J. Michael Word";
 
-static const char *shortVersion    = "reduce.3.24.130724";
+static const char *shortVersion    = "reduce.3.3.160422";
 static const char *referenceString =
                        "Word, et. al. (1999) J. Mol. Biol. 285, 1735-1747.";
 static const char *electronicReference = "http://kinemage.biochem.duke.edu";
@@ -1063,6 +1063,7 @@ void reduceChanges(bool showAll) { /*changes*/
    cerr  << "2013/07/24 - jjh       cleaned up command line parsing function, removed redundant -FLIPs option" << endl;
    cerr  << "2015/08/19 - sj        fixed multimodel handling. Header now printed only once, and" << endl;
    cerr  << "                       everything else not within MODEL ENDMDL printed in the end" << endl;
+   cerr  << "2015/??    - v3.3, sj & cjw, New flip method to replace nqh_minimize" << endl;       
    cerr  << endl;
    exit(1);
 }
