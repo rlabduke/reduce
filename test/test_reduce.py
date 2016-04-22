@@ -154,7 +154,7 @@ END
 '''
 
 default_answer = '''\
-USER  MOD reduce.3.24.130724 H: found=0, std=0, add=78, rem=0, adj=5
+USER  MOD reduce.3.3.160422 H: found=0, std=0, add=78, rem=0, adj=5
 CRYST1   42.360   54.790  111.990  90.00  90.00  90.00 P 21 21 21    4
 SCALE1      0.023607  0.000000  0.000000        0.00000
 SCALE2      0.000000  0.018252  0.000000        0.00000
@@ -407,7 +407,7 @@ HETATM 7693  O   HOH B 527       3.491  85.743  61.660  1.00  4.12           O
 '''
 
 flip_answer = '''\
-USER  MOD reduce.3.24.130724 H: found=0, std=0, add=33, rem=0, adj=3
+USER  MOD reduce.3.3.160422 H: found=0, std=0, add=33, rem=0, adj=3
 USER  MOD -----------------------------------------------------------------
 USER  MOD scores for adjustable sidechains, with "set" totals for H,N and Q
 USER  MOD "o" means original, "f" means flipped, "180deg" is methyl default
@@ -492,7 +492,7 @@ HETATM 7693  O   HOH B 527       3.491  85.743  61.660  1.00  4.12           O
 '''
 
 nuc_answer =  '''\
-USER  MOD reduce.3.24.130724 H: found=0, std=0, add=33, rem=0, adj=3
+USER  MOD reduce.3.3.160422 H: found=0, std=0, add=33, rem=0, adj=3
 USER  MOD -----------------------------------------------------------------
 USER  MOD scores for adjustable sidechains, with "set" totals for H,N and Q
 USER  MOD "o" means original, "f" means flipped, "180deg" is methyl default
