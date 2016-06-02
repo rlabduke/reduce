@@ -11,7 +11,7 @@
 // in any way and (2) any modified versions of the program are
 // also available for free.
 //               ** Absolutely no Warranty **
-// Copyright (C) 1999-2013 J. Michael Word
+// Copyright (C) 1999-2016 J. Michael Word
 // **************************************************************
 //
 //  reduceChanges now contains the CHANGELOG or history info
@@ -24,9 +24,9 @@
 #endif
 
 static const char *versionString =
-     "reduce: version 3.3 04/22/2016, Copyright 1997-2013, J. Michael Word";
+     "reduce: version 3.3 06/02/2016, Copyright 1997-2016, J. Michael Word";
 
-static const char *shortVersion    = "reduce.3.3.160422";
+static const char *shortVersion    = "reduce.3.3.160602";
 static const char *referenceString =
                        "Word, et. al. (1999) J. Mol. Biol. 285, 1735-1747.";
 static const char *electronicReference = "http://kinemage.biochem.duke.edu";
@@ -89,7 +89,7 @@ bool DemandRotNH3             = TRUE;
 bool DemandRotExisting        = FALSE;
 bool DemandFlipAllHNQs        = FALSE;
 bool DoOnlyAltA               = FALSE; //jjh changed default 111118
-bool OKProcessMetMe           = TRUE;
+bool OKProcessMetMe           = FALSE; //cjw changed default 160602
 bool OKtoAdjust               = TRUE;
 bool ShowCliqueTicks          = TRUE;
 bool ShowOrientScore          = FALSE;
@@ -613,6 +613,9 @@ char* parseCommandLine(int argc, char **argv) {
       else if((n = compArgStr(p+1, "NOROTMET", 8))){
         OKProcessMetMe = FALSE;
       }
+      else if((n = compArgStr(p+1, "DOROTMET", 8))){
+        OKProcessMetMe = TRUE;
+      }
       else if((n = compArgStr(p+1, "NOADJust", 5))){
         OKtoAdjust = FALSE;
       }
@@ -831,7 +834,8 @@ void reduceHelp(bool showAll) { /*help*/
    cerr << "-ALLALT           process adjustments for all conformations (default)" << endl;
    cerr << "-ONLYA            only adjust 'A' conformations" << endl;
    cerr << "-CHARGEs          output charge state for appropriate hydrogen records" << endl;
-   cerr << "-NOROTMET         do not rotate methionine methyl groups" << endl;
+//   cerr << "-NOROTMET         do not rotate methionine methyl groups" << endl; //now default behavior -cjw 160602
+   cerr << "-DOROTMET         allow methionine methyl groups to rotate (not recommended)" << endl;
    cerr << "-NOADJust         do not process any rot or flip adjustments" << endl;
   }
    cerr << endl;
@@ -1065,6 +1069,7 @@ void reduceChanges(bool showAll) { /*changes*/
    cerr  << "                       everything else not within MODEL ENDMDL printed in the end" << endl;
    cerr  << "2015/??    - v3.3, sj & cjw, New flip method to replace nqh_minimize" << endl;
    cerr  << "2015/??    - bjh       test system" << endl;
+   cerr  << "2016/06/02 - cjw       set default behavior *not* to rotate methionine methyls, added -DOROTMET flag" << endl;
    cerr  << endl;
    exit(1);
 }
