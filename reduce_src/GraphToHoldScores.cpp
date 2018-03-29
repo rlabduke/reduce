@@ -1149,8 +1149,8 @@ DegreeTwoEdge_ths::whichVertex( int vertex_index ) const
 			return ii;
 		}
 	}
-	std::cerr << "CRITICAL ERROR IN whichVertex(" << vertex_index << ") called on edge [" <<
-	std::cerr << vertex_indices_[ 0 ] << ", " << vertex_indices_[ 1 ] << "]" << std::endl;
+	std::cerr << "CRITICAL ERROR IN whichVertex(" << vertex_index << ") called on edge ["
+		  << vertex_indices_[ 0 ] << ", " << vertex_indices_[ 1 ] << "]" << std::endl;
 	assert(false);
 	exit(1);
         return 0; // to avoid warnings
