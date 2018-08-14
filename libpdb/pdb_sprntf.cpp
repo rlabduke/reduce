@@ -316,28 +316,43 @@ outfloat(double value, int width, int nplace, char fill_char, int left_justify,
 	if (negative)
 		value = -value;
 
-	for (i = 0; i < nplace; i++)
-		value *= 10.0;
+	for (i = 0; i < nplace; i++) //for each decimal place in the input
+		value *= 10.0; //multiply by 10 to get rid of decimals
 
-	intval = (int) (value + 0.5);
+	intval = (int) (value + 0.5); //convert to int,rounding shouldn't be needed?
 
 	if (width == -1)
 		width = nplace + 4;		/* TODO: fix */
+		// a hack to approx width, Not sure what the TODO is about
 	else if (nplace + (nplace == 0 ? 1 : 2) > width)
 		return e_out(width, p);
 
+    //This loop extracts the digits from the decimal places
 	for (place = p + width - 1; place >= p + width - nplace; place--) {
+	    //p is probably the PDB line as assembled so far
+	    //place seems to be the index of the char in that line to operate on
+	    //initialize place at line+width-1(sign? decim?, zero-indexing?)
+	    //that is the end of the field to be filled
+	    //run until place located before the count of decimal places
+	    //place steps back in the line by 1 each round
 		*place = '0' + intval % 10;
 		intval /= 10;
+		// use % operator to extract the ones digit
+		// divide by 10 to truncate the ones place + move all right by one
 	}
 
+    //if any decimal places were called for, step back by one and add the .
 	if (nplace > 0)
 		*place-- = '.';
 
+    //If the value to the left of . is 0, step back and add 0
 	if (intval == 0)
 		*place-- = '0';
 
+    //this loop add digits to the left of the decimal
 	for (; place >= p; place--) {
+	    //place picks up where the above loop left off
+	    //step back until reaching the start of the field
 		if (intval == 0)
 			break;
 		else {
@@ -346,7 +361,8 @@ outfloat(double value, int width, int nplace, char fill_char, int left_justify,
 		}
 	}
 
-	if (intval != 0)
+    //If we run out of field before running out of intval digits, throw error
+	if (intval != 0) //This is the case of interest for too-long floats
 		return e_out(width, p);
 
 	if (place < p && negative)
