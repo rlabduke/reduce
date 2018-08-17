@@ -30,6 +30,7 @@ using std::isspace;
 using std::strlen;
 #endif
 #include <stdarg.h>
+#include <stdio.h> //sprintf
 
 	// scratch must be big enough to hold the largest number
 static char	scratch[256];
@@ -307,6 +308,37 @@ static char *
 outfloat(double value, int width, int nplace, char fill_char, int left_justify,
 									char *p)
 {
+	if (not left_justify)
+	{
+		//This function has been significantly rewritten to accommodate float
+		//values too large to fit in standard pdb format with all decimal places
+		//The string operations now used are very slightly (~10%?) slower than
+		//the previous version
+		//the new printing will not work for left_justify = True, so the
+		// original code is preserved below
+		//fill_char != " " case not currently handled
+		//NB: During testing, I did not find a place where these cases were
+		//invoked, but better safe . . . [CJW 08-17-2018]
+	    char newstr [20];
+	    int printstatus;
+	    //This loop creates strings with successively fewer decimal places until
+	    //creating a string that fits inside the field width
+	    //mmCIF format does not restrict field width like PDB, so this allows
+	    //more values to be wedged into pdb-like format
+		while (nplace >= 0)
+		{
+		  printstatus = sprintf(newstr, "%*.*f", width, nplace, value);
+		  if ((unsigned)strlen(newstr)<=(width)) //if string fits in field, done
+		    break;
+		  nplace--; //otherwise, try it again with one fewer decimal places
+		}
+		if (nplace < 0) //if loop finishes without creating a viable string
+			return e_out(width, p);
+		for(char* it = newstr; *it; ++it) //loop over string, one char at a time
+			*p++ = *it; //and print each char into the next slot of the line
+		return p;
+	}
+
 	int	i, intval;
 	char	*place, *to, *from;
 	int	negative;
