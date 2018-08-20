@@ -308,7 +308,7 @@ static char *
 outfloat(double value, int width, int nplace, char fill_char, int left_justify,
 									char *p)
 {
-	if (not left_justify)
+	if (!left_justify)
 	{
 		//This function has been significantly rewritten to accommodate float
 		//values too large to fit in standard pdb format with all decimal places
