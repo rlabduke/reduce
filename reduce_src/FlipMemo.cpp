@@ -994,7 +994,7 @@ int FlipMemo::findAtom( PDBrec * atom ) const
 	{
 		std::cerr << " &_wrkAtom[ ii ] " << &_wrkAtom[ ii ]  << std::endl;
 	}
-	exit(1);
+	exit(2);
         return 0; // to avoid warnings
 }
 
