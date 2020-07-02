@@ -22,7 +22,7 @@ set(libpdb_HEADERS
 add_library(pdb++ ${libpdb_SOURCES} ${libpdb_HEADERS})
 # In 2020, all current C++ compilers will surely define the bool type.
 # @todo Add a CMake check for whether bool is predefined, and set based on that.
-target_compile_definitions(pdb++ PUBLIC -DBOOLPREDEFINED)
+target_compile_definitions(pdb++ PUBLIC -DBOOLPREDEFINED -DHASSSCANFEXTERN)
 
 # @todo Add configuration information to installed output so those who use
 # the library will have things configured correctly based on the target.
