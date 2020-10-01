@@ -51,8 +51,13 @@ set(reduce_HEADERS
 	hybrid_36_c.h
 )
 
-set(DICT_HOME "/usr/local/reduce_wwPDB_het_dict.txt")
-set(DICT_OLD "/usr/local/reduce_het_dict.txt")
+if (WIN32)
+	set(DICT_HOME "C:/usr/local/reduce_wwPDB_het_dict.txt")
+	set(DICT_OLD "C:/usr/local/reduce_het_dict.txt")
+else ()
+	set(DICT_HOME "/usr/local/reduce_wwPDB_het_dict.txt")
+	set(DICT_OLD "/usr/local/reduce_het_dict.txt")
+endif ()
 
 add_executable(reduce ${reduce_SOURCES} ${reduce_HEADERS})
 # In 2020, all current C++ compilers will surely define the bool type.
