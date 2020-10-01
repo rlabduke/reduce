@@ -317,7 +317,7 @@ CTab::CTab(const std::string& dbfile, int sz) {
 	char buf[DBbufsz+1], resname[4];
 	int n;
 
-	_fp = ::fopen(dbfile.c_str(), "r");
+	_fp = ::fopen(dbfile.c_str(), "rb");
 
 	if (_fp == NULL) {
 		cerr << "ERROR CTab(" << dbfile << "): could not open" << endl;

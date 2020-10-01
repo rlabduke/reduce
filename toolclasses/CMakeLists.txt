@@ -32,6 +32,9 @@ target_compile_definitions(toolclasses PUBLIC
 	-DCHARFUNCMACROS -DINCTEMPLATEDEFNS -DBOOLPREDEFINED
 	-DBRACKETOPERPARMS -DLISTFRIENDFIX
 )
+if (NOT WIN32)
+  target_link_libraries(toolclasses PUBLIC m)
+endif()
 
 # @todo Add configuration information to installed output so those who use
 # the library will have things configured correctly based on the target.
