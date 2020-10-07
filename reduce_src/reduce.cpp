@@ -798,10 +798,10 @@ char* parseCommandLine(int argc, char **argv) {
 	AddOtherHydrogens = FALSE;
       }
       else if ((n = compArgStr(p + 1, "DROP_HYDROGENS_ON_ATOM_RECORDS:", 19))) {
-        RemoveATOMHydrogens = FALSE;
+        RemoveATOMHydrogens = TRUE;
       }
       else if ((n = compArgStr(p + 1, "DROP_HYDROGENS_ON_OTHER_RECORDS:", 19))) {
-	RemoveOtherHydrogens = FALSE;
+	RemoveOtherHydrogens = TRUE;
       }
       else {
         cerr << "unrecognized flag, \"" << p << "\", ignored." << endl;
