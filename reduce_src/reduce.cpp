@@ -1142,7 +1142,7 @@ std::ostream& outputRecords(std::ostream& os, const std::list<PDBrec*>& l, int m
 	if(RemoveATOMHydrogens || RemoveOtherHydrogens)
         {
 	  os <<" removed " << Tally._H_removed
-            << " hydrogens (" << Tally._H_HET_removed << " hets)" << endl;
+            << " hydrogens (" << Tally._H_HET_removed << " hets)";
         }
         if(AddWaterHydrogens || AddOtherHydrogens)
         {
@@ -1150,8 +1150,9 @@ std::ostream& outputRecords(std::ostream& os, const std::list<PDBrec*>& l, int m
             <<", std="<< Tally._H_standardized
             << ", add=" << Tally._H_added
 	    << ", rem=" << Tally._H_removed
-            << ", adj=" << Tally._num_adj << endl;
+            << ", adj=" << Tally._num_adj;
         }
+	os << endl;
 	if (!StopBeforeOptimizing)
 	{
 	  if (Tally._num_renamed > 0) {
