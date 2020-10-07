@@ -129,6 +129,7 @@ float GapWidth        = 0.3; // half width for detecting chain breaks between re
 
 std::string OFile; // if file exists, given orientations forced
 bool UseSEGIDtoChainMap = FALSE; // if true, override some chain ids
+bool StopBeforeOptimizing = FALSE;  // If true, handle hydrogen drops/adds and then quit
 
 #ifndef HET_DICTIONARY
 //#define HET_DICTIONARY "reduce_het_dict.txt"
@@ -311,7 +312,7 @@ void processPDBfile(std::istream& ifs, char *pdbFile, std::list<std::list<PDBrec
       //ofs << "USER  MOD "<< shortVersion <<" removed " << Tally._H_removed
         //   << " hydrogens (" << Tally._H_HET_removed << " hets)" << endl;
    }
-   else {
+   if (!StopBeforeOptimizing) {
 	 if (Verbose) {
 	    if (! OFile.empty()) {
 	       cerr << "Using orientation info in \""<<OFile<<"\"." << endl;
@@ -648,6 +649,7 @@ char* parseCommandLine(int argc, char **argv) {
       }
       else if((n = compArgStr(p+1, "Trim", 1))){
         RemoveHydrogens = TRUE;
+	StopBeforeOptimizing = TRUE;
       }
       else if((n = compArgStr(p+1, "Keep", 1))){
         StandardizeRHBondLengths = FALSE;
@@ -775,6 +777,9 @@ char* parseCommandLine(int argc, char **argv) {
       }
       else if(compArgStr(p+1, "Help", 1)){ // has to be after all the other -HXXXs
         reduceHelp(TRUE);
+      }
+      else if ((n = compArgStr(p + 1, "NOOPT", 4))) {
+	StopBeforeOptimizing = TRUE;
       }
       else {
         cerr << "unrecognized flag, \"" << p << "\", ignored." << endl;
@@ -1109,7 +1114,7 @@ std::ostream& outputRecords(std::ostream& os, const std::list<PDBrec*>& l, int m
             os << "USER  MOD "<< shortVersion <<" removed " << Tally._H_removed
             << " hydrogens (" << Tally._H_HET_removed << " hets)" << endl;
         }
-        else
+        if(!StopBeforeOptimizing)
         {
             os << "USER  MOD "<< shortVersion
             <<" H: found="<<Tally._H_found
