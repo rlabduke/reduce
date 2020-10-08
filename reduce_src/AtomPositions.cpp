@@ -871,13 +871,13 @@ int AtomPositions::SearchClique(std::list<MoverPtr> clique, int limit)
 	const int numItems = clique.size();
 	std::vector<MoverPtr>    item (numItems);
 	std::vector<double> currScore;
-	currScore.reserve(numItems);
+	currScore.resize(numItems);
 	std::vector<float>   currBump;
-	currBump.reserve(numItems);
+	currBump.resize(numItems);
 	std::vector<float>  currHbond;
-	currHbond.reserve(numItems);
+	currHbond.resize(numItems);
 	std::vector<bool> currBadBump;
-	currBadBump.reserve(numItems);
+	currBadBump.resize(numItems);
 	std::vector<std::list<AtomDescr> >   atomsInCliq( numItems );
 	std::vector<std::list<AtomDescr>* >   bmpingAtoms;
 	std::vector<std::list<AtomDescr > > bumpingNonBonded( numItems );

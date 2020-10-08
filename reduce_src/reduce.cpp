@@ -1887,7 +1887,7 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 				std::list<PDBrec*> rs;
 				theRes.get(pp.conn(i), rs);
 				if (!rs.empty()) {
-					nconf[i] = rs.size();
+					nconf.push_back(rs.size());
 					maxalt = std::max(maxalt, nconf[i]);
 					std::vector<PDBrec*> rvv_v;
 					rvv_v.reserve(nconf[i]);
