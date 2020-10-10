@@ -49,6 +49,7 @@ set(reduce_HEADERS
   PDBrec.h
   MoveableNode.h
   hybrid_36_c.h
+  reduce.h
 )
 
 if (WIN32)
@@ -59,18 +60,22 @@ else ()
 	set(DICT_OLD "/usr/local/reduce_het_dict.txt")
 endif ()
 
-add_executable(reduce ${reduce_SOURCES} ${reduce_HEADERS})
+add_library(reducelib ${reduce_SOURCES} ${reduce_HEADERS})
 # In 2020, all current C++ compilers will surely define the bool type.
 # @todo Add a CMake check for whether bool is predefined, and set based on that.
-target_compile_definitions(reduce PUBLIC
+target_compile_definitions(reducelib PUBLIC
 	-DAROMATICS_ACCEPT_HBONDS -DCHARFUNCMACROS -DBOOLPREDEFINED
 	-DBRACKETOPERPARMS -DLEFT_JUSTIFY_NUC_RES_OK
   -DLISTFRIENDFIX -DINCTEMPLATEDEFNS
 	-DHET_DICTIONARY="${DICT_HOME}"
 	-DHET_DICTOLD="${DICT_OLD}"
 )
-target_include_directories(reduce PRIVATE ../libpdb ../toolclasses)
-target_link_libraries(reduce pdb++ toolclasses)
+target_include_directories(reducelib PUBLIC ../libpdb ../toolclasses)
+target_link_libraries(reducelib PUBLIC pdb++ toolclasses)
+
+add_executable(reduce main.cpp)
+target_include_directories(reduce PUBLIC ./)
+target_link_libraries(reduce reducelib)
 
 # @todo Add configuration information to installed output so those who use
 # the library will have things configured correctly based on the target.
