@@ -9,46 +9,46 @@ if (WIN32)
 endif ()
 
 set(reduce_SOURCES
-	GraphToHoldScores.cpp
-	reduce.cpp
-	CTab.cpp
-	ElementInfo.cpp
-	StdResH.cpp
-	ResBlk.cpp
-	AtomConn.cpp
+  GraphToHoldScores.cpp
+  reduce.cpp
+  CTab.cpp
+  ElementInfo.cpp
+  StdResH.cpp
+  ResBlk.cpp
+  AtomConn.cpp
   AtomPositions.cpp
-	DotSph.cpp
-	Mover.cpp
-	RotMethyl.cpp
-	RotAromMethyl.cpp
-	RotDonor.cpp
+  DotSph.cpp
+  Mover.cpp
+  RotMethyl.cpp
+  RotAromMethyl.cpp
+  RotDonor.cpp
   FlipMemo.cpp
-	CliqueList.cpp
-	AtomDescr.cpp
-	PDBrec.cpp
-	MoveableNode.cpp
-	hybrid_36_c.c
+  CliqueList.cpp
+  AtomDescr.cpp
+  PDBrec.cpp
+  MoveableNode.cpp
+  hybrid_36_c.c
 )
 
 set(reduce_HEADERS
-	GraphToHoldScores.h
-	CTab.h
-	ElementInfo.h
-	StdResH.h
-	ResBlk.h
-	AtomConn.h
+  GraphToHoldScores.h
+  CTab.h
+  ElementInfo.h
+  StdResH.h
+  ResBlk.h
+  AtomConn.h
   AtomPositions.h
-	DotSph.h
-	Mover.h
-	RotMethyl.h
-	RotAromMethyl.h
-	RotDonor.h
+  DotSph.h
+  Mover.h
+  RotMethyl.h
+  RotAromMethyl.h
+  RotDonor.h
   FlipMemo.h
-	CliqueList.h
-	AtomDescr.h
-	PDBrec.h
-	MoveableNode.h
-	hybrid_36_c.h
+  CliqueList.h
+  AtomDescr.h
+  PDBrec.h
+  MoveableNode.h
+  hybrid_36_c.h
 )
 
 if (WIN32)
