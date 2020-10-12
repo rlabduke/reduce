@@ -633,19 +633,6 @@ char* parseCommandLine(int argc, char **argv) {
   return pdbfile;
 }
 
-//int main() {
-//   Verbose = FALSE;
-//   ShowCliqueTicks = FALSE;
-//
-//   char *pdbFile = getOptionsOnTheMac();
-//
-//   std::ifstream theinputstream(pdbFile);
-//   processPDBfile(theinputstream, pdbFile, std::ofstream("dump.out"));
-//
-//   return ReturnCodeGlobal; // one pass and then we quit
-//}
-//#else
-
 int main(int argc, char **argv) {
 
     int ret = -1;
@@ -673,8 +660,8 @@ int main(int argc, char **argv) {
       delete ifPtr;
     }
 
-    // Read each model from the file into a separate list of records.  This gives
-    // us a vector of lists of records, one for each model.
+    // Read all models from the file into a list of lists of records.  This gives
+    // us one list of PDB records for each model in the file.
     std::list< std::list<PDBrec*> > models = inputModels(s);
     if (models.size() == 0) {
       cerr << "Error: no input records" << endl;
@@ -687,7 +674,7 @@ int main(int argc, char **argv) {
       ret = processPDBfile(m);
     }
 
-    // SJ This is where the outputrecords should be called for all all_records.
+    // SJ This is where the outputrecords should be called for all records.
     //This function now prints and eventaully deletes all models
     outputRecords_all(cout, models);
     
@@ -699,4 +686,3 @@ int main(int argc, char **argv) {
     
    return ret;
 }
-//#endif
