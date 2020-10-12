@@ -679,19 +679,10 @@ int main(int argc, char **argv) {
 
     // Read each model from the file into a separate list of records.  This gives
     // us a vector of lists of records, one for each model.
-    std::list< std::list<PDBrec*> > models;
-    while (ModelToProcess) {
-      models.push_back(inputRecords(std::stringstream(s)));
-      if (ModelSpecified) {
-        /* did it, so quit */
-        ModelToProcess = 0;
-      } else if (ModelNext > 0) {
-        ModelToProcess = ModelNext;
-        ModelNext = 0; /*perhaps to be rediscovered in PDB file*/
-      } else {
-        /*ModelNext==0, time to quit*/
-        ModelToProcess = 0;
-      }
+    std::list< std::list<PDBrec*> > models = inputModels(s);
+    if (models.size() == 0) {
+      cerr << "Error: no input records" << endl;
+      return 100;
     }
 
     // Process each model.

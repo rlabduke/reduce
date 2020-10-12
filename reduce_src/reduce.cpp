@@ -105,7 +105,6 @@ int MaxAromRingDih    = 10;   // max dihedral angle in planarity check for aroma
 int MinNTermResNo     = 1;   // how high can a resno be for n-term?
 int ModelToProcess    = 1;   // which model to work on,
                              // >0 is a model to work on  041113
-int ModelSpecified    = 0;   // commandline model specified  041113
 int ModelNext         = 0;   // next model to process  041113
 int ModelActive       = 0;   // found the next model and working on it  041113
 int NBondCutoff       = 3;   // how many bonds away do we drop?
@@ -543,17 +542,12 @@ std::list<PDBrec*> inputRecords(std::istream& is) {
           active = FALSE;
           if(modelactive) {//041113
             modelactive = FALSE;
-            if(ModelSpecified > 0) {ModelNext = 0;} /*only do one*/
-            else {ModelNext = rec->modelNum();} /*next after one just done*/
+	    /*next after one just done*/
+	    ModelNext = rec->modelNum();
           }
           if (Verbose) {
             //cerr << "NOTE: skipping model " << rec->modelNum() << endl;
-            if(ModelSpecified > 0) {
-              cerr << "Model " << ModelToProcess << " specified, skipping model " << rec->modelNum() << endl; //041113
-            }
-            else {
-              cerr << "Processing Model " << ModelToProcess << ", for now skipping model " << rec->modelNum() << endl; //041113
-            }
+            cerr << "Processing Model " << ModelToProcess << ", for now skipping model " << rec->modelNum() << endl; //041113
           }
         }
         break;
@@ -582,6 +576,23 @@ std::list<PDBrec*> inputRecords(std::istream& is) {
     }
   }
   return records;
+}
+
+std::list< std::list<PDBrec*> > inputModels(std::string s)
+{
+  std::list< std::list<PDBrec*> > models;
+  while (ModelToProcess) {
+    models.push_back(inputRecords(std::stringstream(s)));
+    if (ModelNext > 0) {
+      ModelToProcess = ModelNext;
+      ModelNext = 0; /*perhaps to be rediscovered in PDB file*/
+    } else {
+      /*ModelNext==0, time to quit*/
+      ModelToProcess = 0;
+    }
+  }
+
+  return models;
 }
 
 void renumberAndReconnect(std::list<PDBrec*>& rlst) {

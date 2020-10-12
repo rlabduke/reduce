@@ -19,8 +19,12 @@
 #include "PDBrec.h"
 
 /// @brief Read the PDB records from the specified input stream.
-/// @todo Consider pulling out parsing of models into the vector.
-extern std::list<PDBrec*> inputRecords(std::istream& is);
+/// @param [in] s String with one PDB record per line.
+/// @return List (one entry per model) of PDB records found in the file.
+///       Each list contains all of the records that are outside of
+///       MODEL...ENDMDL records along with the records for the model
+///       that was read, with the first one being MODEL 1.
+extern std::list< std::list<PDBrec*> > inputModels(std::string s);
 
 /// @brief Check the list of PDB records to see if we should use segment ID as chain
 /// @return TRUE if we should use the segment ID as the chain, FALSE if not
@@ -76,7 +80,6 @@ extern int MaxAromRingDih;   // max dihedral angle in planarity check for aromat
 extern int MinNTermResNo;   // how high can a resno be for n-term?
 extern int ModelToProcess;   // which model to work on,
                              // >0 is a model to work on  041113
-extern int ModelSpecified;   // commandline model specified  041113
 extern int ModelNext;   // next model to process  041113
 extern int ModelActive;   // found the next model and working on it  041113
 extern int NBondCutoff;   // how many bonds away do we drop?
