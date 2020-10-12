@@ -78,10 +78,6 @@ extern bool GenerateFinalFlip; // SJ - 09/04/2015 to keep track of when scoring 
 extern int MaxAromRingDih;   // max dihedral angle in planarity check for aromatic rings  120724 - Aram
 
 extern int MinNTermResNo;   // how high can a resno be for n-term?
-extern int ModelToProcess;   // which model to work on,
-                             // >0 is a model to work on  041113
-extern int ModelNext;   // next model to process  041113
-extern int ModelActive;   // found the next model and working on it  041113
 extern int NBondCutoff;   // how many bonds away do we drop?
 extern int ExhaustiveLimit;  //time limit, in seconds, to spend in brute force enumeration for a single clique
 extern float ProbeRadius; // how big is the probe in VDW calculations?

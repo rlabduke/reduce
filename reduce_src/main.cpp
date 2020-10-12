@@ -92,7 +92,6 @@ void reduceHelp(bool showAll) { /*help*/
    cerr << "-Keep             keep bond lengths as found" << endl;
    cerr << "-MAXAromdih#      dihedral angle cutoff for aromatic ring planarity check (default="<< MaxAromRingDih <<")" << endl; // - Aram 07/24/12
    cerr << "-NBonds#          remove dots if cause within n bonds (default="<< NBondCutoff <<")" << endl;
-   cerr << "-Model#           which model to process (default="<< ModelToProcess <<")" << endl;
    cerr << "-Nterm#           max number of nterm residue (default="<<MinNTermResNo<<")" << endl;
    cerr << "-DENSity#.#       dot density (in dots/A^2) for VDW calculations (Real, default="<<VdwDotDensity<<")" << endl;
    cerr << "-RADius#.#        probe radius (in A) for VDW calculations (Real, default="<<ProbeRadius<<")" << endl;
@@ -513,9 +512,6 @@ char* parseCommandLine(int argc, char **argv) {
       }
       else if((n = compArgStr(p+1, "Nterm", 1))){
         MinNTermResNo = parseInteger(p, n+1, 10);
-      }
-      else if((n = compArgStr(p+1, "Model", 1))){
-        ModelToProcess = parseInteger(p, n+1, 10);
       }
       else if((n = compArgStr(p+1, "ONLTA", 5))){
         DoOnlyAltA = TRUE;

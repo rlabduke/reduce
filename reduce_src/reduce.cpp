@@ -103,10 +103,6 @@ bool GenerateFinalFlip        = FALSE; // SJ - 09/04/2015 to keep track of when 
 int MaxAromRingDih    = 10;   // max dihedral angle in planarity check for aromatic rings  120724 - Aram
 
 int MinNTermResNo     = 1;   // how high can a resno be for n-term?
-int ModelToProcess    = 1;   // which model to work on,
-                             // >0 is a model to work on  041113
-int ModelNext         = 0;   // next model to process  041113
-int ModelActive       = 0;   // found the next model and working on it  041113
 int NBondCutoff       = 3;   // how many bonds away do we drop?
 int ExhaustiveLimit   = 600;  //time limit, in seconds, to spend in brute force enumeration for a single clique
 float ProbeRadius     = 0.0; // how big is the probe in VDW calculations?
@@ -518,7 +514,7 @@ bool checkSEGIDs(std::list<PDBrec*>& rlst) {
 }
 
 // input a list of PDB records
-std::list<PDBrec*> inputRecords(std::istream& is) {
+std::list<PDBrec*> inputRecords(std::istream& is, int &ModelToProcess, int &ModelNext, int &ModelActive) {
   std::list<PDBrec*> records;
   PDB inputbuffer;
   bool active = TRUE;
@@ -580,9 +576,12 @@ std::list<PDBrec*> inputRecords(std::istream& is) {
 
 std::list< std::list<PDBrec*> > inputModels(std::string s)
 {
+  int ModelToProcess = 1;
+  int ModelNext = 0;
+  int ModelActive = 0;
   std::list< std::list<PDBrec*> > models;
   while (ModelToProcess) {
-    models.push_back(inputRecords(std::stringstream(s)));
+    models.push_back(inputRecords(std::stringstream(s), ModelToProcess, ModelNext, ModelActive));
     if (ModelNext > 0) {
       ModelToProcess = ModelNext;
       ModelNext = 0; /*perhaps to be rediscovered in PDB file*/
