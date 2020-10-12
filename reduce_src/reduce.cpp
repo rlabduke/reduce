@@ -162,7 +162,6 @@ bool checkSEGIDs(std::list<PDBrec*>& rlst);
 
 std::ostream& outputRecords(std::ostream& os, const std::list<PDBrec*>& records, int model); // SJ 08/04/2015 added last argument to keep track of how many models have been printed.
 void outputRecords_all(std::ostream& os, const std::list<std::list<PDBrec*> >& all_records); //SJ 08/03/2015 for printing all models together
-void dropHydrogens(std::list<PDBrec*>& records);
 void invalidateRecords(std::list<PDBrec*>& rlst);
 void reduceList(CTab& db, std::list<PDBrec*>& records,
 				AtomPositions& xyz, std::vector<std::string>& fixNotes);
@@ -203,18 +202,6 @@ int processPDBfile(std::list<PDBrec*> &records) {
 
     GenerateFinalFlip=FALSE; // SJ 09/25/2015 - this has to be reset to FALSE, because for a new model the scoring and decision for flips has to be done using renaming the atoms and not the three step flip.
     
-   if (RemoveATOMHydrogens || RemoveOtherHydrogens) {
-      dropHydrogens(records);
-
-      if (Verbose) {
-	 cerr << "Trimming: removed " <<Tally._H_removed << " hydrogens ("
-	    << Tally._H_HET_removed << " hets)" << endl;
-      }
-
-       //commented because printing has to be done in the end SJ 08/03/2015
-      //ofs << "USER  MOD "<< shortVersion <<" removed " << Tally._H_removed
-        //   << " hydrogens (" << Tally._H_HET_removed << " hets)" << endl;
-   }
    if (AddWaterHydrogens || AddOtherHydrogens) {
 	 if (Verbose) {
 	    if (BuildHisHydrogens) {
@@ -674,7 +661,7 @@ void invalidateRecords(std::list<PDBrec*>& rlst) {
   }
 }
 
-void dropHydrogens(std::list<PDBrec*>& rlst) {
+void dropHydrogens(std::list<PDBrec*>& rlst, bool RemoveATOMHydrogens, bool RemoveOtherHydrogens) {
   typedef std::list<PDBrec*>::iterator pdb_iter;
 	for (pdb_iter it = rlst.begin(); it != rlst.end(); ) {
 		PDBrec* r = *it;
@@ -684,7 +671,7 @@ void dropHydrogens(std::list<PDBrec*>& rlst) {
 				Tally._H_removed++;
 				delete r;
 				it = rlst.erase(it);
-        need_increment = false;
+				need_increment = false;
 			}
 			Tally._num_atoms++;
 		}
@@ -712,8 +699,12 @@ void dropHydrogens(std::list<PDBrec*>& rlst) {
 				Tally._conect++;
 			}
 		}
-    if (need_increment) it++;
+		if (need_increment) it++;
 	}
+  if (Verbose) {
+    cerr << "Trimming: removed " << Tally._H_removed << " hydrogens ("
+      << Tally._H_HET_removed << " hets)" << endl;
+  }
 }
 
 // count record types and group records by positon

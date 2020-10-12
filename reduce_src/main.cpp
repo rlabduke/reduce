@@ -670,6 +670,9 @@ int main(int argc, char **argv) {
 
     // Process each model.
     for (std::list<PDBrec*> &m : models) {
+      if (RemoveATOMHydrogens || RemoveOtherHydrogens) {
+        dropHydrogens(m, RemoveATOMHydrogens, RemoveOtherHydrogens);
+      }
       ret = processPDBfile(m);
     }
 

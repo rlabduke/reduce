@@ -26,6 +26,11 @@
 ///       that was read, with the first one being MODEL 1.
 extern std::list< std::list<PDBrec*> > inputModels(std::string s);
 
+/// @brief Drop hydrogens from a model in place.
+/// @param [in] RemoveATOMHydrogens Should we remove hydrogens in ATOM records?
+/// @param [in] RemoveOtherHydrogens Should we remove hydrogens in non_ATOM records?
+void dropHydrogens(std::list<PDBrec*>& records, bool RemoveATOMHydrogens, bool RemoveOtherHydrogens);
+
 /// @brief Process all of the records passed in in place.
 /// @return 0 on success, 1 on abandoned due to too many permutations.
 extern int processPDBfile(std::list<PDBrec*> &records);
