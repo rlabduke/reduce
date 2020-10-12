@@ -670,7 +670,6 @@ int main(int argc, char **argv) {
 
     // Process each model.
     for (std::list<PDBrec*> &m : models) {
-      UseSEGIDasChain = checkSEGIDs(m);
       ret = processPDBfile(m);
     }
 

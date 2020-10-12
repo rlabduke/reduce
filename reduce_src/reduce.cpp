@@ -156,6 +156,10 @@ struct SummaryStats {
 
 SummaryStats Tally;
 
+/// @brief Check the list of PDB records to see if we should use segment ID as chain
+/// @return TRUE if we should use the segment ID as the chain, FALSE if not
+bool checkSEGIDs(std::list<PDBrec*>& rlst);
+
 std::ostream& outputRecords(std::ostream& os, const std::list<PDBrec*>& records, int model); // SJ 08/04/2015 added last argument to keep track of how many models have been printed.
 void outputRecords_all(std::ostream& os, const std::list<std::list<PDBrec*> >& all_records); //SJ 08/03/2015 for printing all models together
 void dropHydrogens(std::list<PDBrec*>& records);
@@ -195,6 +199,8 @@ int processPDBfile(std::list<PDBrec*> &records) {
     int ReturnCodeGlobal = 0;
     //SJ 08/03/2015 - changed the last argument of the function to pass the list of all records that need to be stored and output only in the end
     
+    UseSEGIDasChain = checkSEGIDs(records);
+
     GenerateFinalFlip=FALSE; // SJ 09/25/2015 - this has to be reset to FALSE, because for a new model the scoring and decision for flips has to be done using renaming the atoms and not the three step flip.
     
    if (RemoveATOMHydrogens || RemoveOtherHydrogens) {

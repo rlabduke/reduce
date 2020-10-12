@@ -26,10 +26,6 @@
 ///       that was read, with the first one being MODEL 1.
 extern std::list< std::list<PDBrec*> > inputModels(std::string s);
 
-/// @brief Check the list of PDB records to see if we should use segment ID as chain
-/// @return TRUE if we should use the segment ID as the chain, FALSE if not
-bool checkSEGIDs(std::list<PDBrec*>& rlst);
-
 /// @brief Process all of the records passed in in place.
 /// @return 0 on success, 1 on abandoned due to too many permutations.
 extern int processPDBfile(std::list<PDBrec*> &records);
