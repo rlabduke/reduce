@@ -656,12 +656,11 @@ int main(int argc, char **argv) {
     
     char *pdbFile = parseCommandLine(argc, argv);
     
-    std::list<std::list<PDBrec*> > all_records; // SJ 08/03/2015 added to keep all models before printing them
-
     // See whether we're supposed to read from a PDB file, (pdbFile is a string name and
     // StringInput is FALSE), from a string (StringInput is TRUE and pdbFile is set to
     // the actual string to read from), or from standard input (the - option tells us to
     // read from standard input by setting pdbfile to NULL and StringInput to FALSE).
+    // In any case, read the input into a string.
     std::istream *ifPtr;
     if (StringInput == TRUE) {
       if (Verbose) cerr << "Processing input string" << endl;
@@ -674,8 +673,15 @@ int main(int argc, char **argv) {
       ifPtr = &cin;
     }
     std::string s(std::istreambuf_iterator<char>(*ifPtr), {});
+    if (ifPtr != &cin) {
+      delete ifPtr;
+    }
+
+    // Read each model from the file into a separate list of records.  This gives
+    // us a vector of lists of records, one for each model.
+    std::list< std::list<PDBrec*> > models;
     while (ModelToProcess) {
-      ret = processPDBfile(std::stringstream(s), all_records);
+      models.push_back(inputRecords(std::stringstream(s)));
       if (ModelSpecified) {
         /* did it, so quit */
         ModelToProcess = 0;
@@ -687,13 +693,16 @@ int main(int argc, char **argv) {
         ModelToProcess = 0;
       }
     }
-    if (ifPtr != &cin) {
-      delete ifPtr;
+
+    // Process each model.
+    for (std::list<PDBrec*> &m : models) {
+      UseSEGIDasChain = checkSEGIDs(m);
+      ret = processPDBfile(m);
     }
-    
+
     // SJ This is where the outputrecords should be called for all all_records.
     //This function now prints and eventaully deletes all models
-    outputRecords_all(cout, all_records);
+    outputRecords_all(cout, models);
     
     if (Verbose) { // copied over from processPDBfile to here, will be printed only once
      cerr << "If you publish work which uses reduce, please cite:"

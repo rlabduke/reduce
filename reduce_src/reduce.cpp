@@ -66,6 +66,7 @@ using std::toupper;
 #include "pdb++.h"
 #include "PDBrec.h"
 #include "AtomPositions.h"
+#include "reduce.h"
 
 #define ABANDONED_RC 1
 
@@ -160,10 +161,8 @@ struct SummaryStats {
 
 SummaryStats Tally;
 
-std::istream& inputRecords(std::istream& is, std::list<PDBrec*>& records);
 std::ostream& outputRecords(std::ostream& os, const std::list<PDBrec*>& records, int model); // SJ 08/04/2015 added last argument to keep track of how many models have been printed.
 void outputRecords_all(std::ostream& os, const std::list<std::list<PDBrec*> >& all_records); //SJ 08/03/2015 for printing all models together
-void checkSEGIDs(std::list<PDBrec*>& rlst);
 void dropHydrogens(std::list<PDBrec*>& records);
 void invalidateRecords(std::list<PDBrec*>& rlst);
 void reduceList(CTab& db, std::list<PDBrec*>& records,
@@ -197,18 +196,12 @@ void recordSkipInfo(bool skipH, std::vector<std::string>& fixNotes,
    const PDBrec& theHatom, const PDBrec& heavyAtom,
    std::list<PDBrec*>& nearr, const char * msg);
 
-int processPDBfile(std::istream& ifs, std::list<std::list<PDBrec*> >& all_records/*std::ostream& ofs*/) {
+int processPDBfile(std::list<PDBrec*> &records) {
     int ReturnCodeGlobal = 0;
     //SJ 08/03/2015 - changed the last argument of the function to pass the list of all records that need to be stored and output only in the end
     
     GenerateFinalFlip=FALSE; // SJ 09/25/2015 - this has to be reset to FALSE, because for a new model the scoring and decision for flips has to be done using renaming the atoms and not the three step flip.
     
-   std::list<PDBrec*> records;
-
-   inputRecords(ifs, records);       // read all the PDB records in the file
-
-   checkSEGIDs(records);
-
    if (RemoveATOMHydrogens || RemoveOtherHydrogens) {
       dropHydrogens(records);
 
@@ -403,18 +396,6 @@ int processPDBfile(std::istream& ifs, std::list<std::list<PDBrec*> >& all_record
       ;//renumberAndReconnect(records);
    }
 
-   // SJ 08/03/2015 - add records to all_records here.
-    all_records.push_back(records);
-    
-    // SJ 08/03/2015  - commneted all the lines from below, as printing and deletion will only happen once
-   //outputRecords(ofs, records);
-
-   /*if (Verbose) {
-      cerr << "If you publish work which uses reduce, please cite:"
-           << endl << referenceString << endl;
-      cerr << "For more information see " << electronicReference << endl;
-   }*/
-
   // std::for_each(records.begin(), records.end(), DeleteObject());
   return ReturnCodeGlobal;
 }
@@ -510,7 +491,8 @@ std::ostream& outputRecords(std::ostream& os, const std::list<PDBrec*>& l, int m
 }
 
 // check input records for SEGIDs only, use instead of chainID
-void checkSEGIDs(std::list<PDBrec*>& rlst) {
+bool checkSEGIDs(std::list<PDBrec*>& rlst) {
+  bool ret = FALSE;
   int full_chain_ctr = 0;
   int full_segid_ctr = 0;
   typedef std::list<PDBrec*>::iterator pdb_iter;
@@ -531,12 +513,14 @@ void checkSEGIDs(std::list<PDBrec*>& rlst) {
   //cerr << "full_segid_ctr = " << full_segid_ctr << endl;
   if ( (full_chain_ctr == 0) && (full_segid_ctr > 0) ) {
     //cerr << "Using SEGID as chain" << endl;
-    UseSEGIDasChain = TRUE;
+    ret = TRUE;
   }
+  return ret;
 }
 
 // input a list of PDB records
-std::istream& inputRecords(std::istream& is, std::list<PDBrec*>& records) {
+std::list<PDBrec*> inputRecords(std::istream& is) {
+  std::list<PDBrec*> records;
   PDB inputbuffer;
   bool active = TRUE;
   bool modelactive = FALSE;  //041113
@@ -597,7 +581,7 @@ std::istream& inputRecords(std::istream& is, std::list<PDBrec*>& records) {
       delete rec; rec = 0;
     }
   }
-  return is;
+  return records;
 }
 
 void renumberAndReconnect(std::list<PDBrec*>& rlst) {

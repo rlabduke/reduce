@@ -18,11 +18,17 @@
 #include <list>
 #include "PDBrec.h"
 
+/// @brief Read the PDB records from the specified input stream.
+/// @todo Consider pulling out parsing of models into the vector.
+extern std::list<PDBrec*> inputRecords(std::istream& is);
 
-//SJ 08/03/2015 - replaced with new def of function, to make sure everything is printed in the end
-//void processPDBfile(std::istream& ifs, char *pdbFile, std::ostream& ofs);
+/// @brief Check the list of PDB records to see if we should use segment ID as chain
+/// @return TRUE if we should use the segment ID as the chain, FALSE if not
+bool checkSEGIDs(std::list<PDBrec*>& rlst);
+
+/// @brief Process all of the records passed in in place.
 /// @return 0 on success, 1 on abandoned due to too many permutations.
-extern int processPDBfile(std::istream& ifs, std::list<std::list<PDBrec*> >& all_records);
+extern int processPDBfile(std::list<PDBrec*> &records);
 
 extern void outputRecords_all(std::ostream& os, const std::list<std::list<PDBrec*> >& all_records); //SJ 08/03/2015 for printing all models together
 
