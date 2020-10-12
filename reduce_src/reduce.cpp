@@ -197,31 +197,12 @@ void recordSkipInfo(bool skipH, std::vector<std::string>& fixNotes,
    const PDBrec& theHatom, const PDBrec& heavyAtom,
    std::list<PDBrec*>& nearr, const char * msg);
 
-int processPDBfile(std::istream& ifs, char *pdbFile, std::list<std::list<PDBrec*> >& all_records/*std::ostream& ofs*/) {
+int processPDBfile(std::istream& ifs, std::list<std::list<PDBrec*> >& all_records/*std::ostream& ofs*/) {
     int ReturnCodeGlobal = 0;
     //SJ 08/03/2015 - changed the last argument of the function to pass the list of all records that need to be stored and output only in the end
     
     GenerateFinalFlip=FALSE; // SJ 09/25/2015 - this has to be reset to FALSE, because for a new model the scoring and decision for flips has to be done using renaming the atoms and not the three step flip.
     
-   if (Verbose) {
-      cerr << versionString << endl;
-      if (pdbFile) {
-	 cerr << "Processing file: \"" << pdbFile << "\"" << endl;
-      }
-      else if (StringInput){
-          cerr << "Processing input string" << endl;
-      }
-      else {
-	 cerr << "Processing file: --standard input--" << endl;
-      }
-      if (ProcessConnHydOnHets && !StopBeforeOptimizing) {
-	 cerr << "Database of HETATM connections: \"" << DBfilename << "\"" << endl;
-      }
-      if (ModelToProcess != 1) {
-	 cerr << "Using Model: \"" << ModelToProcess << "\"" << endl;
-      }
-   }
-
    std::list<PDBrec*> records;
 
    inputRecords(ifs, records);       // read all the PDB records in the file

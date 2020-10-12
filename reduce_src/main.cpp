@@ -658,35 +658,38 @@ int main(int argc, char **argv) {
     
     std::list<std::list<PDBrec*> > all_records; // SJ 08/03/2015 added to keep all models before printing them
 
-   if(pdbFile && StringInput == FALSE)
-   {/*can do multiple passes by rewinding input file*/
-      //std::ifstream theinputstream(pdbFile); //would need rewind
-      while(ModelToProcess) /* 041113 */
-      {
-         std::ifstream theinputstream(pdbFile); //declare each time, avoid rewind
-         ret = processPDBfile(theinputstream, pdbFile,all_records); // SJ - changed to match new def
-         if(ModelSpecified) {ModelToProcess = 0;} /* did it, so quit */
-         else if(ModelNext > 0)
-         {
-            ModelToProcess = ModelNext;
-            ModelNext = 0; /*perhaps to be rediscovered in PDB file*/
-            //theinputstream::rewind; /*theinputstream undeclared*/
-//cerr<<"about to rewind"<<endl;
-//            rewind(theinputstream); /*gives warnings*/
-//cerr<<"just did rewind"<<endl;
-         }
-         else {ModelToProcess = 0;} /*ModelNext==0, time to quit*/
+    // See whether we're supposed to read from a PDB file, (pdbFile is a string name and
+    // StringInput is FALSE), from a string (StringInput is TRUE and pdbFile is set to
+    // the actual string to read from), or from standard input (the - option tells us to
+    // read from standard input by setting pdbfile to NULL and StringInput to FALSE).
+    std::istream *ifPtr;
+    if (StringInput == TRUE) {
+      if (Verbose) cerr << "Processing input string" << endl;
+      ifPtr = new std::istringstream(pdbFile);
+    } else if (pdbFile) {
+      if (Verbose) cerr << "Processing file: \"" << pdbFile << "\"" << endl;
+      ifPtr = new std::ifstream(pdbFile);
+    } else {
+      if (Verbose) cerr << "Processing file: --standard input--" << endl;
+      ifPtr = &cin;
+    }
+    std::string s(std::istreambuf_iterator<char>(*ifPtr), {});
+    while (ModelToProcess) {
+      ret = processPDBfile(std::stringstream(s), all_records);
+      if (ModelSpecified) {
+        /* did it, so quit */
+        ModelToProcess = 0;
+      } else if (ModelNext > 0) {
+        ModelToProcess = ModelNext;
+        ModelNext = 0; /*perhaps to be rediscovered in PDB file*/
+      } else {
+        /*ModelNext==0, time to quit*/
+        ModelToProcess = 0;
       }
-   }
-   /* pdbFile here is used to hold the string to be memory efficient */
-   else if(StringInput == TRUE){
-       std::istringstream is(pdbFile);
-       ret = processPDBfile(is,NULL,all_records); // SJ changed to match new def
-   }
-   else
-   {/*presume stdin for pdb file info*/
-      ret = processPDBfile(cin,            pdbFile, all_records); // SJ changed to match new def
-   }
+    }
+    if (ifPtr != &cin) {
+      delete ifPtr;
+    }
     
     // SJ This is where the outputrecords should be called for all all_records.
     //This function now prints and eventaully deletes all models

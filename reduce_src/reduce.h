@@ -22,7 +22,7 @@
 //SJ 08/03/2015 - replaced with new def of function, to make sure everything is printed in the end
 //void processPDBfile(std::istream& ifs, char *pdbFile, std::ostream& ofs);
 /// @return 0 on success, 1 on abandoned due to too many permutations.
-extern int processPDBfile(std::istream& ifs, char *pdbFile,std::list<std::list<PDBrec*> >& all_records);
+extern int processPDBfile(std::istream& ifs, std::list<std::list<PDBrec*> >& all_records);
 
 extern void outputRecords_all(std::ostream& os, const std::list<std::list<PDBrec*> >& all_records); //SJ 08/03/2015 for printing all models together
 
