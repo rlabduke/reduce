@@ -26,7 +26,7 @@
 const char *versionString =
      "reduce: version 3.4 10/08/2020, Copyright 1997-2016, J. Michael Word; 2020 ReliaSolve";
 
-static const char *shortVersion    = "reduce.3.4.201008";
+const char *shortVersion    = "reduce.3.4.201008";
 const char *referenceString =
                        "Word, et. al. (1999) J. Mol. Biol. 285, 1735-1747.";
 const char *electronicReference = "http://kinemage.biochem.duke.edu";
@@ -574,7 +574,8 @@ std::list< std::list<PDBrec*> > inputModels(std::string s)
   int ModelActive = 0;
   std::list< std::list<PDBrec*> > models;
   while (ModelToProcess) {
-    models.push_back(inputRecords(std::stringstream(s), ModelToProcess, ModelNext, ModelActive));
+    std::stringstream ss(s);
+    models.push_back(inputRecords(ss, ModelToProcess, ModelNext, ModelActive));
     if (ModelNext > 0) {
       ModelToProcess = ModelNext;
       ModelNext = 0; /*perhaps to be rediscovered in PDB file*/
