@@ -24,9 +24,9 @@
 #endif
 
 static const char *versionString =
-     "reduce: version 3.3 06/02/2016, Copyright 1997-2016, J. Michael Word";
+     "reduce: version 3.4 10/08/2020, Copyright 1997-2016, J. Michael Word; 2020 ReliaSolve";
 
-static const char *shortVersion    = "reduce.3.3.160602";
+static const char *shortVersion    = "reduce.3.4.201008";
 static const char *referenceString =
                        "Word, et. al. (1999) J. Mol. Biol. 285, 1735-1747.";
 static const char *electronicReference = "http://kinemage.biochem.duke.edu";
@@ -1104,7 +1104,8 @@ void reduceChanges(bool showAll) { /*changes*/
    cerr  << "2015/??    - v3.3, sj & cjw, New flip method to replace nqh_minimize" << endl;
    cerr  << "2015/??    - bjh       test system" << endl;
    cerr  << "2016/06/02 - cjw       set default behavior *not* to rotate methionine methyls, added -DOROTMET flag" << endl;
-   cerr  << endl;
+   cerr  << "2020/10/07 - rmt       added fine-grained command-line control over hydrogen drop/add and optimization" << endl;
+   cerr  << "2020/10/08 - rmt       adjusted vector operations to enable running in debug compile" << endl;
    exit(1);
 }
 
