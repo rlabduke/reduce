@@ -92,7 +92,6 @@ void reduceHelp(bool showAll) { /*help*/
    cerr << "-Keep             keep bond lengths as found" << endl;
    cerr << "-MAXAromdih#      dihedral angle cutoff for aromatic ring planarity check (default="<< MaxAromRingDih <<")" << endl; // - Aram 07/24/12
    cerr << "-NBonds#          remove dots if cause within n bonds (default="<< NBondCutoff <<")" << endl;
-   cerr << "-Model#           which model to process (default="<< ModelToProcess <<")" << endl;
    cerr << "-Nterm#           max number of nterm residue (default="<<MinNTermResNo<<")" << endl;
    cerr << "-DENSity#.#       dot density (in dots/A^2) for VDW calculations (Real, default="<<VdwDotDensity<<")" << endl;
    cerr << "-RADius#.#        probe radius (in A) for VDW calculations (Real, default="<<ProbeRadius<<")" << endl;
@@ -514,9 +513,6 @@ char* parseCommandLine(int argc, char **argv) {
       else if((n = compArgStr(p+1, "Nterm", 1))){
         MinNTermResNo = parseInteger(p, n+1, 10);
       }
-      else if((n = compArgStr(p+1, "Model", 1))){
-        ModelToProcess = parseInteger(p, n+1, 10);
-      }
       else if((n = compArgStr(p+1, "ONLTA", 5))){
         DoOnlyAltA = TRUE;
       }
@@ -637,60 +633,52 @@ char* parseCommandLine(int argc, char **argv) {
   return pdbfile;
 }
 
-//int main() {
-//   Verbose = FALSE;
-//   ShowCliqueTicks = FALSE;
-//
-//   char *pdbFile = getOptionsOnTheMac();
-//
-//   std::ifstream theinputstream(pdbFile);
-//   processPDBfile(theinputstream, pdbFile, std::ofstream("dump.out"));
-//
-//   return ReturnCodeGlobal; // one pass and then we quit
-//}
-//#else
-
 int main(int argc, char **argv) {
 
     int ret = -1;
     
     char *pdbFile = parseCommandLine(argc, argv);
     
-    std::list<std::list<PDBrec*> > all_records; // SJ 08/03/2015 added to keep all models before printing them
+    // See whether we're supposed to read from a PDB file, (pdbFile is a string name and
+    // StringInput is FALSE), from a string (StringInput is TRUE and pdbFile is set to
+    // the actual string to read from), or from standard input (the - option tells us to
+    // read from standard input by setting pdbfile to NULL and StringInput to FALSE).
+    // In any case, read the input into a string.
+    std::istream *ifPtr;
+    if (StringInput == TRUE) {
+      if (Verbose) cerr << "Processing input string" << endl;
+      ifPtr = new std::istringstream(pdbFile);
+    } else if (pdbFile) {
+      if (Verbose) cerr << "Processing file: \"" << pdbFile << "\"" << endl;
+      ifPtr = new std::ifstream(pdbFile);
+    } else {
+      if (Verbose) cerr << "Processing file: --standard input--" << endl;
+      ifPtr = &cin;
+    }
+    std::string s(std::istreambuf_iterator<char>(*ifPtr), {});
+    if (ifPtr != &cin) {
+      delete ifPtr;
+    }
 
-   if(pdbFile && StringInput == FALSE)
-   {/*can do multiple passes by rewinding input file*/
-      //std::ifstream theinputstream(pdbFile); //would need rewind
-      while(ModelToProcess) /* 041113 */
-      {
-         std::ifstream theinputstream(pdbFile); //declare each time, avoid rewind
-         ret = processPDBfile(theinputstream, pdbFile,all_records); // SJ - changed to match new def
-         if(ModelSpecified) {ModelToProcess = 0;} /* did it, so quit */
-         else if(ModelNext > 0)
-         {
-            ModelToProcess = ModelNext;
-            ModelNext = 0; /*perhaps to be rediscovered in PDB file*/
-            //theinputstream::rewind; /*theinputstream undeclared*/
-//cerr<<"about to rewind"<<endl;
-//            rewind(theinputstream); /*gives warnings*/
-//cerr<<"just did rewind"<<endl;
-         }
-         else {ModelToProcess = 0;} /*ModelNext==0, time to quit*/
+    // Read all models from the file into a list of lists of records.  This gives
+    // us one list of PDB records for each model in the file.
+    std::list< std::list<PDBrec*> > models = inputModels(s);
+    if (models.size() == 0) {
+      cerr << "Error: no input records" << endl;
+      return 100;
+    }
+
+    // Process each model.
+    for (std::list<PDBrec*> &m : models) {
+      if (RemoveATOMHydrogens || RemoveOtherHydrogens) {
+        dropHydrogens(m, RemoveATOMHydrogens, RemoveOtherHydrogens);
       }
-   }
-   /* pdbFile here is used to hold the string to be memory efficient */
-   else if(StringInput == TRUE){
-       std::istringstream is(pdbFile);
-       ret = processPDBfile(is,NULL,all_records); // SJ changed to match new def
-   }
-   else
-   {/*presume stdin for pdb file info*/
-      ret = processPDBfile(cin,            pdbFile, all_records); // SJ changed to match new def
-   }
-    
-    // SJ This is where the outputrecords should be called for all all_records.
+      ret = processPDBfile(m);
+    }
+
+    // SJ This is where the outputrecords should be called for all records.
     //This function now prints and eventaully deletes all models
-    outputRecords_all(cout, all_records);
+    outputRecords_all(cout, models);
     
     if (Verbose) { // copied over from processPDBfile to here, will be printed only once
      cerr << "If you publish work which uses reduce, please cite:"
@@ -700,4 +688,3 @@ int main(int argc, char **argv) {
     
    return ret;
 }
-//#endif

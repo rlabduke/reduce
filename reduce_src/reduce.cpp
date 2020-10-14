@@ -66,6 +66,7 @@ using std::toupper;
 #include "pdb++.h"
 #include "PDBrec.h"
 #include "AtomPositions.h"
+#include "reduce.h"
 
 #define ABANDONED_RC 1
 
@@ -102,11 +103,6 @@ bool GenerateFinalFlip        = FALSE; // SJ - 09/04/2015 to keep track of when 
 int MaxAromRingDih    = 10;   // max dihedral angle in planarity check for aromatic rings  120724 - Aram
 
 int MinNTermResNo     = 1;   // how high can a resno be for n-term?
-int ModelToProcess    = 1;   // which model to work on,
-                             // >0 is a model to work on  041113
-int ModelSpecified    = 0;   // commandline model specified  041113
-int ModelNext         = 0;   // next model to process  041113
-int ModelActive       = 0;   // found the next model and working on it  041113
 int NBondCutoff       = 3;   // how many bonds away do we drop?
 int ExhaustiveLimit   = 600;  //time limit, in seconds, to spend in brute force enumeration for a single clique
 float ProbeRadius     = 0.0; // how big is the probe in VDW calculations?
@@ -160,11 +156,12 @@ struct SummaryStats {
 
 SummaryStats Tally;
 
-std::istream& inputRecords(std::istream& is, std::list<PDBrec*>& records);
+/// @brief Check the list of PDB records to see if we should use segment ID as chain
+/// @return TRUE if we should use the segment ID as the chain, FALSE if not
+bool checkSEGIDs(std::list<PDBrec*>& rlst);
+
 std::ostream& outputRecords(std::ostream& os, const std::list<PDBrec*>& records, int model); // SJ 08/04/2015 added last argument to keep track of how many models have been printed.
 void outputRecords_all(std::ostream& os, const std::list<std::list<PDBrec*> >& all_records); //SJ 08/03/2015 for printing all models together
-void checkSEGIDs(std::list<PDBrec*>& rlst);
-void dropHydrogens(std::list<PDBrec*>& records);
 void invalidateRecords(std::list<PDBrec*>& rlst);
 void reduceList(CTab& db, std::list<PDBrec*>& records,
 				AtomPositions& xyz, std::vector<std::string>& fixNotes);
@@ -197,50 +194,14 @@ void recordSkipInfo(bool skipH, std::vector<std::string>& fixNotes,
    const PDBrec& theHatom, const PDBrec& heavyAtom,
    std::list<PDBrec*>& nearr, const char * msg);
 
-int processPDBfile(std::istream& ifs, char *pdbFile, std::list<std::list<PDBrec*> >& all_records/*std::ostream& ofs*/) {
+int processPDBfile(std::list<PDBrec*> &records) {
+    int ReturnCodeGlobal = 0;
     //SJ 08/03/2015 - changed the last argument of the function to pass the list of all records that need to be stored and output only in the end
     
+    UseSEGIDasChain = checkSEGIDs(records);
+
     GenerateFinalFlip=FALSE; // SJ 09/25/2015 - this has to be reset to FALSE, because for a new model the scoring and decision for flips has to be done using renaming the atoms and not the three step flip.
     
-    int ReturnCodeGlobal = 0;
-
-   if (Verbose) {
-      cerr << versionString << endl;
-      if (pdbFile) {
-	 cerr << "Processing file: \"" << pdbFile << "\"" << endl;
-      }
-      else if (StringInput){
-          cerr << "Processing input string" << endl;
-      }
-      else {
-	 cerr << "Processing file: --standard input--" << endl;
-      }
-      if (ProcessConnHydOnHets && !StopBeforeOptimizing) {
-	 cerr << "Database of HETATM connections: \"" << DBfilename << "\"" << endl;
-      }
-      if (ModelToProcess != 1) {
-	 cerr << "Using Model: \"" << ModelToProcess << "\"" << endl;
-      }
-   }
-
-   std::list<PDBrec*> records;
-
-   inputRecords(ifs, records);       // read all the PDB records in the file
-
-   checkSEGIDs(records);
-
-   if (RemoveATOMHydrogens || RemoveOtherHydrogens) {
-      dropHydrogens(records);
-
-      if (Verbose) {
-	 cerr << "Trimming: removed " <<Tally._H_removed << " hydrogens ("
-	    << Tally._H_HET_removed << " hets)" << endl;
-      }
-
-       //commented because printing has to be done in the end SJ 08/03/2015
-      //ofs << "USER  MOD "<< shortVersion <<" removed " << Tally._H_removed
-        //   << " hydrogens (" << Tally._H_HET_removed << " hets)" << endl;
-   }
    if (AddWaterHydrogens || AddOtherHydrogens) {
 	 if (Verbose) {
 	    if (BuildHisHydrogens) {
@@ -423,18 +384,6 @@ int processPDBfile(std::istream& ifs, char *pdbFile, std::list<std::list<PDBrec*
       ;//renumberAndReconnect(records);
    }
 
-   // SJ 08/03/2015 - add records to all_records here.
-    all_records.push_back(records);
-    
-    // SJ 08/03/2015  - commneted all the lines from below, as printing and deletion will only happen once
-   //outputRecords(ofs, records);
-
-   /*if (Verbose) {
-      cerr << "If you publish work which uses reduce, please cite:"
-           << endl << referenceString << endl;
-      cerr << "For more information see " << electronicReference << endl;
-   }*/
-
   // std::for_each(records.begin(), records.end(), DeleteObject());
   return ReturnCodeGlobal;
 }
@@ -530,7 +479,8 @@ std::ostream& outputRecords(std::ostream& os, const std::list<PDBrec*>& l, int m
 }
 
 // check input records for SEGIDs only, use instead of chainID
-void checkSEGIDs(std::list<PDBrec*>& rlst) {
+bool checkSEGIDs(std::list<PDBrec*>& rlst) {
+  bool ret = FALSE;
   int full_chain_ctr = 0;
   int full_segid_ctr = 0;
   typedef std::list<PDBrec*>::iterator pdb_iter;
@@ -551,12 +501,14 @@ void checkSEGIDs(std::list<PDBrec*>& rlst) {
   //cerr << "full_segid_ctr = " << full_segid_ctr << endl;
   if ( (full_chain_ctr == 0) && (full_segid_ctr > 0) ) {
     //cerr << "Using SEGID as chain" << endl;
-    UseSEGIDasChain = TRUE;
+    ret = TRUE;
   }
+  return ret;
 }
 
 // input a list of PDB records
-std::istream& inputRecords(std::istream& is, std::list<PDBrec*>& records) {
+std::list<PDBrec*> inputRecords(std::istream& is, int &ModelToProcess, int &ModelNext, int &ModelActive) {
+  std::list<PDBrec*> records;
   PDB inputbuffer;
   bool active = TRUE;
   bool modelactive = FALSE;  //041113
@@ -579,17 +531,12 @@ std::istream& inputRecords(std::istream& is, std::list<PDBrec*>& records) {
           active = FALSE;
           if(modelactive) {//041113
             modelactive = FALSE;
-            if(ModelSpecified > 0) {ModelNext = 0;} /*only do one*/
-            else {ModelNext = rec->modelNum();} /*next after one just done*/
+	    /*next after one just done*/
+	    ModelNext = rec->modelNum();
           }
           if (Verbose) {
             //cerr << "NOTE: skipping model " << rec->modelNum() << endl;
-            if(ModelSpecified > 0) {
-              cerr << "Model " << ModelToProcess << " specified, skipping model " << rec->modelNum() << endl; //041113
-            }
-            else {
-              cerr << "Processing Model " << ModelToProcess << ", for now skipping model " << rec->modelNum() << endl; //041113
-            }
+            cerr << "Processing Model " << ModelToProcess << ", for now skipping model " << rec->modelNum() << endl; //041113
           }
         }
         break;
@@ -617,7 +564,27 @@ std::istream& inputRecords(std::istream& is, std::list<PDBrec*>& records) {
       delete rec; rec = 0;
     }
   }
-  return is;
+  return records;
+}
+
+std::list< std::list<PDBrec*> > inputModels(std::string s)
+{
+  int ModelToProcess = 1;
+  int ModelNext = 0;
+  int ModelActive = 0;
+  std::list< std::list<PDBrec*> > models;
+  while (ModelToProcess) {
+    models.push_back(inputRecords(std::stringstream(s), ModelToProcess, ModelNext, ModelActive));
+    if (ModelNext > 0) {
+      ModelToProcess = ModelNext;
+      ModelNext = 0; /*perhaps to be rediscovered in PDB file*/
+    } else {
+      /*ModelNext==0, time to quit*/
+      ModelToProcess = 0;
+    }
+  }
+
+  return models;
 }
 
 void renumberAndReconnect(std::list<PDBrec*>& rlst) {
@@ -694,7 +661,7 @@ void invalidateRecords(std::list<PDBrec*>& rlst) {
   }
 }
 
-void dropHydrogens(std::list<PDBrec*>& rlst) {
+void dropHydrogens(std::list<PDBrec*>& rlst, bool RemoveATOMHydrogens, bool RemoveOtherHydrogens) {
   typedef std::list<PDBrec*>::iterator pdb_iter;
 	for (pdb_iter it = rlst.begin(); it != rlst.end(); ) {
 		PDBrec* r = *it;
@@ -704,7 +671,7 @@ void dropHydrogens(std::list<PDBrec*>& rlst) {
 				Tally._H_removed++;
 				delete r;
 				it = rlst.erase(it);
-        need_increment = false;
+				need_increment = false;
 			}
 			Tally._num_atoms++;
 		}
@@ -732,8 +699,12 @@ void dropHydrogens(std::list<PDBrec*>& rlst) {
 				Tally._conect++;
 			}
 		}
-    if (need_increment) it++;
+		if (need_increment) it++;
 	}
+  if (Verbose) {
+    cerr << "Trimming: removed " << Tally._H_removed << " hydrogens ("
+      << Tally._H_HET_removed << " hets)" << endl;
+  }
 }
 
 // count record types and group records by positon

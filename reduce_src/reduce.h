@@ -18,11 +18,22 @@
 #include <list>
 #include "PDBrec.h"
 
+/// @brief Read the PDB records from the specified input stream.
+/// @param [in] s String with one PDB record per line.
+/// @return List (one entry per model) of PDB records found in the file.
+///       Each list contains all of the records that are outside of
+///       MODEL...ENDMDL records along with the records for the model
+///       that was read, with the first one being MODEL 1.
+extern std::list< std::list<PDBrec*> > inputModels(std::string s);
 
-//SJ 08/03/2015 - replaced with new def of function, to make sure everything is printed in the end
-//void processPDBfile(std::istream& ifs, char *pdbFile, std::ostream& ofs);
+/// @brief Drop hydrogens from a model in place.
+/// @param [in] RemoveATOMHydrogens Should we remove hydrogens in ATOM records?
+/// @param [in] RemoveOtherHydrogens Should we remove hydrogens in non_ATOM records?
+void dropHydrogens(std::list<PDBrec*>& records, bool RemoveATOMHydrogens, bool RemoveOtherHydrogens);
+
+/// @brief Process all of the records passed in in place.
 /// @return 0 on success, 1 on abandoned due to too many permutations.
-extern int processPDBfile(std::istream& ifs, char *pdbFile,std::list<std::list<PDBrec*> >& all_records);
+extern int processPDBfile(std::list<PDBrec*> &records);
 
 extern void outputRecords_all(std::ostream& os, const std::list<std::list<PDBrec*> >& all_records); //SJ 08/03/2015 for printing all models together
 
@@ -68,11 +79,6 @@ extern bool GenerateFinalFlip; // SJ - 09/04/2015 to keep track of when scoring 
 extern int MaxAromRingDih;   // max dihedral angle in planarity check for aromatic rings  120724 - Aram
 
 extern int MinNTermResNo;   // how high can a resno be for n-term?
-extern int ModelToProcess;   // which model to work on,
-                             // >0 is a model to work on  041113
-extern int ModelSpecified;   // commandline model specified  041113
-extern int ModelNext;   // next model to process  041113
-extern int ModelActive;   // found the next model and working on it  041113
 extern int NBondCutoff;   // how many bonds away do we drop?
 extern int ExhaustiveLimit;  //time limit, in seconds, to spend in brute force enumeration for a single clique
 extern float ProbeRadius; // how big is the probe in VDW calculations?
