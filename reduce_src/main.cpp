@@ -685,8 +685,6 @@ int main(int argc, char **argv) {
 
       UseSEGIDasChain = checkSEGIDs(m);
 
-      GenerateFinalFlip = FALSE; // SJ 09/25/2015 - this has to be reset to FALSE, because for a new model the scoring and decision for flips has to be done using renaming the atoms and not the three step flip.
-
       if (AddWaterHydrogens || AddOtherHydrogens) {
         if (Verbose) {
           if (BuildHisHydrogens) {
