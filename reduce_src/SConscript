@@ -15,9 +15,8 @@ if (env_etc.compiler != "win32_cl"):
     """-DHET_DICTIONARY='"/usr/local/reduce_het_dict.txt"'"""])
 env.Append(CPPPATH=["#reduce/toolclasses", "#reduce/libpdb"])
 env.Append(LIBPATH=["#reduce/lib"])
-env.Prepend(LIBS=["toolclasses", "pdb++"])
-exe = env.Program(
-  target=["#reduce/exe/reduce"],
+env.StaticLibrary(
+  target=["#reduce/lib/reducelib"],
   source=[
     "hybrid_36_c.c",
     "GraphToHoldScores.cpp",
@@ -38,3 +37,8 @@ exe = env.Program(
     "PDBrec.cpp",
     "MoveableNode.cpp",
     "RotAromMethyl.cpp"])
+env.Prepend(LIBS=["toolclasses", "pdb++", "reducelib"])
+exe = env.Program(
+  target=["#reduce/exe/reduce"],
+  source=[
+    "main.cpp"])
