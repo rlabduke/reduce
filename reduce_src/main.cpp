@@ -24,6 +24,7 @@
 #endif
 
 #include "reduce.h"
+#include "DotSph.h"
 #include <iostream>
 using std::cout;
 using std::cin;
@@ -672,10 +673,100 @@ int main(int argc, char **argv) {
 
     // Process each model.
     for (std::list<PDBrec*> &m : models) {
+      //=====================================================================
+      // Removing hydrogens
+
       if (RemoveATOMHydrogens || RemoveOtherHydrogens) {
         dropHydrogens(m, RemoveATOMHydrogens, RemoveOtherHydrogens);
       }
-      ret = processPDBfile(m);
+
+      //=====================================================================
+      // Adding hydrogens
+
+      UseSEGIDasChain = checkSEGIDs(m);
+
+      GenerateFinalFlip = FALSE; // SJ 09/25/2015 - this has to be reset to FALSE, because for a new model the scoring and decision for flips has to be done using renaming the atoms and not the three step flip.
+
+      if (AddWaterHydrogens || AddOtherHydrogens) {
+        if (Verbose) {
+          if (BuildHisHydrogens) {
+            cerr << "Building His ring NH Hydrogens." << endl;
+          }
+          if (SaveOHetcHydrogens) {
+            cerr << "Building or keeping OH & SH Hydrogens." << endl;
+            if (RotExistingOH && !DemandRotExisting) {
+              cerr << "Rotating existing OH & SH Hydrogens" << endl;
+            }
+          }
+          else {
+            cerr << "Dropping existing OH & SH Hydrogens." << endl;
+          }
+          if (NeutralTermini) {
+            cerr << "Adding \"amide\" Hydrogens to chain breaks." << endl;
+          }
+        }
+      }
+      /// @todo Only load this if we have one...
+      CTab hetdatabase(DBfilename, 1000);
+
+      DotSphManager dotBucket(VdwDotDensity);
+
+      AtomPositions xyz(2000, DoOnlyAltA, UseXplorNames, UseOldNames, BackBoneModel,
+        NBondCutoff, MinRegHBgap, MinChargedHBgap,
+        BadBumpGapCut, dotBucket, ProbeRadius,
+        PenaltyMagnitude, OccupancyCutoff,
+        Verbose, ShowOrientScore, ShowCliqueTicks, cerr);
+
+      //    NonConstListIter<PDBrec> infoPtr(records); // info on changes can be
+                                                     // inserted before infoPtr
+      std::list<PDBrec*>::iterator infoPtr = m.begin();
+
+      scanAndGroupRecords(m, xyz, infoPtr);
+
+      // if some sidechain needs adjustment...
+      std::vector<std::string> adjNotes;
+      Tally._num_adj = 0;
+
+      reduceList(hetdatabase, m, xyz, adjNotes);
+      // SJ - All Hydrogens are generated at this time, but no flips and methyl rotations have happened.
+
+      //=====================================================================
+      // Performing optimizations
+
+      if (!StopBeforeOptimizing) {
+        ret = optimize(xyz, adjNotes);
+
+        if (OKtoAdjust && xyz.numChanges() > 0) {
+          xyz.describeChanges(m, infoPtr, adjNotes);
+        }
+      }
+
+      //=====================================================================
+      // Describing operations
+
+      if (Verbose) {
+        if (AddWaterHydrogens || AddOtherHydrogens) {
+          cerr << "Found " << Tally._H_found << " hydrogens ("
+            << Tally._H_HET_found << " hets)" << endl;
+          cerr << "Standardized " << Tally._H_standardized << " hydrogens ("
+            << Tally._H_HET_standardized << " hets)" << endl;
+          cerr << "Added " << Tally._H_added << " hydrogens ("
+            << Tally._H_HET_added << " hets)" << endl;
+        }
+        if (RemoveATOMHydrogens || RemoveOtherHydrogens) {
+          cerr << "Removed " << Tally._H_removed << " hydrogens ("
+            << Tally._H_HET_removed << " hets)" << endl;
+        }
+        if (!StopBeforeOptimizing) {
+          if (Tally._num_adj > 0) {
+            cerr << "Adjusted " << Tally._num_adj << " group(s)" << endl;
+          }
+          if (Tally._num_renamed > 0) {
+            cerr << "Renamed and marked " << Tally._num_renamed
+              << " ambiguous 'A' atom name(s)" << endl;
+          }
+        }
+      }
     }
 
     // SJ This is where the outputrecords should be called for all records.

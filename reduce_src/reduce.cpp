@@ -138,35 +138,11 @@ std::string DBfilename( HET_DICTIONARY );
 
 enum ConnType {NTERM_RES, CONNECTED_RES, FRAGMENT_RES};
 
-struct SummaryStats {
-   SummaryStats() : _H_found(0),        _H_HET_found(0),
-                    _H_removed(0),      _H_HET_removed(0),
-                    _H_added(0),        _H_HET_added(0),
-                    _H_standardized(0), _H_HET_standardized(0),
-		    _num_atoms(0),      _conect(0),
-		    _num_adj(0),        _num_renamed(0) {}
-
-   int _H_found,        _H_HET_found;
-   int _H_removed,      _H_HET_removed;
-   int _H_added,        _H_HET_added;
-   int _H_standardized, _H_HET_standardized;
-   int _num_atoms,      _conect;
-   int _num_adj,	_num_renamed;
-};
-
 SummaryStats Tally;
-
-/// @brief Check the list of PDB records to see if we should use segment ID as chain
-/// @return TRUE if we should use the segment ID as the chain, FALSE if not
-bool checkSEGIDs(std::list<PDBrec*>& rlst);
 
 std::ostream& outputRecords(std::ostream& os, const std::list<PDBrec*>& records, int model); // SJ 08/04/2015 added last argument to keep track of how many models have been printed.
 void outputRecords_all(std::ostream& os, const std::list<std::list<PDBrec*> >& all_records); //SJ 08/03/2015 for printing all models together
 void invalidateRecords(std::list<PDBrec*>& rlst);
-void reduceList(CTab& db, std::list<PDBrec*>& records,
-				AtomPositions& xyz, std::vector<std::string>& fixNotes);
-void scanAndGroupRecords(std::list<PDBrec*>& rlst, AtomPositions& xyz,
-						 std::list<PDBrec*>::iterator& startAtoms);
 void renumberAndReconnect(std::list<PDBrec*>& rlst);
 void renumberAtoms(std::list<PDBrec*>& rlst);
 void analyzeRes(CTab& db, ResBlk* pb, ResBlk* cb, ResBlk* nb,
@@ -194,58 +170,10 @@ void recordSkipInfo(bool skipH, std::vector<std::string>& fixNotes,
    const PDBrec& theHatom, const PDBrec& heavyAtom,
    std::list<PDBrec*>& nearr, const char * msg);
 
-int processPDBfile(std::list<PDBrec*> &records) {
-    int ReturnCodeGlobal = 0;
+int optimize(AtomPositions& xyz, std::vector<std::string>& adjNotes) {
+    int ret = 0;
     //SJ 08/03/2015 - changed the last argument of the function to pass the list of all records that need to be stored and output only in the end
     
-    UseSEGIDasChain = checkSEGIDs(records);
-
-    GenerateFinalFlip=FALSE; // SJ 09/25/2015 - this has to be reset to FALSE, because for a new model the scoring and decision for flips has to be done using renaming the atoms and not the three step flip.
-    
-   if (AddWaterHydrogens || AddOtherHydrogens) {
-	 if (Verbose) {
-	    if (BuildHisHydrogens) {
-	       cerr << "Building His ring NH Hydrogens." << endl;
-	    }
-	    if (SaveOHetcHydrogens) {
-	       cerr << "Building or keeping OH & SH Hydrogens." << endl;
-	       if (RotExistingOH && !DemandRotExisting) {
-		  cerr << "Rotating existing OH & SH Hydrogens" << endl;
-	       }
-	    }
-	    else {
-	       cerr << "Dropping existing OH & SH Hydrogens." << endl;
-	    }
-        if (NeutralTermini) {
-            cerr << "Adding \"amide\" Hydrogens to chain breaks." << endl;
-        }
-	 }
-	}
-	/// @todo Only load this if we have one...
-    CTab hetdatabase(DBfilename, 1000);
-
-    DotSphManager dotBucket(VdwDotDensity);
-
-    AtomPositions xyz(2000, DoOnlyAltA, UseXplorNames, UseOldNames, BackBoneModel,
-		NBondCutoff, MinRegHBgap, MinChargedHBgap,
-		BadBumpGapCut, dotBucket, ProbeRadius,
-		PenaltyMagnitude, OccupancyCutoff,
-		Verbose, ShowOrientScore, ShowCliqueTicks, cerr);
-
-//    NonConstListIter<PDBrec> infoPtr(records); // info on changes can be
-                                               // inserted before infoPtr
-	std::list<PDBrec*>::iterator infoPtr = records.begin();
-
-    scanAndGroupRecords(records, xyz, infoPtr);
-
-// if some sidechain needs adjustment...
-	std::vector<std::string> adjNotes;
-    Tally._num_adj = 0;
-
-    reduceList(hetdatabase, records, xyz, adjNotes);
-
-    // SJ - All Hydrogens are generated at this time, but no flips and methyl rotations have happened.
-    if (!StopBeforeOptimizing) {
 		if (Verbose) {
 			if (!OFile.empty()) {
 				cerr << "Using orientation info in \"" << OFile << "\"." << endl;
@@ -329,7 +257,7 @@ int processPDBfile(std::list<PDBrec*> &records) {
 	    int nscnt = xyz.orientClique(*cc, ExhaustiveLimit);
 		if (nscnt > 0) { Tally._num_adj += nscnt; }
 	    else { // too many permutations, make note
-	      ReturnCodeGlobal = ABANDONED_RC;
+	      ret = ABANDONED_RC;
 	    }
 	 }
 
@@ -343,49 +271,14 @@ int processPDBfile(std::list<PDBrec*> &records) {
 	    clst.formatClique(adjNotes, jj, xyz); // SJ - added the last argument, as this is needed to do the flip
 	 }
 	 clst.formatSingles(adjNotes, xyz); // SJ - added the last argument, as this is needed to do the flip
-	 xyz.describeChanges(records, infoPtr, adjNotes);
       }
-
-      if (Verbose) {
-	 cerr << "Found " <<Tally._H_found << " hydrogens ("
-	      << Tally._H_HET_found << " hets)" << endl;
-	 cerr << "Standardized " <<Tally._H_standardized << " hydrogens ("
-	      << Tally._H_HET_standardized << " hets)" << endl;
-	 cerr << "Added " <<Tally._H_added << " hydrogens ("
-	      << Tally._H_HET_added << " hets)" << endl;
-	 cerr << "Removed " <<Tally._H_removed << " hydrogens ("
-	      << Tally._H_HET_removed << " hets)" << endl;
-	 if (Tally._num_adj > 0) {
-	    cerr << "Adjusted " << Tally._num_adj << " group(s)" << endl;
-	 }
-	 if (Tally._num_renamed > 0) {
-	    cerr << "Renamed and marked " << Tally._num_renamed
-	         << " ambiguous 'A' atom name(s)" << endl;
-	 }
-      }
-
-      /*ofs << "USER  MOD "<< shortVersion
-           <<" H: found="<<Tally._H_found
-           <<", std="<< Tally._H_standardized
-           << ", add=" << Tally._H_added
-           << ", rem=" << Tally._H_removed
-           << ", adj=" << Tally._num_adj << endl;
-      if (Tally._num_renamed > 0) {
-	 ofs << "USER  MOD renamed " << Tally._num_renamed
-	      << " ambiguous 'A' atoms (marked in segID field)"<< endl;
-      }*/
-      
-       /*if (UseSEGIDtoChainMap) {
-         PDBrec::DumpSEGIDtoChainMap(ofs, "USER  MOD mapped ");
-      }*/
-   }
 
    if (Tally._H_added || Tally._H_removed) {
       ;//renumberAndReconnect(records);
    }
 
   // std::for_each(records.begin(), records.end(), DeleteObject());
-  return ReturnCodeGlobal;
+  return ret;
 }
 
 // SJ 08/03/2015 for printing all records together

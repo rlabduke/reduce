@@ -17,6 +17,25 @@
 #include <iostream>
 #include <list>
 #include "PDBrec.h"
+#include "CTab.h"
+#include "AtomPositions.h"
+
+struct SummaryStats {
+  SummaryStats() : _H_found(0), _H_HET_found(0),
+    _H_removed(0), _H_HET_removed(0),
+    _H_added(0), _H_HET_added(0),
+    _H_standardized(0), _H_HET_standardized(0),
+    _num_atoms(0), _conect(0),
+    _num_adj(0), _num_renamed(0) {}
+
+  int _H_found, _H_HET_found;
+  int _H_removed, _H_HET_removed;
+  int _H_added, _H_HET_added;
+  int _H_standardized, _H_HET_standardized;
+  int _num_atoms, _conect;
+  int _num_adj, _num_renamed;
+};
+extern SummaryStats Tally;
 
 /// @brief Read the PDB records from the specified input stream.
 /// @param [in] s String with one PDB record per line.
@@ -29,13 +48,25 @@ extern std::list< std::list<PDBrec*> > inputModels(std::string s);
 /// @brief Drop hydrogens from a model in place.
 /// @param [in] RemoveATOMHydrogens Should we remove hydrogens in ATOM records?
 /// @param [in] RemoveOtherHydrogens Should we remove hydrogens in non_ATOM records?
-void dropHydrogens(std::list<PDBrec*>& records, bool RemoveATOMHydrogens, bool RemoveOtherHydrogens);
+extern void dropHydrogens(std::list<PDBrec*>& records,
+  bool RemoveATOMHydrogens, bool RemoveOtherHydrogens);
 
-/// @brief Process all of the records passed in in place.
+/// @brief Optimize all of the records passed in in place.
 /// @return 0 on success, 1 on abandoned due to too many permutations.
-extern int processPDBfile(std::list<PDBrec*> &records);
+extern int optimize(AtomPositions &xyz, std::vector<std::string> &adjNotes);
 
-extern void outputRecords_all(std::ostream& os, const std::list<std::list<PDBrec*> >& all_records); //SJ 08/03/2015 for printing all models together
+//SJ 08/03/2015 for printing all models together
+extern void outputRecords_all(std::ostream& os,
+  const std::list<std::list<PDBrec*> >& all_records);
+
+/// @brief Check the list of PDB records to see if we should use segment ID as chain
+/// @return TRUE if we should use the segment ID as the chain, FALSE if not
+extern bool checkSEGIDs(std::list<PDBrec*>& rlst);
+
+extern void scanAndGroupRecords(std::list<PDBrec*>& rlst, AtomPositions& xyz,
+  std::list<PDBrec*>::iterator& startAtoms);
+extern void reduceList(CTab& db, std::list<PDBrec*>& records,
+  AtomPositions& xyz, std::vector<std::string>& fixNotes);
 
 /// Library-scoped global variables that are in the global name space.
 /// @todo Move these out of the global name space
