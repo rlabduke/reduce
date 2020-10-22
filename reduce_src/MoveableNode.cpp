@@ -1239,7 +1239,7 @@ void 				MoveableNode::beNotifiedDependencyEliminated(int i)
 	{
 		std::cerr << "Edge between this node and the other node (" << _index << " and " << i << " ) not found\n.";
 		std::cerr << "Critical Error: Graph incorrectly initialized!" << std::endl;
-		exit(1);
+		exit(2);
 	}
 
 	if (_edgeList.size() == 1)

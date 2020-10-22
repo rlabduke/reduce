@@ -1152,7 +1152,7 @@ DegreeTwoEdge_ths::whichVertex( int vertex_index ) const
 	std::cerr << "CRITICAL ERROR IN whichVertex(" << vertex_index << ") called on edge ["
 		  << vertex_indices_[ 0 ] << ", " << vertex_indices_[ 1 ] << "]" << std::endl;
 	assert(false);
-	exit(1);
+	exit(2);
         return 0; // to avoid warnings
 }
 
@@ -1539,7 +1539,7 @@ DegreeThreeEdge_ths::whichVertex( int vertex ) const
 	std::cerr << vertex_indices_[ 0 ] << ", " << vertex_indices_[ 1 ] << ", " << vertex_indices_[ 2 ];
 	std::cerr << "]" << std::endl;
 	assert( false );
-	exit(1);
+	exit(2);
         return 0; // to avoid warnings
 }
 
@@ -1984,7 +1984,7 @@ DegreeFourEdge_ths::whichVertex( int vertex ) const
 	std::cerr << vertex_indices_[ 2 ] << ", " << vertex_indices_[ 3 ];
 	std::cerr << "]" << std::endl;
 	assert( false );
-	exit(1);
+	exit(2);
         return 0; // to avoid warnings
 }
 
