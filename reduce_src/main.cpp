@@ -133,7 +133,7 @@ void reduceHelp(bool showAll) { /*help*/
    cerr << "-Version          display the version of reduce" <<endl;
    cerr << "-Changes          display the change log" <<endl;
    cerr << "-Help             the more extensive description of command line arguments" << endl;
-   exit(1);
+   exit(2);
 }
 
 void reduceChanges(bool showAll) { /*changes*/
@@ -324,7 +324,7 @@ void reduceChanges(bool showAll) { /*changes*/
    cerr  << "2020/10/07 - rmt       added fine-grained command-line control over hydrogen drop/add and optimization" << endl;
    cerr  << "2020/10/08 - rmt       adjusted vector operations to enable running in debug compile" << endl;
    cerr  << endl;
-   exit(1);
+   exit(2);
 }
 
 void establishHetDictionaryFileName(void) {
@@ -417,7 +417,7 @@ char* parseCommandLine(int argc, char **argv) {
       }
       else if((n = compArgStr(p+1, "Version", 1))){
         cerr << shortVersion << endl;
-        exit(1);
+        exit(2);
       }
       else if((n = compArgStr(p+1, "Changes", 1))) {
         reduceChanges(TRUE);
@@ -457,7 +457,7 @@ char* parseCommandLine(int argc, char **argv) {
       }
       else if((n = compArgStr(p+1, "Xplor", 1)) && UseOldNames){
         cerr << "Cannot use both -Xplor and -OLDpdb flags" << endl;
-        exit(1);
+        exit(2);
       }
       else if((n = compArgStr(p+1, "OLDpdb", 3)) && ! UseXplorNames){
         UseOldNames = TRUE;
@@ -465,7 +465,7 @@ char* parseCommandLine(int argc, char **argv) {
       }
       else if((n = compArgStr(p+1, "OLDpdb", 3)) && UseXplorNames){
         cerr << "Cannot use both -Xplor and -OLDpdb flags" << endl;
-        exit(1);
+        exit(2);
       }
       else if((n = compArgStr(p+1, "BBmodel", 2))){
         BackBoneModel = TRUE;
@@ -568,13 +568,13 @@ char* parseCommandLine(int argc, char **argv) {
         GapWidth = parseReal(p, n+1, 10, GapWidth);
         if (GapWidth > 1.4) {
           cerr << "Max allowed HalfGapWidth is 1.4" << endl;
-          exit(1);
+          exit(2);
         }
       }
       else if((n = compArgStr(p+1, "REFerence", 3))){
         cerr << "Please cite: " << referenceString << endl;
         cerr << "For more information see " << electronicReference << endl;
-        exit(1);
+        exit(2);
       }
       else if((n = compArgStr(p+1, "FIX", 3))){
         if (++i < argc) {
