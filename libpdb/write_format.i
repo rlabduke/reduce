@@ -44,7 +44,7 @@
 "SEQRES%4d%-2s %4d  %-4s%-4s%-4s%-4s%-4s%-4s%-4s%-4s%-4s%-4s%-4s%-4s%-4s%s",
 "SHEET %4D %3s%2d %3s%-2s%4s%c %-3s%-2s%4s%c%2d %-4s%-3s%-2s%4s%c %-4s%-3s%-2s%4s%c%s",
 "SIGATM%-5s %-4s%c%-3s%-2s%4s%c   %8.3f%8.3f%8.3f%6.2f%6.2f      %-4s%2s%-2s %-10s", /**non-standard**/
-"SIGUIJ%-5s %-4s%c%-3s%2s%4s%c %7D%7D%7D%7D%7D%7D  %-4s%2s%-2s %-10s",	/* ANISOU */  /**non-standard**/
+"SIGUIJ%-5s %-4s%c%-3s%2s%4s%c %7d%7d%7d%7d%7d%7d  %-4s%2s%-2s %-10s",	/* ANISOU */  /**non-standard**/
 "SITE   %3d %3s %2d %-3s%-2s%4s%c %-3s%-2s%4s%c %-3s%-2s%4s%c %-3s%-2s%4s%c         %s",
 "SOURCE   %c%-60s%s",					/* AUTHOR */
 "SPRSDE  %2D %-9s %-10s%-5s%-5s%-5s%-5s%-5s%-5s%-5s%-4s%s",

@@ -203,6 +203,9 @@ double RotMethyl::scoreThisAngle(AtomPositions &xyz, DotSphManager& dotBucket,
 	int i = 0;
 	_rot.push_front(&_heavyAtom);
 	for(std::list<PDBrec*>::const_iterator alst = _rot.begin(); alst != _rot.end(); ++alst) {
+		if (!(*alst)->valid())
+			continue;
+
 		float bumpSubScore = 0.0;
 		float hbSubScore   = 0.0;
 		bool subBadBump    = FALSE;
@@ -341,6 +344,6 @@ int RotMethyl::findAtom( PDBrec* atom ) const
 		std::cerr << "_rot: " << *iter << std::endl;
 	}
 
-	exit(1);
+	exit(2);
         return 0; // to avoid warnings
 }
