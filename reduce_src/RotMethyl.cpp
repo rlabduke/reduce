@@ -344,6 +344,6 @@ int RotMethyl::findAtom( PDBrec* atom ) const
 		std::cerr << "_rot: " << *iter << std::endl;
 	}
 
-	exit(1);
+	exit(2);
         return 0; // to avoid warnings
 }

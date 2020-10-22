@@ -593,7 +593,7 @@ char* parseCommandLine(int argc, char **argv) {
       }
       else if((n = compArgStr(p+1, "Version", 1))){
         cerr << shortVersion << endl;
-        exit(1);
+        exit(2);
       }
       else if((n = compArgStr(p+1, "Changes", 1))) {
         reduceChanges(TRUE);
@@ -633,7 +633,7 @@ char* parseCommandLine(int argc, char **argv) {
       }
       else if((n = compArgStr(p+1, "Xplor", 1)) && UseOldNames){
         cerr << "Cannot use both -Xplor and -OLDpdb flags" << endl;
-        exit(1);
+        exit(2);
       }
       else if((n = compArgStr(p+1, "OLDpdb", 3)) && ! UseXplorNames){
         UseOldNames = TRUE;
@@ -641,7 +641,7 @@ char* parseCommandLine(int argc, char **argv) {
       }
       else if((n = compArgStr(p+1, "OLDpdb", 3)) && UseXplorNames){
         cerr << "Cannot use both -Xplor and -OLDpdb flags" << endl;
-        exit(1);
+        exit(2);
       }
       else if((n = compArgStr(p+1, "BBmodel", 2))){
         BackBoneModel = TRUE;
@@ -743,13 +743,13 @@ char* parseCommandLine(int argc, char **argv) {
         GapWidth = parseReal(p, n+1, 10, GapWidth);
         if (GapWidth > 1.4) {
           cerr << "Max allowed HalfGapWidth is 1.4" << endl;
-          exit(1);
+          exit(2);
         }
       }
       else if((n = compArgStr(p+1, "REFerence", 3))){
         cerr << "Please cite: " << referenceString << endl;
         cerr << "For more information see " << electronicReference << endl;
-        exit(1);
+        exit(2);
       }
       else if((n = compArgStr(p+1, "FIX", 3))){
         if (++i < argc) {
@@ -882,7 +882,7 @@ void reduceHelp(bool showAll) { /*help*/
    cerr << "-Version          display the version of reduce" <<endl;
    cerr << "-Changes          display the change log" <<endl;
    cerr << "-Help             the more extensive description of command line arguments" << endl;
-   exit(1);
+   exit(2);
 }
 
 void reduceChanges(bool showAll) { /*changes*/
@@ -1071,7 +1071,7 @@ void reduceChanges(bool showAll) { /*changes*/
    cerr  << "2015/??    - bjh       test system" << endl;
    cerr  << "2016/06/02 - cjw       set default behavior *not* to rotate methionine methyls, added -DOROTMET flag" << endl;
    cerr  << endl;
-   exit(1);
+   exit(2);
 }
 
 // SJ 08/03/2015 for printing all records together
