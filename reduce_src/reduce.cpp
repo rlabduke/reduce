@@ -24,9 +24,9 @@
 #endif
 
 static const char *versionString =
-     "reduce: version 3.3 06/02/2016, Copyright 1997-2016, J. Michael Word";
+     "reduce: version 3.4 10/08/2020, Copyright 1997-2016, J. Michael Word; 2020 ReliaSolve";
 
-static const char *shortVersion    = "reduce.3.3.160602";
+static const char *shortVersion    = "reduce.3.4.201008";
 static const char *referenceString =
                        "Word, et. al. (1999) J. Mol. Biol. 285, 1735-1747.";
 static const char *electronicReference = "http://kinemage.biochem.duke.edu";
@@ -76,7 +76,6 @@ bool Verbose = TRUE;    // do we write processing notes to stdout?
 bool KeepConnections          = TRUE;
 bool StandardizeRHBondLengths = TRUE;
 bool ProcessConnHydOnHets     = TRUE;
-bool RemoveHydrogens          = FALSE;
 bool BuildHisHydrogens        = FALSE;
 bool SaveOHetcHydrogens       = TRUE;
 bool UseXplorNames            = FALSE;
@@ -129,6 +128,11 @@ float GapWidth        = 0.3; // half width for detecting chain breaks between re
 
 std::string OFile; // if file exists, given orientations forced
 bool UseSEGIDtoChainMap = FALSE; // if true, override some chain ids
+bool StopBeforeOptimizing = FALSE;  // If true, handle hydrogen drops/adds and then quit
+bool AddWaterHydrogens = TRUE;	  // If true, add phantom hydrogens to waters
+bool AddOtherHydrogens = TRUE;	  // If true, add hydrogens to non-water atoms
+bool RemoveATOMHydrogens = FALSE; // If true, remove hydrogens from ATOM records
+bool RemoveOtherHydrogens = FALSE;// If true, remove hydrogens from non-ATOM records
 
 #ifndef HET_DICTIONARY
 //#define HET_DICTIONARY "reduce_het_dict.txt"
@@ -285,7 +289,7 @@ void processPDBfile(std::istream& ifs, char *pdbFile, std::list<std::list<PDBrec
       else {
 	 cerr << "Processing file: --standard input--" << endl;
       }
-      if (ProcessConnHydOnHets && ! RemoveHydrogens) {
+      if (ProcessConnHydOnHets && !StopBeforeOptimizing) {
 	 cerr << "Database of HETATM connections: \"" << DBfilename << "\"" << endl;
       }
       if (ModelToProcess != 1) {
@@ -299,7 +303,7 @@ void processPDBfile(std::istream& ifs, char *pdbFile, std::list<std::list<PDBrec
 
    checkSEGIDs(records);
 
-   if (RemoveHydrogens) {
+   if (RemoveATOMHydrogens || RemoveOtherHydrogens) {
       dropHydrogens(records);
 
       if (Verbose) {
@@ -311,45 +315,10 @@ void processPDBfile(std::istream& ifs, char *pdbFile, std::list<std::list<PDBrec
       //ofs << "USER  MOD "<< shortVersion <<" removed " << Tally._H_removed
         //   << " hydrogens (" << Tally._H_HET_removed << " hets)" << endl;
    }
-   else {
+   if (AddWaterHydrogens || AddOtherHydrogens) {
 	 if (Verbose) {
-	    if (! OFile.empty()) {
-	       cerr << "Using orientation info in \""<<OFile<<"\"." << endl;
-	    }
-	    if (UseSEGIDtoChainMap) {
-               PDBrec::DumpSEGIDtoChainMap(cerr, "Mapping ");
-	    }
-
-	    if (DoOnlyAltA) {
-	       cerr << "Processing only 'A' conformations." << endl;
-	    }
-	    cerr << "VDW dot density = " << VdwDotDensity << "/A^2" << endl;
-	    if (ProbeRadius > 0.01) {
-	       cerr << "Probe radius = " << ProbeRadius << "A" << endl;
-	    }
-	    if (PenaltyMagnitude > 0.0001 || PenaltyMagnitude < -0.0001) {
-	       cerr << "Orientation penalty scale = "<< PenaltyMagnitude
-	            <<" (" << int(PenaltyMagnitude*100.0+0.5) << "%)" << endl;
-	    }
-	    else {
-	       cerr << "No Orientation penalty (-penalty0.0)" << endl;
-	    }
-	    cerr << "Eliminate contacts within " << NBondCutoff << " bonds." << endl;
-	    cerr << "Ignore atoms with |occupancy| <= "
-	         << OccupancyCutoff << " during adjustments." << endl;
-	    cerr << "Waters ignored if B-Factor >= " << WaterBcutoff
-	                    << " or |occupancy| < " << WaterOCCcutoff<< endl;
-#ifdef AROMATICS_ACCEPT_HBONDS
-	    cerr << "Aromatic rings in amino acids accept hydrogen bonds." << endl;
-#endif
 	    if (BuildHisHydrogens) {
 	       cerr << "Building His ring NH Hydrogens." << endl;
-	    }
-	    if (DemandFlipAllHNQs) {
-	       cerr << "Flipping Asn, Gln and His groups." << endl;
-	       cerr << "For each flip state, bumps where gap is more than "
-	         << BadBumpGapCut << "A are indicated with \'!\'." << endl;
-
 	    }
 	    if (SaveOHetcHydrogens) {
 	       cerr << "Building or keeping OH & SH Hydrogens." << endl;
@@ -360,60 +329,99 @@ void processPDBfile(std::istream& ifs, char *pdbFile, std::list<std::list<PDBrec
 	    else {
 	       cerr << "Dropping existing OH & SH Hydrogens." << endl;
 	    }
-            if (NeutralTermini) {
-               cerr << "Adding \"amide\" Hydrogens to chain breaks." << endl;
-            }
-	    if (DemandRotNH3) {
-	       cerr << "Rotating NH3 Hydrogens." << endl;
-	    }
-	    if (DemandRotAllMethyls) {
-	       cerr << "Rotating ALL methyls." << endl;
-	    }
-	    if (OKProcessMetMe) {
-	       if (! DemandRotAllMethyls) {
-		  cerr << "Processing Met methyls." << endl;
-	       }
-	    }
-	    else {
-	       cerr << "Not processing Met methyls." << endl;
-	    }
-	    if (DemandRotExisting) {
-	       cerr << "Rotating pre-existing groups." << endl;
-	    }
+        if (NeutralTermini) {
+            cerr << "Adding \"amide\" Hydrogens to chain breaks." << endl;
+        }
 	 }
+	}
+	/// @todo Only load this if we have one...
+    CTab hetdatabase(DBfilename, 1000);
 
-      CTab hetdatabase(DBfilename, 1000);
+    DotSphManager dotBucket(VdwDotDensity);
 
-      DotSphManager dotBucket(VdwDotDensity);
+    AtomPositions xyz(2000, DoOnlyAltA, UseXplorNames, UseOldNames, BackBoneModel,
+		NBondCutoff, MinRegHBgap, MinChargedHBgap,
+		BadBumpGapCut, dotBucket, ProbeRadius,
+		PenaltyMagnitude, OccupancyCutoff,
+		Verbose, ShowOrientScore, ShowCliqueTicks, cerr);
 
-      AtomPositions xyz(2000, DoOnlyAltA, UseXplorNames, UseOldNames, BackBoneModel,
-			NBondCutoff, MinRegHBgap, MinChargedHBgap,
-			BadBumpGapCut, dotBucket, ProbeRadius,
-			PenaltyMagnitude, OccupancyCutoff,
-			Verbose, ShowOrientScore, ShowCliqueTicks, cerr);
+//    NonConstListIter<PDBrec> infoPtr(records); // info on changes can be
+                                               // inserted before infoPtr
+	std::list<PDBrec*>::iterator infoPtr = records.begin();
 
-//      NonConstListIter<PDBrec> infoPtr(records); // info on changes can be
-                                                 // inserted before infoPtr
-	  std::list<PDBrec*>::iterator infoPtr = records.begin();
-
-      scanAndGroupRecords(records, xyz, infoPtr);
+    scanAndGroupRecords(records, xyz, infoPtr);
 
 // if some sidechain needs adjustment...
-	  std::vector<std::string> adjNotes;
-      Tally._num_adj = 0;
+	std::vector<std::string> adjNotes;
+    Tally._num_adj = 0;
 
-      reduceList(hetdatabase, records, xyz, adjNotes);
-    
-     // SJ - All Hydrogens are generated at this time, but no flips and methyl rotations have happened.
+    reduceList(hetdatabase, records, xyz, adjNotes);
+
+    // SJ - All Hydrogens are generated at this time, but no flips and methyl rotations have happened.
+    if (!StopBeforeOptimizing) {
+		if (Verbose) {
+			if (!OFile.empty()) {
+				cerr << "Using orientation info in \"" << OFile << "\"." << endl;
+			}
+			if (UseSEGIDtoChainMap) {
+				PDBrec::DumpSEGIDtoChainMap(cerr, "Mapping ");
+			}
+
+			if (DoOnlyAltA) {
+				cerr << "Processing only 'A' conformations." << endl;
+			}
+			cerr << "VDW dot density = " << VdwDotDensity << "/A^2" << endl;
+			if (ProbeRadius > 0.01) {
+				cerr << "Probe radius = " << ProbeRadius << "A" << endl;
+			}
+			if (PenaltyMagnitude > 0.0001 || PenaltyMagnitude < -0.0001) {
+				cerr << "Orientation penalty scale = " << PenaltyMagnitude
+					<< " (" << int(PenaltyMagnitude * 100.0 + 0.5) << "%)" << endl;
+			}
+			else {
+				cerr << "No Orientation penalty (-penalty0.0)" << endl;
+			}
+			cerr << "Eliminate contacts within " << NBondCutoff << " bonds." << endl;
+			cerr << "Ignore atoms with |occupancy| <= "
+				<< OccupancyCutoff << " during adjustments." << endl;
+			cerr << "Waters ignored if B-Factor >= " << WaterBcutoff
+				<< " or |occupancy| < " << WaterOCCcutoff << endl;
+#ifdef AROMATICS_ACCEPT_HBONDS
+			cerr << "Aromatic rings in amino acids accept hydrogen bonds." << endl;
+#endif
+			if (DemandFlipAllHNQs) {
+				cerr << "Flipping Asn, Gln and His groups." << endl;
+				cerr << "For each flip state, bumps where gap is more than "
+					<< BadBumpGapCut << "A are indicated with \'!\'." << endl;
+
+			}
+			if (DemandRotNH3) {
+				cerr << "Rotating NH3 Hydrogens." << endl;
+			}
+			if (DemandRotAllMethyls) {
+				cerr << "Rotating ALL methyls." << endl;
+			}
+			if (OKProcessMetMe) {
+				if (!DemandRotAllMethyls) {
+					cerr << "Processing Met methyls." << endl;
+				}
+			}
+			else {
+				cerr << "Not processing Met methyls." << endl;
+			}
+			if (DemandRotExisting) {
+				cerr << "Rotating pre-existing groups." << endl;
+			}
+		}
+		
+	 if ((OKtoAdjust || ! OFile.empty()) && xyz.numChanges() > 0) {
+		xyz.finalizeMovers();
+	 }
        
-      if ((OKtoAdjust || ! OFile.empty()) && xyz.numChanges() > 0) {
-	      xyz.finalizeMovers();
-      }
        
-       
-      if (! OFile.empty()) {
+     if (! OFile.empty()) {
           Tally._num_adj += xyz.forceOrientations(OFile, adjNotes);
-      }
+     }
 
      if (OKtoAdjust && xyz.numChanges() > 0) {
 
@@ -647,7 +655,11 @@ char* parseCommandLine(int argc, char **argv) {
         BackBoneModel = TRUE;
       }
       else if((n = compArgStr(p+1, "Trim", 1))){
-        RemoveHydrogens = TRUE;
+        RemoveATOMHydrogens = TRUE;
+	RemoveOtherHydrogens = TRUE;
+	AddWaterHydrogens = FALSE;
+	AddOtherHydrogens = FALSE;
+	StopBeforeOptimizing = TRUE;
       }
       else if((n = compArgStr(p+1, "Keep", 1))){
         StandardizeRHBondLengths = FALSE;
@@ -776,6 +788,21 @@ char* parseCommandLine(int argc, char **argv) {
       else if(compArgStr(p+1, "Help", 1)){ // has to be after all the other -HXXXs
         reduceHelp(TRUE);
       }
+      else if ((n = compArgStr(p + 1, "NOOPT", 4))) {
+	StopBeforeOptimizing = TRUE;
+      }
+      else if ((n = compArgStr(p + 1, "NO_ADD_WATER_HYDROGENS", 8))) {
+        AddWaterHydrogens = FALSE;
+      }
+      else if ((n = compArgStr(p + 1, "NO_ADD_OTHER_HYDROGENS", 8))) {
+	AddOtherHydrogens = FALSE;
+      }
+      else if ((n = compArgStr(p + 1, "DROP_HYDROGENS_ON_ATOM_RECORDS:", 19))) {
+        RemoveATOMHydrogens = TRUE;
+      }
+      else if ((n = compArgStr(p + 1, "DROP_HYDROGENS_ON_OTHER_RECORDS:", 19))) {
+	RemoveOtherHydrogens = TRUE;
+      }
       else {
         cerr << "unrecognized flag, \"" << p << "\", ignored." << endl;
       }
@@ -811,7 +838,7 @@ void reduceHelp(bool showAll) { /*help*/
    cerr << "Flags:" << endl;
    cerr << "-FLIP             add H and rotate and flip NQH groups" << endl;
    cerr << "-NOFLIP           add H and rotate groups with no NQH flips" << endl;
-   cerr << "-Trim             remove (rather than add) hydrogens" << endl;
+   cerr << "-Trim             remove (rather than add) hydrogens and skip all optimizations" << endl;
 
   if (showAll) {
    cerr << endl;
@@ -869,6 +896,13 @@ void reduceHelp(bool showAll) { /*help*/
    cerr << "-LIMIT#           max seconds to spend in exhaustive search (default="<< ExhaustiveLimit <<")" << endl;
    cerr << "-NOTICKs          do not display the set orientation ticker during processing" << endl;
    cerr << "-SHOWSCore        display scores for each orientation considered during processing" << endl;
+   cerr << "-DROP_HYDROGENS_ON_ATOM_RECORDS drop hydrogens on incoming ATOM records before other processing" << endl;
+   cerr << "-DROP_HYDROGENS_ON_OTHER_RECORDS drop hydrogens on incoming non-ATOM records before other processing" << endl;
+   cerr << "-NO_ADD_WATER_HYDROGENS don't add hydrogens on incoming HOH records but do other processing" << endl;
+   cerr << "                   (the default is to add water hydrogens even if hydrogens have been dropped)" << endl;
+   cerr << "-NO_ADD_OTHER_HYDROGENS don't add hydrogens on incoming non-HOH records but do other processing" << endl;
+   cerr << "                   (the default is to add other hydrogens even if hydrogens have been dropped)" << endl;
+   cerr << "-NOOPT            do not perform optimizations, only drop/add hydrogens" << endl;
    cerr << "-FIX \"filename\"   if given, file specifies orientations for adjustable groups" << endl;
    cerr << "-DB \"filename\"    file to search for het info" << endl;
    cerr << "                        (default=\""<<DBfilename<<"\")" << endl;
@@ -1070,6 +1104,8 @@ void reduceChanges(bool showAll) { /*changes*/
    cerr  << "2015/??    - v3.3, sj & cjw, New flip method to replace nqh_minimize" << endl;
    cerr  << "2015/??    - bjh       test system" << endl;
    cerr  << "2016/06/02 - cjw       set default behavior *not* to rotate methionine methyls, added -DOROTMET flag" << endl;
+   cerr  << "2020/10/07 - rmt       added fine-grained command-line control over hydrogen drop/add and optimization" << endl;
+   cerr  << "2020/10/08 - rmt       adjusted vector operations to enable running in debug compile" << endl;
    cerr  << endl;
    exit(2);
 }
@@ -1104,28 +1140,32 @@ std::ostream& outputRecords(std::ostream& os, const std::list<PDBrec*>& l, int m
         flag=true; // everything has to be printed if this is the first model
         
         //SJ: 08/03/2015 copied over from processPDBFile - to be printed only once
-        if(RemoveHydrogens)
+	os << "USER  MOD " << shortVersion;
+	if(RemoveATOMHydrogens || RemoveOtherHydrogens)
         {
-            os << "USER  MOD "<< shortVersion <<" removed " << Tally._H_removed
-            << " hydrogens (" << Tally._H_HET_removed << " hets)" << endl;
+	  os <<" removed " << Tally._H_removed
+            << " hydrogens (" << Tally._H_HET_removed << " hets)";
         }
-        else
+        if(AddWaterHydrogens || AddOtherHydrogens)
         {
-            os << "USER  MOD "<< shortVersion
-            <<" H: found="<<Tally._H_found
+          os  <<" H: found="<<Tally._H_found
             <<", std="<< Tally._H_standardized
             << ", add=" << Tally._H_added
-            << ", rem=" << Tally._H_removed
-            << ", adj=" << Tally._num_adj << endl;
-            if (Tally._num_renamed > 0) {
-                os << "USER  MOD renamed " << Tally._num_renamed
-                << " ambiguous 'A' atoms (marked in segID field)"<< endl;
-            }
-            
-            if (UseSEGIDtoChainMap) {
-               PDBrec::DumpSEGIDtoChainMap(os, "USER  MOD mapped ");
-            }
+	    << ", rem=" << Tally._H_removed
+            << ", adj=" << Tally._num_adj;
         }
+	os << endl;
+	if (!StopBeforeOptimizing)
+	{
+	  if (Tally._num_renamed > 0) {
+	    os << "USER MOD renamed " << Tally._num_renamed
+	      << " ambiguous 'A' atoms (marked in segID field)" << endl;
+	  }
+
+	  if (UseSEGIDtoChainMap) {
+	    PDBrec::DumpSEGIDtoChainMap(os, "USER  MOD mapped ");
+	  }
+	}
     }
     else
         flag=false; //for all other models, print only what is within MODEL and ENDMDL
@@ -1330,7 +1370,7 @@ void dropHydrogens(std::list<PDBrec*>& rlst) {
 	for (pdb_iter it = rlst.begin(); it != rlst.end(); ) {
 		PDBrec* r = *it;
     bool need_increment = true;
-		if (r->type() == PDB::ATOM) {
+		if (RemoveATOMHydrogens && (r->type() == PDB::ATOM)) {
 			if (r->isHydrogen()) {
 				Tally._H_removed++;
 				delete r;
@@ -1339,27 +1379,29 @@ void dropHydrogens(std::list<PDBrec*>& rlst) {
 			}
 			Tally._num_atoms++;
 		}
-		else if (r->type() == PDB::HETATM) {
-			if (r->isHydrogen()) {
-				Tally._H_removed++;
-				Tally._H_HET_removed++;
-				delete r;
-				it = rlst.erase(it);
-        need_increment = false;
+		else if (RemoveOtherHydrogens) {
+			if (r->type() == PDB::HETATM) {
+				if (r->isHydrogen()) {
+					Tally._H_removed++;
+					Tally._H_HET_removed++;
+					delete r;
+					it = rlst.erase(it);
+					need_increment = false;
+				}
+				Tally._num_atoms++;
 			}
-			Tally._num_atoms++;
-		}
-		else if ( r->type() == PDB::SIGATM
-			|| r->type() == PDB::ANISOU
-            || r->type() == PDB::SIGUIJ) { // supplemental records
-			if (r->isHydrogen()) {
-				delete r;
-				it = rlst.erase(it);
-        need_increment = false;
+			else if (r->type() == PDB::SIGATM
+				|| r->type() == PDB::ANISOU
+				|| r->type() == PDB::SIGUIJ) { // supplemental records
+				if (r->isHydrogen()) {
+					delete r;
+					it = rlst.erase(it);
+					need_increment = false;
+				}
 			}
-		}
-		else if ( r->type() == PDB::CONECT) {
-			Tally._conect++;
+			else if (r->type() == PDB::CONECT) {
+				Tally._conect++;
+			}
 		}
     if (need_increment) it++;
 	}
@@ -1436,7 +1478,7 @@ void reduceList(CTab& hetdatabase, std::list<PDBrec*>& rlst,
 	if (cb) { delete cb; cb = NULL; }
 	if (nb) { delete nb; nb = NULL; }
 
-	xyz.generateWaterPhantomHs(waters);
+	if (AddWaterHydrogens) { xyz.generateWaterPhantomHs(waters); }
 }
 
 void renumberAtoms(std::list<PDBrec*>& rlst) {
@@ -1701,8 +1743,10 @@ void analyzeRes(CTab& hetdatabase, ResBlk* pb, ResBlk* cb, ResBlk* nb,
 	}
 
 	// work through each atom placement plan - S.J. each atom placement plan is a potential H atom that needs to be added. The hydrogens that are already present are not looked at right now.
-    for(std::list<atomPlacementPlan*>::const_iterator iter = app.begin(); iter != app.end(); ++iter) {
-        genHydrogens(**iter, *cb, o2prime, xyz, resAlts, fixNotes, rlst);
+	if (AddOtherHydrogens) {
+		for (std::list<atomPlacementPlan*>::const_iterator iter = app.begin(); iter != app.end(); ++iter) {
+			genHydrogens(**iter, *cb, o2prime, xyz, resAlts, fixNotes, rlst);
+		}
 	}
 }
 
@@ -1845,7 +1889,7 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 				std::list<PDBrec*> rs;
 				theRes.get(pp.conn(i), rs);
 				if (!rs.empty()) {
-					nconf[i] = rs.size();
+					nconf.push_back(rs.size());
 					maxalt = std::max(maxalt, nconf[i]);
 					std::vector<PDBrec*> rvv_v;
 					rvv_v.reserve(nconf[i]);
