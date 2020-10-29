@@ -14,6 +14,7 @@
 // **************************************************************
 
 #include "Point3d.h"
+#include <algorithm>
 
 // scale a vector to unit length
 Vector3d& Point3d::normalize() {
