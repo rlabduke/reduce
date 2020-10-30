@@ -14,6 +14,7 @@
 // **************************************************************
 
 #include "Point3d.h"
+#include <algorithm>
 
 // scale a vector to unit length
 Vector3d& Point3d::normalize() {
@@ -231,7 +232,11 @@ Coord dihedral(const Point3d& p1, const Point3d& p2,
 	Coord emag  = e.length();
 	Coord theta = 0.0;
 
-	if (dmag*emag >= 0.0001) { theta = acos(dot(d, e)/(dmag*emag)); }
+	if (dmag*emag >= 0.0001) {
+		theta = dot(d, e)/(dmag*emag);
+		theta = std::max(-1.0, std::min(1.0, theta));
+		theta = acos(theta);
+	}
 
 	Vector3d f = cross(d, b); // this part sets the correct handedness
 
