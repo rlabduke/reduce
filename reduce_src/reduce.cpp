@@ -24,9 +24,9 @@
 #endif
 
 static const char *versionString =
-     "reduce: version 3.4 10/08/2020, Copyright 1997-2016, J. Michael Word; 2020 ReliaSolve";
+     "reduce: version 3.5 10/30/2020, Copyright 1997-2016, J. Michael Word; 2020 ReliaSolve";
 
-static const char *shortVersion    = "reduce.3.4.201008";
+static const char *shortVersion    = "reduce.3.5.201030";
 static const char *referenceString =
                        "Word, et. al. (1999) J. Mol. Biol. 285, 1735-1747.";
 static const char *electronicReference = "http://kinemage.biochem.duke.edu";
@@ -1106,6 +1106,11 @@ void reduceChanges(bool showAll) { /*changes*/
    cerr  << "2016/06/02 - cjw       set default behavior *not* to rotate methionine methyls, added -DOROTMET flag" << endl;
    cerr  << "2020/10/07 - rmt       added fine-grained command-line control over hydrogen drop/add and optimization" << endl;
    cerr  << "2020/10/08 - rmt       adjusted vector operations to enable running in debug compile" << endl;
+   cerr  << "2020/10/22 - rmt       Merged pull request that fixes SIGUIJ record format on output" << endl;
+   cerr  << "2020/10/22 - rmt       Merged pull request that avoids invalidated records when scoring" << endl;
+   cerr  << "2020/10/22 - rmt       Merged pull request that returns code 2 for critical errors" << endl;
+   cerr  << "2020/10/29 - rmt       Merged pull request that fixed arithmetic range error" << endl;
+   cerr  << "2020/10/30 - rmt       Fixed bug introduced in adjustment of vector operations" << endl;
    cerr  << endl;
    exit(2);
 }
@@ -1879,7 +1884,7 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 			int maxalt = 0;
 			std::vector<int> nconf;
 			std::vector<char> all_confs;
-			nconf.reserve(numConnAtoms);
+			nconf.resize(numConnAtoms);
 
 			std::vector< std::vector<PDBrec*> > rvv;
 			rvv.reserve(numConnAtoms);
@@ -1889,7 +1894,7 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 				std::list<PDBrec*> rs;
 				theRes.get(pp.conn(i), rs);
 				if (!rs.empty()) {
-					nconf.push_back(rs.size());
+					nconf[i] = rs.size();
 					maxalt = std::max(maxalt, nconf[i]);
 					std::vector<PDBrec*> rvv_v;
 					rvv_v.reserve(nconf[i]);
