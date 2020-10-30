@@ -1074,7 +1074,7 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 			int maxalt = 0;
 			std::vector<int> nconf;
 			std::vector<char> all_confs;
-			nconf.reserve(numConnAtoms);
+			nconf.resize(numConnAtoms);
 
 			std::vector< std::vector<PDBrec*> > rvv;
 			rvv.reserve(numConnAtoms);
@@ -1084,7 +1084,7 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 				std::list<PDBrec*> rs;
 				theRes.get(pp.conn(i), rs);
 				if (!rs.empty()) {
-					nconf.push_back(rs.size());
+					nconf[i] = rs.size();
 					maxalt = std::max(maxalt, nconf[i]);
 					std::vector<PDBrec*> rvv_v;
 					rvv_v.reserve(nconf[i]);
