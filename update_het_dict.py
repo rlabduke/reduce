@@ -1,4 +1,4 @@
-from __future__ import division
+from __future__ import division, print_function
 import os, sys
 
 #This script updates the het dictionary used by Reduce to add hydrogens to het groups
@@ -14,7 +14,7 @@ import os, sys
 import urllib
 import time
 
-print >> sys.stderr, "Downloading most recent het dict"
+print("Downloading most recent het dict", file=sys.stderr)
 #Download the lasted version of the het_dictionary from the PDB
 urllib.urlretrieve('ftp://ftp.wwpdb.org/pub/pdb/data/monomers/het_dictionary.txt', 'reduce_wwPDB_het_dict_download.txt')
 #Store time of download for versioning
@@ -40,7 +40,7 @@ def make_pdb3_format_atom(atomstring):
 infile = open("reduce_wwPDB_het_dict_download.txt")
 outfile = open("reduce_wwPDB_het_dict_adjusted.txt","w")
 
-print >> sys.stderr, "Adjusting atom columns"
+print("Adjusting atom columns", file=sys.stderr)
 for line in infile:
   if line.startswith("CONECT"):
     x = line.split()
@@ -50,18 +50,18 @@ for line in infile:
     for atom in connections:
       atomlist.append(make_pdb3_format_atom(atom))
     outlist = [x[0],"     ",make_pdb3_format_atom(x[1]),numconnections,' '.join(atomlist).rstrip()]
-    print >> outfile, ''.join(outlist).strip()
+    print(''.join(outlist).strip(), file=outfile)
   elif line.startswith("RESIDUE"):
     x = line.split()
     resname = x[1].rjust(3)
     members = x[2].strip().rjust(7)
-    print >> outfile, x[0]+"   "+resname+ members
+    print(x[0]+"   "+resname+ members, file=outfile)
   elif line.startswith("END"):
-    print >> outfile, line.strip(),"  "
+    print(line.strip(),"  ", file=outfile)
   elif line.startswith("HETNAM") or line.startswith("HETSYN") or line.startswith("FORMUL"):
     outfile.write(line)
   else:
-    print >> outfile, line.strip()
+    print(line.strip(), file=outfile)
 
 infile.close()
 outfile.close()
@@ -117,7 +117,7 @@ class record():
 infile = open("reduce_wwPDB_het_dict_adjusted.txt")
 outfile = open("reduce_wwPDB_het_dict_no_poh.txt","w")
 
-print >> sys.stderr, "Removing phosphate hydorgens"
+print("Removing phosphate hydrogens", file=sys.stderr)
 residue_line_pattern = re.compile('(RESIDUE)(...)(?P<resname>...)')
 formula_line_pattern = re.compile('FORMUL')
 for line in infile:
@@ -140,7 +140,7 @@ outfile.close()
 infile = open("reduce_wwPDB_het_dict_no_poh.txt")
 outfile = open("reduce_wwPDB_het_dict_endlines.txt","w")
 
-print >> sys.stderr, "Switching to Windows endlines"
+print("Switching to Windows endlines", file=sys.stderr)
 lines = infile.readlines()
 for line in lines:
   line=line.replace("\n","")
@@ -157,10 +157,10 @@ outfile.close()
 #Renaming the updated file is renamed to match that name allows it to be used
 #  automatically in most circumstances.
 #The previous file is renamed with a datestamp.
-print >> sys.stderr, "File cleanup"
+print("File cleanup", file=sys.stderr)
 existing_files = os.listdir(".")
 if "reduce_wwPDB_het_dict.txt" in existing_files:
-  print >> sys.stderr, "  The previous het dict was renamed to reduce_wwPDB_het_dict_obsoleted_"+fetchtime+".txt"
+  print("  The previous het dict was renamed to reduce_wwPDB_het_dict_obsoleted_"+fetchtime+".txt", file=sys.stderr)
   os.rename("reduce_wwPDB_het_dict.txt","reduce_wwPDB_het_dict_obsoleted_"+fetchtime+".txt")
 os.rename("reduce_wwPDB_het_dict_endlines.txt","reduce_wwPDB_het_dict.txt")
 os.remove("reduce_wwPDB_het_dict_download.txt")
