@@ -49,6 +49,7 @@ set(reduce_HEADERS
 	PDBrec.h
 	MoveableNode.h
 	hybrid_36_c.h
+	neighbors.h
 )
 
 if (WIN32)
