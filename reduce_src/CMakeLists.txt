@@ -65,6 +65,7 @@ set(reduce_HEADERS
   MoveableNode.h
   hybrid_36_c.h
   reduce.h
+	neighbors.h
 )
 
 if (WIN32)
