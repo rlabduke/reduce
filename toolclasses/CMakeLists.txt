@@ -5,6 +5,14 @@ if (WIN32)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 endif ()
 
+add_definitions(
+  -DCHARFUNCMACROS
+  -DINCTEMPLATEDEFNS
+  -DBOOLPREDEFINED
+  -DBRACKETOPERPARMS
+  -DLISTFRIENDFIX
+)
+
 set(toolclasses_SOURCES
 	UseCount.cpp
 	Point3d.cpp
