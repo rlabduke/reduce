@@ -12,6 +12,7 @@
 // also available for free.
 //               ** Absolutely no Warranty **
 // Copyright (C) 1999-2016 J. Michael Word
+// Copyright (C) 2020 ReliaSolve
 // **************************************************************
 //
 //  reduceChanges now contains the CHANGELOG or history info
@@ -24,9 +25,9 @@
 #endif
 
 static const char *versionString =
-     "reduce: version 3.5 10/30/2020, Copyright 1997-2016, J. Michael Word; 2020 ReliaSolve";
+     "reduce: version 3.6 11/19/2020, Copyright 1997-2016, J. Michael Word; 2020 ReliaSolve";
 
-static const char *shortVersion    = "reduce.3.5.201030";
+static const char *shortVersion    = "reduce.3.6.201119";
 static const char *referenceString =
                        "Word, et. al. (1999) J. Mol. Biol. 285, 1735-1747.";
 static const char *electronicReference = "http://kinemage.biochem.duke.edu";
