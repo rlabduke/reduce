@@ -5,6 +5,11 @@ if (WIN32)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 endif ()
 
+add_definitions(
+  -DBOOLPREDEFINED
+  -DHASSSCANFEXTERN
+) 
+
 set(libpdb_SOURCES
 	pdb_chars.cpp
 	pdb_read.cpp

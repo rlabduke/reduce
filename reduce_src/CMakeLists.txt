@@ -6,7 +6,22 @@ project(reduce_src)
 
 if (WIN32)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+else ()
+  add_definitions(
+    -DHET_DICTIONARY="/usr/local/reduce_wwPDB_het_dict.txt"
+    -DHET_DICTOLD="/usr/local/reduce_het_dict.txt"
+  )
 endif ()
+
+add_definitions(
+  -DAROMATICS_ACCEPT_HBONDS
+  -DCHARFUNCMACROS
+  -DBOOLPREDEFINED
+  -DBRACKETOPERPARMS
+  -DLEFT_JUSTIFY_NUC_RES_OK
+  -DLISTFRIENDFIX
+  -DINCTEMPLATEDEFNS
+)
 
 set(reduce_SOURCES
 	GraphToHoldScores.cpp
@@ -49,6 +64,7 @@ set(reduce_HEADERS
 	PDBrec.h
 	MoveableNode.h
 	hybrid_36_c.h
+	neighbors.h
 )
 
 if (WIN32)

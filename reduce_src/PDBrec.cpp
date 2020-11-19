@@ -34,19 +34,12 @@ using std::strtok;
 bool PDBrec::_MappingSEGIDtoChains = FALSE;
 std::map<std::string, char> PDBrec::_SEGtoChainMap;
 
-void PDBrec::clone(PDBrec* p, bool setmark) {
-   p->_rep->_r          = _rep->_r;
-   p->_rep->_e          = _rep->_e;
-   if (setmark) {
-//      p->_rep->_mark    = _rep->_mark;
-//      p->_rep->_ok      = _rep->_ok;
-//      p->_rep->_recMods = _rep->_recMods;
-   }
-   else {
-      p->_rep->_mark    = 0;
-      p->_rep->_ok      = TRUE;
-      p->_rep->_recMods = 0;
-   }
+void PDBrec::clone(PDBrec* p) {
+    p->_rep->_r       = _rep->_r;
+    p->_rep->_e       = _rep->_e;
+    p->_rep->_mark    = 0;
+    p->_rep->_ok      = TRUE;
+    p->_rep->_recMods = 0;
 }
 
 void PDBrec::getConect(int cvec[]) const {
