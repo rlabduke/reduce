@@ -1,4 +1,4 @@
-from __future__ import division
+from __future__ import division, print_function
 import os, sys
 
 #This script updates the het dictionary used by Reduce to add hydrogens to het groups
@@ -8,13 +8,13 @@ import os, sys
 #Reformat certain columns of the het dictionary
 #Edit certain functional groups
 #Regularize endlines for Windows
-#Set filenames and clen up
+#Set filenames and clean up
 
 #----- Download het dict from PDB -----
 import urllib
 import time
 
-print >> sys.stderr, "Downloading most recent het dict"
+print("Downloading most recent het dict", file=sys.stderr)
 #Download the lasted version of the het_dictionary from the PDB
 urllib.urlretrieve('ftp://ftp.wwpdb.org/pub/pdb/data/monomers/het_dictionary.txt', 'reduce_wwPDB_het_dict_download.txt')
 #Store time of download for versioning
@@ -40,7 +40,7 @@ def make_pdb3_format_atom(atomstring):
 infile = open("reduce_wwPDB_het_dict_download.txt")
 outfile = open("reduce_wwPDB_het_dict_adjusted.txt","w")
 
-print >> sys.stderr, "Adjusting atom columns"
+print("Adjusting atom columns", file=sys.stderr)
 for line in infile:
   if line.startswith("CONECT"):
     x = line.split()
@@ -50,18 +50,18 @@ for line in infile:
     for atom in connections:
       atomlist.append(make_pdb3_format_atom(atom))
     outlist = [x[0],"     ",make_pdb3_format_atom(x[1]),numconnections,' '.join(atomlist).rstrip()]
-    print >> outfile, ''.join(outlist).strip()
+    print(''.join(outlist).strip(), file=outfile)
   elif line.startswith("RESIDUE"):
     x = line.split()
     resname = x[1].rjust(3)
     members = x[2].strip().rjust(7)
-    print >> outfile, x[0]+"   "+resname+ members
+    print(x[0]+"   "+resname+ members, file=outfile)
   elif line.startswith("END"):
-    print >> outfile, line.strip(),"  "
+    print(line.strip(),"  ", file=outfile)
   elif line.startswith("HETNAM") or line.startswith("HETSYN") or line.startswith("FORMUL"):
     outfile.write(line)
   else:
-    print >> outfile, line.strip()
+    print(line.strip(), file=outfile)
 
 infile.close()
 outfile.close()
@@ -73,6 +73,7 @@ outfile.close()
 #  ligands charge-neutral.
 #The most prevalent of these is the H on phosphate OH.
 #Here we comment out those hydrogens so Reduce will not add them.
+#We also adjust SPD, SPM, and PAR nitrogens to have appropriate charge states
 import re
 
 class record():
@@ -108,16 +109,92 @@ class record():
             #matches pattern for a phosphate oxygen, need to comment out the attached hydrogen
       line_index += 1
 
+  def fix_spd_charge(self):
+    line_index = 0
+    while line_index < len(self.lines):
+      line = self.lines[line_index]
+      if line.startswith("CONECT      N1 "):
+        self.lines[line_index] = "CONECT      N1     4 C2  HN11 HN12 HN13\n"
+      elif line.startswith("CONECT      N6 "):
+        self.lines[line_index] = "CONECT      N6     4 C5   C7  HN61 HN62\n"
+      elif line.startswith("CONECT      N10 "):
+        self.lines[line_index] = "CONECT      N10    4 C9  H101 H102 H103\n"
+      elif line.startswith("CONECT     HN12"):
+        self.lines[line_index] = "CONECT     HN12    1 N1\nCONECT     NH13    1 N1\n"
+      elif line.startswith("CONECT      HN6 "):
+        self.lines[line_index] = "CONECT     HN61    1 N6\nCONECT     HN62    1 N6\n"
+      elif line.startswith("CONECT     H102    1 N10"):
+        self.lines[line_index] = "CONECT     H102    1 N10\nCONECT     H103    1 N10\n"
+      line_index += 1
+
+  def fix_spm_charge(self):
+    line_index = 0
+    while line_index < len(self.lines):
+      line = self.lines[line_index]
+      if line.startswith("CONECT      N1 "):
+        self.lines[line_index] = "CONECT      N1     4 C2  HN11 HN12 HN13\n"
+      elif line.startswith("CONECT      N5 "):
+        self.lines[line_index] = "CONECT      N5     4 C4   C6  HN51 HN52\n"
+      elif line.startswith("CONECT      N10"):
+        #HN0 -> H101
+        self.lines[line_index] = "CONECT      N10    4 C9   C11 H101 H102\n"
+      elif line.startswith("CONECT      N14"):
+        self.lines[line_index] = "CONECT      N14    4 C13 HN41 HN42 HN43\n"
+
+      elif line.startswith("CONECT     HN12"):
+        self.lines[line_index] = "CONECT     HN12    1 N1\nCONECT     NH13    1 N1\n"
+      elif line.startswith("CONECT      HN5"):
+        self.lines[line_index] = "CONECT     HN51    1 N5\nCONECT     HN52    1 N5\n"
+      elif line.startswith("CONECT      HN0"):
+        #HN0 -> H101
+        self.lines[line_index] = "CONECT     H101    1 N10\nCONECT     H102    1 N10\n"
+      elif line.startswith("CONECT     HN42"):
+        self.lines[line_index] = "CONECT     HN42    1 N14\nCONECT     HN43    1 N14\n"
+      line_index += 1
+
+  def fix_par_charge(self):
+    line_index = 0
+    while line_index < len(self.lines):
+      line = self.lines[line_index]
+      if line.startswith("CONECT      N21"):
+        self.lines[line_index] = "CONECT      N21    4 C21 HN21 HN22 HN23\n"
+      elif line.startswith("CONECT      N12"):
+        self.lines[line_index] = "CONECT      N12    4 C12 H121 H122 H123\n"
+      elif line.startswith("CONECT      N32"):
+        self.lines[line_index] = "CONECT      N32    4 C32 H321 H322 H323\n"
+      elif line.startswith("CONECT      N24"):
+        self.lines[line_index] = "CONECT      N24    4 C24 H241 H242 H243\n"
+      elif line.startswith("CONECT      N64"):
+        self.lines[line_index] = "CONECT      N64    4 C64 HN61 HN62 HN63\n"
+
+      elif line.startswith("CONECT     HN22"):
+        self.lines[line_index] = "CONECT     HN22    1 N21\nCONECT     HN23    1 N21\n"
+      elif line.startswith("CONECT     H122"):
+        self.lines[line_index] = "CONECT     H122    1 N12\nCONECT     H123    1 N12\n"
+      elif line.startswith("CONECT     H322"):
+        self.lines[line_index] = "CONECT     H322    1 N32\nCONECT     H323    1 N32\n"
+      elif line.startswith("CONECT     H242"):
+        self.lines[line_index] = "CONECT     H242    1 N24\nCONECT     H243    1 N24\n"
+      elif line.startswith("CONECT     HN62"):
+        self.lines[line_index] = "CONECT     HN62    1 N64\nCONECT     HN63    1 N64\n"
+      line_index += 1
+
   def process(self, formul_line, outfile):
     phosphate_pattern = re.compile('(FORMUL)(.........)(.*H[1-9])(.*O[1-9])(.*P[1-9])')
     if phosphate_pattern.match(formul_line):
       self.remove_OH_on_P()
+    if self.lines[0].startswith("RESIDUE   SPD"):
+      self.fix_spd_charge()
+    elif self.lines[0].startswith("RESIDUE   SPM"):
+      self.fix_spm_charge()
+    elif self.lines[0].startswith("RESIDUE   PAR"):
+      self.fix_par_charge()
     self.output_record(outfile)
 
 infile = open("reduce_wwPDB_het_dict_adjusted.txt")
 outfile = open("reduce_wwPDB_het_dict_no_poh.txt","w")
 
-print >> sys.stderr, "Removing phosphate hydorgens"
+print("Adjusting charges", file=sys.stderr)
 residue_line_pattern = re.compile('(RESIDUE)(...)(?P<resname>...)')
 formula_line_pattern = re.compile('FORMUL')
 for line in infile:
@@ -140,7 +217,7 @@ outfile.close()
 infile = open("reduce_wwPDB_het_dict_no_poh.txt")
 outfile = open("reduce_wwPDB_het_dict_endlines.txt","w")
 
-print >> sys.stderr, "Switching to Windows endlines"
+print("Switching to Windows endlines", file=sys.stderr)
 lines = infile.readlines()
 for line in lines:
   line=line.replace("\n","")
@@ -157,10 +234,10 @@ outfile.close()
 #Renaming the updated file is renamed to match that name allows it to be used
 #  automatically in most circumstances.
 #The previous file is renamed with a datestamp.
-print >> sys.stderr, "File cleanup"
+print("File cleanup", file=sys.stderr)
 existing_files = os.listdir(".")
 if "reduce_wwPDB_het_dict.txt" in existing_files:
-  print >> sys.stderr, "  The previous het dict was renamed to reduce_wwPDB_het_dict_obsoleted_"+fetchtime+".txt"
+  print("  The previous het dict was renamed to reduce_wwPDB_het_dict_obsoleted_"+fetchtime+".txt", file=sys.stderr)
   os.rename("reduce_wwPDB_het_dict.txt","reduce_wwPDB_het_dict_obsoleted_"+fetchtime+".txt")
 os.rename("reduce_wwPDB_het_dict_endlines.txt","reduce_wwPDB_het_dict.txt")
 os.remove("reduce_wwPDB_het_dict_download.txt")

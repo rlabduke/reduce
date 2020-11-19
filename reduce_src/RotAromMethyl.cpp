@@ -63,11 +63,13 @@ void RotAromMethyl::finalize(int nBondCutoff, bool useXplorNames, bool useOldNam
 		_rot.push_front(&_heavyAtom);
 		for(std::list<PDBrec*>::const_iterator alst = _rot.begin(); alst != _rot.end(); ++alst) {
 			const PDBrec* thisAtom = *alst;
-			std::list<PDBrec*>* temp = new std::list<PDBrec*>();
-			std::list<PDBrec*> neighborList = xyz.neighbors(thisAtom->loc(), thisAtom->covRad(),
-				approxNbondDistLimit);
-			bondedList(*thisAtom, neighborList, nBondCutoff, _rot, temp);
-			_bnded.push_back(temp);
+			if (thisAtom->valid()) {
+				std::list<PDBrec*>* temp = new std::list<PDBrec*>();
+				std::list<PDBrec*> neighborList = xyz.neighbors(thisAtom->loc(), thisAtom->covRad(),
+					approxNbondDistLimit);
+				bondedList(*thisAtom, neighborList, nBondCutoff, _rot, temp);
+				_bnded.push_back(temp);
+			}
 		}
 		_rot.pop_front();
 	}
