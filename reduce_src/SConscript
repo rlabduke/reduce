@@ -39,7 +39,7 @@ env.StaticLibrary(
     "PDBrec.cpp",
     "MoveableNode.cpp",
     "RotAromMethyl.cpp"])
-env.Prepend(LIBS=["toolclasses", "pdb++", "reducelib"])
+env.Prepend(LIBS=["reducelib", "toolclasses", "pdb++"])
 exe = env.Program(
   target=["#reduce/exe/reduce"],
   source=[
