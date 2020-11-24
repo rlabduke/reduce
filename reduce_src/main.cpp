@@ -658,7 +658,8 @@ int main(int argc, char **argv) {
       if (Verbose) cerr << "Processing file: --standard input--" << endl;
       ifPtr = &cin;
     }
-    std::string s(std::istreambuf_iterator<char>(*ifPtr), {});
+    std::istreambuf_iterator<char> endBuf;
+    std::string s(std::istreambuf_iterator<char>(*ifPtr), endBuf);
     if (ifPtr != &cin) {
       delete ifPtr;
     }
@@ -672,7 +673,9 @@ int main(int argc, char **argv) {
     }
 
     // Process each model.
-    for (std::list<PDBrec*> &m : models) {
+    for (std::list< std::list<PDBrec*> >::iterator it = models.begin();
+         it != models.end(); it++) {
+      std::list<PDBrec*> &m = *it;
       //=====================================================================
       // Removing hydrogens
 
