@@ -16,7 +16,6 @@ add_definitions(
 set(toolclasses_SOURCES
 	UseCount.cpp
 	Point3d.cpp
-	Hash.cpp
 	utility.cpp
 	column_sprintf.cpp
 	column_sscanf.cpp
@@ -26,7 +25,6 @@ set(toolclasses_SOURCES
 set(toolclasses_HEADERS
 	UseCount.h
 	Point3d.h
-	Hash.h
 	utility.h
 	DisjointSets.h
 )

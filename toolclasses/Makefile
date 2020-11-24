@@ -23,7 +23,7 @@ LIBRARY		= toolclasses
 
 LIBARCH		= lib$(LIBRARY).a
 
-OBJS		= UseCount.o Point3d.o Hash.o utility.o \
+OBJS		= UseCount.o Point3d.o utility.o \
 		  column_sprintf.o column_sscanf.o DisjointSets.o
 
 all:		$(LIBARCH)
@@ -43,7 +43,6 @@ spotless:;	@rm -f $(OBJS) $(LIBARCH)
 
 # DO NOT DELETE THIS LINE -- make depend uses it
 DisjointSets.o: DisjointSets.cpp DisjointSets.h
-Hash.o: Hash.cpp Hash.h
 Point3d.o: Point3d.cpp Point3d.h
 UseCount.o: UseCount.cpp UseCount.h
 column_sprintf.o: column_sprintf.cpp
