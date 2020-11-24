@@ -323,6 +323,7 @@ void reduceChanges(bool showAll) { /*changes*/
    cerr  << "2016/06/02 - cjw       set default behavior *not* to rotate methionine methyls, added -DOROTMET flag" << endl;
    cerr  << "2020/10/07 - rmt       added fine-grained command-line control over hydrogen drop/add and optimization" << endl;
    cerr  << "2020/10/08 - rmt       adjusted vector operations to enable running in debug compile" << endl;
+   cerr  << "See Github repository for descriptions of more recent changes" << endl;
    cerr  << endl;
    exit(2);
 }

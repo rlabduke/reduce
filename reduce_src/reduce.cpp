@@ -25,9 +25,9 @@
 #endif
 
 const char *versionString =
-     "reduce: version 3.6 11/19/2020, Copyright 1997-2016, J. Michael Word; 2020 ReliaSolve";
+     "reduce: version 3.7 11/24/2020, Copyright 1997-2016, J. Michael Word; 2020 ReliaSolve";
 
-const char *shortVersion    = "reduce.3.6.201119";
+const char *shortVersion    = "reduce.3.7.201124";
 const char *referenceString =
                        "Word, et. al. (1999) J. Mol. Biol. 285, 1735-1747.";
 const char *electronicReference = "http://kinemage.biochem.duke.edu";
