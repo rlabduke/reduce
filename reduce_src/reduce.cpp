@@ -24,11 +24,11 @@
 #pragma warning(disable:4800)
 #endif
 
-static const char *versionString =
+const char *versionString =
      "reduce: version 3.6 11/19/2020, Copyright 1997-2016, J. Michael Word; 2020 ReliaSolve";
 
-static const char *shortVersion    = "reduce.3.6.201119";
-static const char *referenceString =
+const char *shortVersion    = "reduce.3.6.201119";
+const char *referenceString =
                        "Word, et. al. (1999) J. Mol. Biol. 285, 1735-1747.";
 const char *electronicReference = "http://kinemage.biochem.duke.edu";
 
