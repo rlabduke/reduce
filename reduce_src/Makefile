@@ -20,7 +20,7 @@ CFLAGS = $(OPT) $(DEBUG) $(PROG_FLGS) $(DICT_LOC) $(DICT_LOCOLD)\
 
 LFLAGS = -L$(PDBHOME) -lpdb++ -L$(TOOLHOME) -ltoolclasses -lm
 
-OBJLIST = GraphToHoldScores.o reduce.o CTab.o ElementInfo.o StdResH.o ResBlk.o AtomConn.o \
+OBJLIST = main.o GraphToHoldScores.o reduce.o CTab.o ElementInfo.o StdResH.o ResBlk.o AtomConn.o \
             AtomPositions.o DotSph.o Mover.o RotMethyl.o RotAromMethyl.o RotDonor.o \
             FlipMemo.o CliqueList.o AtomDescr.o PDBrec.o MoveableNode.o hybrid_36_c.o\
             
@@ -116,5 +116,10 @@ reduce.o: $(PDBHOME)/pdb++.h $(TOOLHOME)/Point3d.h \
 	 $(TOOLHOME)/utility.cpp $(TOOLHOME)/utility.h AtomConn.h \
 	 AtomPositions.h BumperPoint.h CTab.h CliqueList.h DotSph.h \
 	 ElementInfo.h LocBlk.h Mover.h PDBrec.h ResBlk.h StdResH.h \
-	 neighbors.cpp neighbors.h reduce.cpp
+	 reduce.cpp
+main.o: $(PDBHOME)/pdb++.h $(TOOLHOME)/Point3d.h \
+	 $(TOOLHOME)/utility.cpp $(TOOLHOME)/utility.h AtomConn.h \
+	 AtomPositions.h BumperPoint.h CTab.h CliqueList.h DotSph.h \
+	 ElementInfo.h LocBlk.h Mover.h PDBrec.h ResBlk.h StdResH.h \
+	 main.cpp
 # DO NOT DELETE THIS 2nd LINE -- make depend uses it

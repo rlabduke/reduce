@@ -13,8 +13,6 @@ env.StaticLibrary(
   source=[
     "UseCount.cpp",
     "Point3d.cpp",
-    "Stringclass.cpp",
-    "Hash.cpp",
     "utility.cpp",
     "column_sprintf.cpp",
     "column_sscanf.cpp",
