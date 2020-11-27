@@ -75,8 +75,6 @@ extern const char *shortVersion;
 extern const char *referenceString;
 extern const char *electronicReference;
 
-extern std::string DBfilename;
-
 extern bool Verbose;    // do we write processing notes to stdout?
 extern bool KeepConnections;
 extern bool StandardizeRHBondLengths;
