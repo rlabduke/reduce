@@ -128,15 +128,6 @@ bool AddOtherHydrogens = TRUE;	  // If true, add hydrogens to non-water atoms
 bool RemoveATOMHydrogens = FALSE; // If true, remove hydrogens from ATOM records
 bool RemoveOtherHydrogens = FALSE;// If true, remove hydrogens from non-ATOM records
 
-#ifndef HET_DICTIONARY
-//#define HET_DICTIONARY "reduce_het_dict.txt"
-#define HET_DICTIONARY "reduce_wwPDB_het_dict.txt"
-#endif
-#ifndef HET_DICTOLD
-#define HET_DICTOLD "reduce_het_dict.txt"
-#endif
-std::string DBfilename( HET_DICTIONARY );
-
 enum ConnType {NTERM_RES, CONNECTED_RES, FRAGMENT_RES};
 
 SummaryStats Tally;

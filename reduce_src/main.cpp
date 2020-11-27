@@ -41,6 +41,15 @@ using std::endl;
 
 #define DIRECTORY_SEP_CHAR '/'
 
+#ifndef HET_DICTIONARY
+//#define HET_DICTIONARY "reduce_het_dict.txt"
+#define HET_DICTIONARY "reduce_wwPDB_het_dict.txt"
+#endif
+#ifndef HET_DICTOLD
+#define HET_DICTOLD "reduce_het_dict.txt"
+#endif
+std::string DBfilename(HET_DICTIONARY);
+
 void reduceHelp(bool showAll) { /*help*/
    cerr << versionString << endl;
    cerr << shortVersion << endl;
