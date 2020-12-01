@@ -25,4 +25,5 @@ The files in this repository have the following licenses:
 // also available for free.
 //               ** Absolutely no Warranty **
 // Copyright (C) 1999 J. Michael Word
+// Copyright (C) 2020 ReliaSolve
 // **************************************************************
