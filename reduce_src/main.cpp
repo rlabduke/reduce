@@ -330,9 +330,14 @@ void reduceChanges(bool showAll) { /*changes*/
    cerr  << "2015/??    - v3.3, sj & cjw, New flip method to replace nqh_minimize" << endl;
    cerr  << "2015/??    - bjh       test system" << endl;
    cerr  << "2016/06/02 - cjw       set default behavior *not* to rotate methionine methyls, added -DOROTMET flag" << endl;
-   cerr  << "2020/10/07 - rmt       added fine-grained command-line control over hydrogen drop/add and optimization" << endl;
-   cerr  << "2020/10/08 - rmt       adjusted vector operations to enable running in debug compile" << endl;
-   cerr  << "See Github repository for descriptions of more recent changes" << endl;
+   cerr  << "2020/10/07 - rmt       Added fine-grained command-line control over hydrogen drop/add and optimization" << endl;
+   cerr  << "2020/10/08 - rmt       Adjusted vector operations to enable running in debug compile" << endl;
+   cerr  << "2020/10/22 - sbstnk    Fix SIGUIJ output format" << endl;
+   cerr  << "2020/10/22 - sbstnk    Return code '2' for critical errors to distinguish from timeouts" << endl;
+   cerr  << "2020/10/29 - sbstnk    Avoid floating-point accuracy issues when doing some flips" << endl;
+   cerr  << "2020/11/03 - cjw       Updated het dictionary" << endl;
+   cerr  << "2020/11/19 - rmt       Verifies that atoms are valid before adjusting them" << endl;
+   cerr  << "2020/12/03 - rmt       Version 3.8 adds hydrogens on all alternates even if not adjusting" << endl;
    cerr  << endl;
    exit(2);
 }

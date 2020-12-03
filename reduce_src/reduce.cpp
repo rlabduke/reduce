@@ -25,9 +25,9 @@
 #endif
 
 const char *versionString =
-     "reduce: version 3.7 11/24/2020, Copyright 1997-2016, J. Michael Word; 2020 ReliaSolve";
+     "reduce: version 3.8 12/03/2020, Copyright 1997-2016, J. Michael Word; 2020 ReliaSolve";
 
-const char *shortVersion    = "reduce.3.7.201124";
+const char *shortVersion    = "reduce.3.8.201203";
 const char *referenceString =
                        "Word, et. al. (1999) J. Mol. Biol. 285, 1735-1747.";
 const char *electronicReference = "http://kinemage.biochem.duke.edu";
@@ -1247,7 +1247,7 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 
 						xyz.put(newHatom); // index in the xyz table
 
-						if (doNotAdjustSC) { return; } // do not add to the adjustable info
+						if (doNotAdjustSC) { continue; } // do not add to the adjustable info
 
 						if ( pp.hasFeature(ROTATEFLAG)
 							||  (pp.hasFeature(ROTATEONDEMAND)
