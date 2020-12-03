@@ -7,6 +7,8 @@ using namespace boost::python;
 #define getSet(type, name) type get ## name(void) { return name; } void set ## name(type val) { name = val; }
 
 // Create getters and setters for the global variables that control behavior
+getSet(SummaryStats,Tally)
+
 getSet(bool,Verbose)
 getSet(bool,KeepConnections)
 getSet(bool,StandardizeRHBondLengths)
@@ -73,6 +75,8 @@ BOOST_PYTHON_MODULE(reduce)
                              def("set" #name , set ## name, "Set value of " #name " global variable");
 
   // Export getters and setters for the global variables that control behavior
+  exportGetSet(Tally)
+
   exportGetSet(Verbose)
   exportGetSet(KeepConnections)
   exportGetSet(StandardizeRHBondLengths)
@@ -125,6 +129,9 @@ BOOST_PYTHON_MODULE(reduce)
 	exportGetSet(AddOtherHydrogens)
 	exportGetSet(RemoveATOMHydrogens)
 	exportGetSet(RemoveOtherHydrogens)
+
+  // By-value converters for structures
+  /// @todo SummaryStats
 
   // Export the functions that will be called
   /// @todo
