@@ -62,7 +62,6 @@ getSet(bool,RemoveOtherHydrogens)
 
 BOOST_PYTHON_MODULE(reduce)
 {
-
   // Export the const char * variables, which will be read only.
   scope().attr("versionString") = versionString;
   scope().attr("shortVersion") = shortVersion;
@@ -74,8 +73,8 @@ BOOST_PYTHON_MODULE(reduce)
                              def("set" #name , set ## name, "Set value of " #name " global variable");
 
   // Export getters and setters for the global variables that control behavior
-  exportGetSet(Verbose);
-  exportGetSet(KeepConnections);
+  exportGetSet(Verbose)
+  exportGetSet(KeepConnections)
   exportGetSet(StandardizeRHBondLengths)
   exportGetSet(ProcessConnHydOnHets)
   exportGetSet(BuildHisHydrogens)
