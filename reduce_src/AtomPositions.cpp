@@ -901,7 +901,7 @@ int AtomPositions::SearchClique(std::list<MoverPtr> clique, int limit)
 	// ---------------------------------------------------------------
 	// initialize
 
-	if ( ! initializeCliqueMovers( clique, item, numItems ) ) return 0;
+	if ( ! initializeCliqueMovers( clique, item, numItems ) ) return -1;
 	std::vector< int > num_states( numItems, 0 );
 
 	//if ( _outputNotice )
