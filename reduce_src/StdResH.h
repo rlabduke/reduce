@@ -26,6 +26,7 @@
 #include "AtomConn.h"
 #include <list>
 #include <map>
+#include <memory>
 #include "ElementInfo.h"
 
 extern bool UseNuclearDistances; //defined in reduce.cpp JJH
@@ -55,7 +56,7 @@ public:
    const std::string& exclude() const { return _exclude; }
 
    // Be careful, std::list must be copied.
-   std::list<atomPlacementPlan*> plans() { return _plans; }
+   std::list<std::shared_ptr<atomPlacementPlan> > plans() { return _plans; }
 
    static const HydrogenPlanTable& HydPlanTbl();
    static const StdResXtraInfo&    ResXtraInfo();
@@ -66,7 +67,7 @@ private:
 
    std::string                   _name;    // residue name
    std::string                   _exclude; // list of incompatible residues (for n-term, etc.)
-   std::list<atomPlacementPlan*> _plans;
+   std::list<std::shared_ptr<atomPlacementPlan> > _plans;
 };
 
 // -----------------------------------------------------------------------------

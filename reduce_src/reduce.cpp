@@ -817,7 +817,7 @@ void analyzeRes(CTab& hetdatabase, ResBlk* pb, ResBlk* cb, ResBlk* nb,
 	}
 
 	// create plans
-	std::list<atomPlacementPlan*> app;
+	std::list<std::shared_ptr<atomPlacementPlan> > app;
 
 	// apl 2007/03/07 -- Bug fix: do not add hydrogens to "N" on non-amino acids
 	// prev: 	if (ProcessConnHydOnHets || StdResH::ResXtraInfo().match(resname, "AminoAcid")) {
@@ -859,13 +859,13 @@ void analyzeRes(CTab& hetdatabase, ResBlk* pb, ResBlk* cb, ResBlk* nb,
 			}
 		}
 		if (hn && hn->exclude().find(resname.c_str()) == std::string::npos) {
-			std::list<atomPlacementPlan*> temp = hn->plans();
+			std::list<std::shared_ptr<atomPlacementPlan> > temp = hn->plans();
 			app.splice(app.end(), temp);
 		}
 		if (StdResH::ResXtraInfo().match(resname, "AminoAcid")) {
 			StdResH *ha = StdResH::HydPlanTbl().get("alpha");
 			if (ha && ha->exclude().find(resname.c_str()) == std::string::npos) {
-				std::list<atomPlacementPlan*> temp = ha->plans();
+				std::list<std::shared_ptr<atomPlacementPlan> > temp = ha->plans();
 				app.splice(app.end(), temp);
 			}
 		}
@@ -874,7 +874,7 @@ void analyzeRes(CTab& hetdatabase, ResBlk* pb, ResBlk* cb, ResBlk* nb,
 	if (StdResH::ResXtraInfo().match(resname, "NucleicAcid")) { // S.J. this does the same thing as above, but just for Nucleotc acids backbone atoms
 		StdResH *rpbb = StdResH::HydPlanTbl().get("ribose phosphate backbone");
 		if (rpbb && rpbb->exclude().find(resname.c_str()) == std::string::npos) {
-			std::list<atomPlacementPlan*> temp = rpbb->plans();
+			std::list<std::shared_ptr<atomPlacementPlan> > temp = rpbb->plans();
 			app.splice(app.end(), temp);
 		}
 	}
@@ -884,10 +884,10 @@ void analyzeRes(CTab& hetdatabase, ResBlk* pb, ResBlk* cb, ResBlk* nb,
 
     StdResH *srh = StdResH::HydPlanTbl().get(resname);
 	if (srh) {
-        std::list<atomPlacementPlan*> temp = srh->plans(); // S.J. this has the hydrogen atom plans for this specific residue given in StdResH.cpp
+        std::list<std::shared_ptr<atomPlacementPlan> > temp = srh->plans(); // S.J. this has the hydrogen atom plans for this specific residue given in StdResH.cpp
 
 		// for aromatic methyls - Aram 07/23/12
-		for(std::list<atomPlacementPlan*>::const_iterator iter = temp.begin(); iter != temp.end(); ++iter) {
+		for(std::list<std::shared_ptr<atomPlacementPlan> >::const_iterator iter = temp.begin(); iter != temp.end(); ++iter) {
             
             std::string conn2atom = (*iter)->conn(1);
 			bool Arom = StdResH::ResXtraInfo().atomHasAttrib(resname, conn2atom, AROMATICFLAG);
@@ -901,10 +901,10 @@ void analyzeRes(CTab& hetdatabase, ResBlk* pb, ResBlk* cb, ResBlk* nb,
 
 		ResConn *ct = hetdatabase.findTable(resname);
 		if (ct) {
-			std::list<atomPlacementPlan*> temp = ct->genHplans(resname.c_str());
+			std::list<std::shared_ptr<atomPlacementPlan> > temp = ct->genHplans(resname.c_str());
 
 			// for aromatic methyls - Aram 07/18/12
-			for(std::list<atomPlacementPlan*>::const_iterator iter = temp.begin(); iter != temp.end(); ++iter) {
+			for(std::list<std::shared_ptr<atomPlacementPlan> >::const_iterator iter = temp.begin(); iter != temp.end(); ++iter) {
 				bool AromMethyl = isAromMethyl(*ct, **iter, *cb, resname.c_str());
 				if (AromMethyl) (*iter)->addFeature(AROMATICFLAG);
 			}
@@ -920,7 +920,7 @@ void analyzeRes(CTab& hetdatabase, ResBlk* pb, ResBlk* cb, ResBlk* nb,
 
 	// work through each atom placement plan - S.J. each atom placement plan is a potential H atom that needs to be added. The hydrogens that are already present are not looked at right now.
 	if (AddOtherHydrogens) {
-		for (std::list<atomPlacementPlan*>::const_iterator iter = app.begin(); iter != app.end(); ++iter) {
+		for (std::list<std::shared_ptr<atomPlacementPlan> >::const_iterator iter = app.begin(); iter != app.end(); ++iter) {
 			genHydrogens(**iter, *cb, o2prime, xyz, resAlts, fixNotes, rlst);
 		}
 	}
@@ -1657,10 +1657,10 @@ void findAndStandardize(const char* name, const char* resname,
 	StdResH *hptr = StdResH::HydPlanTbl().get(name);
 
 	if (hptr && hptr->exclude().find(resname) == std::string::npos) {
-		std::list<atomPlacementPlan*> app_deque = hptr->plans();
-		for (std::list<atomPlacementPlan*>::iterator app = app_deque.begin(); app != app_deque.end(); ++app) {
+		std::list<std::shared_ptr<atomPlacementPlan> > app_deque = hptr->plans();
+		for (std::list<std::shared_ptr<atomPlacementPlan> >::iterator app = app_deque.begin(); app != app_deque.end(); ++app) {
 
-			const atomPlacementPlan* pp = *app;
+			const std::shared_ptr<atomPlacementPlan> pp = *app;
 			std::list< std::shared_ptr<PDBrec> > firstAtoms;
 			theRes.get(pp->conn(0), firstAtoms);
 

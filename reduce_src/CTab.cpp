@@ -41,7 +41,7 @@ std::list<std::string> ResConn::findRingBondedToMethyl(const std::string &atomna
 	ElementInfo *e = ElementInfo::StdElemTbl().lookupPDBatom(atomname.c_str(), resname);
 	if (e && e->isHydrogen()) { // start only from hydrogens
 
-		std::stack<AtomConn*> stkAtoms;
+		std::stack<std::shared_ptr<AtomConn> > stkAtoms;
 		std::stack<int> stkAtomsDepth;
 		std::vector<bool> visited(_atomConn.size());
 		std::list<std::string> L;
@@ -50,11 +50,11 @@ std::list<std::string> ResConn::findRingBondedToMethyl(const std::string &atomna
 		for (int i=0; i < visited.size(); i++)
 			visited.at(i)=false;
 
-		AtomConn *hc = get(atomname);
+		std::shared_ptr<AtomConn> hc = get(atomname);
 		if (hc && hc->num_conn() > 0)  {
 
 			std::string x1name = hc->conn(0); // heavy atom
-			AtomConn *x1c = get(x1name);
+			std::shared_ptr<AtomConn> x1c = get(x1name);
 			int x1cDepth = 0;
 
 			ElementInfo *x1e = ElementInfo::StdElemTbl().lookupPDBatom(x1name.c_str(), resname);
@@ -76,7 +76,7 @@ std::list<std::string> ResConn::findRingBondedToMethyl(const std::string &atomna
 
 				if (nh == 3) {
 					visited[x1c->order()]=true;
-					AtomConn *x2c = get(xc);
+					std::shared_ptr<AtomConn> x2c = get(xc);
 					stkAtoms.push(x2c);
 					stkAtomsDepth.push(x1cDepth+1);
 					x1name = xc;
@@ -107,7 +107,7 @@ std::list<std::string> ResConn::findRingBondedToMethyl(const std::string &atomna
 								return L;
 							}
 
-							AtomConn *x2c = get(xc);
+							std::shared_ptr<AtomConn> x2c = get(xc);
 							if (x2c && !visited[x2c->order()]) {
 								// std::cout << "(x2c: " << x2c->order() << x2c->name();
 								stkAtoms.push(x2c);
@@ -124,19 +124,19 @@ std::list<std::string> ResConn::findRingBondedToMethyl(const std::string &atomna
 	return emptyList;
 }
 
-atomPlacementPlan* ResConn::planHplacement(const std::string &atomname,
+std::shared_ptr<atomPlacementPlan> ResConn::planHplacement(const std::string &atomname,
                                            const char* resname) const {
    int nn = 0, nh = 0, whichH = 0, type = 0, flags = 0;
    float dist = 0.0, ang1 = 0.0, ang2 = 0.0;
 
    ElementInfo *e = ElementInfo::StdElemTbl().lookupPDBatom(atomname.c_str(), resname);
    if (e && e->isHydrogen()) {
-      AtomConn *hc = get(atomname);
+	   std::shared_ptr<AtomConn> hc = get(atomname);
       if (hc && hc->num_conn() > 0)  {
 		  AtomConn names(atomname, hc->order());
 	 std::string x1name = hc->conn(0);
 	 names.addConn(x1name); // H atom connections will be heavy atoms
-	 AtomConn *x1c = get(x1name);
+	 std::shared_ptr<AtomConn> x1c = get(x1name);
 	 if (x1c && x1c->num_conn() > 0)  {
 	    for (int i = 0; i < x1c->num_conn(); i++) {
 			std::string xc = x1c->conn(i);
@@ -200,7 +200,7 @@ atomPlacementPlan* ResConn::planHplacement(const std::string &atomname,
 	       else if (x1c->num_conn() == 3) { type = 4; }
 	    }
 	    else if (nn == 1) {
-		  AtomConn *x2c = get(names.conn(1));
+			std::shared_ptr<AtomConn> x2c = get(names.conn(1));
 		  if (x2c && x2c->num_conn() > 0)  {
 		     for (int k = 0; k < x2c->num_conn(); k++) {
 			std::string xxc = x2c->conn(k);
@@ -283,7 +283,7 @@ atomPlacementPlan* ResConn::planHplacement(const std::string &atomname,
 
 	       flags |= BONDBUMPFLAG;
 
-	       return new atomPlacementPlan(type, *e, names, dist,
+	       return std::make_shared<atomPlacementPlan>(type, *e, names, dist,
 	                                        ang1, ang2, flags);
 	    }
 	    else { cerr << "ERROR ResConn::connect(" << atomname
@@ -294,12 +294,12 @@ atomPlacementPlan* ResConn::planHplacement(const std::string &atomname,
    return NULL;
 }
 
-std::list<atomPlacementPlan*> ResConn::genHplans(const char* resname) {
-	std::list<atomPlacementPlan*> plans;
-	std::map<std::string, AtomConn*>::const_iterator i = _atomConn.begin();
+std::list<std::shared_ptr<atomPlacementPlan> > ResConn::genHplans(const char* resname) {
+	std::list<std::shared_ptr<atomPlacementPlan> > plans;
+	std::map<std::string, std::shared_ptr<AtomConn> >::const_iterator i = _atomConn.begin();
 
 	while (i != _atomConn.end()) {
-		atomPlacementPlan *p = planHplacement(i->first,
+		std::shared_ptr<atomPlacementPlan> p = planHplacement(i->first,
 		                                      resname);
 		if (p) {
 			plans.push_front(p); // store a copy of this part of the plan
@@ -373,7 +373,7 @@ ResConn* CTab::findTable(const std::string &resname) {
 				break;
 			}
 			else {
-				AtomConn *connectedAtoms = new AtomConn(an[0],++m);
+				std::shared_ptr<AtomConn> connectedAtoms = std::make_shared<AtomConn>(an[0],++m);
 				currTbl->put(connectedAtoms);
 				if (n > 9) { n = 9; } // overflow
 				for (int i=1; i <= n; i++) {
@@ -396,7 +396,7 @@ ResConn* CTab::findTable(const std::string &resname) {
 int CTab::numConn(const std::string &resname, const std::string &atomname) {
    ResConn *tbl = findTable(resname);
    if (tbl) {
-      AtomConn *hc = tbl->get(atomname);
+	   std::shared_ptr<AtomConn> hc = tbl->get(atomname);
       if (hc) { return hc->num_conn(); }
    }
    return 0;
