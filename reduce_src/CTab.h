@@ -34,6 +34,7 @@ using std::fseek;
 #include <list>
 #include <map>
 #include <stack>
+#include <memory>
 
 extern bool UseNuclearDistances; //defined in reduce.cpp JJH
 
@@ -44,16 +45,14 @@ class ResConn {
 public:
 	ResConn(const char* resname, int sz_est) {}
 	virtual ~ResConn() {
-	   for (std::map<std::string, AtomConn*>::const_iterator i = _atomConn.begin(); i != _atomConn.end(); ++i)
-		   delete i->second;
 	}
 
-   bool put(AtomConn *value) {
+   bool put(std::shared_ptr<AtomConn> value) {
 	   _atomConn.insert(std::make_pair(value->name(), value));
 	   return TRUE;
    }
-   AtomConn* get(const std::string &atomname) const {
-	   std::map<std::string, AtomConn*>::const_iterator i = _atomConn.find(atomname);
+   std::shared_ptr<AtomConn> get(const std::string &atomname) const {
+	   std::map<std::string, std::shared_ptr<AtomConn> >::const_iterator i = _atomConn.find(atomname);
 	   if (i != _atomConn.end())
 		   return i->second;
 	   else
@@ -62,17 +61,17 @@ public:
    // To find out there's a ring bonded to given H atom of methyl group (aromatic ring candidate) - Aram 07/09/12
    std::list<std::string> findRingBondedToMethyl(const std::string &atomname,const char* resname) const;
 
-   atomPlacementPlan* planHplacement(const std::string &atomname,const char* resname) const;
+   std::shared_ptr<atomPlacementPlan> planHplacement(const std::string &atomname,const char* resname) const;
 
    // Be careful, std::list must be copied.
-   std::list<atomPlacementPlan*> genHplans(const char* resname);
+   std::list<std::shared_ptr<atomPlacementPlan> > genHplans(const char* resname);
 
    const char*  resname() const { return _resname;       }
 
 private:
    ResConn(const ResConn&);            // can't copy
    ResConn& operator=(const ResConn&); // can't assign
-   std::map<std::string, AtomConn*> _atomConn;
+   std::map<std::string, std::shared_ptr<AtomConn> > _atomConn;
    const char*       _resname;      // name of this residue
 };
 

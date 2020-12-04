@@ -58,7 +58,7 @@ void StdResH::addPlan(int type, const char* elem, const char *hname,
 	if (type <= 5) { names.addConn(c3); }
 	if (type == 1) { names.addConn(c4); }
 
-	atomPlacementPlan* p = new atomPlacementPlan(type, *e, names, dist, ang1, ang2, flags);
+    std::shared_ptr<atomPlacementPlan> p = std::make_shared<atomPlacementPlan>(type, *e, names, dist, ang1, ang2, flags);
 
 	_plans.push_front(p);
 //	_plans.insert(p);
