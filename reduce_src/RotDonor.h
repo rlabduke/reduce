@@ -60,7 +60,7 @@ public:
    bool setOrientation(int oi, float delta, AtomPositions &xyz,
       SearchStrategy ss=Mover::LOW_RES);
 
-   const PDBrec& heavyAtom() const { return _heavyAtom; }
+   const PDBrec& heavyAtom() const { return *_heavyAtom; }
 
    void insertHatom(const PDBrec& ha) {
        std::shared_ptr<PDBrec> temp = std::make_shared<PDBrec>();
@@ -87,7 +87,7 @@ private:
    int findAtom(std::shared_ptr<PDBrec> atom ) const;
 
    Point3d     _p1, _p2;   // rotation axis is through these points
-   PDBrec      _heavyAtom; // hydrogen attachment point
+   std::shared_ptr<PDBrec>      _heavyAtom = std::make_shared<PDBrec>(); // hydrogen attachment point
 //   std::list< std::shared_ptr<PDBrec> > _rot;       // rotating hydrogen atoms
    std::list< std::shared_ptr<PDBrec> > _rot;
    double      _angle;     // current angle

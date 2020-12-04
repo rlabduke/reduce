@@ -45,7 +45,7 @@ using std::cout;
 
 RotAromMethyl::RotAromMethyl(const Point3d& a, const Point3d& b,
                      const double ang, const PDBrec& heavyAtom)
-   : _p1(a), _p2(b), _heavyAtom(heavyAtom), _angle(ang) {
+   : _p1(a), _p2(b), _heavyAtom(std::make_shared<PDBrec>(heavyAtom)), _angle(ang) {
    strcpy(_grpName, ((heavyAtom.elem().atno() == 7) ?
 			"NH3+   " : "methyl "));
    validateMemo();
@@ -60,7 +60,7 @@ void RotAromMethyl::finalize(int nBondCutoff, bool useXplorNames, bool useOldNam
 
 		const double approxNbondDistLimit = 3.0 + 0.5*nBondCutoff; // just a rule of thumb
 
-		_rot.push_front(&_heavyAtom);
+		_rot.push_front(_heavyAtom);
 		for(std::list< std::shared_ptr<PDBrec> >::const_iterator alst = _rot.begin(); alst != _rot.end(); ++alst) {
 			const std::shared_ptr<PDBrec> thisAtom = *alst;
 			if (thisAtom->valid()) {
@@ -96,8 +96,8 @@ int RotAromMethyl::makebumpers(std::multimap<LocBlk, BumperPoint*>& bblks,
 
 std::list<AtomDescr> RotAromMethyl::getAtDescOfAllPos(float &maxVDWrad) {
 	std::list<AtomDescr> theList;
-	AtomDescr ad_heavy(_heavyAtom.loc(), _heavyAtom.resno(), _heavyAtom.vdwRad());
-	ad_heavy.setOriginalAtomPtr( & _heavyAtom );
+	AtomDescr ad_heavy(_heavyAtom->loc(), _heavyAtom->resno(), _heavyAtom->vdwRad());
+	ad_heavy.setOriginalAtomPtr( _heavyAtom.get() );
 	theList.push_back(ad_heavy);  // ANDREW: appending _heavyAtom to the getBumpersOfAllPos function
 
 	std::shared_ptr<PDBrec> hyds;
@@ -107,8 +107,8 @@ std::list<AtomDescr> RotAromMethyl::getAtDescOfAllPos(float &maxVDWrad) {
 		for (int i = 0; i < numOrientations(Mover::LOW_RES); i++)
 		{
 			double theta = orientationAngle(i, Mover::LOW_RES);
-			AtomDescr ad_h(initHydPoint.rotate(theta - _angle, _p2, _p1), _heavyAtom.resno(), hyds->vdwRad());
-			ad_h.setOriginalAtomPtr( hyds );
+			AtomDescr ad_h(initHydPoint.rotate(theta - _angle, _p2, _p1), _heavyAtom->resno(), hyds->vdwRad());
+			ad_h.setOriginalAtomPtr( hyds.get() );
 			theList.push_back(ad_h);
 			// cerr << "TEST RotAromMethyl: " << AtomDescr(initHydPoint.rotate(theta, _p2, _p1), _heavyAtom.resno(), hyds->vdwRad()) << endl;
 		}
@@ -213,7 +213,7 @@ double RotAromMethyl::scoreThisAngle(AtomPositions &xyz, DotSphManager& dotBucke
 
 	double scoreThisO = 0.0;
 	int i = 0;
-	_rot.push_front(&_heavyAtom);
+	_rot.push_front(_heavyAtom);
 	for(std::list< std::shared_ptr<PDBrec> >::const_iterator alst = _rot.begin(); alst != _rot.end(); ++alst) {
 		float bumpSubScore = 0.0;
 		float hbSubScore   = 0.0;
@@ -334,7 +334,7 @@ void RotAromMethyl::dropBondedFromBumpingListForPDBrec(
 
 int RotAromMethyl::findAtom(std::shared_ptr<PDBrec> atom ) const
 {
-	if ( atom == & _heavyAtom )
+	if ( atom == _heavyAtom )
 	{
 		return 0;
 	}
@@ -347,7 +347,6 @@ int RotAromMethyl::findAtom(std::shared_ptr<PDBrec> atom ) const
 		++countAtomsSeen;
 	}
 	std::cerr << "Critical error in RotAromMethyl::findAtom( " << atom << ").  Could not find atom. " << std::endl;
-	std::cerr << "&_heavyAtom: " << &_heavyAtom << std::endl;
 	for (std::list< std::shared_ptr<PDBrec> >::const_iterator iter = _rot.begin(); iter != _rot.end(); ++iter)
 	{
 		std::cerr << "_rot: " << *iter << std::endl;

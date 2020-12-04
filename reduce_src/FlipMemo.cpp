@@ -986,7 +986,7 @@ int FlipMemo::findAtom(std::shared_ptr<PDBrec> atom ) const
 {
 	for (int ii = 1; ii <= FMmaxAtomSlots; ++ii)
 	{
-		if ( &_wrkAtom[ ii ] == atom )
+		if ( &_wrkAtom[ ii ] == atom.get() )
 			return ii - 1; //FIXING OFF BY ONE ERROR
 	}
 	std::cerr << "Critical error in FlipMemo::findAtom( " << atom << " ).  Atom not found." << std::endl;

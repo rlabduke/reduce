@@ -65,7 +65,7 @@ public:
       float probeRadius, float &bumpScore,
       float &hbScore, bool &hasBadBump);
 
-   const PDBrec& heavyAtom() const { return _heavyAtom; }
+   const PDBrec& heavyAtom() const { return *_heavyAtom; }
 
    void insertHatom(const PDBrec& ha) {
        std::shared_ptr<PDBrec> temp = std::make_shared<PDBrec>();
@@ -86,7 +86,7 @@ private:
    int findAtom(std::shared_ptr<PDBrec> atom ) const;
 
    Point3d     _p1, _p2;   // rotation axis is through these points
-   PDBrec      _heavyAtom; // hydrogen attachment point
+   std::shared_ptr<PDBrec>      _heavyAtom = std::make_shared<PDBrec>(); // hydrogen attachment point
    std::list< std::shared_ptr<PDBrec> > _rot;       // rotating hydrogen atoms
    double      _angle;
    char        _grpName[20];
