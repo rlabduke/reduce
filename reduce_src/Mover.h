@@ -29,6 +29,7 @@
 
 #include <map>
 #include <functional>
+#include <memory>
 #include "PDBrec.h"
 #include "DotSph.h"
 #include "BumperPoint.h"

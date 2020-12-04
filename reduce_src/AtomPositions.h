@@ -16,6 +16,7 @@
 #ifndef ATOMPOSITIONS_H
 #define ATOMPOSITIONS_H 1
 
+#include <memory>
 #include "PDBrec.h"
 #include "ResBlk.h"
 #include "DotSph.h"

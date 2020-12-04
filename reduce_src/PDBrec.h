@@ -30,6 +30,7 @@
 #include "ElementInfo.h"
 #include <iostream>
 #include <map>
+#include <memory>
 #include "pdb++.h"
 #include "Point3d.h"
 #include "utility.h"
