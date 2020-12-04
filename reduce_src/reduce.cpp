@@ -287,11 +287,6 @@ void outputRecords_all(std::ostream& os, const std::list <std::list< std::shared
     
     outputRecords(os,(const std::list< std::shared_ptr<PDBrec> > &)l.back(), 0); // SJ - so that all records after the last ENDMDL are printed. model will be equal to 0, which means all models are printed and only the left over information needs to be printed. model = 0 is a little counterintuitive, but that is the only number I can think of that will work.
     
-    for (std::list<std::list< std::shared_ptr<PDBrec> > >::const_iterator ptr = l.begin(); ptr != l.end(); ++ptr) {
-        
-        std::for_each(ptr->begin(),ptr->end(),DeleteObject()); // delete records
-    }
-    
     return;
 }
 

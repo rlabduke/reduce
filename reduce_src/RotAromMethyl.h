@@ -29,14 +29,6 @@ public:
    RotAromMethyl(const Point3d& a, const Point3d& b,
              const double ang, const PDBrec& heavyAtom);
    virtual ~RotAromMethyl() {
-//	   std::for_each(_bnded.begin(), _bnded.end(), DeleteObject());
-	   for (std::vector< std::list< std::shared_ptr<PDBrec> >* >::const_iterator i = _bnded.begin(); i != _bnded.end(); ++i) {
-		   std::list< std::shared_ptr<PDBrec> >* rlst = *i;
-		   for (std::list< std::shared_ptr<PDBrec> >::const_iterator it = rlst->begin(); it != rlst->end(); ++it)
-			   delete *it;
-		   delete rlst;
-	   }
-	   std::for_each(_rot.begin(), _rot.end(), DeleteObject());
    }
 
    virtual Mover::MemoType type() { return Mover::ROTATE_METHYL; }
