@@ -215,9 +215,9 @@ void AtomPositions::reposition(const Point3d& prev, const PDBrec& rec) {
    LocBlk pb(prev);
    LocBlk nb(rec.loc());
    if (! (pb == nb)) { // rec has moved to a new xyz block
-	   std::multimap<LocBlk, PDBrec*>::iterator it = _xyzBlocks.find(pb);
-	   std::multimap<LocBlk, PDBrec*>::iterator it2;
-	   PDBrec* a = NULL;
+	   std::multimap<LocBlk, std::shared_ptr<PDBrec> >::iterator it = _xyzBlocks.find(pb);
+	   std::multimap<LocBlk, std::shared_ptr<PDBrec> >::iterator it2;
+	   std::shared_ptr<PDBrec> a;
 	   while (it != _xyzBlocks.end() && it->first == pb) {
 		   a = it->second;
 		   it2 = it;
@@ -227,7 +227,7 @@ void AtomPositions::reposition(const Point3d& prev, const PDBrec& rec) {
 			   _xyzBlocks.erase(it2);
 		   }
 	   }
-	   PDBrec* r = new PDBrec(rec);
+	   std::shared_ptr<PDBrec> r = std::make_shared<PDBrec>(rec);
 	   _xyzBlocks.insert(std::make_pair(nb, r));
    }
 }
@@ -400,13 +400,13 @@ void AtomPositions::doNotAdjust(const PDBrec& a) {
 std::list<char> AtomPositions::insertFlip(const ResBlk& rblk) {
 	std::list<char> resAlts;
 	FlipMemo::altCodes(rblk, _useXplorNames, _useOldNames, _bbModel, resAlts);
-	std::multimap<std::string, PDBrec*> pdb = rblk.atomIt();
+	std::multimap<std::string, std::shared_ptr<PDBrec> > pdb = rblk.atomIt();
 	std::string key, descriptor;
 	char descrbuf[32];
 
 	for(std::list<char>::iterator alts = resAlts.begin(); alts != resAlts.end(); ++alts) { // SJ - for each alternate code
-		std::multimap<std::string, PDBrec*>::const_iterator pdbit = pdb.begin();
-		PDBrec* atsq = NULL;
+		std::multimap<std::string, std::shared_ptr<PDBrec> >::const_iterator pdbit = pdb.begin();
+		std::shared_ptr<PDBrec> atsq;
 		while(pdbit != pdb.end()) {
 			key = pdbit->first;
 			if (key[0] == '-' || key[0] == '+') {++pdbit; continue; } // skip connectors
@@ -454,7 +454,7 @@ std::list<char> AtomPositions::insertFlip(const ResBlk& rblk) {
 
 // Insert an atom into one or more flip memos based on the residues alt codes
 
-void AtomPositions::insertFlip(PDBrec* hr, std::list<char> alts_list) {
+void AtomPositions::insertFlip(std::shared_ptr<PDBrec> hr, std::list<char> alts_list) {
 	char descrbuf[32];
 
 	if (! visableAltConf(*hr, _onlyA)) { return; }
@@ -846,14 +846,14 @@ int AtomPositions::orientClique(const std::list<MoverPtr>& clique, int limit) {
 	return rc;
 }
 
-void AtomPositions::CollectBumping(const AtomDescr& ad, std::list<PDBrec*>& bumping)
+void AtomPositions::CollectBumping(const AtomDescr& ad, std::list< std::shared_ptr<PDBrec> >& bumping)
 {
 	//std::cerr << "Collect Bumping: " << ad << " pr="  << _probeRadius << " maxVDW =" << _maxVDWFound << std::endl;
-	std::list<PDBrec*> nearby = ::neighbors(ad.getAtomPos(), (Coord)0.001,
+	std::list< std::shared_ptr<PDBrec> > nearby = ::neighbors(ad.getAtomPos(), (Coord)0.001,
       		(Coord)(ad.getAtRadius() + _probeRadius + _maxVDWFound ), _xyzBlocks);
 
-	PDBrec* ni = NULL;
-	for(std::list<PDBrec*>::iterator it = nearby.begin(); it != nearby.end(); ++it) {
+	std::shared_ptr<PDBrec> ni;
+	for(std::list< std::shared_ptr<PDBrec> >::iterator it = nearby.begin(); it != nearby.end(); ++it) {
 		ni = *it;
 		//std:: cerr << "nearby: " << ni->getAtomDescr() << std::endl;
 		double distancecutoff = (ad.getAtRadius() + ni->vdwRad() + _probeRadius);
@@ -1319,15 +1319,15 @@ AtomPositions::setNumStatesForNodes(
 
 // ---------------------------------------------------------------
 // insert user records about motion at the end of the header
-void AtomPositions::describeChanges(std::list<PDBrec*>& records,
-									std::list<PDBrec*>::iterator& infoPtr,
+void AtomPositions::describeChanges(std::list< std::shared_ptr<PDBrec> >& records,
+									std::list< std::shared_ptr<PDBrec> >::iterator& infoPtr,
 									std::vector<std::string>& notes) {
 	if (notes.size() > 0) {
-		PDBrec* separator = new PDBrec("USER  MOD -----------------------------------------------------------------");
+		std::shared_ptr<PDBrec> separator = std::make_shared<PDBrec>("USER  MOD -----------------------------------------------------------------");
 		records.insert(infoPtr, separator);
-		separator = new PDBrec("USER  MOD scores for adjustable sidechains, with \"set\" totals for H,N and Q");
+		separator = std::make_shared<PDBrec>("USER  MOD scores for adjustable sidechains, with \"set\" totals for H,N and Q");
 		records.insert(infoPtr, separator);
-		separator = new PDBrec("USER  MOD \"o\" means original, \"f\" means flipped, \"180deg\" is methyl default");
+		separator = std::make_shared<PDBrec>("USER  MOD \"o\" means original, \"f\" means flipped, \"180deg\" is methyl default");
 		records.insert(infoPtr, separator);
 //		infoPtr.insertBefore(separator);
 //		infoPtr.insertBefore(PDBrec(
@@ -1338,11 +1338,11 @@ void AtomPositions::describeChanges(std::list<PDBrec*>& records,
 		char fmtbuf[123];
 		::sprintf(fmtbuf, "USER  MOD \"!\" flags a clash with an overlap of %.2fA or greater",
 			_bad_bump_gap_cutoff);
-		separator = new PDBrec(fmtbuf);
+		separator = std::make_shared<PDBrec>(fmtbuf);
 		records.insert(infoPtr, separator);
 
 		::sprintf(fmtbuf, "USER  MOD flip categories: \"K\"=keep, \"C\"=clashes, \"X\"=uncertain, \"F\"=flip");
-		separator = new PDBrec(fmtbuf);
+		separator = std::make_shared<PDBrec>(fmtbuf);
 		records.insert(infoPtr, separator);
 
 		std::string s;
@@ -1352,24 +1352,24 @@ void AtomPositions::describeChanges(std::list<PDBrec*>& records,
 		while(np != notes.end()) {
 //			.next(s)) {	// insert notes in sorted order
 //			PDBrec userRec(s.array());
-			separator = new PDBrec((*np).c_str());
+			separator = std::make_shared<PDBrec>((*np).c_str());
 //                      cerr << separator->resname() << endl;
 			records.insert(infoPtr, separator);
 			++np;
 		}
 
-		separator = new PDBrec("USER  MOD -----------------------------------------------------------------");
+		separator = std::make_shared<PDBrec>("USER  MOD -----------------------------------------------------------------");
 		records.insert(infoPtr, separator);
 	}
 }
 
 // ---------------------------------------------------------------
 void AtomPositions::manageMetals(const ResBlk& rblk) {
-	std::multimap<std::string, PDBrec*> pdb = rblk.atomIt();
+	std::multimap<std::string, std::shared_ptr<PDBrec> > pdb = rblk.atomIt();
 	std::string key, descr;
 
-	std::multimap<std::string, PDBrec*>::const_iterator pdbit = pdb.begin();
-	PDBrec* a = NULL;
+	std::multimap<std::string, std::shared_ptr<PDBrec> >::const_iterator pdbit = pdb.begin();
+	std::shared_ptr<PDBrec> a;
 	while(pdbit != pdb.end()) {
 		key = pdbit->first;
 		for (; pdbit != pdb.end() && pdbit->first == key; ++pdbit) {
@@ -1385,7 +1385,7 @@ void AtomPositions::manageMetals(const ResBlk& rblk) {
 // ---------------------------------------------------------------
 // create possible orientations for H atoms on waters (identified elsewhere)
 // and store these Hs in the xyz table
-void AtomPositions::generateWaterPhantomHs(std::list<PDBrec*>& waters) {
+void AtomPositions::generateWaterPhantomHs(std::list< std::shared_ptr<PDBrec> >& waters) {
 	char descrbuf[32];
 	const int MaxAccDir = 25;
 	struct AccDirection {
@@ -1399,14 +1399,14 @@ void AtomPositions::generateWaterPhantomHs(std::list<PDBrec*>& waters) {
 
 	const ElementInfo& elemHOd = * ElementInfo::StdElemTbl().element("HOd");
 
-	PDBrec* a = NULL;
-	for(std::list<PDBrec*>::const_iterator it = waters.begin(); it != waters.end(); ++it) {
+	std::shared_ptr<PDBrec> a;
+	for(std::list< std::shared_ptr<PDBrec> >::const_iterator it = waters.begin(); it != waters.end(); ++it) {
 		a = *it;
 		int i = 0, nAcc = 0;
 
-		std::list<PDBrec*> nearby_list = neighbors(a->loc(), 0.001, 4.0);
-		PDBrec* rec = NULL;
-		for(std::list<PDBrec*>::const_iterator nearby = nearby_list.begin(); nearby != nearby_list.end(); ++nearby) {
+		std::list< std::shared_ptr<PDBrec> > nearby_list = neighbors(a->loc(), 0.001, 4.0);
+		std::shared_ptr<PDBrec> rec;
+		for(std::list< std::shared_ptr<PDBrec> >::const_iterator nearby = nearby_list.begin(); nearby != nearby_list.end(); ++nearby) {
 			rec = *nearby;
 
 			if (rec->hasProp(ACCEPTOR_ATOM)
@@ -1467,7 +1467,7 @@ void AtomPositions::generateWaterPhantomHs(std::list<PDBrec*>& waters) {
 		// each of these acceptors is a possible direction for a hydrogen
 
 		for(i = 0; i < nAcc; i++) {
-			PDBrec* pHatom = new PDBrec();
+			std::shared_ptr<PDBrec> pHatom = std::make_shared<PDBrec>();
 			a->clone(pHatom); // duplicate & modify Oxygen
 
 #define BEST_HBOND_OVERLAP 0.6
@@ -1527,7 +1527,7 @@ float AtomPositions::determineScoreForMover(
 // nearby atoms (ignoring excluded atoms)
 
 double AtomPositions::atomScore(const PDBrec& a, const Point3d& p,
-								float nearbyRadius, const std::list<PDBrec*>& exclude,
+								float nearbyRadius, const std::list< std::shared_ptr<PDBrec> >& exclude,
 								const DotSph& dots, float pRad,	bool onlyBumps,
 								float &bumpSubScore, float &hbSubScore,	bool &hasBadBump) {
 
@@ -1593,11 +1593,11 @@ double AtomPositions::atomScore(const PDBrec& a, const Point3d& p,
 	}
 
 	//apl now that AtomPositions has decided to score this atom, collect nearby-list
-	std::list<PDBrec*> nearby = this->neighbors( p, 0.001, nearbyRadius);
+	std::list< std::shared_ptr<PDBrec> > nearby = this->neighbors( p, 0.001, nearbyRadius);
     
-    std::list<PDBrec*> bumping_list; // first we collect atoms actually interacting
-	PDBrec* rec = NULL;
-	for (std::list<PDBrec*>::const_iterator ni = nearby.begin(); ni != nearby.end(); ++ni) {
+    std::list< std::shared_ptr<PDBrec> > bumping_list; // first we collect atoms actually interacting
+	std::shared_ptr<PDBrec> rec;
+	for (std::list< std::shared_ptr<PDBrec> >::const_iterator ni = nearby.begin(); ni != nearby.end(); ++ni) {
 		rec = *ni;
         if (rec->valid() && (! rec->hasProp(IGNORE))
 			&& (abs(rec->occupancy()) > _occupancyCuttoff)
@@ -1610,7 +1610,7 @@ double AtomPositions::atomScore(const PDBrec& a, const Point3d& p,
 	}
 
 
-	std::vector< PDBrec* > bumping( bumping_list.size(), NULL );
+	std::vector< std::shared_ptr<PDBrec> > bumping( bumping_list.size(), NULL );
 	std::copy( bumping_list.begin(), bumping_list.end(), bumping.begin() );
 	//for (int ii = 0; ii < bumping.size(); ++ii )
 	//{
@@ -1625,7 +1625,7 @@ double AtomPositions::atomScore(const PDBrec& a, const Point3d& p,
 	//	int first = 0;
 	//	int last = bumping.size() - 1;
 	//
-	//	for (std::list< PDBrec*>::iterator iter = bumping_list.begin(); iter != bumping_list.end(); ++iter)
+	//	for (std::list<  std::shared_ptr<PDBrec> >::iterator iter = bumping_list.begin(); iter != bumping_list.end(); ++iter)
 	//	{
 	//		AtomDescr bumping_descr = (*iter)->getAtomDescr();
 	//		if (std::find(dotsToCount->begin(), dotsToCount->end(), bumping_descr) == dotsToCount->end() )
@@ -1670,9 +1670,9 @@ double AtomPositions::atomScore(const PDBrec& a, const Point3d& p,
 		bool isaHB = FALSE;
 		bool tooCloseHB = FALSE;
 		float HBmindist = 999.9;
-		PDBrec* cause = 0;
+		std::shared_ptr<PDBrec> cause;
 
-		PDBrec* b = NULL;
+		std::shared_ptr<PDBrec> b;
 		//int closest_bumping = -1;
 		for (int ii = 0; ii < bumping.size(); ++ii) {
 			b = bumping[ ii ];
@@ -1723,8 +1723,8 @@ double AtomPositions::atomScore(const PDBrec& a, const Point3d& p,
 		}
 
 		if (keepDot) { // remove dots inside a connected atom
-			PDBrec* x = NULL;
-			for (std::list<PDBrec*>::const_iterator it = exclude.begin(); it != exclude.end(); ++it) {
+			std::shared_ptr<PDBrec> x;
+			for (std::list< std::shared_ptr<PDBrec> >::const_iterator it = exclude.begin(); it != exclude.end(); ++it) {
 				x = *it;
 				if ( (distanceSquared(q, x->loc()) < x->vdwRad()*x->vdwRad())
 					&& x->valid() && (! x->hasProp(IGNORE))

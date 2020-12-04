@@ -145,7 +145,7 @@ public:
 
    void makeNonAdjustable() { _ok = FALSE; _adj = FALSE; }
    
-   virtual void dropBondedFromBumpingListForPDBrec( std::list< PDBrec * > & bumping, PDBrec* atom, int nBondCutoff ) const = 0;
+   virtual void dropBondedFromBumpingListForPDBrec( std::list< std::shared_ptr<PDBrec> > & bumping, std::shared_ptr<PDBrec> atom, int nBondCutoff ) const = 0;
 protected:
    void initializeScoreIfNotSet(double val, bool hasBadBump) {
       if (!_initIsSet) {
@@ -184,19 +184,19 @@ private:
    Mover& operator=(const Mover& m);
 };
 
-void bondedList(const PDBrec& a, std::list<PDBrec*>& nearby, int nbnds,
-		  std::list<PDBrec*>& atmList, std::list<PDBrec*>* bondedAtoms);
-void countBonds(const PDBrec& src, const std::list<PDBrec*>& nearby,
-	       int distcount, int maxcnt, std::list<PDBrec*>& atmList);
-void resetMarks(std::list<PDBrec*>& lst);
+void bondedList(const PDBrec& a, std::list< std::shared_ptr<PDBrec> >& nearby, int nbnds,
+		  std::list< std::shared_ptr<PDBrec> >& atmList, std::list< std::shared_ptr<PDBrec> >* bondedAtoms);
+void countBonds(const PDBrec& src, const std::list< std::shared_ptr<PDBrec> >& nearby,
+	       int distcount, int maxcnt, std::list< std::shared_ptr<PDBrec> >& atmList);
+void resetMarks(std::list< std::shared_ptr<PDBrec> >& lst);
 bool visableAltConf(const PDBrec& a, bool onlyA);
 bool interactingConfs(const PDBrec& a, const PDBrec& b, bool onlyA);
 bool diffAltLoc(const PDBrec& a, const PDBrec& b);
 int withinCovalentDist(const PDBrec& p, const PDBrec& q, double offset);
-bool impossibleCovalent(const PDBrec& src, const PDBrec& targ, std::list<PDBrec*>& atmList);
+bool impossibleCovalent(const PDBrec& src, const PDBrec& targ, std::list< std::shared_ptr<PDBrec> >& atmList);
 double vdwGap(const PDBrec& p, const Point3d& pp,
               const PDBrec& q, const Point3d& qq);
-bool foundInList(const PDBrec& a, const std::list<PDBrec*>& lst);
+bool foundInList(const PDBrec& a, const std::list< std::shared_ptr<PDBrec> >& lst);
 bool annularDots(const Point3d& dot, const PDBrec& src, const PDBrec& targ, float probeRadius);
 double dot2srcCenter(const Point3d& dot, const PDBrec& src, const PDBrec& targ);
 double kissEdge2bullsEye(float ra, float rb, float rp);

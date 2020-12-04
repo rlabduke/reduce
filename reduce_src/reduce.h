@@ -16,6 +16,7 @@
 
 #include <iostream>
 #include <list>
+#include <memory>
 #include "PDBrec.h"
 #include "CTab.h"
 #include "AtomPositions.h"
@@ -43,12 +44,12 @@ extern SummaryStats Tally;
 ///       Each list contains all of the records that are outside of
 ///       MODEL...ENDMDL records along with the records for the model
 ///       that was read, with the first one being MODEL 1.
-extern std::list< std::list<PDBrec*> > inputModels(std::string s);
+extern std::list< std::list< std::shared_ptr<PDBrec> > > inputModels(std::string s);
 
 /// @brief Drop hydrogens from a model in place.
 /// @param [in] RemoveATOMHydrogens Should we remove hydrogens in ATOM records?
 /// @param [in] RemoveOtherHydrogens Should we remove hydrogens in non_ATOM records?
-extern void dropHydrogens(std::list<PDBrec*>& records,
+extern void dropHydrogens(std::list< std::shared_ptr<PDBrec> >& records,
   bool RemoveATOMHydrogens, bool RemoveOtherHydrogens);
 
 /// @brief Optimize all of the records passed in in place.
@@ -57,15 +58,15 @@ extern int optimize(AtomPositions &xyz, std::vector<std::string> &adjNotes);
 
 //SJ 08/03/2015 for printing all models together
 extern void outputRecords_all(std::ostream& os,
-  const std::list<std::list<PDBrec*> >& all_records);
+  const std::list<std::list< std::shared_ptr<PDBrec> > >& all_records);
 
 /// @brief Check the list of PDB records to see if we should use segment ID as chain
 /// @return TRUE if we should use the segment ID as the chain, FALSE if not
-extern bool checkSEGIDs(std::list<PDBrec*>& rlst);
+extern bool checkSEGIDs(std::list< std::shared_ptr<PDBrec> >& rlst);
 
-extern void scanAndGroupRecords(std::list<PDBrec*>& rlst, AtomPositions& xyz,
-  std::list<PDBrec*>::iterator& startAtoms);
-extern void reduceList(CTab& db, std::list<PDBrec*>& records,
+extern void scanAndGroupRecords(std::list< std::shared_ptr<PDBrec> >& rlst, AtomPositions& xyz,
+  std::list< std::shared_ptr<PDBrec> >::iterator& startAtoms);
+extern void reduceList(CTab& db, std::list< std::shared_ptr<PDBrec> >& records,
   AtomPositions& xyz, std::vector<std::string>& fixNotes);
 
 /// Library-scoped global variables that are in the global name space.
