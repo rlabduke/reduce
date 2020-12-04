@@ -62,6 +62,20 @@ getSet(bool,AddOtherHydrogens)
 getSet(bool,RemoveATOMHydrogens)
 getSet(bool,RemoveOtherHydrogens)
 
+// Macro defines a getter and setter for a named global variable of the specified type
+#define getSetMethod(class, name, type) type (class::*get ## name)() const = &class::name; void (class::*set ## name)(type) = &class::name;
+#define getSetMethodTakeConst(class, name, type) type (class::*get ## name)() const = &class::name; void (class::*set ## name)(const type &) = &class::name;
+#define getSetMethodReturnTakeConst(class, name, type) const type & (class::*get ## name)() const = &class::name; void (class::*set ## name)(const type &) = &class::name;
+
+/**
+// Function pointers needed to handle overloaded functions
+getSetMethod(PDBrec, x, Coord);
+getSetMethod(PDBrec, y, Coord);
+getSetMethod(PDBrec, z, Coord);
+getSetMethodTakeConst(PDBrec, loc, Point3d);
+getSetMethodReturnTakeConst(PDBrec, elem, ElementInfo);
+*/
+
 BOOST_PYTHON_MODULE(reduce)
 {
   // Export the class objects that Python will need access to
@@ -79,6 +93,28 @@ BOOST_PYTHON_MODULE(reduce)
     .def_readonly("_num_adj", &SummaryStats::_num_adj)
     .def_readonly("_num_renamed", &SummaryStats::_num_renamed)
   ;
+  /**
+  class_<PDBrec>("PDBrec", init<>())
+    .def(init<const PDB &>())
+    .def(init<const PDBrec &>())
+    .def("clone", &PDBrec::clone)
+    .def(self == self)
+    .add_property("x", getx, setx)
+    .add_property("y", gety, sety)
+    .add_property("z", getz, setz)
+    .add_property("loc", getloc, setloc)
+    .def("type", &PDBrec::type)
+    .add_property("elem", getelem, setelem)
+  ;
+  */
+
+  /// @todo Point3d
+  /// @todo PDB::RecordType
+  /// @todo ElementInfo
+
+  // Export the global functions
+  def("inputModels", inputModels, "Read the PDB records from the specified input stream.");
+  def("dropHydrogens", dropHydrogens, "Drop hydrogens from a model in place.");
 
   // Export the const char * variables, which will be read only.
   scope().attr("versionString") = versionString;
