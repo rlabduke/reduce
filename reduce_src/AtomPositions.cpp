@@ -223,7 +223,6 @@ void AtomPositions::reposition(const Point3d& prev, const PDBrec& rec) {
 		   it2 = it;
 		   ++it;
 		   if (a->valid() && *a == rec) {
-			   delete it2->second;
 			   _xyzBlocks.erase(it2);
 		   }
 	   }
