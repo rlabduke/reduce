@@ -60,10 +60,10 @@ void RotMethyl::finalize(int nBondCutoff, bool useXplorNames, bool useOldNames, 
 		for(std::list< std::shared_ptr<PDBrec> >::const_iterator alst = _rot.begin(); alst != _rot.end(); ++alst) {
 			const  std::shared_ptr<PDBrec> thisAtom = *alst;
 			if (thisAtom->valid()) {
-			  std::list< std::shared_ptr<PDBrec> >* temp = new std::list< std::shared_ptr<PDBrec> >();
+				std::shared_ptr<std::list< std::shared_ptr<PDBrec> > > temp = std::make_shared<std::list< std::shared_ptr<PDBrec> > >();
 			  std::list< std::shared_ptr<PDBrec> > neighborList = xyz.neighbors(thisAtom->loc(), thisAtom->covRad(),
 				approxNbondDistLimit);
-			  bondedList(*thisAtom, neighborList, nBondCutoff, _rot, temp);
+			  bondedList(*thisAtom, neighborList, nBondCutoff, _rot, temp.get());
 			  _bnded.push_back(temp);
             }
 		}
