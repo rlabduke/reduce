@@ -30,9 +30,9 @@ public:
              const double ang, const PDBrec& heavyAtom);
    virtual ~RotAromMethyl() {
 //	   std::for_each(_bnded.begin(), _bnded.end(), DeleteObject());
-	   for (std::vector< std::list<PDBrec*>* >::const_iterator i = _bnded.begin(); i != _bnded.end(); ++i) {
-		   std::list<PDBrec*>* rlst = *i;
-		   for (std::list<PDBrec*>::const_iterator it = rlst->begin(); it != rlst->end(); ++it)
+	   for (std::vector< std::list< std::shared_ptr<PDBrec> >* >::const_iterator i = _bnded.begin(); i != _bnded.end(); ++i) {
+		   std::list< std::shared_ptr<PDBrec> >* rlst = *i;
+		   for (std::list< std::shared_ptr<PDBrec> >::const_iterator it = rlst->begin(); it != rlst->end(); ++it)
 			   delete *it;
 		   delete rlst;
 	   }
@@ -76,7 +76,7 @@ public:
    const PDBrec& heavyAtom() const { return _heavyAtom; }
 
    void insertHatom(const PDBrec& ha) {
-	   PDBrec* temp = new PDBrec();
+       std::shared_ptr<PDBrec> temp = std::make_shared<PDBrec>();
 	   *temp = ha;
 	   _rot.push_front(temp); 
    }
@@ -85,21 +85,21 @@ public:
    double angle() const { return _angle; }
 
    virtual void setHydAngle(double newAng, AtomPositions &xyz);
-   virtual void dropBondedFromBumpingListForPDBrec( std::list< PDBrec * > & bumping, PDBrec* atom, int nBondCutoff  ) const;
+   virtual void dropBondedFromBumpingListForPDBrec( std::list< std::shared_ptr<PDBrec> > & bumping, std::shared_ptr<PDBrec> atom, int nBondCutoff  ) const;
 private:
    double orientationPenalty(float pmag) const;
    void angle(double val) { _angle = clampAngle(val); }
    void setHydAngle(PDBrec& theAtom, double oldAng, double newAng,
                         AtomPositions &xyz);
-   int findAtom( PDBrec* atom ) const;
+   int findAtom(std::shared_ptr<PDBrec> atom ) const;
 
    Point3d     _p1, _p2;   // rotation axis is through these points
    PDBrec      _heavyAtom; // hydrogen attachment point
-   std::list<PDBrec*> _rot;       // rotating hydrogen atoms
+   std::list< std::shared_ptr<PDBrec> > _rot;       // rotating hydrogen atoms
    double      _angle;
    char        _grpName[20];
 
-   std::vector< std::list<PDBrec*>* > _bnded; // pre-calculated bonding list
+   std::vector< std::list< std::shared_ptr<PDBrec> >* > _bnded; // pre-calculated bonding list
 
    RotAromMethyl(const RotAromMethyl& m); // copy and assign not implemented
    RotAromMethyl& operator=(const RotAromMethyl& m);

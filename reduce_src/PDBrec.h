@@ -124,7 +124,7 @@ public:
 	   return *this;
    }
 
-   void clone(PDBrec* p);
+   void clone(std::shared_ptr<PDBrec> p);
 
    bool operator==(const PDBrec& a) const { return _rep->_r == a._rep->_r; }
 

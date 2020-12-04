@@ -61,11 +61,11 @@ void RotAromMethyl::finalize(int nBondCutoff, bool useXplorNames, bool useOldNam
 		const double approxNbondDistLimit = 3.0 + 0.5*nBondCutoff; // just a rule of thumb
 
 		_rot.push_front(&_heavyAtom);
-		for(std::list<PDBrec*>::const_iterator alst = _rot.begin(); alst != _rot.end(); ++alst) {
-			const PDBrec* thisAtom = *alst;
+		for(std::list< std::shared_ptr<PDBrec> >::const_iterator alst = _rot.begin(); alst != _rot.end(); ++alst) {
+			const std::shared_ptr<PDBrec> thisAtom = *alst;
 			if (thisAtom->valid()) {
-				std::list<PDBrec*>* temp = new std::list<PDBrec*>();
-				std::list<PDBrec*> neighborList = xyz.neighbors(thisAtom->loc(), thisAtom->covRad(),
+				std::list< std::shared_ptr<PDBrec> >* temp = new std::list< std::shared_ptr<PDBrec> >();
+				std::list< std::shared_ptr<PDBrec> > neighborList = xyz.neighbors(thisAtom->loc(), thisAtom->covRad(),
 					approxNbondDistLimit);
 				bondedList(*thisAtom, neighborList, nBondCutoff, _rot, temp);
 				_bnded.push_back(temp);
@@ -81,8 +81,8 @@ int RotAromMethyl::makebumpers(std::multimap<LocBlk, BumperPoint*>& bblks,
 	const double dtheta = 10.0; // fineness of rotation angle scan
 	const double scanAngle = 60.0;
 	BumperPoint* bp;
-    for(std::list<PDBrec*>::const_iterator it = _rot.begin(); it != _rot.end(); ++it) {
-		PDBrec* a = *it;
+    for(std::list< std::shared_ptr<PDBrec> >::const_iterator it = _rot.begin(); it != _rot.end(); ++it) {
+		std::shared_ptr<PDBrec> a = *it;
 		for (double theta = -scanAngle; theta < scanAngle; theta += dtheta) {
 			Point3d p(a->loc().rotate(theta, _p2, _p1));
 			bp = new BumperPoint(p, rn, an++, a->vdwRad());
@@ -100,8 +100,8 @@ std::list<AtomDescr> RotAromMethyl::getAtDescOfAllPos(float &maxVDWrad) {
 	ad_heavy.setOriginalAtomPtr( & _heavyAtom );
 	theList.push_back(ad_heavy);  // ANDREW: appending _heavyAtom to the getBumpersOfAllPos function
 
-	PDBrec* hyds = NULL;
-	for (std::list<PDBrec*>::const_iterator it = _rot.begin(); it != _rot.end(); ++it) {
+	std::shared_ptr<PDBrec> hyds;
+	for (std::list< std::shared_ptr<PDBrec> >::const_iterator it = _rot.begin(); it != _rot.end(); ++it) {
 		hyds = *it;
 		Point3d initHydPoint = hyds->loc();
 		for (int i = 0; i < numOrientations(Mover::LOW_RES); i++)
@@ -142,7 +142,7 @@ bool RotAromMethyl::setOrientation(int oi, float delta, AtomPositions &xyz,
 	const double    theta = orientationAngle(oi, Mover::LOW_RES) + delta;
 
 	if (abs(theta-oldTheta) > 0.1) {
-		for(std::list<PDBrec*>::const_iterator hydlist = _rot.begin(); hydlist != _rot.end(); ++hydlist) {
+		for(std::list< std::shared_ptr<PDBrec> >::const_iterator hydlist = _rot.begin(); hydlist != _rot.end(); ++hydlist) {
 			setHydAngle(**hydlist, oldTheta, theta, xyz);
 		}
 		angle(theta);
@@ -214,11 +214,11 @@ double RotAromMethyl::scoreThisAngle(AtomPositions &xyz, DotSphManager& dotBucke
 	double scoreThisO = 0.0;
 	int i = 0;
 	_rot.push_front(&_heavyAtom);
-	for(std::list<PDBrec*>::const_iterator alst = _rot.begin(); alst != _rot.end(); ++alst) {
+	for(std::list< std::shared_ptr<PDBrec> >::const_iterator alst = _rot.begin(); alst != _rot.end(); ++alst) {
 		float bumpSubScore = 0.0;
 		float hbSubScore   = 0.0;
 		bool subBadBump    = FALSE;
-		const PDBrec* thisAtom = *alst;
+		const  std::shared_ptr<PDBrec> thisAtom = *alst;
 
 		double val = xyz.atomScore(*thisAtom, thisAtom->loc(),
 			thisAtom->vdwRad() + probeRadius + maxVDWrad,
@@ -263,7 +263,7 @@ double RotAromMethyl::orientationPenalty(float) const {
 
 void RotAromMethyl::setHydAngle(double newAng, AtomPositions &xyz) {
    const double oldAng = angle();
-   for(std::list<PDBrec*>::const_iterator hydlist = _rot.begin(); hydlist != _rot.end(); ++hydlist) {
+   for(std::list< std::shared_ptr<PDBrec> >::const_iterator hydlist = _rot.begin(); hydlist != _rot.end(); ++hydlist) {
       setHydAngle(**hydlist, oldAng, newAng, xyz);
 // std::cout  << "RotAromMethyl::setHydAngle[" << (*hydlist)->atomname() << "] "
      // << oldAng << " deg --> "
@@ -282,17 +282,17 @@ void RotAromMethyl::setHydAngle(PDBrec& theAtom, double oldAng, double newAng,
 }
 
 void RotAromMethyl::dropBondedFromBumpingListForPDBrec(
-	std::list< PDBrec * > & bumping,
-	PDBrec* atom,
+	std::list< std::shared_ptr<PDBrec> > & bumping,
+	std::shared_ptr<PDBrec> atom,
 	int //unused nBondCutoff
 ) const
 {
 	/*
 	int atom_id = findAtom( atom );
-	for (std::list< PDBrec* >::iterator iter = bumping.begin();
+	for (std::list< std::shared_ptr<PDBrec> >::iterator iter = bumping.begin();
 		iter != bumping.end(); )
 	{
-		std::list< PDBrec* >::iterator iter_next = iter;
+		std::list< std::shared_ptr<PDBrec> >::iterator iter_next = iter;
 		++iter_next;
 		if ( std::find( _bnded[ atom_id]->begin(), _bnded[ atom_id]->end(), *iter ) != _bnded[ atom_id]->end() )
 		{
@@ -303,20 +303,20 @@ void RotAromMethyl::dropBondedFromBumpingListForPDBrec(
 	*/
 	//std::cerr << "Attempting to drop bumping for atom " << atom->getAtomDescr() << " in RotAromMethyl" << std::endl;
 	int atom_id = findAtom( atom );
-	//for (std::list< PDBrec* >::const_iterator iter = _bnded[ atom_id]->begin();
+	//for (std::list< std::shared_ptr<PDBrec> >::const_iterator iter = _bnded[ atom_id]->begin();
 	//	iter != _bnded[ atom_id]->end(); ++iter)
 	//{
 	//	std::cerr << "Bonded to atom: " << (*iter) << " " << (*iter)->getAtomDescr()  << std::endl;
 	//}
 
-	for (std::list< PDBrec* >::iterator iter = bumping.begin();
+	for (std::list< std::shared_ptr<PDBrec> >::iterator iter = bumping.begin();
 		iter != bumping.end(); )
 	{
-		std::list< PDBrec* >::iterator iter_next = iter;
+		std::list< std::shared_ptr<PDBrec> >::iterator iter_next = iter;
 		//std::cerr << "Comparing: " << (*iter) << " " << (*iter)->getAtomDescr() << std::endl;
 		++iter_next;
 
-		for (std::list< PDBrec* >::const_iterator constiter = _bnded[ atom_id]->begin();
+		for (std::list< std::shared_ptr<PDBrec> >::const_iterator constiter = _bnded[ atom_id]->begin();
 			constiter != _bnded[ atom_id]->end(); ++constiter)
 		{
 			if ( (*constiter)->getAtomDescr() == (*iter)->getAtomDescr() )
@@ -332,7 +332,7 @@ void RotAromMethyl::dropBondedFromBumpingListForPDBrec(
 }
 
 
-int RotAromMethyl::findAtom( PDBrec* atom ) const
+int RotAromMethyl::findAtom(std::shared_ptr<PDBrec> atom ) const
 {
 	if ( atom == & _heavyAtom )
 	{
@@ -340,7 +340,7 @@ int RotAromMethyl::findAtom( PDBrec* atom ) const
 	}
 
 	int countAtomsSeen = 1;
-	for (std::list< PDBrec * >::const_iterator iter = _rot.begin(); iter != _rot.end(); ++iter)
+	for (std::list< std::shared_ptr<PDBrec> >::const_iterator iter = _rot.begin(); iter != _rot.end(); ++iter)
 	{
 		if ( atom == *iter )
 			return countAtomsSeen;
@@ -348,7 +348,7 @@ int RotAromMethyl::findAtom( PDBrec* atom ) const
 	}
 	std::cerr << "Critical error in RotAromMethyl::findAtom( " << atom << ").  Could not find atom. " << std::endl;
 	std::cerr << "&_heavyAtom: " << &_heavyAtom << std::endl;
-	for (std::list< PDBrec * >::const_iterator iter = _rot.begin(); iter != _rot.end(); ++iter)
+	for (std::list< std::shared_ptr<PDBrec> >::const_iterator iter = _rot.begin(); iter != _rot.end(); ++iter)
 	{
 		std::cerr << "_rot: " << *iter << std::endl;
 	}

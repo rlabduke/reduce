@@ -132,21 +132,21 @@ enum ConnType {NTERM_RES, CONNECTED_RES, FRAGMENT_RES};
 
 SummaryStats Tally;
 
-std::ostream& outputRecords(std::ostream& os, const std::list<PDBrec*>& records, int model); // SJ 08/04/2015 added last argument to keep track of how many models have been printed.
-void outputRecords_all(std::ostream& os, const std::list<std::list<PDBrec*> >& all_records); //SJ 08/03/2015 for printing all models together
-void invalidateRecords(std::list<PDBrec*>& rlst);
-void renumberAndReconnect(std::list<PDBrec*>& rlst);
-void renumberAtoms(std::list<PDBrec*>& rlst);
+std::ostream& outputRecords(std::ostream& os, const std::list< std::shared_ptr<PDBrec> >& records, int model); // SJ 08/04/2015 added last argument to keep track of how many models have been printed.
+void outputRecords_all(std::ostream& os, const std::list<std::list< std::shared_ptr<PDBrec> > >& all_records); //SJ 08/03/2015 for printing all models together
+void invalidateRecords(std::list< std::shared_ptr<PDBrec> >& rlst);
+void renumberAndReconnect(std::list< std::shared_ptr<PDBrec> >& rlst);
+void renumberAtoms(std::list< std::shared_ptr<PDBrec> >& rlst);
 void analyzeRes(CTab& db, ResBlk* pb, ResBlk* cb, ResBlk* nb,
-				AtomPositions& xyz, std::list<PDBrec*>& waters,
-				std::vector<std::string>& fixNotes, std::list<PDBrec*>& rlst);
+				AtomPositions& xyz, std::list< std::shared_ptr<PDBrec> >& waters,
+				std::vector<std::string>& fixNotes, std::list< std::shared_ptr<PDBrec> >& rlst);
 bool isConnected(ResBlk* a, ResBlk* b);
 void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 				  AtomPositions& xyz, std::list<char>& resAlts,
-		  std::vector<std::string>& fixNotes, std::list<PDBrec*>& rlst);
-void noteWaterInfo(ResBlk& r, std::list<PDBrec*>& waters);
+		  std::vector<std::string>& fixNotes, std::list< std::shared_ptr<PDBrec> >& rlst);
+void noteWaterInfo(ResBlk& r, std::list< std::shared_ptr<PDBrec> >& waters);
 void findAndStandardize(const char* name, const char* resname, ResBlk& theRes);
-void stdBondLen(float dist, PDBrec& ourHydrogen, std::list<PDBrec*>& firstAtoms,
+void stdBondLen(float dist, PDBrec& ourHydrogen, std::list< std::shared_ptr<PDBrec> >& firstAtoms,
                                      const ElementInfo& e);
 void fixupHeavyAtomElementType(ResBlk& theRes, CTab& hetDB);
 void noteAddedInTally(const PDBrec& theH);
@@ -160,7 +160,7 @@ bool okToPlaceHydHere(const PDBrec& theHatom,
    std::vector<std::string>& fixNotes);
 void recordSkipInfo(bool skipH, std::vector<std::string>& fixNotes,
    const PDBrec& theHatom, const PDBrec& heavyAtom,
-   std::list<PDBrec*>& nearr, const char * msg);
+   std::list< std::shared_ptr<PDBrec> >& nearr, const char * msg);
 
 int optimize(AtomPositions& xyz, std::vector<std::string>& adjNotes) {
     int ret = 0;
@@ -275,19 +275,19 @@ int optimize(AtomPositions& xyz, std::vector<std::string>& adjNotes) {
 }
 
 // SJ 08/03/2015 for printing all records together
-void outputRecords_all(std::ostream& os, const std::list <std::list<PDBrec*> >& l) {
+void outputRecords_all(std::ostream& os, const std::list <std::list< std::shared_ptr<PDBrec> > >& l) {
     
     int model=0; // keeping track of how many models are printed
-    for (std::list<std::list<PDBrec*> >::const_iterator ptr = l.begin(); ptr != l.end(); ++ptr) {
+    for (std::list<std::list< std::shared_ptr<PDBrec> > >::const_iterator ptr = l.begin(); ptr != l.end(); ++ptr) {
         
         model++;
-        outputRecords(os,(const std::list<PDBrec*> &)*ptr, model); // print
+        outputRecords(os,(const std::list< std::shared_ptr<PDBrec> > &)*ptr, model); // print
         
     }
     
-    outputRecords(os,(const std::list<PDBrec*> &)l.back(), 0); // SJ - so that all records after the last ENDMDL are printed. model will be equal to 0, which means all models are printed and only the left over information needs to be printed. model = 0 is a little counterintuitive, but that is the only number I can think of that will work.
+    outputRecords(os,(const std::list< std::shared_ptr<PDBrec> > &)l.back(), 0); // SJ - so that all records after the last ENDMDL are printed. model will be equal to 0, which means all models are printed and only the left over information needs to be printed. model = 0 is a little counterintuitive, but that is the only number I can think of that will work.
     
-    for (std::list<std::list<PDBrec*> >::const_iterator ptr = l.begin(); ptr != l.end(); ++ptr) {
+    for (std::list<std::list< std::shared_ptr<PDBrec> > >::const_iterator ptr = l.begin(); ptr != l.end(); ++ptr) {
         
         std::for_each(ptr->begin(),ptr->end(),DeleteObject()); // delete records
     }
@@ -296,7 +296,7 @@ void outputRecords_all(std::ostream& os, const std::list <std::list<PDBrec*> >& 
 }
 
 // output a list of PDB records
-std::ostream& outputRecords(std::ostream& os, const std::list<PDBrec*>& l, int model) {
+std::ostream& outputRecords(std::ostream& os, const std::list< std::shared_ptr<PDBrec> >& l, int model) {
     
     bool flag; // SJ 08/04/2015 to keep track of if this record has to be printed or not.
     
@@ -334,7 +334,7 @@ std::ostream& outputRecords(std::ostream& os, const std::list<PDBrec*>& l, int m
     else
         flag=false; //for all other models, print only what is within MODEL and ENDMDL
     
-    for (std::list<PDBrec*>::const_iterator ptr = l.begin(); ptr != l.end(); ++ptr) {
+    for (std::list< std::shared_ptr<PDBrec> >::const_iterator ptr = l.begin(); ptr != l.end(); ++ptr) {
         
         if((*ptr)->type() == PDB::MODEL){
             if(model != 0) // to make sure the last model is not printed again when the function is called to print the leftover stuff.
@@ -365,13 +365,13 @@ std::ostream& outputRecords(std::ostream& os, const std::list<PDBrec*>& l, int m
 }
 
 // check input records for SEGIDs only, use instead of chainID
-bool checkSEGIDs(std::list<PDBrec*>& rlst) {
+bool checkSEGIDs(std::list< std::shared_ptr<PDBrec> >& rlst) {
   bool ret = FALSE;
   int full_chain_ctr = 0;
   int full_segid_ctr = 0;
-  typedef std::list<PDBrec*>::iterator pdb_iter;
+  typedef std::list< std::shared_ptr<PDBrec> >::iterator pdb_iter;
   for (pdb_iter it = rlst.begin(); it != rlst.end(); ) {
-    PDBrec* r = *it;
+	 std::shared_ptr<PDBrec> r = *it;
     //currently only checks atom records - is this enough?
     if (r->type() == PDB::ATOM) {
       if (strcmp(r->chain(), "") != 0) {
@@ -393,14 +393,14 @@ bool checkSEGIDs(std::list<PDBrec*>& rlst) {
 }
 
 // input a list of PDB records
-std::list<PDBrec*> inputRecords(std::istream& is, int &ModelToProcess, int &ModelNext, int &ModelActive) {
-  std::list<PDBrec*> records;
+std::list< std::shared_ptr<PDBrec> > inputRecords(std::istream& is, int &ModelToProcess, int &ModelNext, int &ModelActive) {
+  std::list< std::shared_ptr<PDBrec> > records;
   PDB inputbuffer;
   bool active = TRUE;
   bool modelactive = FALSE;  //041113
 
   while ((is >> inputbuffer).gcount() > 0) {
-    PDBrec* rec = new PDBrec(inputbuffer);
+	std::shared_ptr<PDBrec> rec = std::make_shared<PDBrec>(inputbuffer);
     bool drop = FALSE;
 
     switch (rec->type()) {
@@ -446,19 +446,16 @@ std::list<PDBrec*> inputRecords(std::istream& is, int &ModelToProcess, int &Mode
     if (active && !drop) {
       records.push_back(rec);
     }
-    else {
-      delete rec; rec = 0;
-    }
   }
   return records;
 }
 
-std::list< std::list<PDBrec*> > inputModels(std::string s)
+std::list< std::list< std::shared_ptr<PDBrec> > > inputModels(std::string s)
 {
   int ModelToProcess = 1;
   int ModelNext = 0;
   int ModelActive = 0;
-  std::list< std::list<PDBrec*> > models;
+  std::list< std::list< std::shared_ptr<PDBrec> > > models;
   while (ModelToProcess) {
     std::stringstream ss(s);
     models.push_back(inputRecords(ss, ModelToProcess, ModelNext, ModelActive));
@@ -474,18 +471,18 @@ std::list< std::list<PDBrec*> > inputModels(std::string s)
   return models;
 }
 
-void renumberAndReconnect(std::list<PDBrec*>& rlst) {
-	std::list<PDBrec*>::iterator it = rlst.begin();
+void renumberAndReconnect(std::list< std::shared_ptr<PDBrec> >& rlst) {
+	std::list< std::shared_ptr<PDBrec> >::iterator it = rlst.begin();
 
 	if (KeepConnections && Tally._conect > 0) {
-		std::list<PDBrec*> conn;
-		std::map<long, PDBrec*> atomsBySeqNum;
+		std::list< std::shared_ptr<PDBrec> > conn;
+		std::map<long, std::shared_ptr<PDBrec> > atomsBySeqNum;
 
 		// first we organize atom records by the original sequence num
 		// and put all the connect records in a list
 
 		for (; it != rlst.end(); ++it) {
-			PDBrec* rin = *it;
+			std::shared_ptr<PDBrec> rin = *it;
 			if (rin->type() == PDB::ATOM || rin->type() == PDB::HETATM) {
 				if (rin->atomno() > 0) {
 					atomsBySeqNum.insert(std::make_pair(rin->atomno(), rin));
@@ -502,19 +499,19 @@ void renumberAndReconnect(std::list<PDBrec*>& rlst) {
 
 		// now we update the connection records
 
-		for (std::list<PDBrec*>::iterator ic = conn.begin(); ic != conn.end(); ++ic) {
-			PDBrec* rup = *ic;
+		for (std::list< std::shared_ptr<PDBrec> >::iterator ic = conn.begin(); ic != conn.end(); ++ic) {
+			std::shared_ptr<PDBrec> rup = *ic;
 			int anum[11];
 			rup->getConect(anum);
 
 			for (int k=0; k < 11; k++) {
 				if (anum[k] > 0) {
-					std::map<long, PDBrec*>::const_iterator iter = atomsBySeqNum.find(anum[k]);
+					std::map<long, std::shared_ptr<PDBrec> >::const_iterator iter = atomsBySeqNum.find(anum[k]);
 					if (iter != atomsBySeqNum.end())
 						anum[k] = iter->second->atomno();
 					else
 						anum[k] = -999;
-					//	       PDBrec* x = atomsBySeqNum.get(anum[k]);
+					//	       std::shared_ptr<PDBrec> x = atomsBySeqNum.get(anum[k]);
 					//	       anum[k] = (x == NULL) ? -999 : x->atomno();
 				}
 			}
@@ -528,10 +525,10 @@ void renumberAndReconnect(std::list<PDBrec*>& rlst) {
 	}
 }
 
-void invalidateRecords(std::list<PDBrec*>& rlst) {
-  typedef std::list<PDBrec*>::iterator pdb_iter;
+void invalidateRecords(std::list< std::shared_ptr<PDBrec> >& rlst) {
+  typedef std::list< std::shared_ptr<PDBrec> >::iterator pdb_iter;
   for (pdb_iter it = rlst.begin(); it != rlst.end(); ) {
-    PDBrec* r = *it;
+	std::shared_ptr<PDBrec> r = *it;
     if (r->type() == PDB::ATOM) {
 	  if (r->isHydrogen()) {
         Tally._H_removed++;
@@ -548,15 +545,14 @@ void invalidateRecords(std::list<PDBrec*>& rlst) {
   }
 }
 
-void dropHydrogens(std::list<PDBrec*>& rlst, bool RemoveATOMHydrogens, bool RemoveOtherHydrogens) {
-  typedef std::list<PDBrec*>::iterator pdb_iter;
+void dropHydrogens(std::list< std::shared_ptr<PDBrec> >& rlst, bool RemoveATOMHydrogens, bool RemoveOtherHydrogens) {
+  typedef std::list< std::shared_ptr<PDBrec> >::iterator pdb_iter;
 	for (pdb_iter it = rlst.begin(); it != rlst.end(); ) {
-		PDBrec* r = *it;
+		std::shared_ptr<PDBrec> r = *it;
     bool need_increment = true;
 		if (RemoveATOMHydrogens && (r->type() == PDB::ATOM)) {
 			if (r->isHydrogen()) {
 				Tally._H_removed++;
-				delete r;
 				it = rlst.erase(it);
 				need_increment = false;
 			}
@@ -567,7 +563,6 @@ void dropHydrogens(std::list<PDBrec*>& rlst, bool RemoveATOMHydrogens, bool Remo
 				if (r->isHydrogen()) {
 					Tally._H_removed++;
 					Tally._H_HET_removed++;
-					delete r;
 					it = rlst.erase(it);
 					need_increment = false;
 				}
@@ -577,7 +572,6 @@ void dropHydrogens(std::list<PDBrec*>& rlst, bool RemoveATOMHydrogens, bool Remo
 				|| r->type() == PDB::ANISOU
 				|| r->type() == PDB::SIGUIJ) { // supplemental records
 				if (r->isHydrogen()) {
-					delete r;
 					it = rlst.erase(it);
 					need_increment = false;
 				}
@@ -597,12 +591,12 @@ void dropHydrogens(std::list<PDBrec*>& rlst, bool RemoveATOMHydrogens, bool Remo
 // count record types and group records by positon
 // also, update iterator to point to the start of the atom records
 
-void scanAndGroupRecords(std::list<PDBrec*>& rlst, AtomPositions& xyz,
-						 std::list<PDBrec*>::iterator& startAtoms) {
+void scanAndGroupRecords(std::list< std::shared_ptr<PDBrec> >& rlst, AtomPositions& xyz,
+						 std::list< std::shared_ptr<PDBrec> >::iterator& startAtoms) {
 	bool foundStart = FALSE;
 
-	for (std::list<PDBrec*>::iterator it = rlst.begin(); it != rlst.end(); ++it) {
-		PDBrec* r = *it;
+	for (std::list< std::shared_ptr<PDBrec> >::iterator it = rlst.begin(); it != rlst.end(); ++it) {
+		std::shared_ptr<PDBrec> r = *it;
 		if (r->type() == PDB::ATOM) {
 			if (! foundStart) { foundStart = TRUE; startAtoms = it; }
 			if (r->isHydrogen()) {
@@ -631,12 +625,12 @@ void scanAndGroupRecords(std::list<PDBrec*>& rlst, AtomPositions& xyz,
 	}
 }
 
-void reduceList(CTab& hetdatabase, std::list<PDBrec*>& rlst,
+void reduceList(CTab& hetdatabase, std::list< std::shared_ptr<PDBrec> >& rlst,
 				AtomPositions& xyz, std::vector<std::string>& fixNotes) {
-	std::list<PDBrec*>::iterator it = rlst.begin();
-	std::list<PDBrec*>::iterator it_backup;
+	std::list< std::shared_ptr<PDBrec> >::iterator it = rlst.begin();
+	std::list< std::shared_ptr<PDBrec> >::iterator it_backup;
 	ResBlk *pb = NULL, *cb = NULL, *nb = NULL;
-	std::list<PDBrec*> waters;
+	std::list< std::shared_ptr<PDBrec> > waters;
 
 	while (it != rlst.end()) { // the ResBlk constructor will advance the iterator
 		if (pb) { delete pb; }
@@ -668,11 +662,11 @@ void reduceList(CTab& hetdatabase, std::list<PDBrec*>& rlst,
 	if (AddWaterHydrogens) { xyz.generateWaterPhantomHs(waters); }
 }
 
-void renumberAtoms(std::list<PDBrec*>& rlst) {
+void renumberAtoms(std::list< std::shared_ptr<PDBrec> >& rlst) {
 	int ia = 0;
 
-	for (std::list<PDBrec*>::iterator it = rlst.begin(); it != rlst.end(); ++it) {
-		PDBrec* r = *it;
+	for (std::list< std::shared_ptr<PDBrec> >::iterator it = rlst.begin(); it != rlst.end(); ++it) {
+		std::shared_ptr<PDBrec> r = *it;
 		if (r->type() == PDB::ATOM
 			|| r->type() == PDB::HETATM) {
 			r->atomno(++ia);
@@ -692,9 +686,9 @@ void renumberAtoms(std::list<PDBrec*>& rlst) {
 bool isConnected(ResBlk* a, ResBlk* b) {
    if (a == NULL || b == NULL) { return FALSE; }
 
-   std::list<PDBrec*> ar;
+   std::list< std::shared_ptr<PDBrec> > ar;
    a->get(" C", ar);
-   std::list<PDBrec*> br;
+   std::list< std::shared_ptr<PDBrec> > br;
    b->get(" N", br);
 
    if (ar.size() > 0 && br.size() > 0) {
@@ -736,12 +730,12 @@ bool isAromMethyl(ResConn& ct, const atomPlacementPlan& pp, ResBlk& theRes, cons
 	}
 
 	std::list<std::string>::const_iterator it = temp.begin();
-	std::vector<PDBrec*> r_vec;
+	std::vector< std::shared_ptr<PDBrec> > r_vec;
 	r_vec.reserve(temp.size());
 
 	// std::cout << std::endl << "resname: " << resname << ", atomname: " << pp.name() << "." << theRes.firstRec().atomname();
 	while (it != temp.end()) {
-		std::list<PDBrec*> r_list;
+		std::list< std::shared_ptr<PDBrec> > r_list;
 		// if atom does not exist, do not test dihedral
 		if (!theRes.contains(*it)) {
 		  cerr <<"WARNING: No " << *it << " atom! Cannot determine if "
@@ -749,7 +743,7 @@ bool isAromMethyl(ResConn& ct, const atomPlacementPlan& pp, ResBlk& theRes, cons
 		  return FALSE;
 		}
 		theRes.get(*it, r_list);
-		PDBrec* rec = *r_list.begin(); // Do not consider alt configulation for now
+		std::shared_ptr<PDBrec> rec = *r_list.begin(); // Do not consider alt configulation for now
 		r_vec.push_back(rec);
 		// std::cout << " " << *it << "(" << r_vec[r_vec.size()-1]->loc() << ")";
 		++it;
@@ -780,23 +774,23 @@ bool isAromMethyl(ResConn& ct, const atomPlacementPlan& pp, ResBlk& theRes, cons
 
 //SJ - called for each residue
 void analyzeRes(CTab& hetdatabase, ResBlk* pb, ResBlk* cb, ResBlk* nb,
-				AtomPositions& xyz, std::list<PDBrec*>& waters,
-				std::vector<std::string>& fixNotes, std::list<PDBrec*>& rlst) {
+				AtomPositions& xyz, std::list< std::shared_ptr<PDBrec> >& waters,
+				std::vector<std::string>& fixNotes, std::list< std::shared_ptr<PDBrec> >& rlst) {
 	if (! (cb && cb->valid(rlst))) { return; } // double check
 
 	// add in the previous and next records
 
 	if (pb) {
-		std::list<PDBrec*> pr_list;
+		std::list< std::shared_ptr<PDBrec> > pr_list;
 		pb->get(" C", pr_list);
-		for (std::list<PDBrec*>::iterator pr = pr_list.begin(); pr != pr_list.end(); ++pr) {
+		for (std::list< std::shared_ptr<PDBrec> >::iterator pr = pr_list.begin(); pr != pr_list.end(); ++pr) {
 			cb->addPrevRec(*pr);
 		}
 	}
 	if (nb) {
-		std::list<PDBrec*> nr_list;
+		std::list< std::shared_ptr<PDBrec> > nr_list;
 		nb->get(" N", nr_list);
-		for (std::list<PDBrec*>::iterator nr = nr_list.begin(); nr != nr_list.end(); ++nr) {
+		for (std::list< std::shared_ptr<PDBrec> >::iterator nr = nr_list.begin(); nr != nr_list.end(); ++nr) {
 			cb->addNextRec(*nr);
 		}
 	}
@@ -842,7 +836,7 @@ void analyzeRes(CTab& hetdatabase, ResBlk* pb, ResBlk* cb, ResBlk* nb,
 			bool ispro = resname.find("PRO") != std::string::npos;
 			hn = StdResH::HydPlanTbl().get(ispro?"nt-pro":"nt-amide");
 			//Trim N-H atom if present in input model for N-terminal amino JJH 130110
-			std::list<PDBrec*> cr_list;
+			std::list< std::shared_ptr<PDBrec> > cr_list;
 		    cb->get(" H", cr_list);
 		    if (cr_list.size() > 0) {
 		      std::cerr << "Removing redundant N-terminal N-H hydrogen atom from input model." << std::endl;
@@ -863,9 +857,9 @@ void analyzeRes(CTab& hetdatabase, ResBlk* pb, ResBlk* cb, ResBlk* nb,
 			}
 			// since we don't know for sure if this is an N-terminal or a frag
 			// we make sure this nitrogen is an acceptor just in case
-			std::list<PDBrec*> nfr_list;
+			std::list< std::shared_ptr<PDBrec> > nfr_list;
 			cb->get(" N", nfr_list);
-			for (std::list<PDBrec*>::iterator nfr = nfr_list.begin(); nfr != nfr_list.end(); ++nfr) {
+			for (std::list< std::shared_ptr<PDBrec> >::iterator nfr = nfr_list.begin(); nfr != nfr_list.end(); ++nfr) {
 				(*nfr)->elem(* ElementInfo::StdElemTbl().element("Nacc"));
 			}
 		}
@@ -940,11 +934,11 @@ void analyzeRes(CTab& hetdatabase, ResBlk* pb, ResBlk* cb, ResBlk* nb,
 //SJ - called for each potential hydrogen to be added to the residue
 void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 				  AtomPositions& xyz, std::list<char>& resAlts,
-				  std::vector<std::string>& fixNotes, std::list<PDBrec*>& rlst) {
+				  std::vector<std::string>& fixNotes, std::list< std::shared_ptr<PDBrec> >& rlst) {
 
-	std::list<PDBrec*> ourHydrogens;
+	std::list< std::shared_ptr<PDBrec> > ourHydrogens;
 	theRes.get(pp.name(), ourHydrogens); // S.J.- checks if this specific Hydrogen to be added is already present in the residue or not.
-	std::list<PDBrec*> firstAtoms;
+	std::list< std::shared_ptr<PDBrec> > firstAtoms;
 	theRes.get(pp.conn(0), firstAtoms);
     
     bool doNotAdjustSC = FALSE;
@@ -952,8 +946,8 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 
 		if (!ourHydrogens.empty()) {// Hydrogen exists
             
-			PDBrec* o = NULL;
-			for (std::list<PDBrec*>::iterator it = ourHydrogens.begin(); it != ourHydrogens.end(); ++it) {
+			std::shared_ptr<PDBrec> o;
+			for (std::list< std::shared_ptr<PDBrec> >::iterator it = ourHydrogens.begin(); it != ourHydrogens.end(); ++it) {
 				o = *it;
 				doNotAdjustSC = FALSE;
 				if (pp.hasFeature(NOO2PRIMEFLAG) && o2prime) {
@@ -1068,19 +1062,19 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 			std::vector<char> all_confs;
 			nconf.resize(numConnAtoms);
 
-			std::vector< std::vector<PDBrec*> > rvv;
+			std::vector< std::vector< std::shared_ptr<PDBrec> > > rvv;
 			rvv.reserve(numConnAtoms);
 			bool success = TRUE, alt_success = TRUE;
 
 			for (i = 0; i < numConnAtoms; i++) { // get the records and count how many
-				std::list<PDBrec*> rs;
+				std::list< std::shared_ptr<PDBrec> > rs;
 				theRes.get(pp.conn(i), rs);
 				if (!rs.empty()) {
 					nconf[i] = rs.size();
 					maxalt = std::max(maxalt, nconf[i]);
-					std::vector<PDBrec*> rvv_v;
+					std::vector< std::shared_ptr<PDBrec> > rvv_v;
 					rvv_v.reserve(nconf[i]);
-					std::list<PDBrec*>::iterator it_rs = rs.begin();
+					std::list< std::shared_ptr<PDBrec> >::iterator it_rs = rs.begin();
 					for(j=0; j < nconf[i]; ++j, ++it_rs) {
 						rvv_v.push_back(*it_rs);
 						all_confs.push_back(rvv_v[j]->alt());
@@ -1121,7 +1115,7 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 				maxalt = 1; // this is an H(alpha) so ignore the fourth (CBeta) alternate conf
 				considerNonAlt = TRUE;
 				all_confs.clear();
-				const PDBrec* cnr = rvv[0][0];
+				const std::shared_ptr<PDBrec> cnr = rvv[0][0];
 				char abc = cnr->alt();
 				all_confs.push_back(abc);
 			}
@@ -1137,7 +1131,7 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 				float occ = (*(firstAtoms.begin()))->occupancy();
                 alt_success = TRUE;
 				if (considerNonAlt) {
-				    const PDBrec* cnr = rvv[3][j];
+				    const  std::shared_ptr<PDBrec> cnr = rvv[3][j];
 				    char abc = cnr->alt();
 				    altId = abc;
 				}
@@ -1145,7 +1139,7 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 				    altId = all_confs[j];
 				}
 				for(i=0; i < numConnAtoms; i++) {
-					const PDBrec* cnr = rvv[i][std::min(j, nconf[i]-1)];
+					const std::shared_ptr<PDBrec> cnr = rvv[i][std::min(j, nconf[i]-1)];
 					loc[i] = cnr->loc(); //apl 7/3/06 -- FIXING PUSH_BACK BUG
 					counter[i] = std::min(j, nconf[i]-1);
 					char abc = cnr->alt();
@@ -1158,7 +1152,7 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 					else {
 			            alt_success = FALSE;
 			            for(k=maxalt-1; k>=0; k--) { //comprehensive search
-			                const PDBrec* cnr_v = rvv[i][std::min(k, nconf[i]-1)];
+			                const std::shared_ptr<PDBrec> cnr_v = rvv[i][std::min(k, nconf[i]-1)];
 			                char abc = cnr_v->alt();
 			                if (abc == altId || abc == ' ') {
 				                loc[i] = cnr_v->loc();
@@ -1173,7 +1167,7 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 			            }
 			            if (!alt_success) {
 			                if ( (i>0) && (nconf[i]==1) ) {
-			                    const PDBrec* cnr_v = rvv[i][0];
+			                    const std::shared_ptr<PDBrec> cnr_v = rvv[i][0];
 			                    loc[i] = cnr_v->loc();
 			                    counter[i] = 0;
 				                alt_success = TRUE;
@@ -1189,7 +1183,7 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 
 				Point3d newHpos;
 				if (success && alt_success && (success = pp.placeH(loc, newHpos))) {
-					PDBrec* newHatom = new PDBrec();
+					std::shared_ptr<PDBrec> newHatom = std::make_shared<PDBrec>();
 					(*(firstAtoms.begin()))->clone(newHatom); // dup and modify connected heavy atom
 
 					newHatom->atomname(pp.name().substr(0,4).c_str()); // restrict name size
@@ -1282,10 +1276,6 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 							xyz.insertFlip(newHatom, resAlts);
 						}
 					}
-					else {
-					  //if not added, delete
-					  delete newHatom; newHatom = 0;
-					}
 				}
 			}
 		}
@@ -1315,12 +1305,12 @@ int findConnAtoms(const atomPlacementPlan& pp, ResBlk& theRes, char hac,
 				  PDBrec& r0atom, PDBrec& r1atom, PDBrec& r2atom) {
 
 	int connatomcount = 0;
-	PDBrec* rec = NULL;
+	std::shared_ptr<PDBrec> rec = NULL;
 
 	if (pp.num_conn() > 0) {
-		std::list<PDBrec*> r0_list;
+		std::list< std::shared_ptr<PDBrec> > r0_list;
 		theRes.get(pp.conn(0), r0_list);
-		for (std::list<PDBrec*>::iterator r0 = r0_list.begin(); r0 != r0_list.end(); ++r0) {
+		for (std::list< std::shared_ptr<PDBrec> >::iterator r0 = r0_list.begin(); r0 != r0_list.end(); ++r0) {
 			rec = *r0;
 			char r0ac = rec->alt();
 			if (hac == r0ac || hac == ' ' || r0ac == ' ') {
@@ -1332,9 +1322,9 @@ int findConnAtoms(const atomPlacementPlan& pp, ResBlk& theRes, char hac,
 	}
 
 	if (pp.num_conn() > 1) {
-		std::list<PDBrec*> r1_list;
+		std::list< std::shared_ptr<PDBrec> > r1_list;
 		theRes.get(pp.conn(1), r1_list);
-		for (std::list<PDBrec*>::iterator r1 = r1_list.begin(); r1 != r1_list.end(); ++r1) {
+		for (std::list< std::shared_ptr<PDBrec> >::iterator r1 = r1_list.begin(); r1 != r1_list.end(); ++r1) {
 			rec = *r1;
 			char r1ac = rec->alt();
 			if (hac == r1ac || hac == ' ' || r1ac == ' ') {
@@ -1346,9 +1336,9 @@ int findConnAtoms(const atomPlacementPlan& pp, ResBlk& theRes, char hac,
 	}
 
 	if (pp.num_conn() > 2) {
-		std::list<PDBrec*> r2_list;
+		std::list< std::shared_ptr<PDBrec> > r2_list;
 		theRes.get(pp.conn(2), r2_list);
-		for (std::list<PDBrec*>::iterator r2 = r2_list.begin(); r2 != r2_list.end(); ++r2) {
+		for (std::list< std::shared_ptr<PDBrec> >::iterator r2 = r2_list.begin(); r2 != r2_list.end(); ++r2) {
 			rec = *r2;
 			char r2ac = rec->alt();
 			if (hac == r2ac || hac == ' ' || r2ac == ' ') {
@@ -1366,7 +1356,7 @@ bool okToPlaceHydHere(const PDBrec& theHatom, const atomPlacementPlan& pp,
 					  const PDBrec& a1, const PDBrec& a2, AtomPositions& xyz,
 					  bool& doNotAdjustSC, std::vector<std::string>& fixNotes) {
 
-	std::list<PDBrec*> emptySet;
+	std::list< std::shared_ptr<PDBrec> > emptySet;
 
 	const Point3d& theHpos = theHatom.loc();
 
@@ -1376,13 +1366,13 @@ bool okToPlaceHydHere(const PDBrec& theHatom, const atomPlacementPlan& pp,
 			const double halfbondlen = heavyAtom.elem().covRad();
 			const double  maxbondlen = halfbondlen
 				+ ElementInfo::StdElemTbl().maxCovalentRadius();
-			std::list<PDBrec*> nearr_list = xyz.neighbors( heavyAtom.loc(),
+			std::list< std::shared_ptr<PDBrec> > nearr_list = xyz.neighbors( heavyAtom.loc(),
 				halfbondlen + 0.1,
 				maxbondlen  + 0.25);
-			std::list<PDBrec*> c2batoms;
+			std::list< std::shared_ptr<PDBrec> > c2batoms;
 			int countOfBonds = 0;
-			PDBrec* rec = NULL;
-			for (std::list<PDBrec*>::const_iterator nearr = nearr_list.begin(); nearr != nearr_list.end(); ++nearr) {
+			std::shared_ptr<PDBrec> rec;
+			for (std::list< std::shared_ptr<PDBrec> >::const_iterator nearr = nearr_list.begin(); nearr != nearr_list.end(); ++nearr) {
 				rec = *nearr;
 				if (interactingConfs(heavyAtom, *rec, DoOnlyAltA)
 					&& (! rec->elem().isHydrogen())
@@ -1401,8 +1391,8 @@ bool okToPlaceHydHere(const PDBrec& theHatom, const atomPlacementPlan& pp,
 
 							if (pp.hasFeature(NH3FLAG)) {
 								bool skipthisH = FALSE;
-								PDBrec* nbs = NULL;
-								for(std::list<PDBrec*>::const_iterator it = c2batoms.begin(); it != c2batoms.end(); ++it) {
+								std::shared_ptr<PDBrec> nbs;
+								for(std::list< std::shared_ptr<PDBrec> >::const_iterator it = c2batoms.begin(); it != c2batoms.end(); ++it) {
 									nbs = *it;
 									const double hRdist = distance2(theHpos,
 										nbs->loc());
@@ -1444,11 +1434,11 @@ bool okToPlaceHydHere(const PDBrec& theHatom, const atomPlacementPlan& pp,
 		const double  maxbondlen = halfbondlen
 			+ ElementInfo::StdElemTbl().maxCovalentRadius();
 
-		std::list<PDBrec*> nearr_list = xyz.neighbors( nqoxygen.loc(),
+		std::list< std::shared_ptr<PDBrec> > nearr_list = xyz.neighbors( nqoxygen.loc(),
 			halfbondlen + 0.1, maxbondlen  + 0.25);
 
-		PDBrec* rec = NULL;
-		for (std::list<PDBrec*>::const_iterator nearr = nearr_list.begin(); nearr != nearr_list.end(); ++nearr) {
+		std::shared_ptr<PDBrec> rec;
+		for (std::list< std::shared_ptr<PDBrec> >::const_iterator nearr = nearr_list.begin(); nearr != nearr_list.end(); ++nearr) {
 			rec = *nearr;
 			if (interactingConfs(nqoxygen, *rec, DoOnlyAltA)
 				&& rec->hasProp(METALIC_ATOM) ) {
@@ -1474,11 +1464,11 @@ bool okToPlaceHydHere(const PDBrec& theHatom, const atomPlacementPlan& pp,
 		const double  maxbondlen = halfbondlen
 			+ ElementInfo::StdElemTbl().maxCovalentRadius();
 
-		std::list<PDBrec*> nearr_list = xyz.neighbors( heavyAtom.loc(),
+		std::list< std::shared_ptr<PDBrec> > nearr_list = xyz.neighbors( heavyAtom.loc(),
 			halfbondlen + 0.1,
 			maxbondlen  + 0.25);
-		PDBrec* rec = NULL;
-		for (std::list<PDBrec*>::const_iterator nearr = nearr_list.begin(); nearr != nearr_list.end(); ++nearr) {
+		std::shared_ptr<PDBrec> rec;
+		for (std::list< std::shared_ptr<PDBrec> >::const_iterator nearr = nearr_list.begin(); nearr != nearr_list.end(); ++nearr) {
 			rec = *nearr;
 			if (interactingConfs(heavyAtom, *rec, DoOnlyAltA)
 				&& (! (sameres(theHatom, *rec)
@@ -1534,10 +1524,10 @@ bool okToPlaceHydHere(const PDBrec& theHatom, const atomPlacementPlan& pp,
 		const PDBrec& theoxygen = a1;
 		double pobondlen = theoxygen.elem().covRad() +
 			ElementInfo::StdElemTbl().element("P")->covRad();
-		std::list<PDBrec*> nearr_list = xyz.neighbors( theoxygen.loc(),
+		std::list< std::shared_ptr<PDBrec> > nearr_list = xyz.neighbors( theoxygen.loc(),
 			pobondlen - 0.25, pobondlen + 0.25);
-		PDBrec* rec = NULL;
-		for (std::list<PDBrec*>::const_iterator nearr = nearr_list.begin(); nearr != nearr_list.end(); ++nearr) {
+		std::shared_ptr<PDBrec> rec;
+		for (std::list< std::shared_ptr<PDBrec> >::const_iterator nearr = nearr_list.begin(); nearr != nearr_list.end(); ++nearr) {
 			rec = *nearr;
 			if (interactingConfs(theoxygen, *rec, DoOnlyAltA)
 				&& rec->elem().atno() == 15 ) {
@@ -1550,10 +1540,10 @@ bool okToPlaceHydHere(const PDBrec& theHatom, const atomPlacementPlan& pp,
 
 void recordSkipInfo(bool skipH, std::vector<std::string>& fixNotes,
 					const PDBrec& theHatom, const PDBrec& heavyAtom,
-					std::list<PDBrec*>& nearr, const char * msg) {
-	std::list<PDBrec*> conAtms;
-	PDBrec* rec = NULL;
-	for(std::list<PDBrec*>::const_iterator it = nearr.begin(); it != nearr.end(); ++it) {
+					std::list< std::shared_ptr<PDBrec> >& nearr, const char * msg) {
+	std::list< std::shared_ptr<PDBrec> > conAtms;
+	std::shared_ptr<PDBrec> rec;
+	for(std::list< std::shared_ptr<PDBrec> >::const_iterator it = nearr.begin(); it != nearr.end(); ++it) {
 		rec = *it;
 		if (! (sameres(heavyAtom, *rec)
 			&& StdResH::ResXtraInfo().match(heavyAtom.resname(), "AminoAcid")) ) {
@@ -1568,7 +1558,7 @@ void recordSkipInfo(bool skipH, std::vector<std::string>& fixNotes,
 
 	if ((heavy == " O3'") || (heavy == " O3*") ||
 		(heavy == " O5'") || (heavy == " O5*")) {
-		for(std::list<PDBrec*>::const_iterator cat = conAtms.begin(); cat != conAtms.end(); ++cat) {
+		for(std::list< std::shared_ptr<PDBrec> >::const_iterator cat = conAtms.begin(); cat != conAtms.end(); ++cat) {
 			std::string cat_elem = (*cat)->elemLabel();
 			if (cat_elem == " P") {
 				return; /* bypass -- do not warn about normal nucleic acid linkages */
@@ -1590,7 +1580,7 @@ void recordSkipInfo(bool skipH, std::vector<std::string>& fixNotes,
 			cerr << "FIXED H("<< theHatom.recName() <<"):"
 				<< heavyAtom.recName() << " bonds";
 		}
-		for(std::list<PDBrec*>::const_iterator it = conAtms.begin(); it != conAtms.end(); ++it) {
+		for(std::list< std::shared_ptr<PDBrec> >::const_iterator it = conAtms.begin(); it != conAtms.end(); ++it) {
 			cerr << "-" << (*it)->recName();
 		}
 		cerr << " " << msg << endl;
@@ -1601,16 +1591,16 @@ void recordSkipInfo(bool skipH, std::vector<std::string>& fixNotes,
 // and identify waters that do not have explicit H atoms.
 // Possible orientations for the new H atoms are identified elsewhere.
 
-void noteWaterInfo(ResBlk& r, std::list<PDBrec*>& waters) {
-	std::multimap<std::string, PDBrec*> it_map = r.atomIt();
-	std::multimap<std::string, PDBrec*>::const_iterator it = it_map.begin();
+void noteWaterInfo(ResBlk& r, std::list< std::shared_ptr<PDBrec> >& waters) {
+	std::multimap<std::string, std::shared_ptr<PDBrec> > it_map = r.atomIt();
+	std::multimap<std::string, std::shared_ptr<PDBrec> >::const_iterator it = it_map.begin();
 	std::string key;
 	int i=0, nac=0;
 	float occ = 0.0, bf = 0.0;
 	const int altbufsz = 10;
 	char skipalt[altbufsz], ac;
 	bool hwithsamecode;
-	PDBrec* a;
+	std::shared_ptr<PDBrec> a;
 
 	// first gather altcodes for high occupancy Hydrogens
 	while(it != it_map.end()) {
@@ -1676,14 +1666,14 @@ void findAndStandardize(const char* name, const char* resname,
 		for (std::list<atomPlacementPlan*>::iterator app = app_deque.begin(); app != app_deque.end(); ++app) {
 
 			const atomPlacementPlan* pp = *app;
-			std::list<PDBrec*> firstAtoms;
+			std::list< std::shared_ptr<PDBrec> > firstAtoms;
 			theRes.get(pp->conn(0), firstAtoms);
 
 			if (!firstAtoms.empty()) { // must connect to something!
 
-				std::list<PDBrec*> ourHydrogens;
+				std::list< std::shared_ptr<PDBrec> > ourHydrogens;
 				theRes.get(pp->name(), ourHydrogens);
-				for (std::list<PDBrec*>::iterator it = ourHydrogens.begin(); it != ourHydrogens.end(); ++it) {
+				for (std::list< std::shared_ptr<PDBrec> >::iterator it = ourHydrogens.begin(); it != ourHydrogens.end(); ++it) {
 				  stdBondLen(pp->dist(), **it, firstAtoms, pp->elem());
 				}
 			}
@@ -1691,11 +1681,11 @@ void findAndStandardize(const char* name, const char* resname,
 	}
 }
 
-void stdBondLen(float dist, PDBrec& ourHydrogen, std::list<PDBrec*>& firstAtoms,
+void stdBondLen(float dist, PDBrec& ourHydrogen, std::list< std::shared_ptr<PDBrec> >& firstAtoms,
 				const ElementInfo& e) {
 	if (ourHydrogen.valid()) {
-		PDBrec* temp = NULL;
-		for(std::list<PDBrec*>::iterator it = firstAtoms.begin(); it != firstAtoms.end(); ++it) {
+		std::shared_ptr<PDBrec> temp;
+		for(std::list< std::shared_ptr<PDBrec> >::iterator it = firstAtoms.begin(); it != firstAtoms.end(); ++it) {
 			temp = *it;
 			char halt = ourHydrogen.alt();
 			char calt = temp->alt();
@@ -1728,12 +1718,12 @@ void stdBondLen(float dist, PDBrec& ourHydrogen, std::list<PDBrec*>& firstAtoms,
 }
 
 void fixupHeavyAtomElementType(ResBlk& theRes, CTab& hetDB) {
-	std::multimap<std::string, PDBrec*> theAtoms_map = theRes.atomIt();
-	std::multimap<std::string, PDBrec*>::const_iterator theAtoms = theAtoms_map.begin();
+	std::multimap<std::string, std::shared_ptr<PDBrec> > theAtoms_map = theRes.atomIt();
+	std::multimap<std::string, std::shared_ptr<PDBrec> >::const_iterator theAtoms = theAtoms_map.begin();
 	std::string atomname;
 	while (theAtoms != theAtoms_map.end()) {
 		atomname = theAtoms->first;
-		PDBrec* r;
+		std::shared_ptr<PDBrec> r;
 		for (; theAtoms != theAtoms_map.end() && theAtoms->first == atomname; ++theAtoms) {
 			r = theAtoms->second;
 

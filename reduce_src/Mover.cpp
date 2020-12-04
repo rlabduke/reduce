@@ -31,31 +31,31 @@ void Mover::trackFlipMaxScore(int f, double val, bool hasBadBump) {
    }
 }
 
-void bondedList(const PDBrec& a, std::list<PDBrec*>& nearby, int nbnds,
-				std::list<PDBrec*>& atmList, std::list<PDBrec*>* bondedAtoms) {
+void bondedList(const PDBrec& a, std::list< std::shared_ptr<PDBrec> >& nearby, int nbnds,
+				std::list< std::shared_ptr<PDBrec> >& atmList, std::list< std::shared_ptr<PDBrec> >* bondedAtoms) {
 	resetMarks(nearby);
 	countBonds(a, nearby, 1, nbnds, atmList); // up to nbnds bonds away
 
-	PDBrec* rec = NULL;
-	for (std::list<PDBrec*>::const_iterator it = nearby.begin(); it != nearby.end(); ++it) {
+	std::shared_ptr<PDBrec> rec;
+	for (std::list< std::shared_ptr<PDBrec> >::const_iterator it = nearby.begin(); it != nearby.end(); ++it) {
 		rec = *it;
 		if (rec->valid()) {
 		  if (rec->mark() >= 1 && rec->mark() <= nbnds) {
-			PDBrec* temp = new PDBrec(*rec);
+			  std::shared_ptr<PDBrec> temp = std::make_shared<PDBrec>(*rec);
 			bondedAtoms->push_front(temp);
 		  }
         }
 	}
 }
 
-void countBonds(const PDBrec& src, const std::list<PDBrec*>& nearby,
-				int distcount, int maxcnt, std::list<PDBrec*>& atmList) {
+void countBonds(const PDBrec& src, const std::list< std::shared_ptr<PDBrec> >& nearby,
+				int distcount, int maxcnt, std::list< std::shared_ptr<PDBrec> >& atmList) {
 
-	std::list<PDBrec*> newlyMarked;
-	std::list<PDBrec*> remainder;
+	std::list< std::shared_ptr<PDBrec> > newlyMarked;
+	std::list< std::shared_ptr<PDBrec> > remainder;
 
-	PDBrec* rec = NULL;
-	for (std::list<PDBrec*>::const_iterator targ = nearby.begin(); targ != nearby.end(); ++targ) {
+	std::shared_ptr<PDBrec> rec;
+	for (std::list< std::shared_ptr<PDBrec> >::const_iterator targ = nearby.begin(); targ != nearby.end(); ++targ) {
 		rec = *targ;
 		if (rec->valid()) {
 		  if ( (rec->mark() < 1 || rec->mark() > distcount)
@@ -75,15 +75,15 @@ void countBonds(const PDBrec& src, const std::list<PDBrec*>& nearby,
 		}
 	}
 	if (distcount < maxcnt) {
-		for(std::list<PDBrec*>::const_iterator it = newlyMarked.begin(); it != newlyMarked.end(); ++it) {
+		for(std::list< std::shared_ptr<PDBrec> >::const_iterator it = newlyMarked.begin(); it != newlyMarked.end(); ++it) {
 			countBonds(**it, remainder, distcount+1, maxcnt, atmList);
 		}
 	}
 }
 
 // initialize the markers we use to determine bonding patterns
-void resetMarks(std::list<PDBrec*>& lst) {
-	for (std::list<PDBrec*>::const_iterator it = lst.begin(); it != lst.end(); ++it) {
+void resetMarks(std::list< std::shared_ptr<PDBrec> >& lst) {
+	for (std::list< std::shared_ptr<PDBrec> >::const_iterator it = lst.begin(); it != lst.end(); ++it) {
 		(*it)->mark(0);
 	}
 }
@@ -115,12 +115,12 @@ int withinCovalentDist(const PDBrec& p, const PDBrec& q, double offset) {
    return distanceSquared(p.loc(), q.loc()) <= (lim*lim);
 }
 
-bool impossibleCovalent(const PDBrec& src, const PDBrec& targ, std::list<PDBrec*>& atmList) {
+bool impossibleCovalent(const PDBrec& src, const PDBrec& targ, std::list< std::shared_ptr<PDBrec> >& atmList) {
    if (src.isHydrogen() && targ.isHydrogen()) { return TRUE; }
 
    else if (src.isHydrogen() || targ.isHydrogen()) {
       bool srcInList = FALSE, targInList = FALSE;
-      for(std::list<PDBrec*>::const_iterator it = atmList.begin(); it != atmList.end(); ++it) {
+      for(std::list< std::shared_ptr<PDBrec> >::const_iterator it = atmList.begin(); it != atmList.end(); ++it) {
 	      if (**it == src)  {srcInList  = TRUE; }
 	 else if (**it == targ) {targInList = TRUE; }
       }
@@ -133,8 +133,8 @@ bool impossibleCovalent(const PDBrec& src, const PDBrec& targ, std::list<PDBrec*
    return (! sameres(src, targ)) && (src.isHydrogen() || targ.isHydrogen());
 }
 
-bool foundInList(const PDBrec& a, const std::list<PDBrec*>& lst) {
-	for (std::list<PDBrec*>::const_iterator it = lst.begin(); it != lst.end(); ++it) {
+bool foundInList(const PDBrec& a, const std::list< std::shared_ptr<PDBrec> >& lst) {
+	for (std::list< std::shared_ptr<PDBrec> >::const_iterator it = lst.begin(); it != lst.end(); ++it) {
 		if (a == **it) { return TRUE; }
 	}
 	return FALSE;
