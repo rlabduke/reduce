@@ -67,8 +67,8 @@ getSet(bool,RemoveOtherHydrogens)
 #define getSetMethodTakeConst(class, name, type) type (class::*get ## name)() const = &class::name; void (class::*set ## name)(const type &) = &class::name;
 #define getSetMethodReturnTakeConst(class, name, type) const type & (class::*get ## name)() const = &class::name; void (class::*set ## name)(const type &) = &class::name;
 
-/**
 // Function pointers needed to handle overloaded functions
+/*
 getSetMethod(PDBrec, x, Coord);
 getSetMethod(PDBrec, y, Coord);
 getSetMethod(PDBrec, z, Coord);
@@ -93,8 +93,10 @@ BOOST_PYTHON_MODULE(reduce)
     .def_readonly("_num_adj", &SummaryStats::_num_adj)
     .def_readonly("_num_renamed", &SummaryStats::_num_renamed)
   ;
-  /**
-  class_<PDBrec>("PDBrec", init<>())
+  
+  // Export the return types from various functions, along with their shared_ptr types
+/*
+  class_<PDBrec, std::shared_ptr<PDBrec> >("PDBrec", init<>())
     .def(init<const PDB &>())
     .def(init<const PDBrec &>())
     .def("clone", &PDBrec::clone)
@@ -104,13 +106,15 @@ BOOST_PYTHON_MODULE(reduce)
     .add_property("z", getz, setz)
     .add_property("loc", getloc, setloc)
     .def("type", &PDBrec::type)
-    .add_property("elem", getelem, setelem)
   ;
-  */
+*/
+
+  class_< std::list< std::list< std::shared_ptr<PDBrec> > > >("list_list_ptr_PDBrec");
 
   /// @todo Point3d
   /// @todo PDB::RecordType
   /// @todo ElementInfo
+
 
   // Export the global functions
   def("inputModels", inputModels, "Read the PDB records from the specified input stream.");
