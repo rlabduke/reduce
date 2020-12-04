@@ -21,6 +21,7 @@
 #include "BumperPoint.h"
 #include "Mover.h"
 #include <vector>
+#include <memory>
 #include "neighbors.h"
 #include "utility.h"
 
@@ -91,7 +92,7 @@ private:
    double      _angle;
    char        _grpName[20];
 
-   std::vector< std::list< std::shared_ptr<PDBrec> >* > _bnded; // pre-calculated bonding list
+   std::vector< std::shared_ptr<std::list< std::shared_ptr<PDBrec> > > > _bnded; // pre-calculated bonding list
 
    RotMethyl(const RotMethyl& m); // copy and assign not implemented
    RotMethyl& operator=(const RotMethyl& m);
