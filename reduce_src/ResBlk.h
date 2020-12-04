@@ -19,6 +19,7 @@
 #include "PDBrec.h"
 #include <list>
 #include <iostream>
+#include <memory>
 
 bool sameres(const PDBrec &r1, const PDBrec &rn);
 
