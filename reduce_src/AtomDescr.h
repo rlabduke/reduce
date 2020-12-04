@@ -103,9 +103,9 @@ public:
 		return (distanceSquared(a._atomPos, _atomPos) < (a._atRadius + _atRadius) * (a._atRadius + _atRadius));
 	}
 	
-	void setOriginalAtomPtr(std::shared_ptr<PDBrec> originalAtom) {_originalAtom = originalAtom;}
+	void setOriginalAtomPtr(PDBrec* originalAtom) {_originalAtom = originalAtom;}
 	
-	std::shared_ptr<PDBrec> getOriginalAtomPtr() const {return _originalAtom;}
+	PDBrec* getOriginalAtomPtr() const {return _originalAtom;}
 	
 	bool containsPoint( Point3d const & p ) const{ return (distanceSquared( p , _atomPos) < _atRadiusSqr );}
 private:
@@ -113,7 +113,7 @@ private:
 	int  		_atomResNo;
 	float   _atRadius;
 	float _atRadiusSqr;
-	std::shared_ptr<PDBrec> _originalAtom;
+	PDBrec* _originalAtom;
 };
 
 std::ostream& operator<<(std::ostream& os, const AtomDescr& A);
