@@ -3,7 +3,7 @@
 
 using namespace boost::python;
 
-// Defines a getter and setter for a named global variable of the specified type
+// Macro defines a getter and setter for a named global variable of the specified type
 #define getSet(type, name) type get ## name(void) { return name; } void set ## name(type val) { name = val; }
 
 // Create getters and setters for the global variables that control behavior
@@ -64,13 +64,29 @@ getSet(bool,RemoveOtherHydrogens)
 
 BOOST_PYTHON_MODULE(reduce)
 {
+  // Export the class objects that Python will need access to
+  class_<SummaryStats>("SummaryStats", init<>())
+    .def_readonly("_H_found", &SummaryStats::_H_found)
+    .def_readonly("_H_HET_found", &SummaryStats::_H_HET_found)
+    .def_readonly("_H_removed", &SummaryStats::_H_removed)
+    .def_readonly("_H_HET_removed", &SummaryStats::_H_HET_removed)
+    .def_readonly("_H_added", &SummaryStats::_H_added)
+    .def_readonly("_H_HET_added", &SummaryStats::_H_HET_added)
+    .def_readonly("_H_standardized", &SummaryStats::_H_standardized)
+    .def_readonly("_H_HET_standardized", &SummaryStats::_H_HET_standardized)
+    .def_readonly("_num_atoms", &SummaryStats::_num_atoms)
+    .def_readonly("_conect", &SummaryStats::_conect)
+    .def_readonly("_num_adj", &SummaryStats::_num_adj)
+    .def_readonly("_num_renamed", &SummaryStats::_num_renamed)
+  ;
+
   // Export the const char * variables, which will be read only.
   scope().attr("versionString") = versionString;
   scope().attr("shortVersion") = shortVersion;
   scope().attr("referenceString") = referenceString;
   scope().attr("electronicReference") = electronicReference;
 
-  // Exports a getter and setter for a named global variable of the specified type
+  // Macro exports a getter and setter for a named global variable of the specified type
   #define exportGetSet(name) def("get" #name , get ## name, "Get value of " #name " global variable");\
                              def("set" #name , set ## name, "Set value of " #name " global variable");
 
