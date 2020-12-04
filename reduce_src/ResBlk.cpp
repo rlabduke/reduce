@@ -33,11 +33,11 @@ bool sameres(const PDBrec &r1, const PDBrec &rn) {
 }
 
 // build a residue block by advancing in the list (updates the input iterator)
-ResBlk::ResBlk(std::list<PDBrec*>& rlst, std::list<PDBrec*>::iterator& lit) {
+ResBlk::ResBlk(std::list< std::shared_ptr<PDBrec> >& rlst, std::list< std::shared_ptr<PDBrec> >::iterator& lit) {
 	_insertPt = lit;
 
 	while (_insertPt != rlst.end()) {
-		PDBrec* r1 = *_insertPt;
+        std::shared_ptr<PDBrec> r1 = *_insertPt;
 
 		++_insertPt;
 
@@ -50,7 +50,7 @@ ResBlk::ResBlk(std::list<PDBrec*>& rlst, std::list<PDBrec*>::iterator& lit) {
 
 			while (_insertPt != rlst.end()) {  // now find the rest
 
-				PDBrec* rn = *_insertPt;
+                std::shared_ptr<PDBrec> rn = *_insertPt;
 
 				if (rn->type() == PDB::ATOM
 					|| rn->type() == PDB::HETATM) {

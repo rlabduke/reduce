@@ -315,7 +315,7 @@ void FlipMemo::finalize(int, bool, bool, bool, AtomPositions &, DotSphManager&) 
 		// we copy each atom and save the old locations
 
 		for(int pi=1; pi <= _resFlip[_resType].numPnts; pi++) {
-            std::map<std::string, PDBrec*>::iterator iter = _resAtoms.find(_pointName[_resType][pi]);
+            std::map<std::string, std::shared_ptr<PDBrec> >::iterator iter = _resAtoms.find(_pointName[_resType][pi]);
             
             bool found;
 			if (iter != _resAtoms.end()) {
@@ -754,10 +754,10 @@ double FlipMemo::determineScore(AtomPositions &xyz,	DotSphManager& dotBucket,
 		bool  subBadBump   = FALSE;
 
 		if (locAtom(j, thisAtom)) {
-			std::list<PDBrec*> bnded = neighbors(j, nBondCutoff);
+			std::list< std::shared_ptr<PDBrec> > bnded = neighbors(j, nBondCutoff);
 
 			//std::cerr << "Scoring atom: " << j << " " << thisAtom.getAtomDescr() << std::endl;
-			//for (std::list< PDBrec* >::iterator iter = bnded.begin(); iter != bnded.end(); ++iter )
+			//for (std::list< std::shared_ptr<PDBrec> >::iterator iter = bnded.begin(); iter != bnded.end(); ++iter )
 			//{
 			//	std::cerr << "bonded for FlipMemo: " << nBondCutoff << " " << (*iter)->getAtomDescr() << std::endl;
 			//}
@@ -800,7 +800,7 @@ double FlipMemo::determineScore(AtomPositions &xyz,	DotSphManager& dotBucket,
 	return scoreThisO;
 }
 
-void FlipMemo::insertAtom(PDBrec* r) {
+void FlipMemo::insertAtom(std::shared_ptr<PDBrec> r) {
    if (valid()) {
 	   _resAtoms.insert(std::make_pair(r->atomname(), r));
       fillAtomAndLocVectors(); // try and find required atoms
@@ -823,8 +823,8 @@ bool FlipMemo::locAtom(int na, PDBrec& outrec) const {
 }
 
 // externally, na is the atom num in the range [0..numScore)
-std::list<PDBrec*> FlipMemo::neighbors(int na, int nbdist) const {
-	std::list<PDBrec*> nbhd;
+std::list< std::shared_ptr<PDBrec> > FlipMemo::neighbors(int na, int nbdist) const {
+	std::list< std::shared_ptr<PDBrec> > nbhd;
 	int nnr = -1;
 	if (_isComplete) { // don't bother if incomplete
 		for(int i=_resFlip[_resType].from3B;
@@ -846,7 +846,7 @@ std::list<PDBrec*> FlipMemo::neighbors(int na, int nbdist) const {
 				|| k > _resFlip[_resType].numPnts) { break; } // error...
 
 			if (_wrkAtom[k].valid() && (! _wrkAtom[k].hasProp(IGNORE)) ) {
-				PDBrec* temp = new PDBrec(_wrkAtom[k]);
+                std::shared_ptr<PDBrec> temp = std::make_shared<PDBrec>(_wrkAtom[k]);
 				nbhd.push_front(temp);
 			}
 		}
@@ -874,10 +874,10 @@ void FlipMemo::altCodes(const ResBlk& rblk,	bool useXplorNames, bool useOldNames
 		}
 	}
 	if (isInResidueSet) { // SJ - if the residue is ASN, GLN, or HIS
-		std::multimap<std::string, PDBrec*> pdb = rblk.atomIt();
+		std::multimap<std::string, std::shared_ptr<PDBrec> > pdb = rblk.atomIt();
 		std::string key;
-		std::multimap<std::string, PDBrec*>::const_iterator pdbit = pdb.begin();
-		PDBrec* atsq = NULL;
+		std::multimap<std::string, std::shared_ptr<PDBrec> >::const_iterator pdbit = pdb.begin();
+        std::shared_ptr<PDBrec> atsq;
 		while(pdbit != pdb.end()) {
 			key = pdbit->first;
 			for (; pdbit != pdb.end() && pdbit->first == key; ++pdbit) {
@@ -941,13 +941,13 @@ bool FlipMemo::isHBDonorOrAcceptorFlipped(const PDBrec& a, bool useXplorNames, b
 }
 
 void FlipMemo::dropBondedFromBumpingListForPDBrec(
-		std::list< PDBrec * > & bumping,
-		PDBrec* atom,
+		std::list< std::shared_ptr<PDBrec> > & bumping,
+        std::shared_ptr<PDBrec>  atom,
 		int nBondCutoff
 ) const
 {
 	//std::cerr << "Dropping bonded from bumping list for " << atom->getAtomDescr() << std::endl;
-	//for ( std::list< PDBrec * >::iterator iter = bumping.begin();
+	//for ( std::list< std::shared_ptr<PDBrec> >::iterator iter = bumping.begin();
 	//	iter != bumping.end(); ++iter )
 	//{
 	//	std::cerr << "Bumping: " << nBondCutoff << " " << (*iter)->getAtomDescr() << std::endl;
@@ -956,17 +956,17 @@ void FlipMemo::dropBondedFromBumpingListForPDBrec(
 	int atom_number = findAtom( atom );
 	//std::cerr << "Atom number: " << atom_number << std::endl;
 
-	std::list<PDBrec*> bnded = neighbors(atom_number, nBondCutoff);
-	for (std::list< PDBrec* >::iterator iter = bumping.begin();
+	std::list< std::shared_ptr<PDBrec> > bnded = neighbors(atom_number, nBondCutoff);
+	for (std::list< std::shared_ptr<PDBrec> >::iterator iter = bumping.begin();
 		iter != bumping.end(); )
 	{
-		std::list< PDBrec* >::iterator iter_next = iter;
+		std::list< std::shared_ptr<PDBrec> >::iterator iter_next = iter;
 		++iter_next;
 		//if ( std::find( bnded.begin(), bnded.end(), *iter ) != bnded.end() )
 		//{
 		//	bumping.erase( iter );
 		//}
-		for (std::list< PDBrec* >::const_iterator constiter = bnded.begin();
+		for (std::list< std::shared_ptr<PDBrec> >::const_iterator constiter = bnded.begin();
 			constiter != bnded.end(); ++constiter)
 		{
 			//std::cerr << "Compairing against: " << (*constiter)->getAtomDescr() << std::endl;
@@ -982,7 +982,7 @@ void FlipMemo::dropBondedFromBumpingListForPDBrec(
 	}
 }
 
-int FlipMemo::findAtom( PDBrec * atom ) const
+int FlipMemo::findAtom(std::shared_ptr<PDBrec> atom ) const
 {
 	for (int ii = 1; ii <= FMmaxAtomSlots; ++ii)
 	{

@@ -34,7 +34,7 @@ using std::strtok;
 bool PDBrec::_MappingSEGIDtoChains = FALSE;
 std::map<std::string, char> PDBrec::_SEGtoChainMap;
 
-void PDBrec::clone(PDBrec* p) {
+void PDBrec::clone(std::shared_ptr<PDBrec> p) {
     p->_rep->_r       = _rep->_r;
     p->_rep->_e       = _rep->_e;
     p->_rep->_mark    = 0;

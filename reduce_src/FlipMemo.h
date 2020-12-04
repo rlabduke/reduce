@@ -110,30 +110,30 @@ public:
    void Rename_Flip(int orientation, AtomPositions & xyz); // SJ - 09/10/2015 function to perform the standard flip given the correct oritentation number
    void InFlip_ModifyDAStatus(int, int, int); // SJ - 09/10/2015 function to modify the donor acceptor status of N and C atoms after flips have happened. Copied the original code from setOrientations and made a function because it has to called from multiple places.
    
-   void insertAtom(PDBrec* r);
+   void insertAtom(std::shared_ptr<PDBrec> r);
 
    int numScoreAtoms() const {
       return valid() ? _resFlip[_resType].numScore : 0;
    }
    bool locAtom(int ai, PDBrec& outrec) const;
 
-   std::list<PDBrec*> neighbors(int na, int nbdist) const;
+   std::list< std::shared_ptr<PDBrec> > neighbors(int na, int nbdist) const;
 
    static void altCodes(const ResBlk& rblk, bool useXplorNames, bool useOldNames, bool bbModel, std::list<char>& sch);
    static bool isHBDonorOrAcceptorFlipped(const PDBrec& a, bool useXplorNames, bool useOldNames, bool bbModel);
 
    virtual void setHydAngle(double, AtomPositions &) {/*do nothing*/}
 
-   virtual void dropBondedFromBumpingListForPDBrec( std::list< PDBrec * > & bumping, PDBrec* atom, int nBondCutoff  ) const;
+   virtual void dropBondedFromBumpingListForPDBrec( std::list< std::shared_ptr<PDBrec> > & bumping, std::shared_ptr<PDBrec> atom, int nBondCutoff  ) const;
 private:
    double orientationPenalty(float pmag) const;
    void fillAtomAndLocVectors(); // utility routines
-   int findAtom( PDBrec* atom ) const; // which atom in the list is a particular PDBrec?
+   int findAtom(std::shared_ptr<PDBrec>  atom ) const; // which atom in the list is a particular PDBrec?
 
    FlipMemo(const FlipMemo& m); // assign and copy are not implemented
    FlipMemo& operator=(const FlipMemo& m);
 
-   std::map<std::string, PDBrec*> _resAtoms;
+   std::map<std::string, std::shared_ptr<PDBrec> > _resAtoms;
    int         _resType;
    bool        _isComplete;   // have all the atoms been gathered?
    bool        _extendO;      // extend the number of orientations?

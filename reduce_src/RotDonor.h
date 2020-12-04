@@ -63,7 +63,7 @@ public:
    const PDBrec& heavyAtom() const { return _heavyAtom; }
 
    void insertHatom(const PDBrec& ha) {
-	   PDBrec* temp = new PDBrec();
+       std::shared_ptr<PDBrec> temp = std::make_shared<PDBrec>();
 	   *temp = ha;
 	   _rot.push_front(temp); 
    }
@@ -73,7 +73,7 @@ public:
 
    virtual void setHydAngle(double newAng, AtomPositions &xyz);
    
-   virtual void dropBondedFromBumpingListForPDBrec( std::list< PDBrec * > & bumping, PDBrec* atom, int nBondCutoff  ) const;
+   virtual void dropBondedFromBumpingListForPDBrec( std::list< std::shared_ptr<PDBrec> > & bumping, std::shared_ptr<PDBrec> atom, int nBondCutoff  ) const;
 private:
    void angle(double val) { _angle = clampAngle(val); }
    void setHydAngle(PDBrec& theAtom, double oldAng, double newAng,
@@ -84,15 +84,15 @@ private:
       float &hbScore, bool &hasBadBump);
    double bumpsThisAngle(AtomPositions &xyz, DotSphManager& dotBucket);
    double orientationPenalty(float) const { return 0.0; }
-   int findAtom( PDBrec* atom ) const;
+   int findAtom(std::shared_ptr<PDBrec> atom ) const;
 
    Point3d     _p1, _p2;   // rotation axis is through these points
    PDBrec      _heavyAtom; // hydrogen attachment point
-//   std::list<PDBrec*> _rot;       // rotating hydrogen atoms
-   std::list<PDBrec*> _rot;
+//   std::list< std::shared_ptr<PDBrec> > _rot;       // rotating hydrogen atoms
+   std::list< std::shared_ptr<PDBrec> > _rot;
    double      _angle;     // current angle
 
-   std::vector< std::list<PDBrec*>* > _bnded; // pre-calculated bonding list
+   std::vector< std::list< std::shared_ptr<PDBrec> >* > _bnded; // pre-calculated bonding list
 
    int                   _nori;  // number of orientation angles
    std::vector< double >      _oang;  // array of angles

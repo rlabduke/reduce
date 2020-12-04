@@ -48,7 +48,7 @@ RotDonor::RotDonor(const Point3d& a, const Point3d& b,
 
 RotDonor::~RotDonor()
 {
-	for (std::vector< std::list< PDBrec * > * >::iterator iter = _bnded.begin(); iter != _bnded.end(); ++iter)
+	for (std::vector< std::list< std::shared_ptr<PDBrec> > * >::iterator iter = _bnded.begin(); iter != _bnded.end(); ++iter)
 	{
 		std::for_each( (*iter)->begin(), (*iter)->end(), DeleteObject());
 		delete (*iter);
@@ -70,10 +70,10 @@ void RotDonor::finalize(int nBondCutoff, bool useXplorNames, bool useOldNames, b
 		const double approxNbondDistLimit = 3.0 + 0.5*nBondCutoff; // just a rule of thumb
 		i = 0;
 		_rot.push_front(&_heavyAtom);
-		for (std::list<PDBrec*>::const_iterator alst = _rot.begin(); alst != _rot.end(); ++alst) {
-			const PDBrec* thisAtom = *alst;
-			std::list<PDBrec*> *temp = new std::list<PDBrec*>();
-			std::list<PDBrec*> neighborList = xyz.neighbors(thisAtom->loc(), thisAtom->covRad(),
+		for (std::list< std::shared_ptr<PDBrec> >::const_iterator alst = _rot.begin(); alst != _rot.end(); ++alst) {
+			const  std::shared_ptr<PDBrec> thisAtom = *alst;
+			std::list< std::shared_ptr<PDBrec> > *temp = new std::list< std::shared_ptr<PDBrec> >();
+			std::list< std::shared_ptr<PDBrec> > neighborList = xyz.neighbors(thisAtom->loc(), thisAtom->covRad(),
 				approxNbondDistLimit);
 			bondedList(*thisAtom, neighborList, nBondCutoff, _rot, temp);
 			_bnded.push_back(temp);
@@ -91,9 +91,9 @@ void RotDonor::finalize(int nBondCutoff, bool useXplorNames, bool useOldNames, b
 		// O-H & N-H bond len == 1.0, S-H bond len == 1.3
 		const double XHbondlen = (_heavyAtom.elem().atno() == 16) ? 1.3 : 1.0;
 
-		std::list<PDBrec*> nearby_list = xyz.neighbors(_heavyAtom.loc(), 0.001, 4.0);
-		PDBrec* rec = NULL;
-		for(std::list<PDBrec*>::const_iterator nearby = nearby_list.begin(); nearby != nearby_list.end(); ++nearby) {
+		std::list< std::shared_ptr<PDBrec> > nearby_list = xyz.neighbors(_heavyAtom.loc(), 0.001, 4.0);
+		std::shared_ptr<PDBrec> rec;
+		for(std::list< std::shared_ptr<PDBrec> >::const_iterator nearby = nearby_list.begin(); nearby != nearby_list.end(); ++nearby) {
 			rec = *nearby;
 			if (rec->hasProp(ACCEPTOR_ATOM)
 				|| FlipMemo::isHBDonorOrAcceptorFlipped(*rec, useXplorNames, useOldNames, bbModel)) {
@@ -143,7 +143,7 @@ void RotDonor::finalize(int nBondCutoff, bool useXplorNames, bool useOldNames, b
 			}
 
 			if (tryThisAngle) {
-				for(std::list<PDBrec*>::const_iterator hydlist = _rot.begin(); hydlist != _rot.end(); ++hydlist) {
+				for(std::list< std::shared_ptr<PDBrec> >::const_iterator hydlist = _rot.begin(); hydlist != _rot.end(); ++hydlist) {
 					setHydAngle(**hydlist, oldTheta, theta, xyz);
 				}
 				angle(theta);
@@ -153,7 +153,7 @@ void RotDonor::finalize(int nBondCutoff, bool useXplorNames, bool useOldNames, b
 		}
 
 		// re-position to least bump angle
-		for(std::list<PDBrec*>::const_iterator hydlist = _rot.begin(); hydlist != _rot.end(); ++hydlist) {
+		for(std::list< std::shared_ptr<PDBrec> >::const_iterator hydlist = _rot.begin(); hydlist != _rot.end(); ++hydlist) {
 			setHydAngle(**hydlist, angle(), leastBumpAngle, xyz);
 		}
 		angle(leastBumpAngle);
@@ -188,8 +188,8 @@ int RotDonor::makebumpers(std::multimap<LocBlk, BumperPoint*>& bblks,
 	const double dtheta = 10.0; // fineness of rotation angle scan
 	const double scanAngle = 180.0;
 	BumperPoint* bp;
-	for(std::list<PDBrec*>::const_iterator it = _rot.begin(); it != _rot.end(); ++it) {
-		PDBrec* a = *it;
+	for(std::list< std::shared_ptr<PDBrec> >::const_iterator it = _rot.begin(); it != _rot.end(); ++it) {
+		std::shared_ptr<PDBrec> a = *it;
 		for (double theta = -scanAngle; theta < scanAngle; theta += dtheta) {
 			Point3d p(a->loc().rotate(theta, _p2, _p1));
 			bp = new BumperPoint(p, rn, an++, a->vdwRad());
@@ -207,8 +207,8 @@ std::list<AtomDescr> RotDonor::getAtDescOfAllPos(float &maxVDWrad) {
 	ad_heavy.setOriginalAtomPtr( & _heavyAtom );
 	theList.push_back(ad_heavy);		//ANDREW adding heavyAtom to the list of bumpers returned
 	
-	PDBrec* hyds = NULL;
-	for (std::list<PDBrec*>::const_iterator it = _rot.begin(); it != _rot.end(); ++it) {
+	std::shared_ptr<PDBrec> hyds;
+	for (std::list< std::shared_ptr<PDBrec> >::const_iterator it = _rot.begin(); it != _rot.end(); ++it) {
 		hyds = *it;
 		Point3d initHydPoint = hyds->loc();
 		for (int i = 0; i < numOrientations(Mover::LOW_RES); i++)
@@ -236,7 +236,7 @@ bool RotDonor::setOrientation(int oi, float delta, AtomPositions &xyz,
    const double    theta = orientationAngle(oi, ss) + delta;
 
    if (abs(theta-oldTheta) > 0.1) {
-	   for(std::list<PDBrec*>::const_iterator hydlist = _rot.begin(); hydlist != _rot.end(); ++hydlist) {
+	   for(std::list< std::shared_ptr<PDBrec> >::const_iterator hydlist = _rot.begin(); hydlist != _rot.end(); ++hydlist) {
 	 setHydAngle(**hydlist, oldTheta, theta, xyz);
       }
       angle(theta);
@@ -294,11 +294,11 @@ double RotDonor::scoreThisAngle(AtomPositions &xyz,	DotSphManager& dotBucket,
 	double scoreThisO = 0.0;
 	int i = 0;
 	_rot.push_front(&_heavyAtom);
-	for(std::list<PDBrec*>::const_iterator alst = _rot.begin(); alst != _rot.end(); ++alst) {
+	for(std::list< std::shared_ptr<PDBrec> >::const_iterator alst = _rot.begin(); alst != _rot.end(); ++alst) {
 		float bumpSubScore = 0.0;
 		float hbSubScore   = 0.0;
 		bool subBadBump    = FALSE;
-		const PDBrec* thisAtom = *alst;
+		const  std::shared_ptr<PDBrec> thisAtom = *alst;
 
 		double val = xyz.atomScore(*thisAtom, thisAtom->loc(),
 			thisAtom->vdwRad() + probeRadius + maxVDWrad, 
@@ -336,11 +336,11 @@ double RotDonor::bumpsThisAngle(AtomPositions &xyz, DotSphManager& dotBucket) {
 	double bumpsThisA = 0.0;
 	int i = 0;
 	_rot.push_front(&_heavyAtom);
-	for(std::list<PDBrec*>::const_iterator alst = _rot.begin(); alst != _rot.end(); ++alst) {
+	for(std::list< std::shared_ptr<PDBrec> >::const_iterator alst = _rot.begin(); alst != _rot.end(); ++alst) {
 		float bumpSubScore = 0.0;
 		float hbSubScore   = 0.0;
 		bool subBadBump    = FALSE;
-		const PDBrec* thisAtom = *alst;
+		const  std::shared_ptr<PDBrec> thisAtom = *alst;
 
 		double val = xyz.atomScore(*thisAtom, thisAtom->loc(), 
 			thisAtom->vdwRad() + maxVDWrad, 
@@ -366,7 +366,7 @@ double RotDonor::bumpsThisAngle(AtomPositions &xyz, DotSphManager& dotBucket) {
 
 void RotDonor::setHydAngle(double newAng, AtomPositions &xyz) {
    const double oldAng = angle();
-   for(std::list<PDBrec*>::const_iterator hydlist = _rot.begin(); hydlist != _rot.end(); ++hydlist) {
+   for(std::list< std::shared_ptr<PDBrec> >::const_iterator hydlist = _rot.begin(); hydlist != _rot.end(); ++hydlist) {
       setHydAngle(**hydlist, oldAng, newAng, xyz);
 //cerr  << "RotDonor::setHydAngle[" << (*hydlist).atomname() << "] "
 //      << oldAng << " deg --> "
@@ -376,27 +376,27 @@ void RotDonor::setHydAngle(double newAng, AtomPositions &xyz) {
 }
 
 void RotDonor::dropBondedFromBumpingListForPDBrec(
-		std::list< PDBrec * > & bumping,
-		PDBrec* atom,
+		std::list< std::shared_ptr<PDBrec> > & bumping,
+		std::shared_ptr<PDBrec> atom,
 		int //unused nBondCutoff
 ) const
 {
 	//std::cerr << "Attempting to drop bumping for atom " << atom->getAtomDescr() << " in RotD" << std::endl;
 	int atom_id = findAtom( atom );
-	//for (std::list< PDBrec* >::const_iterator iter = _bnded[ atom_id]->begin();
+	//for (std::list< std::shared_ptr<PDBrec> >::const_iterator iter = _bnded[ atom_id]->begin();
 	//	iter != _bnded[ atom_id]->end(); ++iter)
 	//{
 	//	std::cerr << "Bonded to atom: " << (*iter) << " " << (*iter)->getAtomDescr()  << std::endl;
 	//}
 
-	for (std::list< PDBrec* >::iterator iter = bumping.begin();
+	for (std::list< std::shared_ptr<PDBrec> >::iterator iter = bumping.begin();
 		iter != bumping.end(); )
 	{
-		std::list< PDBrec* >::iterator iter_next = iter;
+		std::list< std::shared_ptr<PDBrec> >::iterator iter_next = iter;
 		//std::cerr << "Comparing: " << (*iter) << " " << (*iter)->getAtomDescr() << std::endl;
 		++iter_next;
 		
-		for (std::list< PDBrec* >::const_iterator constiter = _bnded[ atom_id]->begin();
+		for (std::list< std::shared_ptr<PDBrec> >::const_iterator constiter = _bnded[ atom_id]->begin();
 			constiter != _bnded[ atom_id]->end(); ++constiter)
 		{
 			if ( (*constiter)->getAtomDescr() == (*iter)->getAtomDescr() )
@@ -410,7 +410,7 @@ void RotDonor::dropBondedFromBumpingListForPDBrec(
 	}	
 }
 
-int RotDonor::findAtom( PDBrec* atom ) const
+int RotDonor::findAtom(std::shared_ptr<PDBrec> atom ) const
 {
 	if ( atom == & _heavyAtom )
 	{
@@ -418,7 +418,7 @@ int RotDonor::findAtom( PDBrec* atom ) const
 	}
 	
 	int countAtomsSeen = 1;
-	for (std::list< PDBrec * >::const_iterator iter = _rot.begin(); iter != _rot.end(); ++iter)
+	for (std::list< std::shared_ptr<PDBrec> >::const_iterator iter = _rot.begin(); iter != _rot.end(); ++iter)
 	{
 		if ( atom == *iter )
 			return countAtomsSeen;
@@ -426,7 +426,7 @@ int RotDonor::findAtom( PDBrec* atom ) const
 	}
 	std::cerr << "Critical error in RotDonor::findAtom( " << atom << ").  Could not find atom. " << std::endl;
 	std::cerr << "&_heavyAtom: " << &_heavyAtom << std::endl;
-	for (std::list< PDBrec * >::const_iterator iter = _rot.begin(); iter != _rot.end(); ++iter)
+	for (std::list< std::shared_ptr<PDBrec> >::const_iterator iter = _rot.begin(); iter != _rot.end(); ++iter)
 	{
 		std::cerr << "_rot: " << *iter << std::endl;
 	}

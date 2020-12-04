@@ -58,21 +58,21 @@ public:
 	  for (std::map<std::string, Mover*>::const_iterator i = _motionDesc.begin(); i != _motionDesc.end(); ++i)
 		   delete i->second;
 	   std::for_each(_excludePoints.begin(), _excludePoints.end(), DeleteObject());
-	  for (std::multimap<LocBlk, PDBrec*>::const_iterator it = _xyzBlocks.begin(); it != _xyzBlocks.end(); ++it)
+	  for (std::multimap<LocBlk, std::shared_ptr<PDBrec> >::const_iterator it = _xyzBlocks.begin(); it != _xyzBlocks.end(); ++it)
 		   delete it->second;
   }
 
   int forceOrientations(const std::string& ofilename, std::vector<std::string>& notes);
 
-   void put(PDBrec* r) {
-	   PDBrec* temp = new PDBrec(*r);
+   void put(std::shared_ptr<PDBrec> r) {
+	   std::shared_ptr<PDBrec> temp = std::make_shared<PDBrec>(*r);
 	   _xyzBlocks.insert(std::make_pair(LocBlk(r->loc()), temp));
    }
 
    // move atom to new xyz pos.
    void reposition(const Point3d& prev, const PDBrec& r);
 
-   std::list<PDBrec*> neighbors(const Point3d& p,
+   std::list< std::shared_ptr<PDBrec> > neighbors(const Point3d& p,
                          Coord mindist, Coord maxdist) const {
       return ::neighbors(p, mindist, maxdist, _xyzBlocks);
    }
@@ -84,7 +84,7 @@ public:
    void insertRotAromMethyl(const PDBrec& hr, const PDBrec& c1,
                   const PDBrec& c2, const PDBrec& c3); // for Arom methyls - Aram 08/13/12
    std::list<char> insertFlip(const ResBlk& rblk);
-   void      insertFlip(PDBrec* hr, std::list<char> alts_list);
+   void      insertFlip(std::shared_ptr<PDBrec> hr, std::list<char> alts_list);
 
    void doNotAdjust(const PDBrec& a);
 
@@ -96,17 +96,17 @@ public:
    int orientClique(const std::list<MoverPtr>& clique, int limit); // returns -1 if abandoned
    int exhaustiveSearchOfClique(const std::list<MoverPtr>& clique);
 
-   void describeChanges(std::list<PDBrec*>& records,
-	   std::list<PDBrec*>::iterator& infoPtr, std::vector<std::string>& notes);
+   void describeChanges(std::list< std::shared_ptr<PDBrec> >& records,
+	   std::list< std::shared_ptr<PDBrec> >::iterator& infoPtr, std::vector<std::string>& notes);
 
    int numChanges() const { return _motionDesc.size(); }
 
    void manageMetals(const ResBlk& rblk);
 
-   void generateWaterPhantomHs(std::list<PDBrec*>& waters);
+   void generateWaterPhantomHs(std::list< std::shared_ptr<PDBrec> >& waters);
 
    double atomScore(const PDBrec& a, const Point3d& p,
-		float nearbyRadius, const std::list<PDBrec*>& exclude,  // JSS: no need to copy
+		float nearbyRadius, const std::list< std::shared_ptr<PDBrec> >& exclude,  // JSS: no need to copy
 		const DotSph& dots, float prRadius, bool onlyBumps,
 		float &bumpSubScore, float &hbSubScore, bool &hasBadBump);
 
@@ -115,7 +115,7 @@ public:
 	//	Mover* mover
 	//);
 
-	void CollectBumping(const AtomDescr& ad, std::list<PDBrec*>& bumping);
+	void CollectBumping(const AtomDescr& ad, std::list< std::shared_ptr<PDBrec> >& bumping);
    float & getMaxFoundVDWRad() { return _maxVDWFound;}
    int getNBondCutoff() const {return _nBondCutoff;}
 
@@ -135,7 +135,7 @@ private:
    AtomPositions(const AtomPositions& a);            // can't copy
    AtomPositions& operator=(const AtomPositions& a); // can't assign
 
-   std::multimap<LocBlk, PDBrec*> _xyzBlocks;
+   std::multimap<LocBlk, std::shared_ptr<PDBrec> > _xyzBlocks;
    std::map<std::string, Mover*>       _motionDesc;
    std::list<BumperPoint*>          _excludePoints;
 
