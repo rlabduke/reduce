@@ -682,14 +682,14 @@ int main(int argc, char **argv) {
 
     // Read all models from the file into a list of lists of records.  This gives
     // us one list of PDB records for each model in the file.
-    std::list< std::list< std::shared_ptr<PDBrec> > > models = inputModels(s);
+    std::vector< std::list< std::shared_ptr<PDBrec> > > models = inputModels(s);
     if (models.size() == 0) {
       cerr << "Error: no input records" << endl;
       return 100;
     }
 
     // Process each model.
-    for (std::list< std::list< std::shared_ptr<PDBrec> > >::iterator it = models.begin();
+    for (std::vector< std::list< std::shared_ptr<PDBrec> > >::iterator it = models.begin();
          it != models.end(); it++) {
       std::list< std::shared_ptr<PDBrec> > &m = *it;
       //=====================================================================
