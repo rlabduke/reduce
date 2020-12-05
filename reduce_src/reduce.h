@@ -16,6 +16,7 @@
 
 #include <iostream>
 #include <list>
+#include <vector>
 #include <memory>
 #include "PDBrec.h"
 #include "CTab.h"
@@ -44,7 +45,7 @@ extern SummaryStats Tally;
 ///       Each list contains all of the records that are outside of
 ///       MODEL...ENDMDL records along with the records for the model
 ///       that was read, with the first one being MODEL 1.
-extern std::list< std::list< std::shared_ptr<PDBrec> > > inputModels(std::string s);
+extern std::vector< std::list< std::shared_ptr<PDBrec> > > inputModels(std::string s);
 
 /// @brief Drop hydrogens from a model in place.
 /// @param [in] RemoveATOMHydrogens Should we remove hydrogens in ATOM records?
@@ -58,7 +59,7 @@ extern int optimize(AtomPositions &xyz, std::vector<std::string> &adjNotes);
 
 //SJ 08/03/2015 for printing all models together
 extern void outputRecords_all(std::ostream& os,
-  const std::list<std::list< std::shared_ptr<PDBrec> > >& all_records);
+  const std::vector<std::list< std::shared_ptr<PDBrec> > >& all_records);
 
 /// @brief Check the list of PDB records to see if we should use segment ID as chain
 /// @return TRUE if we should use the segment ID as the chain, FALSE if not
