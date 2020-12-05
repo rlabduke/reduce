@@ -1,4 +1,5 @@
 #include <boost/python.hpp>
+#include <boost/python/suite/indexing/vector_indexing_suite.hpp>
 #include "reduce.h"
 
 using namespace boost::python;
@@ -76,6 +77,9 @@ getSetMethodTakeConst(PDBrec, loc, Point3d);
 getSetMethodReturnTakeConst(PDBrec, elem, ElementInfo);
 */
 
+typedef std::list< std::shared_ptr<PDBrec> > ModelList;
+typedef std::vector< ModelList > ModelsVector;
+
 BOOST_PYTHON_MODULE(reduce)
 {
   // Export the class objects that Python will need access to
@@ -94,7 +98,8 @@ BOOST_PYTHON_MODULE(reduce)
     .def_readonly("_num_renamed", &SummaryStats::_num_renamed)
   ;
   
-  // Export the return types from various functions, along with their shared_ptr types
+  // Export the return types from various functions, along with their shared_ptr
+  // and vector types.
 /*
   class_<PDBrec, std::shared_ptr<PDBrec> >("PDBrec", init<>())
     .def(init<const PDB &>())
@@ -109,16 +114,25 @@ BOOST_PYTHON_MODULE(reduce)
   ;
 */
 
-  class_< std::list< std::list< std::shared_ptr<PDBrec> > > >("list_list_ptr_PDBrec");
+  class_<ModelList>("ModelList");
+  class_<ModelsVector>("ModelsVector")
+    .def(vector_indexing_suite<ModelsVector>() )
+  ;
+  class_<AtomPositions>("AtomPositions");
 
-  /// @todo Point3d
-  /// @todo PDB::RecordType
-  /// @todo ElementInfo
+/*
+  class_< std::vector< int > >("list_list_ptr_PDBrec")
+    .def(vector_indexing_suite< std::vector< int >() )
+  ;
+*/
 
 
   // Export the global functions
   def("inputModels", inputModels, "Read the PDB records from the specified input stream.");
   def("dropHydrogens", dropHydrogens, "Drop hydrogens from a model in place.");
+  def("optimize", optimize, "Optimize all of the records passed in in place.");
+  def("checkSEGIDs", checkSEGIDs, "Check the list of PDB records to see if we should use segment ID as chain.");
+  def("scanAndGroupRecords", scanAndGroupRecords);
 
   // Export the const char * variables, which will be read only.
   scope().attr("versionString") = versionString;
