@@ -133,7 +133,7 @@ enum ConnType {NTERM_RES, CONNECTED_RES, FRAGMENT_RES};
 SummaryStats Tally;
 
 std::ostream& outputRecords(std::ostream& os, const std::list< std::shared_ptr<PDBrec> >& records, int model); // SJ 08/04/2015 added last argument to keep track of how many models have been printed.
-void outputRecords_all(std::ostream& os, const std::list<std::list< std::shared_ptr<PDBrec> > >& all_records); //SJ 08/03/2015 for printing all models together
+void outputRecords_all(std::ostream& os, const std::vector<std::list< std::shared_ptr<PDBrec> > >& all_records); //SJ 08/03/2015 for printing all models together
 void invalidateRecords(std::list< std::shared_ptr<PDBrec> >& rlst);
 void renumberAndReconnect(std::list< std::shared_ptr<PDBrec> >& rlst);
 void renumberAtoms(std::list< std::shared_ptr<PDBrec> >& rlst);
@@ -275,10 +275,10 @@ int optimize(AtomPositions& xyz, std::vector<std::string>& adjNotes) {
 }
 
 // SJ 08/03/2015 for printing all records together
-void outputRecords_all(std::ostream& os, const std::list <std::list< std::shared_ptr<PDBrec> > >& l) {
+void outputRecords_all(std::ostream& os, const std::vector <std::list< std::shared_ptr<PDBrec> > >& l) {
     
     int model=0; // keeping track of how many models are printed
-    for (std::list<std::list< std::shared_ptr<PDBrec> > >::const_iterator ptr = l.begin(); ptr != l.end(); ++ptr) {
+    for (std::vector<std::list< std::shared_ptr<PDBrec> > >::const_iterator ptr = l.begin(); ptr != l.end(); ++ptr) {
         
         model++;
         outputRecords(os,(const std::list< std::shared_ptr<PDBrec> > &)*ptr, model); // print
@@ -445,12 +445,12 @@ std::list< std::shared_ptr<PDBrec> > inputRecords(std::istream& is, int &ModelTo
   return records;
 }
 
-std::list< std::list< std::shared_ptr<PDBrec> > > inputModels(std::string s)
+std::vector< std::list< std::shared_ptr<PDBrec> > > inputModels(std::string s)
 {
   int ModelToProcess = 1;
   int ModelNext = 0;
   int ModelActive = 0;
-  std::list< std::list< std::shared_ptr<PDBrec> > > models;
+  std::vector< std::list< std::shared_ptr<PDBrec> > > models;
   while (ModelToProcess) {
     std::stringstream ss(s);
     models.push_back(inputRecords(ss, ModelToProcess, ModelNext, ModelActive));
