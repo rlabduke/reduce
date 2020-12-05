@@ -114,11 +114,13 @@ BOOST_PYTHON_MODULE(reduce)
   ;
 */
 
-  class_<ModelList>("ModelList");
+  class_<ModelList>("ModelList")
+    .def("size", &ModelList::size)
+  ;
   class_<ModelsVector>("ModelsVector")
     .def(vector_indexing_suite<ModelsVector>() )
   ;
-  class_<AtomPositions>("AtomPositions");
+//  class_<AtomPositions>("AtomPositions");
 
 /*
   class_< std::vector< int > >("list_list_ptr_PDBrec")
@@ -199,12 +201,5 @@ BOOST_PYTHON_MODULE(reduce)
 	exportGetSet(AddOtherHydrogens)
 	exportGetSet(RemoveATOMHydrogens)
 	exportGetSet(RemoveOtherHydrogens)
-
-  // By-value converters for structures
-  /// @todo SummaryStats
-
-  // Export the functions that will be called
-  /// @todo
-
 }
 
