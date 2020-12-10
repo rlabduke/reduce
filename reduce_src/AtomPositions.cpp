@@ -514,7 +514,7 @@ CliqueList AtomPositions::findCliques() const {
 	const int mdsz = _motionDesc.size();
 	float maxVDWrad = 1.0;
 
-	std::multimap<LocBlk, BumperPoint*> bumpbins;  //(2*mdsz);
+	std::multimap<LocBlk, std::shared_ptr<BumperPoint> > bumpbins;  //(2*mdsz);
 	std::vector<MoverPtr> memo;
 	memo.reserve(mdsz);
 //	Vector< MoverPtr >   memo(mdsz);
@@ -540,12 +540,12 @@ CliqueList AtomPositions::findCliques() const {
 
 // exclude bumper points which interact with exclude-list members
 
-	BumperPoint* xp = NULL;
-	for (std::list<BumperPoint*>::const_iterator xp_iter = _excludePoints.begin(); xp_iter != _excludePoints.end(); ++xp_iter) {
+	std::shared_ptr<BumperPoint> xp;
+	for (std::list<std::shared_ptr<BumperPoint> >::const_iterator xp_iter = _excludePoints.begin(); xp_iter != _excludePoints.end(); ++xp_iter) {
 		xp = *xp_iter;
-		std::list<BumperPoint*> nearxp_list = ::neighbors(xp->loc(), (Coord)0.001,
+		std::list<std::shared_ptr<BumperPoint> > nearxp_list = ::neighbors(xp->loc(), (Coord)0.001,
 			(Coord)(xp->vdwRad() + prRad + maxVDWrad), bumpbins);
-		std::list<BumperPoint*>::iterator nearxp = nearxp_list.begin();
+		std::list<std::shared_ptr<BumperPoint> >::iterator nearxp = nearxp_list.begin();
 		while (nearxp != nearxp_list.end()) {
 			if ((*nearxp)->valid()
 				&& ((distance2(xp->loc(), (*nearxp)->loc())
@@ -557,12 +557,12 @@ CliqueList AtomPositions::findCliques() const {
 		}
 	}
 	DisjointSets connsets(numMemos);
-	std::multimap<LocBlk, BumperPoint*>::iterator bbit = bumpbins.begin();
+	std::multimap<LocBlk, std::shared_ptr<BumperPoint> >::iterator bbit = bumpbins.begin();
 
 //	add connections between memos to DisjointSet (& remember pairwise links)
 
 	const LocBlk* key;
-	const BumperPoint* bp;
+	std::shared_ptr<BumperPoint> bp;
 	while (bbit != bumpbins.end()) {
 		key = &(bbit->first);
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -571,9 +571,9 @@ CliqueList AtomPositions::findCliques() const {
 		for (; bbit != bumpbins.end() && bbit->first == *key; ++bbit) {
 ///////////////////////////////////////////////////////////////////////////////////////
 			bp = bbit->second;
-			std::list<BumperPoint*> nearbp_list = ::neighbors(bp->loc(), (Coord)0.001,
+			std::list<std::shared_ptr<BumperPoint> > nearbp_list = ::neighbors(bp->loc(), (Coord)0.001,
 				(Coord)(bp->vdwRad() + prRad + maxVDWrad), bumpbins);
-			std::list<BumperPoint*>::iterator nearbp = nearbp_list.begin();
+			std::list<std::shared_ptr<BumperPoint> >::iterator nearbp = nearbp_list.begin();
 			while (nearbp != nearbp_list.end()) {
 				const int ares = bp->rnum(), bres = (*nearbp)->rnum();
 				if ((ares != bres) && bp->valid() && (*nearbp)->valid()
@@ -627,9 +627,6 @@ CliqueList AtomPositions::findCliques() const {
 #ifdef DEBUGCLIQUE
    _os << "Searched " << rn << " residues and examined " << an << " frontier points." << endl;
 #endif
-
-   for (std::multimap<LocBlk, BumperPoint*>::iterator iter = bumpbins.begin(); iter != bumpbins.end(); ++iter)
-	   delete iter->second;
 
    return clst;
 }
@@ -1374,7 +1371,7 @@ void AtomPositions::manageMetals(const ResBlk& rblk) {
 		for (; pdbit != pdb.end() && pdbit->first == key; ++pdbit) {
 			a = pdbit->second;
 			if (a->hasProp(METALIC_ATOM)) {
-				BumperPoint* bp = new BumperPoint(a->loc(), 0, 0, a->vdwRad());
+				std::shared_ptr<BumperPoint> bp = std::make_shared<BumperPoint>(a->loc(), 0, 0, a->vdwRad());
 				_excludePoints.push_front(bp);
 			}
 		}

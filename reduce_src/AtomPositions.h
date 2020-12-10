@@ -31,34 +31,43 @@
 extern bool UseSEGIDasChain; //jjh 130503, defined in reduce.cpp
 
 class AtomPositions {
-public:
-   AtomPositions(int nblocks, bool onlyA, bool xplor, bool old, bool bbmodel, int nbCutoff,
-		  float minRegHBcut, float minChargedHBcut,
-		  float badBumpGapCut,
-		  DotSphManager& dotBucket, float probeRadius,
-		  float pmag, float occCutoff,
-		  bool verbose, bool showOrientScore,
-		  bool cliqueTicks, std::ostream& os)
-      : _onlyA(onlyA), _useXplorNames(xplor), _useOldNames(old), _bbModel(bbmodel),
-	_nBondCutoff(nbCutoff),
-	_min_regular_hb_cutoff(minRegHBcut),
-	_min_charged_hb_cutoff(minChargedHBcut),
-	_bad_bump_gap_cutoff(badBumpGapCut),
-	_dotBucket(dotBucket),
-	_probeRadius(probeRadius), _pmag(pmag),
-	_occupancyCuttoff(occCutoff),
-	_outputNotice(verbose),
-	_showOrientScore(showOrientScore),
-	_cliqueTicks(cliqueTicks), _os(os),
-	scoreAtomsAndDotsInAtomsToScoreVector_( false ),
-	scoreAtomsInAtomsInHighOrderOverlapList_( false ),
-	atoms_to_score_ptr_(0), atoms_in_high_order_overlap_ptr_(0),
-	_clqOfInt( false ) {}
+    class NullStream : public std::ostream {
+        class NullBuffer : public std::streambuf {
+        public:
+            int overflow( int c ) { return c; }
+        } m_nb;
+    public:
+        NullStream() : std::ostream( &m_nb ) {}
+    };
+    static NullStream nullStream;
+
+  public:
+     AtomPositions(int nblocks, bool onlyA, bool xplor, bool old, bool bbmodel, int nbCutoff,
+        float minRegHBcut, float minChargedHBcut,
+        float badBumpGapCut,
+        DotSphManager& dotBucket, float probeRadius,
+        float pmag, float occCutoff,
+        bool verbose, bool showOrientScore,
+        bool cliqueTicks, std::ostream& os = nullStream)
+        : _onlyA(onlyA), _useXplorNames(xplor), _useOldNames(old), _bbModel(bbmodel),
+    _nBondCutoff(nbCutoff),
+    _min_regular_hb_cutoff(minRegHBcut),
+    _min_charged_hb_cutoff(minChargedHBcut),
+    _bad_bump_gap_cutoff(badBumpGapCut),
+    _dotBucket(dotBucket),
+    _probeRadius(probeRadius), _pmag(pmag),
+    _occupancyCuttoff(occCutoff),
+    _outputNotice(verbose),
+    _showOrientScore(showOrientScore),
+    _cliqueTicks(cliqueTicks), _os(os),
+    scoreAtomsAndDotsInAtomsToScoreVector_( false ),
+    scoreAtomsInAtomsInHighOrderOverlapList_( false ),
+    atoms_to_score_ptr_(0), atoms_in_high_order_overlap_ptr_(0),
+    _clqOfInt( false ) {}
 
   ~AtomPositions() {
 	  for (std::map<std::string, Mover*>::const_iterator i = _motionDesc.begin(); i != _motionDesc.end(); ++i)
 		   delete i->second;
-	   std::for_each(_excludePoints.begin(), _excludePoints.end(), DeleteObject());
   }
 
   int forceOrientations(const std::string& ofilename, std::vector<std::string>& notes);
@@ -136,7 +145,7 @@ private:
 
    std::multimap<LocBlk, std::shared_ptr<PDBrec> > _xyzBlocks;
    std::map<std::string, Mover*>       _motionDesc;
-   std::list<BumperPoint*>          _excludePoints;
+   std::list< std::shared_ptr<BumperPoint> >          _excludePoints;
 
    const bool                _onlyA;
    const bool                _useXplorNames;

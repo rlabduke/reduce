@@ -40,7 +40,7 @@ public:
    virtual bool markFlipAtoms() { return FALSE; }
    virtual void finalize(int nBondCutoff, bool useXplorNames, bool useOldNames, bool bbModel, 
                          AtomPositions &xyz, DotSphManager& dotBucket);
-   virtual int makebumpers(std::multimap<LocBlk, BumperPoint*>& bbins,
+   virtual int makebumpers(std::multimap<LocBlk, std::shared_ptr<BumperPoint> >& bbins,
                            int n, float& maxVDWrad);
    virtual std::list<AtomDescr> getAtDescOfAllPos(float &maxVDWrad);                        
    virtual const PDBrec& exampleAtom() const { return heavyAtom(); }
