@@ -28,6 +28,7 @@
 #endif
 
 #include <map>
+#include <memory>
 #include <functional>
 #include <memory>
 #include "PDBrec.h"
@@ -75,7 +76,7 @@ public:
    virtual bool markFlipAtoms() = 0;
    virtual void finalize(int nBondCutoff, bool useXplorNames, bool useOldNames, bool bbModel, AtomPositions &xyz, DotSphManager& dotBucket) = 0;
    virtual const PDBrec& exampleAtom() const = 0;
-   virtual int makebumpers(std::multimap<LocBlk, BumperPoint*>& bbins,
+   virtual int makebumpers(std::multimap<LocBlk, std::shared_ptr<BumperPoint> >& bbins,
                            int n, float& maxVDWrad) = 0;
    virtual std::list<AtomDescr> getAtDescOfAllPos(float &maxVDWrad) = 0;
    virtual void setHydAngle(double newAng, AtomPositions &xyz) = 0;
