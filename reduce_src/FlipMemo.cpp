@@ -355,13 +355,13 @@ void FlipMemo::finalize(int, bool, bool, bool, AtomPositions &, DotSphManager&) 
 	}
 }
 
-int FlipMemo::makebumpers(std::multimap<LocBlk, BumperPoint*>& bblks, int rn, float& maxVDWrad) {
+int FlipMemo::makebumpers(std::multimap<LocBlk, std::shared_ptr<BumperPoint> >& bblks, int rn, float& maxVDWrad) {
 	int i = 0, an = 0;
-	BumperPoint* bp;
+	std::shared_ptr<BumperPoint> bp;
 	if (_isComplete) {
 		for (i = 0; i < _resFlip[_resType].numBmpr; i++) { // regular
 			const int f1 = i + 1;
-			bp = new BumperPoint(_origLoc[f1], rn, an++, _wrkAtom[f1].vdwRad());
+			bp = std::make_shared<BumperPoint>(_origLoc[f1], rn, an++, _wrkAtom[f1].vdwRad());
 			bblks.insert(std::make_pair(LocBlk(_origLoc[f1]), bp));
 //			bblks.put(LocBlk(_origLoc[f1]),
 //				BumperPoint(_origLoc[f1], rn, an++, _wrkAtom[f1].vdwRad()));
@@ -370,7 +370,7 @@ int FlipMemo::makebumpers(std::multimap<LocBlk, BumperPoint*>& bblks, int rn, fl
 		}
 		for (i = 0; i < _resFlip[_resType].numPP; i++) { // flipped
 			const int f2 = _resFlip[_resType].numPnts - i;
-			bp = new BumperPoint(_origLoc[f2], rn, an++, _wrkAtom[f2].vdwRad());
+			bp = std::make_shared<BumperPoint>(_origLoc[f2], rn, an++, _wrkAtom[f2].vdwRad());
 			bblks.insert(std::make_pair(LocBlk(_origLoc[f2]), bp));
 //			bblks.put(LocBlk(_origLoc[f2]),
 //				BumperPoint(_origLoc[f2], rn, an++, _wrkAtom[f2].vdwRad()));
