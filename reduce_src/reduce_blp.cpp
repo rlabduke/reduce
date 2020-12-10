@@ -77,12 +77,14 @@ getSetMethodTakeConst(PDBrec, loc, Point3d);
 getSetMethodReturnTakeConst(PDBrec, elem, ElementInfo);
 */
 
+// Describe and name compound classes that we need access to.
 typedef std::list< std::shared_ptr<PDBrec> > ModelList;
 typedef std::vector< ModelList > ModelsVector;
 
 BOOST_PYTHON_MODULE(reduce)
 {
-  // Export the class objects that Python will need access to
+  // Export the class objects that Python will need access to,
+  // along with their shared-pointer and vector types.
   class_<SummaryStats>("SummaryStats", init<>())
     .def_readonly("_H_found", &SummaryStats::_H_found)
     .def_readonly("_H_HET_found", &SummaryStats::_H_HET_found)
@@ -98,8 +100,6 @@ BOOST_PYTHON_MODULE(reduce)
     .def_readonly("_num_renamed", &SummaryStats::_num_renamed)
   ;
   
-  // Export the return types from various functions, along with their shared_ptr
-  // and vector types.
 /*
   class_<PDBrec, std::shared_ptr<PDBrec> >("PDBrec", init<>())
     .def(init<const PDB &>())
@@ -120,7 +120,20 @@ BOOST_PYTHON_MODULE(reduce)
   class_<ModelsVector>("ModelsVector")
     .def(vector_indexing_suite<ModelsVector>() )
   ;
-//  class_<AtomPositions>("AtomPositions");
+  /// @todo We need to get this working in a way that can be copied for Python
+  //class_<CTab>("CTab", init<const std::string &, int>());
+  class_<DotSphManager>("DotSphManager", init<float>());
+
+  /// @todo We need to get this working in a way that can be copied for Python
+/*
+  class_<AtomPositions>("AtomPositions", init<int, bool, bool, bool, bool, int,
+      float, float,
+      float,
+      DotSphManager &, float,
+      float, float,
+      bool, bool,
+      bool, std::ostream &>());
+*/
 
 /*
   class_< std::vector< int > >("list_list_ptr_PDBrec")
