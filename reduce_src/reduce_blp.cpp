@@ -122,8 +122,9 @@ BOOST_PYTHON_MODULE(reduce)
   class_<ModelsVector>("ModelsVector")
     .def(vector_indexing_suite<ModelsVector>() )
   ;
-  /// @todo We need to get this working in a way that can be copied for Python
-  //class_<CTab>("CTab", init<const std::string &, int>());
+  
+  class_<CTab>("CTab", init<const std::string &>());
+
   class_<DotSphManager>("DotSphManager", init<float>());
 
   class_<AtomPositions>("AtomPositions", init<int, bool, bool, bool, bool, int,
