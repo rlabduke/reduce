@@ -43,7 +43,7 @@ extern bool UseNuclearDistances; //defined in reduce.cpp JJH
 // -----------------------------------------
 class ResConn {
 public:
-	ResConn(const char* resname, int sz_est) {}
+	ResConn() {}
 	virtual ~ResConn() {
 	}
 
@@ -66,13 +66,10 @@ public:
    // Be careful, std::list must be copied.
    std::list<std::shared_ptr<atomPlacementPlan> > genHplans(const char* resname);
 
-   const char*  resname() const { return _resname;       }
-
 private:
-   ResConn(const ResConn&);            // can't copy
-   ResConn& operator=(const ResConn&); // can't assign
+   //ResConn(const ResConn&);            // can't copy
+   //ResConn& operator=(const ResConn&); // can't assign
    std::map<std::string, std::shared_ptr<AtomConn> > _atomConn;
-   const char*       _resname;      // name of this residue
 };
 
 // -----------------------------------------
