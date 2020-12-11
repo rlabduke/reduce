@@ -31,6 +31,7 @@
 extern bool UseSEGIDasChain; //jjh 130503, defined in reduce.cpp
 
 class AtomPositions {
+  private:
     class NullStream : public std::ostream {
         class NullBuffer : public std::streambuf {
         public:
@@ -138,8 +139,8 @@ class AtomPositions {
 	bool outputNotice() const {return _outputNotice;}
 
 private:
-   AtomPositions(const AtomPositions& a);            // can't copy
-   AtomPositions& operator=(const AtomPositions& a); // can't assign
+   //AtomPositions(const AtomPositions& a);            // can't copy
+   //AtomPositions& operator=(const AtomPositions& a); // can't assign
 
    std::multimap<LocBlk, std::shared_ptr<PDBrec> > _xyzBlocks;
    std::map<std::string,  MoverPtr>       _motionDesc;

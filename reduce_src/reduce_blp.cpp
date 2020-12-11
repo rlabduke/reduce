@@ -1,6 +1,8 @@
+#define BOOST_PYTHON_MAX_ARITY 20
 #include <boost/python.hpp>
 #include <boost/python/suite/indexing/vector_indexing_suite.hpp>
 #include "reduce.h"
+
 
 using namespace boost::python;
 
@@ -124,16 +126,13 @@ BOOST_PYTHON_MODULE(reduce)
   //class_<CTab>("CTab", init<const std::string &, int>());
   class_<DotSphManager>("DotSphManager", init<float>());
 
-  /// @todo We need to get this working in a way that can be copied for Python
-/*
   class_<AtomPositions>("AtomPositions", init<int, bool, bool, bool, bool, int,
       float, float,
       float,
       DotSphManager &, float,
       float, float,
       bool, bool,
-      bool, std::ostream &>());
-*/
+      bool>());
 
 /*
   class_< std::vector< int > >("list_list_ptr_PDBrec")
