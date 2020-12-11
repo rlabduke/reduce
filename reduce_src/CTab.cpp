@@ -299,8 +299,7 @@ std::list<std::shared_ptr<atomPlacementPlan> > ResConn::genHplans(const char* re
 	std::map<std::string, std::shared_ptr<AtomConn> >::const_iterator i = _atomConn.begin();
 
 	while (i != _atomConn.end()) {
-		std::shared_ptr<atomPlacementPlan> p = planHplacement(i->first,
-		                                      resname);
+		std::shared_ptr<atomPlacementPlan> p = planHplacement(i->first,resname);
 		if (p) {
 			plans.push_front(p); // store a copy of this part of the plan
 		}
@@ -359,7 +358,7 @@ ResConn* CTab::findTable(const std::string &resname) {
 	if (loc == NULL || _fp == NULL || loc->relocate(_fp) == FALSE)
 		return NULL;
 
-	ResConn *currTbl = new ResConn(resname.c_str(), loc->value());
+	ResConn *currTbl = new ResConn();
 	_rescache.insert(std::make_pair(resname, currTbl));
 //	_rescache.put(resname, currTbl);
 
