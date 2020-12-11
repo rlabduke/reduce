@@ -19,9 +19,8 @@ for m in models:
   UseSEGIDasChain = reduce.checkSEGIDs(m)
   print(" UseSEGIDasChain = "+str(UseSEGIDasChain))
 
-  # @todo We need to get this working in a way that it can be copied for Python
   # @todo Point this at the general location.
-  # hetdatabase = reduce.CTab("/usr/local/reduce_wwPDB_het_dict.txt")
+  hetdatabase = reduce.CTab("/usr/local/reduce_wwPDB_het_dict.txt")
 
   dotBucket = reduce.DotSphManager(reduce.getVdwDotDensity())
 
