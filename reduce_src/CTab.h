@@ -44,8 +44,6 @@ extern bool UseNuclearDistances; //defined in reduce.cpp JJH
 class ResConn {
 public:
 	ResConn() {}
-	virtual ~ResConn() {
-	}
 
    bool put(std::shared_ptr<AtomConn> value) {
 	   _atomConn.insert(std::make_pair(value->name(), value));
@@ -72,55 +70,26 @@ private:
    std::map<std::string, std::shared_ptr<AtomConn> > _atomConn;
 };
 
-// -----------------------------------------
-//  a specific location in an open file
-// -----------------------------------------
-class FileLoc {
-public:
-   FileLoc(FILE *stream, int xtra) : _value(xtra) {
-      _location = ::ftell(stream);
-   }
-   virtual ~FileLoc() {}
-
-   bool relocate(FILE *stream) const{
-      return ::fseek(stream, _location, SEEK_SET) == 0;
-   }
-   int value() { return _value; }
-private:
-
-   long _location; // position in file (bytes from the beginning)
-   int  _value;    // xtra info. (used to store table size)
-};
-
 // -------------------------------------------------------------
 //  find residue connection tables in a connection database file
 // -------------------------------------------------------------
 class CTab {
 public:
-	CTab(const std::string& dbfile, int szest);
-	virtual ~CTab() {
-		if (_fp) ::fclose(_fp);
-		for (std::map<std::string, FileLoc*>::const_iterator i = _filedict.begin(); i != _filedict.end(); ++i)
-			delete i->second;
-		for (std::map<std::string, ResConn*>::const_iterator j = _rescache.begin(); j != _rescache.end(); ++j)
-			delete j->second;
-	}
+  /// @brief Read residue connection tables from specified file
+  /// @param [in] dbfile Name of the file to read from
+	CTab(const std::string& dbFileName);
 
-   bool ok() const { return _fp != NULL; }
+   bool ok() const { return m_rescache.size() != 0; }
 
-   ResConn* findTable(const std::string &resname); // note: updates a cache...
+   std::shared_ptr<ResConn> findTable(const std::string &resname) const;
 
-   int numConn(const std::string &resname, const std::string &atomname); // note: updates a cache...
+   int numConn(const std::string &resname, const std::string &atomname) const;
 
 private:
-   CTab(const CTab&);            // can't copy
-   CTab& operator=(const CTab&); // can't assign
+   //CTab(const CTab&);            // can't copy
+   //CTab& operator=(const CTab&); // can't assign
 
-   FILE *                 _fp;
-   std::map<std::string, FileLoc*>  _filedict;
-   std::map<std::string, ResConn*>  _rescache;
-
-   static const int DBbufsz;
+   std::map<std::string, std::shared_ptr<ResConn> >  m_rescache;
 };
 
 #endif

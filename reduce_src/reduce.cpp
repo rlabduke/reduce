@@ -899,7 +899,7 @@ void analyzeRes(CTab& hetdatabase, ResBlk* pb, ResBlk* cb, ResBlk* nb,
 
 	else if (ProcessConnHydOnHets) { // if not in the std table we look in the het database...
 
-		ResConn *ct = hetdatabase.findTable(resname);
+		std::shared_ptr<ResConn> ct = hetdatabase.findTable(resname);
 		if (ct) {
 			std::list<std::shared_ptr<atomPlacementPlan> > temp = ct->genHplans(resname.c_str());
 
