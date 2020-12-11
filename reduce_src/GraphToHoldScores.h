@@ -79,7 +79,7 @@ public:
 	);
 	~Vertex_ths();
 	
-	void setMover( MoverPtr mover );		
+	void setMover( MoverPtr mover );
 	void obtainAtomsFromMover();
 	int getNumStates() const;
 	int getNumAtoms() const;
