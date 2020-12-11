@@ -724,7 +724,7 @@ int main(int argc, char **argv) {
         }
       }
       /// @todo Only load this if we have one...
-      CTab hetdatabase(DBfilename, 1000);
+      CTab hetdatabase(DBfilename);
 
       DotSphManager dotBucket(VdwDotDensity);
 
