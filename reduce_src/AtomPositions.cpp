@@ -60,6 +60,8 @@ using std::exp;
 //#include "stuff.h"
 #include "MoveableNode.h"
 
+AtomPositions::NullStream AtomPositions::nullStream;
+
 int AtomPositions::forceOrientations(const std::string& ofilename, std::vector<std::string>& orientNotes) {
 	int numInNonDefaultOrientations = 0;
 	ifstream is(ofilename.c_str());
