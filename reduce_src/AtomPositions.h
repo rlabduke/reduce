@@ -66,8 +66,6 @@ class AtomPositions {
     _clqOfInt( false ) {}
 
   ~AtomPositions() {
-	  for (std::map<std::string, Mover*>::const_iterator i = _motionDesc.begin(); i != _motionDesc.end(); ++i)
-		   delete i->second;
   }
 
   int forceOrientations(const std::string& ofilename, std::vector<std::string>& notes);
@@ -120,7 +118,7 @@ class AtomPositions {
 
 	//double determineScoreForMoverIn3WayOverlap(
 	//	std::list< AtomDescr > * atomsIn3WayOverlap,
-	//	Mover* mover
+	//	MoverPtr mover
 	//);
 
 	void CollectBumping(const AtomDescr& ad, std::list< std::shared_ptr<PDBrec> >& bumping);
@@ -128,14 +126,14 @@ class AtomPositions {
    int getNBondCutoff() const {return _nBondCutoff;}
 
    float determineScoreForMover(
-   	Mover* mover,
+   	MoverPtr mover,
    	std::vector< std::pair< AtomDescr, DotsForAtom * > >  & atoms_to_score,
    	double & penalty
    );
 
    //float scoreMoverInHighOrderOverlap(
 	//	std::list< AtomDescr > & atomsInHighOrderOverlap,
-	//	Mover * mover );
+	//	MoverPtr mover );
 
 	bool outputNotice() const {return _outputNotice;}
 
@@ -144,7 +142,7 @@ private:
    AtomPositions& operator=(const AtomPositions& a); // can't assign
 
    std::multimap<LocBlk, std::shared_ptr<PDBrec> > _xyzBlocks;
-   std::map<std::string, Mover*>       _motionDesc;
+   std::map<std::string,  MoverPtr>       _motionDesc;
    std::list< std::shared_ptr<BumperPoint> >          _excludePoints;
 
    const bool                _onlyA;
@@ -167,14 +165,14 @@ private:
 
    bool
 	initializeCliqueMovers(
-		std::list< Mover* > const & clique,
-		std::vector< Mover* > & item,
+		std::list< MoverPtr > const & clique,
+		std::vector< MoverPtr > & item,
 		int const numItems
 	);
 
 	void
 	setNumStatesForNodes(
-		std::vector< Mover* > & item,
+		std::vector< MoverPtr > & item,
 		int const numItems,
 		std::vector< int > & num_states,
 		std::vector< std::vector< float > > & penalties
