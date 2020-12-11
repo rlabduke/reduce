@@ -525,7 +525,7 @@ Vertex_ths::~Vertex_ths()
 	delete [] scores_; scores_ = 0;
 }
 
-void Vertex_ths::setMover( Mover* mover )
+void Vertex_ths::setMover( MoverPtr mover )
 {
 	mover_ = mover;
 }		
@@ -846,7 +846,7 @@ float Vertex_ths::getScoreForEnabledState( int enabled_state ) const
 	return scores_[ convertEnabledStateToRegularState( enabled_state ) ];
 }
 
-Mover* Vertex_ths::getMover() const
+MoverPtr Vertex_ths::getMover() const
 {
 	return mover_;
 }
@@ -2045,7 +2045,7 @@ GraphToHoldScores::GraphToHoldScores(
 	AtomPositions * xyz,
 	DotSphManager * dotSphereManager,
 	std::vector< int > const & num_states,
-	std::vector< Mover * > const & movers )
+	std::vector< MoverPtr > const & movers )
 :
 	xyz_( xyz ),
 	dotSphereManager_( dotSphereManager ),
@@ -2312,7 +2312,7 @@ GraphToHoldScores::getAtomsInHighOrderOverlapForNode( int vertex_id ) const
 	return vertices_[ vertex_id ]->getAtomsInHighOrderOverlap();
 }
 
-Mover* GraphToHoldScores::getMoverForNode( int vertex_id ) const
+MoverPtr GraphToHoldScores::getMoverForNode( int vertex_id ) const
 {
 	nodeInRange( vertex_id );
 	return vertices_[ vertex_id ]->getMover();
@@ -2484,7 +2484,7 @@ void
 GraphToHoldScores::instantiateVertices
 ( 
 	std::vector< int > const & num_states,
-	std::vector< Mover * > const & movers
+	std::vector< MoverPtr > const & movers
 )
 {
 	for (int ii = 0; ii < num_vertices_; ++ii )
