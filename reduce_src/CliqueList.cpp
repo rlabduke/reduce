@@ -62,50 +62,14 @@ void CliqueList::sortSingletonsByDescr() {
 
 void CliqueList::formatSingles(std::vector<std::string>& cliqueNotes, AtomPositions& xyz) const { // SJ - 09/25/2015  added the last argument as that is need for doing the final flip
 
-   char buf[200];
-
    for(std::list<MoverPtr>::const_iterator s = _singles.begin(); s != _singles.end(); ++s) {
 
-      if ((*s)->type() == Mover::ROTATE_METHYL) {
-	 ::sprintf(buf, "USER  MOD Single :%s:%s:sc=%8.3g%c  (180deg=%.3g%s)",
-	    (*s)->descr().c_str(), (*s)->describeOrientation().c_str(),
-	    (*s)->bestScore(),(((*s)->bestHasBadBump())?'!':' '),
-	    (*s)->initScore(),(((*s)->initHasBadBump())?"!":""));
+      if ((*s)->canFlip() && GenerateFinalFlip) {
+        int orientation = (*s)->orientation();
+        (*s)->setOrientation(orientation,xyz);
       }
-      else if ((*s)->canFlip()) {
-          
-          // SJ - 09/25/2015 - added to do the rot hinge dock flip if the GenerateFinalFlip flag is true
-          if(GenerateFinalFlip){
-              
-              int orientation = (*s)->orientation();
-              (*s)->setOrientation(orientation,xyz);
-          }
-          
-          char classcode = ' ';
-          if ((*s)->flipStateHasBadBump(0) && (*s)->flipStateHasBadBump(1)) {
-              classcode = 'C';
-          }
-          else if (abs((*s)->flipMaxScore(0) - (*s)->flipMaxScore(1)) <= 0.5) {
-              classcode = 'X';
-          }
-          else if ((*s)->flipState() != 0) {
-              classcode = 'F';
-          }
-          else {
-              classcode = 'K';
-          }
-          ::sprintf(buf, "USER  MOD Single :%s:%s:sc=%8.3g%c %c(o=%.2g%s,f=%.2g%s)",
-                    (*s)->descr().c_str(), (*s)->describeOrientation().c_str(),
-                    (*s)->bestScore(),(((*s)->bestHasBadBump())?'!':' '), classcode,
-                    (*s)->flipMaxScore(0),(((*s)->flipStateHasBadBump(0))?"!":""),
-                    (*s)->flipMaxScore(1),(((*s)->flipStateHasBadBump(1))?"!":""));
-      }
-      else {
-	 ::sprintf(buf, "USER  MOD Single :%s:%s:sc=%8.3g%c",
-	    (*s)->descr().c_str(), (*s)->describeOrientation().c_str(),
-	    (*s)->bestScore(), (((*s)->bestHasBadBump())?'!':' '));
-      }
-      cliqueNotes.push_back(buf);
+
+      cliqueNotes.push_back( (*s)->formatComment("Single ") );
    }
 }
 
@@ -125,49 +89,14 @@ void CliqueList::formatClique(std::vector<std::string>& cliqueNotes, int c, Atom
 		i = 0;
 		for(std::list<MoverPtr>::iterator s = s_list.begin(); s != s_list.end(); ++s) {
 
-			if ((*s)->type() == Mover::ROTATE_METHYL) {
-				::sprintf(buf, "USER  MOD Set%2d.%d:%s:%s:sc=%8.3g%c  (180deg=%.3g%s)",
-					c+1, i+1,
-					(*s)->descr().c_str(), (*s)->describeOrientation().c_str(),
-					(*s)->bestScore(),(((*s)->bestHasBadBump())?'!':' '),
-					(*s)->initScore(),(((*s)->initHasBadBump())?"!":""));
-			}
-			else if ((*s)->canFlip()) {
-                
-                // SJ - 09/25/2015 - added to do the rot hinge dock flip if the GenerateFinalFlip flag is true
-                if(GenerateFinalFlip){
-                    
-                    int orientation = (*s)->orientation();
-                    (*s)->setOrientation(orientation,xyz);
-                }
-                
-				char classcode = ' ';
-				if ((*s)->flipStateHasBadBump(0) && (*s)->flipStateHasBadBump(1)) {
-					classcode = 'C';
-				}
-				else if (abs((*s)->flipMaxScore(0) - (*s)->flipMaxScore(1)) <= 0.5) {
-					classcode = 'X';
-				}
-				else if ((*s)->flipState() != 0) {
-					classcode = 'F';
-				}
-				else {
-					classcode = 'K';
-				}
-				::sprintf(buf, "USER  MOD Set%2d.%d:%s:%s:sc=%8.3g%c %c(o=%.2g%s,f=%.2g%s)",
-					c+1, i+1,
-					(*s)->descr().c_str(), (*s)->describeOrientation().c_str(),
-					(*s)->bestScore(),(((*s)->bestHasBadBump())?'!':' '), classcode,
-					(*s)->flipMaxScore(0),(((*s)->flipStateHasBadBump(0))?"!":""),
-					(*s)->flipMaxScore(1),(((*s)->flipStateHasBadBump(1))?"!":""));
-			}
-			else {
-				::sprintf(buf, "USER  MOD Set%2d.%d:%s:%s:sc=%8.3g%c",
-					c+1, i+1,
-					(*s)->descr().c_str(), (*s)->describeOrientation().c_str(),
-					(*s)->bestScore(), (((*s)->bestHasBadBump())?'!':' '));
-			}
-			cliqueNotes.push_back(buf);
+      if ((*s)->canFlip() && GenerateFinalFlip) {
+        int orientation = (*s)->orientation();
+        (*s)->setOrientation(orientation,xyz);
+      }
+
+      ::sprintf(buf, "Set%2d.%d", c+1, i+1);
+      cliqueNotes.push_back( (*s)->formatComment(buf) );
+
 			i++;
 		}
 	}

@@ -74,7 +74,6 @@ public:
    virtual ~FlipMemo() {
    }
 
-   virtual Mover::MemoType type() { return Mover::FLIP; }
    virtual bool isComplete() const { return _isComplete; }
    virtual bool hasHires() const { return FALSE; }
    virtual bool canFlip() const { return TRUE; }
@@ -110,7 +109,10 @@ public:
    void Rename_Flip(int orientation, AtomPositions & xyz); // SJ - 09/10/2015 function to perform the standard flip given the correct oritentation number
    void InFlip_ModifyDAStatus(int, int, int); // SJ - 09/10/2015 function to modify the donor acceptor status of N and C atoms after flips have happened. Copied the original code from setOrientations and made a function because it has to called from multiple places.
    
-   void insertAtom(std::shared_ptr<PDBrec> r);
+   virtual bool insertHatom(const PDBrec& ha) { return false; }
+   virtual bool insertAtom(std::shared_ptr<PDBrec> r);
+
+   virtual std::string formatComment(std::string prefix) const;
 
    int numScoreAtoms() const {
       return valid() ? _resFlip[_resType].numScore : 0;
