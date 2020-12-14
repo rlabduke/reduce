@@ -1,8 +1,14 @@
-import sys
-import reduce
+##################################################################################
+# This program is a rewrite of a subset of the main.cpp Reduce program into
+# Python that makes use of the python.so (or python.dll) shared library that
+# is produced by Boost.Python.
+#
 
 # @todo Add a main function and parse the command line
 # @todo Make Python 2 and 3 compatible
+
+import sys
+import reduce
 
 fileName = sys.argv[1]
 
