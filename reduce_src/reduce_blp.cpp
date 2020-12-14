@@ -3,7 +3,6 @@
 #include <boost/python/suite/indexing/vector_indexing_suite.hpp>
 #include "reduce.h"
 
-
 using namespace boost::python;
 
 // Macro defines a getter and setter for a named global variable of the specified type
@@ -82,27 +81,37 @@ getSetMethodReturnTakeConst(PDBrec, elem, ElementInfo);
 // Describe and name compound classes that we need access to.
 typedef std::list< std::shared_ptr<PDBrec> > ModelList;
 typedef std::vector< ModelList > ModelsVector;
+typedef std::list< std::shared_ptr<PDBrec> >::iterator ModelIterator;
+typedef std::vector<std::string> StringVector;
 
 BOOST_PYTHON_MODULE(reduce)
 {
   // Export the class objects that Python will need access to,
   // along with their shared-pointer and vector types.
   class_<SummaryStats>("SummaryStats", init<>())
-    .def_readonly("_H_found", &SummaryStats::_H_found)
-    .def_readonly("_H_HET_found", &SummaryStats::_H_HET_found)
-    .def_readonly("_H_removed", &SummaryStats::_H_removed)
-    .def_readonly("_H_HET_removed", &SummaryStats::_H_HET_removed)
-    .def_readonly("_H_added", &SummaryStats::_H_added)
-    .def_readonly("_H_HET_added", &SummaryStats::_H_HET_added)
-    .def_readonly("_H_standardized", &SummaryStats::_H_standardized)
-    .def_readonly("_H_HET_standardized", &SummaryStats::_H_HET_standardized)
-    .def_readonly("_num_atoms", &SummaryStats::_num_atoms)
-    .def_readonly("_conect", &SummaryStats::_conect)
-    .def_readonly("_num_adj", &SummaryStats::_num_adj)
-    .def_readonly("_num_renamed", &SummaryStats::_num_renamed)
+    .def_readwrite("_H_found", &SummaryStats::_H_found)
+    .def_readwrite("_H_HET_found", &SummaryStats::_H_HET_found)
+    .def_readwrite("_H_removed", &SummaryStats::_H_removed)
+    .def_readwrite("_H_HET_removed", &SummaryStats::_H_HET_removed)
+    .def_readwrite("_H_added", &SummaryStats::_H_added)
+    .def_readwrite("_H_HET_added", &SummaryStats::_H_HET_added)
+    .def_readwrite("_H_standardized", &SummaryStats::_H_standardized)
+    .def_readwrite("_H_HET_standardized", &SummaryStats::_H_HET_standardized)
+    .def_readwrite("_num_atoms", &SummaryStats::_num_atoms)
+    .def_readwrite("_conect", &SummaryStats::_conect)
+    .def_readwrite("_num_adj", &SummaryStats::_num_adj)
+    .def_readwrite("_num_renamed", &SummaryStats::_num_renamed)
   ;
   
-/*
+  // Select from among overloaded methods
+  Coord (PDBrec::*getx)(void) const = &PDBrec::x;
+  void (PDBrec::*setx)(Coord) = &PDBrec::x;
+  Coord (PDBrec::*gety)(void) const = &PDBrec::y;
+  void (PDBrec::*sety)(Coord) = &PDBrec::y;
+  Coord (PDBrec::*getz)(void) const = &PDBrec::z;
+  void (PDBrec::*setz)(Coord) = &PDBrec::z;
+  //Point3D (PDBrec::*getloc)(void) const = &PDBrec::loc;
+  //void (PDBrec::*setloc)(Point3D) = &PDBrec::loc;
   class_<PDBrec, std::shared_ptr<PDBrec> >("PDBrec", init<>())
     .def(init<const PDB &>())
     .def(init<const PDBrec &>())
@@ -111,14 +120,22 @@ BOOST_PYTHON_MODULE(reduce)
     .add_property("x", getx, setx)
     .add_property("y", gety, sety)
     .add_property("z", getz, setz)
-    .add_property("loc", getloc, setloc)
+    //.add_property("loc", getloc, setloc)
     .def("type", &PDBrec::type)
   ;
-*/
+  register_ptr_to_python< std::shared_ptr<PDBrec> >();
 
+  // Select from among overloaded methods
+  ModelIterator (ModelList::*mlbegin)(void) = &ModelList::begin;
+  ModelIterator (ModelList::*mlend)(void) = &ModelList::end;
   class_<ModelList>("ModelList")
     .def("size", &ModelList::size)
+    .def("begin", mlbegin)
+    .def("end", mlend)
+    .def("__iter__", iterator<ModelList>())
   ;
+  class_<ModelIterator>("ModelIterator");
+
   class_<ModelsVector>("ModelsVector")
     .def(vector_indexing_suite<ModelsVector>() )
   ;
@@ -135,12 +152,9 @@ BOOST_PYTHON_MODULE(reduce)
       bool, bool,
       bool>());
 
-/*
-  class_< std::vector< int > >("list_list_ptr_PDBrec")
-    .def(vector_indexing_suite< std::vector< int >() )
+  class_<StringVector>("StringVector")
+    .def(vector_indexing_suite<StringVector>() )
   ;
-*/
-
 
   // Export the global functions
   def("inputModels", inputModels, "Read the PDB records from the specified input stream.");
@@ -148,6 +162,7 @@ BOOST_PYTHON_MODULE(reduce)
   def("optimize", optimize, "Optimize all of the records passed in in place.");
   def("checkSEGIDs", checkSEGIDs, "Check the list of PDB records to see if we should use segment ID as chain.");
   def("scanAndGroupRecords", scanAndGroupRecords);
+  def("reduceList", reduceList);
 
   // Export the const char * variables, which will be read only.
   scope().attr("versionString") = versionString;
@@ -158,6 +173,7 @@ BOOST_PYTHON_MODULE(reduce)
   // Macro exports a getter and setter for a named global variable of the specified type
   #define exportGetSet(name) def("get" #name , get ## name, "Get value of " #name " global variable");\
                              def("set" #name , set ## name, "Set value of " #name " global variable");
+
 
   // Export getters and setters for the global variables that control behavior
   exportGetSet(Tally)
