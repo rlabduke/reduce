@@ -34,3 +34,16 @@ for m in models:
           reduce.getVerbose(), reduce.getShowOrientScore(),
           reduce.getShowCliqueTicks()
         )
+
+  infoPtr = m.begin()
+
+  reduce.scanAndGroupRecords(m, xyz, infoPtr)
+
+  adjNotes = reduce.StringVector()
+
+  tally = reduce.getTally()
+  tally._num_adj = 0
+  reduce.setTally(tally)
+
+  reduce.reduceList(hetdatabase, m, xyz, adjNotes)
+
