@@ -1,3 +1,4 @@
+// Enable functions with up to 20 parameters to be called.  Default of 15 is insufficient
 #define BOOST_PYTHON_MAX_ARITY 20
 #include <boost/python.hpp>
 #include <boost/python/suite/indexing/vector_indexing_suite.hpp>
@@ -78,7 +79,7 @@ typedef std::vector<std::string> StringVector;
 // Desribe overloaded functions
 BOOST_PYTHON_FUNCTION_OVERLOADS(outputRecords_all_overloads, outputRecords_all, 1, 2);
 
-BOOST_PYTHON_MODULE(reduce)
+BOOST_PYTHON_MODULE(pyreduce)
 {
   // Export the class objects that Python will need access to,
   // along with their shared-pointer and vector types.
