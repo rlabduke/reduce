@@ -10,14 +10,14 @@ with open(fileName) as f:
   input = f.read()
 
 models = reduce.inputModels(input)
-print("Found "+str(len(models))+" models:")
+# print("Found "+str(len(models))+" models:")
 for m in models:
-  print(" Model size "+str(m.size()))
+  # print(" Model size "+str(m.size()))
   if reduce.getRemoveATOMHydrogens() or reduce.getRemoveOtherHydrogens():
     reduce.dropHydrogens(m, reduce.getRemoveATOMHydrogens(), reduce.getRemoveOtherHydrogens())
 
   UseSEGIDasChain = reduce.checkSEGIDs(m)
-  print(" UseSEGIDasChain = "+str(UseSEGIDasChain))
+  # print(" UseSEGIDasChain = "+str(UseSEGIDasChain))
 
   # @todo Point this at the general location.
   hetdatabase = reduce.CTab("/usr/local/reduce_wwPDB_het_dict.txt")
@@ -47,3 +47,12 @@ for m in models:
 
   reduce.reduceList(hetdatabase, m, xyz, adjNotes)
 
+  if not reduce.getStopBeforeOptimizing():
+    ret = reduce.optimize(xyz, adjNotes)
+
+    if reduce.getOKtoAdjust() and xyz.numChanges() > 0:
+      xyz.describeChanges(m, infoPtr, adjNotes)
+
+reduce.outputRecords_all(models)
+
+sys.exit(ret)
