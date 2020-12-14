@@ -8,7 +8,7 @@
 # @todo Make Python 2 and 3 compatible
 
 import sys
-import reduce
+import pyreduce reduce
 
 fileName = sys.argv[1]
 
