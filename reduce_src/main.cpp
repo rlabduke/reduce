@@ -788,7 +788,7 @@ int main(int argc, char **argv) {
 
     // SJ This is where the outputrecords should be called for all records.
     //This function now prints and eventaully deletes all models
-    outputRecords_all(cout, models);
+    outputRecords_all(models, cout);
     
     if (Verbose) { // copied over from processPDBfile to here, will be printed only once
      cerr << "If you publish work which uses reduce, please cite:"

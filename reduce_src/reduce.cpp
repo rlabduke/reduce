@@ -275,7 +275,7 @@ int optimize(AtomPositions& xyz, std::vector<std::string>& adjNotes) {
 }
 
 // SJ 08/03/2015 for printing all records together
-void outputRecords_all(std::ostream& os, const std::vector <std::list< std::shared_ptr<PDBrec> > >& l) {
+void outputRecords_all(const std::vector <std::list< std::shared_ptr<PDBrec> > >& l, std::ostream& os) {
     
     int model=0; // keeping track of how many models are printed
     for (std::vector<std::list< std::shared_ptr<PDBrec> > >::const_iterator ptr = l.begin(); ptr != l.end(); ++ptr) {
