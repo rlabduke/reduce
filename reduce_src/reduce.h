@@ -58,8 +58,9 @@ extern void dropHydrogens(std::list< std::shared_ptr<PDBrec> >& records,
 extern int optimize(AtomPositions &xyz, std::vector<std::string> &adjNotes);
 
 //SJ 08/03/2015 for printing all models together
-extern void outputRecords_all(std::ostream& os,
-  const std::vector<std::list< std::shared_ptr<PDBrec> > >& all_records);
+extern void outputRecords_all(
+  const std::vector<std::list< std::shared_ptr<PDBrec> > >& all_records,
+  std::ostream& os = std::cout);
 
 /// @brief Check the list of PDB records to see if we should use segment ID as chain
 /// @return TRUE if we should use the segment ID as the chain, FALSE if not
