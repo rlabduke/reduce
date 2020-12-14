@@ -69,20 +69,14 @@ getSet(bool,RemoveOtherHydrogens)
 #define getSetMethodTakeConst(class, name, type) type (class::*get ## name)() const = &class::name; void (class::*set ## name)(const type &) = &class::name;
 #define getSetMethodReturnTakeConst(class, name, type) const type & (class::*get ## name)() const = &class::name; void (class::*set ## name)(const type &) = &class::name;
 
-// Function pointers needed to handle overloaded functions
-/*
-getSetMethod(PDBrec, x, Coord);
-getSetMethod(PDBrec, y, Coord);
-getSetMethod(PDBrec, z, Coord);
-getSetMethodTakeConst(PDBrec, loc, Point3d);
-getSetMethodReturnTakeConst(PDBrec, elem, ElementInfo);
-*/
-
 // Describe and name compound classes that we need access to.
 typedef std::list< std::shared_ptr<PDBrec> > ModelList;
 typedef std::vector< ModelList > ModelsVector;
 typedef std::list< std::shared_ptr<PDBrec> >::iterator ModelIterator;
 typedef std::vector<std::string> StringVector;
+
+// Desribe overloaded functions
+BOOST_PYTHON_FUNCTION_OVERLOADS(outputRecords_all_overloads, outputRecords_all, 1, 2);
 
 BOOST_PYTHON_MODULE(reduce)
 {
@@ -150,7 +144,10 @@ BOOST_PYTHON_MODULE(reduce)
       DotSphManager &, float,
       float, float,
       bool, bool,
-      bool>());
+      bool>())
+    .def("numChanges", &AtomPositions::numChanges)
+    .def("describeChanges", &AtomPositions::describeChanges)
+  ;
 
   class_<StringVector>("StringVector")
     .def(vector_indexing_suite<StringVector>() )
@@ -163,6 +160,8 @@ BOOST_PYTHON_MODULE(reduce)
   def("checkSEGIDs", checkSEGIDs, "Check the list of PDB records to see if we should use segment ID as chain.");
   def("scanAndGroupRecords", scanAndGroupRecords);
   def("reduceList", reduceList);
+  def("optimize", optimize);
+  def("outputRecords_all", outputRecords_all, outputRecords_all_overloads());
 
   // Export the const char * variables, which will be read only.
   scope().attr("versionString") = versionString;
