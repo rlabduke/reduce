@@ -117,7 +117,6 @@ BOOST_PYTHON_MODULE(reduce)
     //.add_property("loc", getloc, setloc)
     .def("type", &PDBrec::type)
   ;
-  register_ptr_to_python< std::shared_ptr<PDBrec> >();
 
   // Select from among overloaded methods
   ModelIterator (ModelList::*mlbegin)(void) = &ModelList::begin;
