@@ -125,7 +125,7 @@ if (USE_PYTHON)
   message(STATUS "PYTHON_INCLUDE_DIRS = ${PYTHON_INCLUDE_DIRS}")
   message(STATUS "Boost_LIBRARIES = ${Boost_LIBRARIES}")
   include_directories(../libpdb ../toolclasses ${PYTHON_INCLUDE_DIRS})
-  PYTHON_ADD_MODULE(pyreduce reduce_blp.cpp)
+  PYTHON_ADD_MODULE(pyreduce reduce_bpl.cpp)
   target_link_libraries(pyreduce reducelib ${Boost_LIBRARIES})
 endif()
 
