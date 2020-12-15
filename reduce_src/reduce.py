@@ -68,6 +68,7 @@ if __name__ == '__main__':
   fileName = ""
   for i in range(1,len(sys.argv)):
     if sys.argv[i] == "-TRIM":
+      reduce.setRemoveATOMHydrogens(True)
       reduce.setRemoveOtherHydrogens(True)
       reduce.setAddWaterHydrogens(False)
       reduce.setAddOtherHydrogens(False)
