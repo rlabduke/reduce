@@ -48,6 +48,15 @@ exe = env.Program(
 if (not env_etc.no_boost_python):
   Import("env_cctbx_boost_python_ext")
   env_bpl = env_cctbx_boost_python_ext.Clone()
+  env_bpl.Append(
+    CXXFLAGS=[
+      "-DAROMATICS_ACCEPT_HBONDS",
+      "-DCHARFUNCMACROS",
+      "-DBOOLPREDEFINED",
+      "-DBRACKETOPERPARMS",
+      "-DLEFT_JUSTIFY_NUC_RES_OK",
+      "-DLISTFRIENDFIX",
+      "-DINCTEMPLATEDEFNS"])
   env_bpl.Append(CPPPATH=["#reduce/toolclasses", "#reduce/libpdb"])
   env_bpl.Prepend(LIBS=["reducelib", "toolclasses", "pdb++"])
   env_bpl.SharedLibrary(
