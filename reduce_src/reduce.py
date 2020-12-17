@@ -8,7 +8,7 @@
 # @todo Make Python 2 and 3 compatible
 
 import sys
-import pyreduce as reduce
+import cctbx_reduce_ext as reduce
 
 def RunReduce(input, hetdatabase):
   ret = 0
@@ -77,7 +77,7 @@ if __name__ == '__main__':
       fileName = sys.argv[i]
 
   if len(fileName) == 0:
-    print 'Usage:', sys.argv[0], "[-TRIM] PDB_FILE_NAME"
+    print('Usage:', sys.argv[0], "[-TRIM] PDB_FILE_NAME")
     sys.exit(-2)
 
   with open(fileName) as f:
