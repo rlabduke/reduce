@@ -79,7 +79,7 @@ typedef std::vector<std::string> StringVector;
 // Desribe overloaded functions
 BOOST_PYTHON_FUNCTION_OVERLOADS(outputRecords_all_overloads, outputRecords_all, 1, 2);
 
-BOOST_PYTHON_MODULE(pyreduce)
+BOOST_PYTHON_MODULE(cctbx_reduce_ext)
 {
   // Export the class objects that Python will need access to,
   // along with their shared-pointer and vector types.
