@@ -291,7 +291,8 @@ std::shared_ptr<atomPlacementPlan> ResConn::planHplacement(const std::string &at
 	 }
       }
    }
-   return NULL;
+   std::shared_ptr<atomPlacementPlan> ret;
+   return ret;
 }
 
 std::list<std::shared_ptr<atomPlacementPlan> > ResConn::genHplans(const char* resname) {
@@ -401,12 +402,13 @@ CTab::CTab(const std::string& dbFileName) {
 
 std::shared_ptr<ResConn> CTab::findTable(const std::string &resname) const {
 
+  std::shared_ptr<ResConn> ret;
 	std::map<std::string, std::shared_ptr<ResConn> >::const_iterator iter = m_rescache.find(resname);
 	if (iter != m_rescache.end()) {
-		return iter->second;
+		ret = iter->second;
   }
 
-  return NULL;
+  return ret;
 }
 
 int CTab::numConn(const std::string &resname, const std::string &atomname) const {
