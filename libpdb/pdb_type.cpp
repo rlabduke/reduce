@@ -31,13 +31,17 @@ using std::islower;
 using std::toupper;
 #endif
 }
-#if defined(__DECCXX_VER) || defined(_MSC_VER)
-#define NEEDSTRCASECMP
-#endif
-#ifdef NEEDSTRCASECMP
-int strncasecmp(const char *buf, const char *pat, int sz);
-int strcasecmp(const char *buf, const char *pat);
-#endif
+
+/// @brief Our own cross-platform implementation of strncasecmp
+static int strncasecmp_cp(const char* buf, const char* pat, int sz) {
+	int rc = 0;
+	for (int i = 0; i < sz; i++) {
+		if (tolower(buf[i]) != tolower(pat[i])) { rc = 1; break; }
+		else if (buf[i] == '\0') { break; }
+	}
+	return rc;
+}
+
 
 int PDB::pdbrunInputVersion = PDB::PDBRUNVersion;	// just in case
 int PDB::pdbrunOutputVersion = PDB::PDBRUNVersion;	// just in case
@@ -47,35 +51,35 @@ PDB::getGfxType(const char *buf)
 {
 	switch (buf[0]) {
 	case 'L': case 'l':
-		if (strcasecmp(buf + 1, "INE-LOOP") == 0)
+		if (strncasecmp_cp(buf + 1, "INE-LOOP", 9) == 0)
 			return GFX_LINE_LOOP;
-		if (strcasecmp(buf + 1, "INE-STRIP") == 0)
+		if (strncasecmp_cp(buf + 1, "INE-STRIP", 10) == 0)
 			return GFX_LINE_STRIP;
-		if (strcasecmp(buf + 1, "INES") == 0)
+		if (strncasecmp_cp(buf + 1, "INES", 5) == 0)
 			return GFX_LINES;
 		break;
 	case 'M': case 'm':
-		if (strcasecmp(buf + 1, "ARKERS") == 0)
+		if (strncasecmp_cp(buf + 1, "ARKERS", 7) == 0)
 			return GFX_MARKERS;
 		break;
 	case 'P': case 'p':
-		if (strcasecmp(buf + 1, "OINTS") == 0)
+		if (strncasecmp_cp(buf + 1, "OINTS", 6) == 0)
 			return GFX_POINTS;
-		if (strcasecmp(buf + 1, "OLYGON") == 0)
+		if (strncasecmp_cp(buf + 1, "OLYGON", 7) == 0)
 			return GFX_POLYGON;
 		break;
 	case 'Q': case 'q':
-		if (strcasecmp(buf + 1, "UAD-STRIP") == 0)
+		if (strncasecmp_cp(buf + 1, "UAD-STRIP", 10) == 0)
 			return GFX_QUAD_STRIP;
-		if (strcasecmp(buf + 1, "UADS") == 0)
+		if (strncasecmp_cp(buf + 1, "UADS", 6) == 0)
 			return GFX_QUADS;
 		break;
 	case 'T': case 't':
-		if (strcasecmp(buf + 1, "RIANGLE-FAN") == 0)
+		if (strncasecmp_cp(buf + 1, "RIANGLE-FAN", 12) == 0)
 			return GFX_TRIANGLE_FAN;
-		if (strcasecmp(buf + 1, "RIANGLE-STRIP") == 0)
+		if (strncasecmp_cp(buf + 1, "RIANGLE-STRIP", 14) == 0)
 			return GFX_TRIANGLE_STRIP;
-		if (strcasecmp(buf + 1, "RIANGLES") == 0)
+		if (strncasecmp_cp(buf + 1, "RIANGLES", 9) == 0)
 			return GFX_TRIANGLES;
 		break;
 	}
@@ -106,75 +110,75 @@ pdbrun5Type(const char *buf)
 {
 	switch (buf[0]) {
 	case 'A': case 'a':
-		if (strncasecmp(buf + 1, "NGLE ", 5) == 0)
+		if (strncasecmp_cp(buf + 1, "NGLE ", 5) == 0)
 			return PDB::USER_ANGLE;
-		if (strncasecmp(buf + 1, "TPOS ", 5) == 0)
+		if (strncasecmp_cp(buf + 1, "TPOS ", 5) == 0)
 			return PDB::USER_ATPOS;
 		break;
 	case 'B': case 'b':
-		if (strncasecmp(buf + 1, "GCOLOR ", 7) == 0)
+		if (strncasecmp_cp(buf + 1, "GCOLOR ", 7) == 0)
 			return PDB::USER_BGCOLOR;
 		break;
 	case 'C': case 'c':
-		if (strncasecmp(buf + 1, "HAIN ", 5) == 0)
+		if (strncasecmp_cp(buf + 1, "HAIN ", 5) == 0)
 			return PDB::USER_CHAIN;
-		if (strncasecmp(buf + 1, "NAME ", 5) == 0)
+		if (strncasecmp_cp(buf + 1, "NAME ", 5) == 0)
 			return PDB::USER_CNAME;
-		if (strncasecmp(buf + 1, "OLOR ", 5) == 0)
+		if (strncasecmp_cp(buf + 1, "OLOR ", 5) == 0)
 			return PDB::USER_COLOR;
 		break;
 	case 'D': case 'd':
-		if (strncasecmp(buf + 1, "ISTANCE ", 8) == 0)
+		if (strncasecmp_cp(buf + 1, "ISTANCE ", 8) == 0)
 			return PDB::USER_DISTANCE;
 		break;
 	case 'E': case 'e':
-		if (strncasecmp(buf + 1, "NDOBJ ", 6) == 0)
+		if (strncasecmp_cp(buf + 1, "NDOBJ ", 6) == 0)
 			return PDB::USER_ENDOBJ;
-		if (strncasecmp(buf + 1, "YEPOS ", 6) == 0)
+		if (strncasecmp_cp(buf + 1, "YEPOS ", 6) == 0)
 			return PDB::USER_EYEPOS;
 		break;
 	case 'F': case 'f':
-		if (strncasecmp(buf + 1, "ILE ", 4) == 0)
+		if (strncasecmp_cp(buf + 1, "ILE ", 4) == 0)
 			return PDB::USER_FILE;
-		if (strncasecmp(buf + 1, "OCUS ", 5) == 0)
+		if (strncasecmp_cp(buf + 1, "OCUS ", 5) == 0)
 			return PDB::USER_FOCUS;
 		break;
 	case 'G': case 'g':
-		if (strncasecmp(buf + 1, "FX ", 3) != 0)
+		if (strncasecmp_cp(buf + 1, "FX ", 3) != 0)
 			break;
-		if (strncasecmp(buf + 4, "COLOR ", 6) == 0)
+		if (strncasecmp_cp(buf + 4, "COLOR ", 6) == 0)
 			return PDB::USER_GFX_COLOR;
-		if (strncasecmp(buf + 4, "DRAW ", 5) == 0)
+		if (strncasecmp_cp(buf + 4, "DRAW ", 5) == 0)
 			return PDB::USER_GFX_DRAW;
-		if (strncasecmp(buf + 4, "FONT ", 5) == 0)
+		if (strncasecmp_cp(buf + 4, "FONT ", 5) == 0)
 			return PDB::USER_GFX_FONT;
-		if (strncasecmp(buf + 4, "LABEL ", 6) == 0)
+		if (strncasecmp_cp(buf + 4, "LABEL ", 6) == 0)
 			return PDB::USER_GFX_LABEL;
-		if (strncasecmp(buf + 4, "MARKER ", 7) == 0)
+		if (strncasecmp_cp(buf + 4, "MARKER ", 7) == 0)
 			return PDB::USER_GFX_MARKER;
-		if (strncasecmp(buf + 4, "MOVE ", 5) == 0)
+		if (strncasecmp_cp(buf + 4, "MOVE ", 5) == 0)
 			return PDB::USER_GFX_MOVE;
-		if (strncasecmp(buf + 4, "POINT ", 6) == 0)
+		if (strncasecmp_cp(buf + 4, "POINT ", 6) == 0)
 			return PDB::USER_GFX_POINT;
 		break;
 	case 'O': case 'o':
-		if (strncasecmp(buf + 1, "BJECT ", 6) == 0)
+		if (strncasecmp_cp(buf + 1, "BJECT ", 6) == 0)
 			return PDB::USER_OBJECT;
 		break;
 	case 'P': case 'p':
-		if (strncasecmp(buf + 1, "DBRUN ", 6) == 0)
+		if (strncasecmp_cp(buf + 1, "DBRUN ", 6) == 0)
 			return PDB::USER_PDBRUN;
 		break;
 	case 'R': case 'r':
-		if (strncasecmp(buf + 1, "ADIUS ", 6) == 0)
+		if (strncasecmp_cp(buf + 1, "ADIUS ", 6) == 0)
 			return PDB::USER_RADIUS;
 		break;
 	case 'V': case 'v':
-		if (strncasecmp(buf + 1, "IEWPORT ", 8) == 0)
+		if (strncasecmp_cp(buf + 1, "IEWPORT ", 8) == 0)
 			return PDB::USER_VIEWPORT;
 		break;
 	case 'W': case 'w':
-		if (strncasecmp(buf + 1, "INDOW ", 6) == 0)
+		if (strncasecmp_cp(buf + 1, "INDOW ", 6) == 0)
 			return PDB::USER_WINDOW;
 		break;
 	}
@@ -186,38 +190,38 @@ pdbrun6Type(const char *buf)
 {
 	switch (buf[0]) {
 	case 'A': case 'a':
-		if (strncasecmp(buf + 1, "NGLE ", 5) == 0)
+		if (strncasecmp_cp(buf + 1, "NGLE ", 5) == 0)
 			return PDB::USER_ANGLE;
-		if (strncasecmp(buf + 1, "TPOS ", 5) == 0)
+		if (strncasecmp_cp(buf + 1, "TPOS ", 5) == 0)
 			return PDB::USER_ATPOS;
 		break;
 	case 'B': case 'b':
-		if (strncasecmp(buf + 1, "GCOLOR ", 7) == 0)
+		if (strncasecmp_cp(buf + 1, "GCOLOR ", 7) == 0)
 			return PDB::USER_BGCOLOR;
 		break;
 	case 'C': case 'c':
-		if (strncasecmp(buf + 1, "HAIN ", 5) == 0)
+		if (strncasecmp_cp(buf + 1, "HAIN ", 5) == 0)
 			return PDB::USER_CHAIN;
-		if (strncasecmp(buf + 1, "NAME ", 5) == 0)
+		if (strncasecmp_cp(buf + 1, "NAME ", 5) == 0)
 			return PDB::USER_CNAME;
-		if (strncasecmp(buf + 1, "OLOR ", 5) == 0)
+		if (strncasecmp_cp(buf + 1, "OLOR ", 5) == 0)
 			return PDB::USER_COLOR;
 		break;
 	case 'D': case 'd':
-		if (strncasecmp(buf + 1, "ISTANCE ", 8) == 0)
+		if (strncasecmp_cp(buf + 1, "ISTANCE ", 8) == 0)
 			return PDB::USER_DISTANCE;
 		break;
 	case 'E': case 'e':
-		if (strncasecmp(buf + 1, "NDOBJ", 5) == 0
+		if (strncasecmp_cp(buf + 1, "NDOBJ", 5) == 0
 		&& (buf[6] == '\0' || buf[6] == '\n' || buf[6] == '\r' || buf[6] == ' '))
 			return PDB::USER_ENDOBJ;
-		if (strncasecmp(buf + 1, "YEPOS ", 6) == 0)
+		if (strncasecmp_cp(buf + 1, "YEPOS ", 6) == 0)
 			return PDB::USER_EYEPOS;
 		break;
 	case 'F': case 'f':
-		if (strncasecmp(buf + 1, "ILE ", 4) == 0)
+		if (strncasecmp_cp(buf + 1, "ILE ", 4) == 0)
 			return PDB::USER_FILE;
-		if (strncasecmp(buf + 1, "OCUS ", 5) == 0)
+		if (strncasecmp_cp(buf + 1, "OCUS ", 5) == 0)
 			return PDB::USER_FOCUS;
 		break;
 	case 'G': case 'g':
@@ -225,11 +229,11 @@ pdbrun6Type(const char *buf)
 			break;
 		switch (buf[4]) {
 		case 'B': case 'b':
-			if (strncasecmp(buf + 5, "EGIN ", 5) == 0)
+			if (strncasecmp_cp(buf + 5, "EGIN ", 5) == 0)
 				return PDB::USER_GFX_BEGIN;
 			break;
 		case 'C': case 'c':
-			if (strncasecmp(buf + 5, "OLOR ", 5) == 0)
+			if (strncasecmp_cp(buf + 5, "OLOR ", 5) == 0)
 				return PDB::USER_GFX_COLOR;
 			break;
 		case 'E': case 'e':
@@ -238,52 +242,52 @@ pdbrun6Type(const char *buf)
 				return PDB::USER_GFX_END;
 			break;
 		case 'F': case 'f':
-			if (strncasecmp(buf + 5, "ONT ", 4) == 0)
+			if (strncasecmp_cp(buf + 5, "ONT ", 4) == 0)
 				return PDB::USER_GFX_FONT;
 			break;
 		case 'L': case 'l':
-			if (strncasecmp(buf + 5, "ABEL ", 5) == 0)
+			if (strncasecmp_cp(buf + 5, "ABEL ", 5) == 0)
 				return PDB::USER_GFX_LABEL;
 			break;
 		case 'N': case 'n':
-			if (strncasecmp(buf + 5, "ORMAL ", 6) == 0)
+			if (strncasecmp_cp(buf + 5, "ORMAL ", 6) == 0)
 				return PDB::USER_GFX_NORMAL;
 			break;
 		case 'T': case 't':
-			if (strncasecmp(buf + 5, "EXTPOS ", 7) == 0)
+			if (strncasecmp_cp(buf + 5, "EXTPOS ", 7) == 0)
 				return PDB::USER_GFX_TEXTPOS;
 			break;
 		case 'V': case 'v':
-			if (strncasecmp(buf + 5, "ERTEX ", 6) == 0)
+			if (strncasecmp_cp(buf + 5, "ERTEX ", 6) == 0)
 				return PDB::USER_GFX_VERTEX;
 			break;
 		}
 		break;
 	case 'M': case 'm':
-		if (strncasecmp(buf + 1, "ARK ", 4) == 0)
+		if (strncasecmp_cp(buf + 1, "ARK ", 4) == 0)
 			return PDB::USER_MARK;
-		if (strncasecmp(buf + 1, "ARKNAME ", 6) == 0)
+		if (strncasecmp_cp(buf + 1, "ARKNAME ", 6) == 0)
 			return PDB::USER_MARKNAME;
 		break;
 	case 'O': case 'o':
-		if (strncasecmp(buf + 1, "BJECT", 5) == 0
+		if (strncasecmp_cp(buf + 1, "BJECT", 5) == 0
 		&& (buf[6] == '\0' || buf[6] == '\n' || buf[6] == '\r' || buf[6] == ' '))
 			return PDB::USER_OBJECT;
 		break;
 	case 'P': case 'p':
-		if (strncasecmp(buf + 1, "DBRUN ", 6) == 0)
+		if (strncasecmp_cp(buf + 1, "DBRUN ", 6) == 0)
 			return PDB::USER_PDBRUN;
 		break;
 	case 'R': case 'r':
-		if (strncasecmp(buf + 1, "ADIUS ", 6) == 0)
+		if (strncasecmp_cp(buf + 1, "ADIUS ", 6) == 0)
 			return PDB::USER_RADIUS;
 		break;
 	case 'V': case 'v':
-		if (strncasecmp(buf + 1, "IEWPORT ", 6) == 0)
+		if (strncasecmp_cp(buf + 1, "IEWPORT ", 6) == 0)
 			return PDB::USER_VIEWPORT;
 		break;
 	case 'W': case 'w':
-		if (strncasecmp(buf + 1, "INDOW ", 6) == 0)
+		if (strncasecmp_cp(buf + 1, "INDOW ", 6) == 0)
 			return PDB::USER_WINDOW;
 		break;
 	}
@@ -519,7 +523,7 @@ PDB::getType(const char *buf)
 			case 6:
 				return pdbrun6Type(buf + 6);
 			default:
-				if (strncasecmp(buf + 6, "PDBRUN ", 7) == 0)
+				if (strncasecmp_cp(buf + 6, "PDBRUN ", 7) == 0)
 					return USER_PDBRUN;
 				return USER;
 			}
