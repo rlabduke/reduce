@@ -50,11 +50,11 @@ public:
 	   return TRUE;
    }
    std::shared_ptr<AtomConn> get(const std::string &atomname) const {
+     std::shared_ptr<AtomConn> ret;
 	   std::map<std::string, std::shared_ptr<AtomConn> >::const_iterator i = _atomConn.find(atomname);
 	   if (i != _atomConn.end())
-		   return i->second;
-	   else
-		   return NULL;
+		   ret = i->second;
+     return ret;
    }
    // To find out there's a ring bonded to given H atom of methyl group (aromatic ring candidate) - Aram 07/09/12
    std::list<std::string> findRingBondedToMethyl(const std::string &atomname,const char* resname) const;

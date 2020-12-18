@@ -49,7 +49,7 @@ public:
 	   if (it != _resAtoms.end())
 		   sp = it->second;
 	   else
-		   sp = NULL;
+		   sp.reset();
    }
    void get(const std::string& atomname, std::list< std::shared_ptr<PDBrec> >& sp) {
 	   std::multimap<std::string, std::shared_ptr<PDBrec> >::const_iterator it2 = _resAtoms.upper_bound(atomname);
