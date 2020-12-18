@@ -1300,7 +1300,7 @@ int findConnAtoms(const atomPlacementPlan& pp, ResBlk& theRes, char hac,
 				  PDBrec& r0atom, PDBrec& r1atom, PDBrec& r2atom) {
 
 	int connatomcount = 0;
-	std::shared_ptr<PDBrec> rec = NULL;
+	std::shared_ptr<PDBrec> rec;
 
 	if (pp.num_conn() > 0) {
 		std::list< std::shared_ptr<PDBrec> > r0_list;
