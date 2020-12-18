@@ -336,7 +336,7 @@ CTab::CTab(const std::string& dbFileName) {
 	while (::fgets(buf, DBbufsz, fp)) {
     
     // Take action based on the type of line we find.
-		if (::strncasecmp(buf, "RESIDUE", 7) == 0) {
+		if (strncasecmp_cp(buf, "RESIDUE", 7) == 0) {
       // Whenever we find a RESIDUE line, we finish any existing
       // residue.
       if (curResidue) {
@@ -354,14 +354,14 @@ CTab::CTab(const std::string& dbFileName) {
         curResidue = std::make_shared<ResConn>();
 			}
 
-		} else if (::strncasecmp(buf, "END", 3) == 0) {
+		} else if (strncasecmp_cp(buf, "END", 3) == 0) {
       // Finish any existing residue.
       if (curResidue) {
         m_rescache.insert(std::make_pair(curName, curResidue));
         curResidue.reset();
       }
 
-    } else if (::strncasecmp(buf, "CONECT", 6) == 0) {
+    } else if (strncasecmp_cp(buf, "CONECT", 6) == 0) {
       char an[10][5];     // holds ten strings of length 4
       int m = 0, n = 0;
 

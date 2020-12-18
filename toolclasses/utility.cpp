@@ -52,8 +52,7 @@ void copyChars(char *to, const char *from, int n) {
 	for(i=0; i<n; i++) { to[i] = from[i]; }
 }
 
-#ifdef NEEDSTRCASECMP
-int strncasecmp(const char *buf, const char *pat, int sz) {
+int strncasecmp_cp(const char *buf, const char *pat, int sz) {
 	int rc = 0;
 	for(int i=0; i < sz; i++) {
 		if (tolower(buf[i]) != tolower(pat[i])) { rc = 1; break; }
@@ -61,14 +60,6 @@ int strncasecmp(const char *buf, const char *pat, int sz) {
 	}
 	return rc;
 }
-int strcasecmp(const char *buf, const char *pat) {
-	int rc = 0;
-	for(int i=0; buf[i] && pat[i]; i++) {
-		if (tolower(buf[i]) != tolower(pat[i])) { rc = 1; break; }
-	}
-	return rc;
-}
-#endif
 
 double clampAngle(double a, int min) {
    if (min == 0) {
