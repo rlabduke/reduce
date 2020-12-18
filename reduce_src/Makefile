@@ -8,14 +8,14 @@ DICT_LOCOLD = -DHET_DICTOLD='"$(DICT_OLD)"'
 PROG_FLGS   = -DAROMATICS_ACCEPT_HBONDS \
               -DCHARFUNCMACROS \
 	      -DBOOLPREDEFINED  -DBRACKETOPERPARMS -DLEFT_JUSTIFY_NUC_RES_OK \
-              -DLISTFRIENDFIX -DINCTEMPLATEDEFNS
+              -DLISTFRIENDFIX -DINCTEMPLATEDEFNS -std=c++11
 #		-DOLD_CXX_DEFNS 
 #              -DDEBUGLOOKFORTHREEWAYOVERLAP 
 #              -DDEBUGMOVABLENODE -DDEBUGDOTCOUNTS
 #              -DMINPREDEFINED -DMAXPREDEFINED\
 
-CFLAGS = $(OPT) $(DEBUG) $(PROG_FLGS) $(DICT_LOC) $(DICT_LOCOLD)\
-         -I$(PDBHOME) -I$(TOOLHOME) -std=c++11
+CXXFLAGS = $(OPT) $(DEBUG) $(PROG_FLGS) $(DICT_LOC) $(DICT_LOCOLD)\
+         -I$(PDBHOME) -I$(TOOLHOME)
 #         -Wall
 
 LFLAGS = -L$(PDBHOME) -lpdb++ -L$(TOOLHOME) -ltoolclasses -lm
@@ -28,7 +28,7 @@ OBJLIST = main.o GraphToHoldScores.o reduce.o CTab.o ElementInfo.o StdResH.o Res
 CXX		= g++
 
 .cpp.o:
-	$(CXX) -c $*.cpp $(CFLAGS)
+	$(CXX) -c $*.cpp $(CXXFLAGS)
 
 OPT             = -O3
 DEBUG           = $(CXXDEBUGFLAGS)
