@@ -84,13 +84,8 @@ int trimStr(char *str);
 
 void copyChars(char *to, const char *from, int n);
 
-#if defined(__DECCXX_VER) || defined(_MSC_VER)
-#define NEEDSTRCASECMP
-#endif
-#ifdef NEEDSTRCASECMP
-int strncasecmp(const char *buf, const char *pat, int sz);
-int strcasecmp(const char *buf, const char *pat);
-#endif
+/// @brief Cross-platform strncasecmp that we provide to use everywhere.
+int strncasecmp_cp(const char *buf, const char *pat, int sz);
 
 double clampAngle(double a, int min=-180);
 
