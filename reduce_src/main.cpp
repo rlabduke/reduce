@@ -339,6 +339,7 @@ void reduceChanges(bool showAll) { /*changes*/
    cerr  << "2020/11/19 - rmt       Verifies that atoms are valid before adjusting them" << endl;
    cerr  << "2020/12/03 - rmt       Version 3.8 adds hydrogens on all alternates even if not adjusting" << endl;
    cerr  << "2020/12/03 - rmt       Version 3.9 fixed bugs in abandoned-clique reporting" << endl;
+   cerr  << "2020/12/18 - rmt       Version 3.10 wraps the library for use in Python" << endl;
    cerr  << endl;
    exit(2);
 }
