@@ -127,9 +127,9 @@ if (USE_PYTHON)
   message(STATUS "PYTHON_EXECUTABLE = ${PYTHON_EXECUTABLE}")
   message(STATUS "PYTHON_INCLUDE_DIRS = ${PYTHON_INCLUDE_DIRS}")
   message(STATUS "Boost_LIBRARIES = ${Boost_LIBRARIES}")
-  include_directories(../libpdb ../toolclasses ${PYTHON_INCLUDE_DIRS})
+  include_directories(../libpdb ../toolclasses ${Boost_INCLUDE_DIRS} ${PYTHON_INCLUDE_DIRS})
   PYTHON_ADD_MODULE(cctbx_reduce_ext reduce_bpl.cpp)
-  target_link_libraries(cctbx_reduce_ext reducelib ${Boost_LIBRARIES})
+  target_link_libraries(cctbx_reduce_ext reducelib ${Boost_LIBRARIES} ${PYTHON_LIBRARIES})
 
   add_custom_command(
     TARGET cctbx_reduce_ext POST_BUILD
