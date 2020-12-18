@@ -1,11 +1,8 @@
 ##################################################################################
 # This program is a rewrite of a subset of the main.cpp Reduce program into
-# Python that makes use of the python.so (or python.dll) shared library that
-# is produced by Boost.Python.
+# Python that makes use of the shared library that is produced using Boost.Python.
+# It is a test program to validate that the Python wrapping worked.
 #
-
-# @todo Add a main function and parse the command line
-# @todo Make Python 2 and 3 compatible
 
 import sys
 import cctbx_reduce_ext as reduce
@@ -14,14 +11,11 @@ def RunReduce(input, hetdatabase):
   ret = 0
 
   models = reduce.inputModels(input)
-  # print("Found "+str(len(models))+" models:")
   for m in models:
-    # print(" Model size "+str(m.size()))
     if reduce.getRemoveATOMHydrogens() or reduce.getRemoveOtherHydrogens():
       reduce.dropHydrogens(m, reduce.getRemoveATOMHydrogens(), reduce.getRemoveOtherHydrogens())
 
     UseSEGIDasChain = reduce.checkSEGIDs(m)
-    # print(" UseSEGIDasChain = "+str(UseSEGIDasChain))
 
     dotBucket = reduce.DotSphManager(reduce.getVdwDotDensity())
 
