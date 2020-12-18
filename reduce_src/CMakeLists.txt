@@ -127,6 +127,13 @@ if (USE_PYTHON)
   include_directories(../libpdb ../toolclasses ${PYTHON_INCLUDE_DIRS})
   PYTHON_ADD_MODULE(pyreduce reduce_bpl.cpp)
   target_link_libraries(pyreduce reducelib ${Boost_LIBRARIES})
+
+  add_custom_command(
+    TARGET pyreduce POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy
+      ${CMAKE_SOURCE_DIR}/reduce_src/reduce.py
+      ${CMAKE_CURRENT_BINARY_DIR}
+  )
 endif()
 
 add_executable(reduce main.cpp)
