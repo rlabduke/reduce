@@ -125,11 +125,11 @@ if (USE_PYTHON)
   message(STATUS "PYTHON_INCLUDE_DIRS = ${PYTHON_INCLUDE_DIRS}")
   message(STATUS "Boost_LIBRARIES = ${Boost_LIBRARIES}")
   include_directories(../libpdb ../toolclasses ${PYTHON_INCLUDE_DIRS})
-  PYTHON_ADD_MODULE(pyreduce reduce_bpl.cpp)
-  target_link_libraries(pyreduce reducelib ${Boost_LIBRARIES})
+  PYTHON_ADD_MODULE(cctbx_reduce_ext reduce_bpl.cpp)
+  target_link_libraries(cctbx_reduce_ext reducelib ${Boost_LIBRARIES})
 
   add_custom_command(
-    TARGET pyreduce POST_BUILD
+    TARGET cctbx_reduce_ext POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy
       ${CMAKE_SOURCE_DIR}/reduce_src/reduce.py
       ${CMAKE_CURRENT_BINARY_DIR}
