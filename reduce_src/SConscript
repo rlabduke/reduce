@@ -1,7 +1,6 @@
 Import("reduce_scons_env", "env_etc")
 
 env = reduce_scons_env.Clone()
-env.Append(SCONS_CXX_STANDARD="c++11")
 env.Append(
   CXXFLAGS=[
     "-DAROMATICS_ACCEPT_HBONDS",
@@ -14,7 +13,8 @@ env.Append(
 if (env_etc.compiler != "win32_cl"):
   env.Append(CXXFLAGS=[
     """-DHET_DICTIONARY='"/usr/local/reduce_wwPDB_het_dict.txt"'""",
-    """-DHET_DICTOLD='"/usr/local/reduce_het_dict.txt"'"""]
+    """-DHET_DICTOLD='"/usr/local/reduce_het_dict.txt"'""",
+    "-std=c++11"]
   )
 env.Append(CPPPATH=["#reduce/toolclasses", "#reduce/libpdb"])
 env.Append(LIBPATH=["#reduce/lib"])
@@ -49,7 +49,6 @@ exe = env.Program(
 if (not env_etc.no_boost_python):
   Import("env_cctbx_boost_python_ext")
   env_bpl = env_cctbx_boost_python_ext.Clone()
-  env_bpl.Append(SCONS_CXX_STANDARD="c++11")
   env_bpl.Append(
     SHCXXFLAGS=[
       "-DAROMATICS_ACCEPT_HBONDS",
@@ -58,7 +57,14 @@ if (not env_etc.no_boost_python):
       "-DBRACKETOPERPARMS",
       "-DLEFT_JUSTIFY_NUC_RES_OK",
       "-DLISTFRIENDFIX",
-      "-DINCTEMPLATEDEFNS"])
+      "-DINCTEMPLATEDEFNS",
+      "-std=c++11"])
+if (env_etc.compiler != "win32_cl"):
+  env.Append(SHCXXFLAGS=[
+    """-DHET_DICTIONARY='"/usr/local/reduce_wwPDB_het_dict.txt"'""",
+    """-DHET_DICTOLD='"/usr/local/reduce_het_dict.txt"'""",
+    "-std=c++11"]
+  )
   env_bpl.Append(CPPPATH=["#reduce/toolclasses", "#reduce/libpdb"])
   env_bpl.Append(LIBPATH=["#reduce/lib"])
   env_bpl.Prepend(LIBS=["reducelib", "toolclasses", "pdb++"])
