@@ -1,6 +1,7 @@
 Import("reduce_scons_env", "env_etc")
 
 env = reduce_scons_env.Clone()
+env.Append(SCONS_CXX_STANDARD="c++11")
 env.Append(
   CXXFLAGS=[
     "-DAROMATICS_ACCEPT_HBONDS",
@@ -48,6 +49,7 @@ exe = env.Program(
 if (not env_etc.no_boost_python):
   Import("env_cctbx_boost_python_ext")
   env_bpl = env_cctbx_boost_python_ext.Clone()
+  env_bpl.Append(SCONS_CXX_STANDARD="c++11")
   env_bpl.Append(
     SHCXXFLAGS=[
       "-DAROMATICS_ACCEPT_HBONDS",
