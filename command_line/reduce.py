@@ -1,5 +1,5 @@
 # LIBTBX_SET_DISPATCHER_NAME phenix.reduce
-# LIBTBX_SET_DISPATCHER_NAME cctbx.reduce
+# LIBTBX_SET_DISPATCHER_NAME mmtbx.reduce
 # LIBTBX_SET_DISPATCHER_NAME molprobity.reduce
 import libtbx.load_env
 import os, sys, subprocess
