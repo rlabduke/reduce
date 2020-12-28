@@ -59,12 +59,12 @@ if (not env_etc.no_boost_python):
       "-DLISTFRIENDFIX",
       "-DINCTEMPLATEDEFNS",
       "-std=c++11"])
-if (env_etc.compiler != "win32_cl"):
-  env.Append(SHCXXFLAGS=[
-    """-DHET_DICTIONARY='"/usr/local/reduce_wwPDB_het_dict.txt"'""",
-    """-DHET_DICTOLD='"/usr/local/reduce_het_dict.txt"'""",
-    "-std=c++11"]
-  )
+  if (env_etc.compiler != "win32_cl"):
+    env.Append(SHCXXFLAGS=[
+      """-DHET_DICTIONARY='"/usr/local/reduce_wwPDB_het_dict.txt"'""",
+      """-DHET_DICTOLD='"/usr/local/reduce_het_dict.txt"'""",
+      "-std=c++11"]
+    )
   env_bpl.Append(CPPPATH=["#reduce/toolclasses", "#reduce/libpdb"])
   env_bpl.Append(LIBPATH=["#reduce/lib"])
   env_bpl.Prepend(LIBS=["reducelib", "toolclasses", "pdb++"])
