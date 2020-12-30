@@ -73,6 +73,7 @@ extern void outputRecords_all(
 extern std::string outputRecords_all_string(
     const std::vector<std::list< std::shared_ptr<PDBrec> > >& all_records);
 
+
 /// @brief Check the list of PDB records to see if we should use segment ID as chain
 /// @return TRUE if we should use the segment ID as the chain, FALSE if not
 extern bool checkSEGIDs(std::list< std::shared_ptr<PDBrec> >& rlst);
