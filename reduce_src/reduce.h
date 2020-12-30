@@ -62,6 +62,17 @@ extern void outputRecords_all(
   const std::vector<std::list< std::shared_ptr<PDBrec> > >& all_records,
   std::ostream& os = std::cout);
 
+/// @brief Output all records into a string with one record per line.
+///
+/// This reassembles the multiple models into a single combined file that
+/// has the boiler-plate information once and all models in the same file.
+/// It also reports the version of version of Reduce that was run in a
+/// USER MOD line.
+/// @param all_records vector of models to combine.
+/// @return String with one record described on each line
+extern std::string outputRecords_all_string(
+    const std::vector<std::list< std::shared_ptr<PDBrec> > >& all_records);
+
 /// @brief Check the list of PDB records to see if we should use segment ID as chain
 /// @return TRUE if we should use the segment ID as the chain, FALSE if not
 extern bool checkSEGIDs(std::list< std::shared_ptr<PDBrec> >& rlst);

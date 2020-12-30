@@ -162,6 +162,7 @@ BOOST_PYTHON_MODULE(mmtbx_reduce_ext)
   def("reduceList", reduceList);
   def("optimize", optimize);
   def("outputRecords_all", outputRecords_all, outputRecords_all_overloads());
+  def("outputRecords_all_string", outputRecords_all_string);
 
   // Export the const char * variables, which will be read only.
   scope().attr("versionString") = versionString;

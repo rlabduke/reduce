@@ -286,6 +286,12 @@ void outputRecords_all(const std::vector <std::list< std::shared_ptr<PDBrec> > >
     return;
 }
 
+std::string outputRecords_all_string(const std::vector <std::list< std::shared_ptr<PDBrec> > >& all_records) {
+	std::ostringstream ss;
+	outputRecords_all(all_records, ss);
+	return ss.str();
+}
+
 // output a list of PDB records
 std::ostream& outputRecords(std::ostream& os, const std::list< std::shared_ptr<PDBrec> >& l, int model) {
     
