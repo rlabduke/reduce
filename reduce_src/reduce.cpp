@@ -133,7 +133,6 @@ enum ConnType {NTERM_RES, CONNECTED_RES, FRAGMENT_RES};
 SummaryStats Tally;
 
 std::ostream& outputRecords(std::ostream& os, const std::list< std::shared_ptr<PDBrec> >& records, int model); // SJ 08/04/2015 added last argument to keep track of how many models have been printed.
-void outputRecords_all(std::ostream& os, const std::vector<std::list< std::shared_ptr<PDBrec> > >& all_records); //SJ 08/03/2015 for printing all models together
 void invalidateRecords(std::list< std::shared_ptr<PDBrec> >& rlst);
 void renumberAndReconnect(std::list< std::shared_ptr<PDBrec> >& rlst);
 void renumberAtoms(std::list< std::shared_ptr<PDBrec> >& rlst);
@@ -279,12 +278,9 @@ void outputRecords_all(const std::vector <std::list< std::shared_ptr<PDBrec> > >
     
     int model=0; // keeping track of how many models are printed
     for (std::vector<std::list< std::shared_ptr<PDBrec> > >::const_iterator ptr = l.begin(); ptr != l.end(); ++ptr) {
-        
         model++;
         outputRecords(os,(const std::list< std::shared_ptr<PDBrec> > &)*ptr, model); // print
-        
     }
-    
     outputRecords(os,(const std::list< std::shared_ptr<PDBrec> > &)l.back(), 0); // SJ - so that all records after the last ENDMDL are printed. model will be equal to 0, which means all models are printed and only the left over information needs to be printed. model = 0 is a little counterintuitive, but that is the only number I can think of that will work.
     
     return;
@@ -298,7 +294,7 @@ std::ostream& outputRecords(std::ostream& os, const std::list< std::shared_ptr<P
     if (model == 1) { // this model does not necessarily correspond to the model number specified in the PDB file. This is just to keep internal records of how many models have been printed. See the for loop in the function above.
         flag=true; // everything has to be printed if this is the first model
         
-        //SJ: 08/03/2015 copied over from processPDBFile - to be printed only once
+    //SJ: 08/03/2015 copied over from processPDBFile - to be printed only once
 	os << "USER  MOD " << shortVersion;
 	if(RemoveATOMHydrogens || RemoveOtherHydrogens)
         {
