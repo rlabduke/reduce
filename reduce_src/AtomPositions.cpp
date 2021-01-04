@@ -236,7 +236,7 @@ void AtomPositions::reposition(const Point3d& prev, const PDBrec& rec) {
 // ---------------------------------------------------------------
 void AtomPositions::insertRot(const PDBrec& hr,
                 const PDBrec& c1, const PDBrec& c2, const PDBrec& c3,
-		bool doOHSH, bool doNH3, bool doMethyl) {
+		bool doOHSH, bool doNH3) {
 
 	if ((! visableAltConf(hr, _onlyA))
 		|| (! visableAltConf(c1, _onlyA))
@@ -271,10 +271,7 @@ void AtomPositions::insertRot(const PDBrec& hr,
 
 	if (m == NULL) {
 		if (c1.elem().atno() == 6) {
-			if (doMethyl) {
-				m = std::make_shared<RotMethyl>(c1.loc(), c2.loc(), dang, c1);
-				_motionDesc.insert(std::make_pair(descr, m));
-			}
+			// Never rotate CH3 (removed 1/4/2021)
 		}
 		else if (c1.elem().atno() == 7) {
 			if (doNH3) {
