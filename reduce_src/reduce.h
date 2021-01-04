@@ -99,14 +99,12 @@ extern bool SaveOHetcHydrogens;
 extern bool UseXplorNames;
 extern bool UseOldNames;
 extern bool BackBoneModel;
-extern bool DemandRotAllMethyls;
 extern bool RotExistingOH;
 extern bool NeutralTermini;
 extern bool DemandRotNH3;
 extern bool DemandRotExisting;
 extern bool DemandFlipAllHNQs;
 extern bool DoOnlyAltA; //jjh changed default 111118
-extern bool OKProcessMetMe; //cjw changed default 160602
 extern bool OKtoAdjust;
 extern bool ShowCliqueTicks;
 extern bool ShowOrientScore;

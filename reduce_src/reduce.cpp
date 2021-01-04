@@ -12,7 +12,7 @@
 // also available for free.
 //               ** Absolutely no Warranty **
 // Copyright (C) 1999-2016 J. Michael Word
-// Copyright (C) 2020 ReliaSolve
+// Copyright (C) 2020-2021 ReliaSolve
 // **************************************************************
 //
 //  reduceChanges now contains the CHANGELOG or history info
@@ -25,9 +25,9 @@
 #endif
 
 const char *versionString =
-     "reduce: version 3.10 12/18/2020, Copyright 1997-2016, J. Michael Word; 2020 ReliaSolve";
+     "reduce: version 4.0 1/4/2021, Copyright 1997-2016, J. Michael Word; 2020-2021 ReliaSolve";
 
-const char *shortVersion    = "reduce.3.9.201218";
+const char *shortVersion    = "reduce.4.0.210104";
 const char *referenceString =
                        "Word, et. al. (1999) J. Mol. Biol. 285, 1735-1747.";
 const char *electronicReference = "http://kinemage.biochem.duke.edu";
@@ -80,14 +80,12 @@ bool SaveOHetcHydrogens       = TRUE;
 bool UseXplorNames            = FALSE;
 bool UseOldNames	      = FALSE;
 bool BackBoneModel	      = FALSE;
-bool DemandRotAllMethyls      = FALSE;
 bool RotExistingOH            = FALSE;
 bool NeutralTermini           = FALSE;
 bool DemandRotNH3             = TRUE;
 bool DemandRotExisting        = FALSE;
 bool DemandFlipAllHNQs        = FALSE;
 bool DoOnlyAltA               = FALSE; //jjh changed default 111118
-bool OKProcessMetMe           = FALSE; //cjw changed default 160602
 bool OKtoAdjust               = TRUE;
 bool ShowCliqueTicks          = TRUE;
 bool ShowOrientScore          = FALSE;
@@ -205,17 +203,7 @@ int optimize(AtomPositions& xyz, std::vector<std::string>& adjNotes) {
 			if (DemandRotNH3) {
 				cerr << "Rotating NH3 Hydrogens." << endl;
 			}
-			if (DemandRotAllMethyls) {
-				cerr << "Rotating ALL methyls." << endl;
-			}
-			if (OKProcessMetMe) {
-				if (!DemandRotAllMethyls) {
-					cerr << "Processing Met methyls." << endl;
-				}
-			}
-			else {
-				cerr << "Not processing Met methyls." << endl;
-			}
+			cerr << "Not processing Met methyls." << endl;
 			if (DemandRotExisting) {
 				cerr << "Rotating pre-existing groups." << endl;
 			}
@@ -977,11 +965,7 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 						} else {
 							xyz.insertRot(*o, r0atom, r1atom, r2atom,
 								(DemandRotExisting || RotExistingOH),
-								DemandRotNH3,
-								(  (DemandRotExisting && DemandRotAllMethyls
-								&& pp.hasFeature(ROTATEONDEMAND))
-								|| (DemandRotExisting && OKProcessMetMe
-								&& pp.hasFeature(ROTATEFLAG))) );
+								DemandRotNH3);
 						}
 
 					}
@@ -1242,7 +1226,7 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 
 						if ( pp.hasFeature(ROTATEFLAG)
 							||  (pp.hasFeature(ROTATEONDEMAND)
-							&& (DemandRotAllMethyls || DemandRotNH3 || pp.hasFeature(AROMATICFLAG)) )     ) {
+							&& (DemandRotNH3 || pp.hasFeature(AROMATICFLAG)) )     ) {
 							// for heme methyls - Aram 05/31/12
 							if ((pp.hasFeature(ROTATEONDEMAND) && pp.hasFeature(AROMATICFLAG))) {
 								//std::cout << " in genHydrogens_noHyd " << newHatom->resname() << pp.name() << std::endl;
@@ -1264,9 +1248,7 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 									*(rvv[0][counter[0]]),
 									*(rvv[1][counter[1]]),
 									*(rvv[2][counter[2]]),
-									TRUE, DemandRotNH3,
-									((DemandRotAllMethyls && pp.hasFeature(ROTATEONDEMAND))
-									|| (OKProcessMetMe && pp.hasFeature(ROTATEFLAG))) );
+									TRUE, DemandRotNH3);
 							}
 						}
 						if (DemandFlipAllHNQs && (!resAlts.empty())) {
