@@ -84,12 +84,9 @@ void reduceHelp(bool showAll) { /*help*/
    cerr << "-NOROTNH3         do not allow lysine NH3 to rotate" << endl;
    cerr << "-ROTEXist         allow existing rotatable groups (OH, SH, Met-CH3) to rotate" << endl;
    cerr << "-ROTEXOH          allow existing OH & SH groups to rotate" << endl;
-//   cerr << "-ALLMETHYLS       allow all methyl groups to rotate" << endl;
    cerr << "-ALLALT           process adjustments for all conformations (default)" << endl;
    cerr << "-ONLYA            only adjust 'A' conformations" << endl;
    cerr << "-CHARGEs          output charge state for appropriate hydrogen records" << endl;
-//   cerr << "-NOROTMET         do not rotate methionine methyl groups" << endl; //now default behavior -cjw 160602
-   cerr << "-DOROTMET         allow methionine methyl groups to rotate (not recommended)" << endl;
    cerr << "-NOADJust         do not process any rot or flip adjustments" << endl;
   }
    cerr << endl;
@@ -451,12 +448,6 @@ char* parseCommandLine(int argc, char **argv) {
       else if((n = compArgStr(p+1, "NOCon", 3))){
         KeepConnections = FALSE;
       }
-      else if((n = compArgStr(p+1, "NOROTMET", 8))){
-        OKProcessMetMe = FALSE;
-      }
-      else if((n = compArgStr(p+1, "DOROTMET", 8))){
-        OKProcessMetMe = TRUE;
-      }
       else if((n = compArgStr(p+1, "NOADJust", 5))){
         OKtoAdjust = FALSE;
       }
@@ -496,9 +487,6 @@ char* parseCommandLine(int argc, char **argv) {
       }
       else if((n = compArgStr(p+1, "Keep", 1))){
         StandardizeRHBondLengths = FALSE;
-      }
-      else if((n = compArgStr(p+1, "ALLMETHYLS", 10))){
-        DemandRotAllMethyls = TRUE;
       }
       else if((n = compArgStr(p+1, "ROTEXist", 5))){
         DemandRotExisting = TRUE;
