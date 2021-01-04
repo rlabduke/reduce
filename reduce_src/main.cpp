@@ -12,6 +12,7 @@
 // also available for free.
 //               ** Absolutely no Warranty **
 // Copyright (C) 1999-2016 J. Michael Word
+// Copyright (C) 2020-2021 ReliaSolve
 // **************************************************************
 //
 //  reduceChanges now contains the CHANGELOG or history info
@@ -337,6 +338,7 @@ void reduceChanges(bool showAll) { /*changes*/
    cerr  << "2020/12/03 - rmt       Version 3.8 adds hydrogens on all alternates even if not adjusting" << endl;
    cerr  << "2020/12/03 - rmt       Version 3.9 fixed bugs in abandoned-clique reporting" << endl;
    cerr  << "2020/12/18 - rmt       Version 3.10 wraps the library for use in Python" << endl;
+   cerr  << "2021/01/04 - rmt       Version 4.0 removes the ability to rotate CH3 groups" << endl;
    cerr  << endl;
    exit(2);
 }

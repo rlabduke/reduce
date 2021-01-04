@@ -15,8 +15,6 @@
 // Copyright (C) 2020-2021 ReliaSolve
 // **************************************************************
 //
-//  reduceChanges now contains the CHANGELOG or history info
-//
 
 #if defined(_MSC_VER)
 #pragma warning(disable:4786)
