@@ -617,10 +617,10 @@ char* parseCommandLine(int argc, char **argv) {
       else if ((n = compArgStr(p + 1, "NO_ADD_OTHER_HYDROGENS", 8))) {
 	AddOtherHydrogens = FALSE;
       }
-      else if ((n = compArgStr(p + 1, "DROP_HYDROGENS_ON_ATOM_RECORDS:", 19))) {
+      else if ((n = compArgStr(p + 1, "DROP_HYDROGENS_ON_ATOM_RECORDS", 19))) {
         RemoveATOMHydrogens = TRUE;
       }
-      else if ((n = compArgStr(p + 1, "DROP_HYDROGENS_ON_OTHER_RECORDS:", 19))) {
+      else if ((n = compArgStr(p + 1, "DROP_HYDROGENS_ON_OTHER_RECORDS", 19))) {
 	RemoveOtherHydrogens = TRUE;
       }
       else {
