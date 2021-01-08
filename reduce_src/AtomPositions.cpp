@@ -277,23 +277,24 @@ void AtomPositions::insertRot(const PDBrec& hr,
 			if (doNH3) {
 				m = std::make_shared<RotMethyl>(c1.loc(), c2.loc(), dang, c1);
 				_motionDesc.insert(std::make_pair(descr, m));
+				if (doNH3) {
+					m->insertHatom(hr);
+				}
 			}
 		}
 		else if (c1.hasProp(ACCEPTOR_ATOM)) {
 			if (doOHSH) {
 				m = std::make_shared<RotDonor>(c1.loc(), c2.loc(), dang, c1);
 				_motionDesc.insert(std::make_pair(descr, m));
+				if (doOHSH) {
+					m->insertHatom(hr);
+				}
 			}
 		}
 		else {
 			cerr<<"*error* insertRot(heavy atom("<<
 				c1.recName()<<") not Carbon and not ACCEPTOR)"<<endl;
 		}
-	}
-	if (m != NULL) {
-    if (!m->insertHatom(hr)) {
-			cerr<<"*error* insertRot(hr)"<<endl;
-    }
 	}
 }
 
@@ -337,15 +338,11 @@ void AtomPositions::insertRotAromMethyl(const PDBrec& hr,
 		if (c1.elem().atno() == 6) {
 			m = std::make_shared<RotAromMethyl>(c1.loc(), c2.loc(), dang, c1);
 			_motionDesc.insert(std::make_pair(descr, m));
+			m->insertHatom(hr);
 		}
 		else {
 			cerr<<"*error* insertRotAromMethyl(heavy atom("<<
 				c1.recName()<<") not Carbon)"<<endl;
-		}
-	}
-	if (m != NULL) {
-		if (!m->insertHatom(hr)) {
-			cerr<<"*error* insertRotAromMethyl(hr)"<<endl;
 		}
 	}
 }
