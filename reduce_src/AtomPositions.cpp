@@ -425,7 +425,7 @@ std::list<char> AtomPositions::insertFlip(const ResBlk& rblk) {
 						//std::cerr << "FlipMemo constructed: " << descriptor << " " << m << std::endl;
 					}
           // SJ insert all atoms of the residue with the corresponding altCode into the mover.
- 					else if (!m->insertAtom(atsq)) {
+ 					else if (!m->canFlip() || !m->insertAtom(atsq)) {
 						cerr<<"*error* insertFlip(rblk)"<<endl;
 						return std::list<char>();
 					}
@@ -467,7 +467,7 @@ void AtomPositions::insertFlip(std::shared_ptr<PDBrec> hr, std::list<char> alts_
 				m = std::make_shared<FlipMemo>(hr->resname(), _useXplorNames, _useOldNames, _bbModel);
 				_motionDesc.insert(std::make_pair(descr, m));
 			}
-			else if (!m->insertAtom(hr)){
+			else if (!m->canFlip() || !m->insertAtom(hr)){
 				cerr<<"*error* insertFlip(hr)"<<endl;
 				return;
 			}
