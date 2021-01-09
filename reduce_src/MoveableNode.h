@@ -207,8 +207,8 @@ public:
 	void addDegree4Hyperedge( Degree4Hyperedge * edge );
 	void deleteDegreeThreeHyperedge( Degree3Hyperedge * edge );
 	void deleteDegreeFourHyperedge( Degree4Hyperedge * edge );
-	void setMover( Mover* mover ) {_mover = mover;}
-	Mover* getMover() {return _mover;}
+	void setMover( MoverPtr mover ) {_mover = mover;}
+	MoverPtr getMover() {return _mover;}
 	
 	void setAtomsInHighOrderOverlap( 
 		std::vector< std::pair< AtomDescr, DotsForAtom * > > const & atsInHOO
@@ -252,7 +252,7 @@ private:
 
 	bool _hasAnyHighOrderOverlap;
 	std::vector< std::pair< AtomDescr, DotsForAtom * > > _atomsInHighOrderOverlap;
-	Mover* _mover;
+	MoverPtr _mover;
 };
 
 class EdgeBetweenMoveableNodes 
@@ -478,7 +478,7 @@ public:
 
 	int addDegreeThreeHyperedge();
 	void setNodesDeg3HypererdgeIncidentUpon( int hyperedge, int first_node, int second_node, int third_node );
-	void setMoverForD3H( int hyperedge, int node_index, Mover * mover );
+	void setMoverForD3H( int hyperedge, int node_index, MoverPtr mover );
 	void setAtomsInThreeWayOverlap( int hyperedge, int node_index, std::list<AtomDescr> & atomlist );
 	void addAtomsToThreeWayOverlap( int hyperedge, int node_index, std::list<AtomDescr> & atomlist );
 	void setAllAtomsForMover( int hyperedge, int node_index, std::list<AtomDescr> & atomlist );
@@ -486,7 +486,7 @@ public:
 	AtomPositions * getAtomPositionsPointer() const;
 	int getNumHyperedges() const;
 	int getVertexIdForD3H(int edge, int vertexID ) const;
-	Mover* getMoverForD3H( int edge, int vertexID ) const;
+	MoverPtr getMoverForD3H( int edge, int vertexID ) const;
 	std::list< AtomDescr > const & getAtomsIn3WayOverlapForD3H( int edge, int vertexID ) const;
 		
 	void setAllStatesEnabled();
@@ -523,7 +523,7 @@ private:
 	int _numberDegree3Hyperedges;
 	bool _alreadyFinalizedD3HEs;
 	std::vector< std::vector< int > > _verticesForDegree3Hyperedge;
-	std::vector< std::vector< Mover* > > _moversForDegree3Hyperedge;
+	std::vector< std::vector< MoverPtr > > _moversForDegree3Hyperedge;
 	std::vector< std::vector< std::list< AtomDescr > > > _atomsInThreeWayOverlap;
 	std::vector< std::vector< std::list< AtomDescr > > > _allAtomsOnMover;
 

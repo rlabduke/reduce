@@ -40,7 +40,7 @@
 
 class AtomPositions;
 class Mover;
-typedef Mover* MoverPtr;
+typedef std::shared_ptr<Mover> MoverPtr;
 
 const double LowestMoverScore = -9.9E99;
 

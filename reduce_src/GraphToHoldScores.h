@@ -4,11 +4,11 @@
 #include <list>
 #include <vector>
 
-class Mover;
 class AtomPositions;
 class DotSphManager;
 
 #include "AtomDescr.h"
+#include "Mover.h"
 
 void sort_three(int, int, int, int &, int &, int & );
 
@@ -77,7 +77,7 @@ public:
 	);
 	~Vertex_ths();
 	
-	void setMover( Mover* mover );		
+	void setMover( MoverPtr mover );		
 	void obtainAtomsFromMover();
 	int getNumStates() const;
 	int getNumAtoms() const;
@@ -111,7 +111,7 @@ public:
 	//Methods for interaction graph initialization
 	int getNumEnabledStates() const;
 	float getScoreForEnabledState( int enabled_state ) const;
-	Mover* getMover() const;
+	MoverPtr getMover() const;
 	bool getHasAnyHighOrderOverlap() const;
 	
 	std::vector< std::pair< AtomDescr, DotsForAtom * > >
@@ -136,7 +136,7 @@ private:
 	std::list< DegreeThreeEdge_ths* > deg3edges_;
 	std::list< DegreeFourEdge_ths* > deg4edges_;
 	
-	Mover* mover_;
+	MoverPtr mover_;
 	//int num_atoms_;
 	int num_states_;
 	int num_incident_d2edges_;
@@ -219,7 +219,7 @@ private:
 	Vertex_ths* vertex_ptrs_[2];
 	int num_states_[2];
 	int num_atoms_[2];
-	Mover* movers_[2];
+	MoverPtr movers_[2];
 	std::list< DegreeTwoEdge_ths* >::iterator pos_in_verts_edge_list_[2];
 	std::list< DegreeTwoEdge_ths* >::iterator pos_in_owners_edge_list_;
 	
@@ -307,7 +307,7 @@ private:
 	Vertex_ths* vertex_ptrs_[3];
 	int num_states_[3];
 	int num_atoms_[3];
-	Mover* movers_[3];
+	MoverPtr movers_[3];
 	DegreeTwoEdge_ths * d2e_[ 3 ]; // 0 == 0-1 edge, 1 == 0-2 edge, 3 == 1-2 edge
 	
 	std::list< DegreeThreeEdge_ths* >::iterator pos_in_verts_edge_list_[ 3 ];
@@ -392,7 +392,7 @@ private:
 	Vertex_ths* vertex_ptrs_[4];
 	int num_states_[4];
 	int num_atoms_[4];
-	Mover* movers_[4];
+	MoverPtr movers_[4];
 	//DegreeTwoEdge_ths * d2e_[ 4 ][ 4 ];
 	
 	std::list< DegreeFourEdge_ths* >::iterator pos_in_verts_edge_list_[ 4 ];
@@ -416,7 +416,7 @@ public:
 		AtomPositions * xyz,
 		DotSphManager * dotSphereManager, 
 		std::vector< int > const & num_states,
-		std::vector< Mover * > const & movers
+		std::vector< MoverPtr > const & movers
 	);
 	~GraphToHoldScores();
 
@@ -451,7 +451,7 @@ public:
 	float getNodeScoreForState( int vertex_id, int state) const;
 	bool getNodeHasAnyHighOrderOverlap( int vertex_id ) const;
 	std::vector< std::pair< AtomDescr, DotsForAtom * > > getAtomsInHighOrderOverlapForNode( int vertex_id ) const;
-	Mover* getMoverForNode( int vertex_id ) const;
+	MoverPtr getMoverForNode( int vertex_id ) const;
 	
 	void setD2EIteratorAtBegining();
 	void incrementD2EIterator();
@@ -486,7 +486,7 @@ private:
 	void allocateConnectivityTable();
 	void instantiateVertices( 
 		std::vector< int > const & num_states,
-		std::vector< Mover * > const & movers
+		std::vector< MoverPtr > const & movers
 	);
 	void obtainAtomsFromMovers();
 	void addDegreeTwoEdges();
