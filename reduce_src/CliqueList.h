@@ -21,11 +21,10 @@
 #include <list>
 #include <string>
 #include <vector>
-#include <memory>
 
 class Mover;
 class AtomPositions; // SJ 09/25/2015
-typedef std::shared_ptr<Mover> MoverPtr;
+typedef Mover* MoverPtr;
 
 class CliqueList {
 public:

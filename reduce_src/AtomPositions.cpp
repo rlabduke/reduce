@@ -107,10 +107,10 @@ int AtomPositions::forceOrientations(const std::string& ofilename, std::vector<s
 			p[0] = '\0';
 			descr = q;
 		}
-		MoverPtr mx;
+		Mover *mx;
 		if (descr.empty()) { continue; } // incomplete line or comment
 		else {
-			std::map<std::string, MoverPtr >::const_iterator iter = _motionDesc.find(descr);
+			std::map<std::string, Mover*>::const_iterator iter = _motionDesc.find(descr);
 			if (iter != _motionDesc.end())
 				mx = iter->second;
 			else
@@ -262,8 +262,8 @@ void AtomPositions::insertRot(const PDBrec& hr,
 //      << hr.chain() << " " <<  hr.resno() << hr.insCode()
 //      << " " << hr.resname() << " " << hr.atomname() <<  hr.alt() << endl;
 
-	std::map<std::string, MoverPtr >::const_iterator iter = _motionDesc.find(descr);
-	MoverPtr m;
+	std::map<std::string, Mover*>::const_iterator iter = _motionDesc.find(descr);
+	Mover *m;
 	if (iter != _motionDesc.end())
 		m = iter->second;
 	else
@@ -275,13 +275,13 @@ void AtomPositions::insertRot(const PDBrec& hr,
 		}
 		else if (c1.elem().atno() == 7) {
 			if (doNH3) {
-				m = std::make_shared<RotMethyl>(c1.loc(), c2.loc(), dang, c1);
+				m = new RotMethyl(c1.loc(), c2.loc(), dang, c1);
 				_motionDesc.insert(std::make_pair(descr, m));
 			}
 		}
 		else if (c1.hasProp(ACCEPTOR_ATOM)) {
 			if (doOHSH) {
-				m = std::make_shared<RotDonor>(c1.loc(), c2.loc(), dang, c1);
+				m = new RotDonor(c1.loc(), c2.loc(), dang, c1);
 				_motionDesc.insert(std::make_pair(descr, m));
 			}
 		}
@@ -291,9 +291,19 @@ void AtomPositions::insertRot(const PDBrec& hr,
 		}
 	}
 	if (m != NULL) {
-    if (!m->insertHatom(hr)) {
-			cerr<<"*error* insertRot(hr)"<<endl;
-    }
+		if (m->type() == Mover::ROTATE_METHYL){
+			if (doNH3) {
+				((RotMethyl*)m)->insertHatom(hr);
+			}
+		}
+		else if (m->type() == Mover::ROTATE_DONOR){
+			if (doOHSH) {
+				((RotDonor*)m)->insertHatom(hr);
+			}
+		}
+		else {
+			cerr<<"*error* insertRot(hr, "<< m->type() <<")"<<endl;
+		}
 	}
 }
 
@@ -326,8 +336,8 @@ void AtomPositions::insertRotAromMethyl(const PDBrec& hr,
 //      << hr.chain() << " " <<  hr.resno() << hr.insCode()
 //      << " " << hr.resname() << " " << hr.atomname() <<  hr.alt() << endl;
 
-	std::map<std::string, MoverPtr >::const_iterator iter = _motionDesc.find(descr);
-	MoverPtr m;
+	std::map<std::string, Mover*>::const_iterator iter = _motionDesc.find(descr);
+	Mover *m;
 	if (iter != _motionDesc.end())
 		m = iter->second;
 	else
@@ -335,7 +345,7 @@ void AtomPositions::insertRotAromMethyl(const PDBrec& hr,
 
 	if (m == NULL) {
 		if (c1.elem().atno() == 6) {
-			m = std::make_shared<RotAromMethyl>(c1.loc(), c2.loc(), dang, c1);
+			m = new RotAromMethyl(c1.loc(), c2.loc(), dang, c1);
 			_motionDesc.insert(std::make_pair(descr, m));
 		}
 		else {
@@ -344,8 +354,11 @@ void AtomPositions::insertRotAromMethyl(const PDBrec& hr,
 		}
 	}
 	if (m != NULL) {
-		if (!m->insertHatom(hr)) {
-			cerr<<"*error* insertRotAromMethyl(hr)"<<endl;
+		if (m->type() == Mover::ROTATE_METHYL){
+			((RotMethyl*)m)->insertHatom(hr);
+		}
+		else {
+			cerr<<"*error* insertRotAromMethyl(hr, "<< m->type() <<")"<<endl;
 		}
 	}
 }
@@ -368,8 +381,8 @@ void AtomPositions::doNotAdjust(const PDBrec& a) {
     }
 	const std::string descr = descrbuf;
 
-	std::map<std::string, MoverPtr >::const_iterator iter = _motionDesc.find(descr);
-	MoverPtr m = NULL;
+	std::map<std::string, Mover*>::const_iterator iter = _motionDesc.find(descr);
+	Mover *m = NULL;
 	if (iter != _motionDesc.end())
 		m = iter->second;
 
@@ -413,22 +426,23 @@ std::list<char> AtomPositions::insertFlip(const ResBlk& rblk) {
 					}
 					descriptor = descrbuf;
                     
-          std::map<std::string, MoverPtr >::const_iterator iter = _motionDesc.find(descriptor);
-					MoverPtr m = NULL;
+                    std::map<std::string, Mover*>::const_iterator iter = _motionDesc.find(descriptor);
+					Mover *m = NULL;
 					if (iter != _motionDesc.end())
 						m = iter->second;
 
 					if (m == NULL) { // SJ - create a new mover for each residue and altCode
-            m = std::make_shared<FlipMemo>(atsq->resname(), _useXplorNames, _useOldNames, _bbModel);
+                        m = new FlipMemo(atsq->resname(), _useXplorNames, _useOldNames, _bbModel);
 						m->descr( descriptor );
 						_motionDesc.insert(std::make_pair(descriptor, m));
 						//std::cerr << "FlipMemo constructed: " << descriptor << " " << m << std::endl;
 					}
-          // SJ insert all atoms of the residue with the corresponding altCode into the mover.
- 					else if (!m->canFlip() || !m->insertAtom(atsq)) {
-						cerr<<"*error* insertFlip(rblk)"<<endl;
+					else if (m->type() != Mover::FLIP){
+						cerr<<"*error* insertFlip(rblk, "<< m->type() <<")"<<endl;
 						return std::list<char>();
 					}
+					((FlipMemo*)m)->insertAtom(atsq); // SJ insert all atoms of the residue with the corresponding altCode into the mover.
+
 				}
 			}
 		}
@@ -458,29 +472,30 @@ void AtomPositions::insertFlip(std::shared_ptr<PDBrec> hr, std::list<char> alts_
 			}
 			std::string descr = descrbuf;
 
-			std::map<std::string, MoverPtr >::const_iterator iter = _motionDesc.find(descr);
-			MoverPtr m;
+			std::map<std::string, Mover*>::const_iterator iter = _motionDesc.find(descr);
+			Mover *m = NULL;
 			if (iter != _motionDesc.end())
 				m = iter->second;
 
 			if (m == NULL) {
-				m = std::make_shared<FlipMemo>(hr->resname(), _useXplorNames, _useOldNames, _bbModel);
+				m = new FlipMemo(hr->resname(), _useXplorNames, _useOldNames, _bbModel);
 				_motionDesc.insert(std::make_pair(descr, m));
 			}
-			else if (!m->canFlip() || !m->insertAtom(hr)){
-				cerr<<"*error* insertFlip(hr)"<<endl;
+			else if (m->type() != Mover::FLIP){
+				cerr<<"*error* insertFlip(hr, "<< m->type() <<")"<<endl;
 				return;
 			}
+			((FlipMemo*)m)->insertAtom(hr);
 		}
 		++alts;
 	}
 }
 // ---------------------------------------------------------------
 void AtomPositions::finalizeMovers() {
-	std::map<std::string, MoverPtr >::const_iterator it = _motionDesc.begin();
+	std::map<std::string, Mover*>::const_iterator it = _motionDesc.begin();
 	int rn=0;
 	while (it != _motionDesc.end()) {
-		MoverPtr m = it->second;
+		Mover *m = it->second;
 		if (m != NULL) {
 
 			m->descr(it->first);
@@ -502,13 +517,13 @@ CliqueList AtomPositions::findCliques() const {
 	std::vector<MoverPtr> memo;
 	memo.reserve(mdsz);
 //	Vector< MoverPtr >   memo(mdsz);
-	std::map<std::string, MoverPtr>::const_iterator it = _motionDesc.begin();
+	std::map<std::string, Mover*>::const_iterator it = _motionDesc.begin();
 	std::string descr;
 
 	// pack each memo into an array and add bumper points to bumpbins
 	int rn=0, an=0;
 	while (it != _motionDesc.end()) {
-		MoverPtr mx = it->second;
+		Mover   *mx = it->second;
 		//_os << "find cliques " << mx->descr() << " valid: " << mx->valid() << " complete: " << mx->isComplete() << endl;
 		if (mx != NULL && mx->valid() && mx->isComplete()
 			&& rn < mdsz) {
@@ -1254,8 +1269,8 @@ int AtomPositions::SearchClique(std::list<MoverPtr> clique, int limit)
 
 bool
 AtomPositions::initializeCliqueMovers(
-	std::list< MoverPtr > const & clique,
-	std::vector< MoverPtr > & item,
+	std::list< Mover* > const & clique,
+	std::vector< Mover* > & item,
 	int const numItems
 )
 {
@@ -1274,7 +1289,7 @@ AtomPositions::initializeCliqueMovers(
 
 void
 AtomPositions::setNumStatesForNodes(
-	std::vector< MoverPtr > & item,
+	std::vector< Mover* > & item,
 	int const numItems,
 	std::vector< int > & num_states,
 	std::vector< std::vector< float > > & penalties
@@ -1482,7 +1497,7 @@ void AtomPositions::generateWaterPhantomHs(std::list< std::shared_ptr<PDBrec> >&
 }
 
 float AtomPositions::determineScoreForMover(
-  	MoverPtr mover,
+  	Mover* mover,
   	std::vector< std::pair< AtomDescr, DotsForAtom * > > & atoms_to_score,
 	double & penalty
 )

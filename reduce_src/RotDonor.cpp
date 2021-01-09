@@ -441,15 +441,3 @@ void RotDonor::setHydAngle(PDBrec& theAtom, double oldAng, double newAng,
       xyz.reposition(lastloc, theAtom);
    }
 }
-
-std::string RotDonor::formatComment(std::string prefix) const
-{
-	char buf[200];
-
-  ::sprintf(buf, "USER  MOD %s:%s:%s:sc=%8.3g%c",
-    prefix.c_str(),
-    descr().c_str(), describeOrientation().c_str(),
-    bestScore(), ((bestHasBadBump())?'!':' '));
-
-  return buf;
-}

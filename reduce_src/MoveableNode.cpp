@@ -2046,7 +2046,7 @@ bool NodeAndEdgeManager::bruteForceIrreducibleSubgraph()
 
 	bool anyHighOrderOverlap = false;
 	std::vector< bool > nodeHasHighOrderOverlap( _numUnEliminatedNodes, false );
-	std::vector< MoverPtr > nodesCorrespondingMover( _numUnEliminatedNodes, static_cast< MoverPtr> (0) );
+	std::vector< Mover* > nodesCorrespondingMover( _numUnEliminatedNodes, static_cast< Mover*> (0) );
 	std::vector< std::vector< std::pair< AtomDescr, DotsForAtom * > > > atomsInHighOrderOverlap( _numUnEliminatedNodes );
 
 	clock_t start_time = clock();
