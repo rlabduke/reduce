@@ -146,6 +146,8 @@ public:
    void trackFlipMaxScore(int f, double val, bool hasBadBump);
 
    void makeNonAdjustable() { _ok = FALSE; _adj = FALSE; }
+
+   virtual std::string formatComment(std::string prefix) const = 0;
    
    virtual void dropBondedFromBumpingListForPDBrec( std::list< std::shared_ptr<PDBrec> > & bumping, std::shared_ptr<PDBrec> atom, int nBondCutoff ) const = 0;
 protected:
