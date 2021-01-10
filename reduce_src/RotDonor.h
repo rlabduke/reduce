@@ -68,6 +68,8 @@ public:
 	   _rot.push_front(temp); 
    }
 
+   virtual std::string formatComment(std::string prefix) const;
+
    double orientationAngle(int oi, SearchStrategy ss=Mover::LOW_RES) const;
    double angle() const { return _angle; }
 

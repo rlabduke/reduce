@@ -76,6 +76,8 @@ public:
    double orientationAngle(int oi, SearchStrategy ss=Mover::LOW_RES) const;
    double angle() const { return _angle; }
 
+   virtual std::string formatComment(std::string prefix) const;
+
    virtual void setHydAngle(double newAng, AtomPositions &xyz);
    virtual void dropBondedFromBumpingListForPDBrec( std::list< std::shared_ptr<PDBrec> > & bumping, std::shared_ptr<PDBrec> atom, int nBondCutoff  ) const;
 private:

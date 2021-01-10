@@ -1026,3 +1026,30 @@ void FlipMemo::fillAtomAndLocVectors() {
 	}
 	_isComplete = TRUE; // good enough
 }
+
+std::string FlipMemo::formatComment(std::string prefix) const
+{
+  char buf[200];
+
+  char classcode = ' ';
+  if (flipStateHasBadBump(0) && flipStateHasBadBump(1)) {
+    classcode = 'C';
+  }
+  else if (abs(flipMaxScore(0) - flipMaxScore(1)) <= 0.5) {
+    classcode = 'X';
+  }
+  else if (flipState() != 0) {
+    classcode = 'F';
+  }
+  else {
+    classcode = 'K';
+  }
+  ::sprintf(buf, "USER  MOD %s:%s:%s:sc=%8.3g%c %c(o=%.2g%s,f=%.2g%s)",
+    prefix.c_str(),
+    descr().c_str(), describeOrientation().c_str(),
+    bestScore(),((bestHasBadBump())?'!':' '), classcode,
+    flipMaxScore(0),((flipStateHasBadBump(0))?"!":""),
+    flipMaxScore(1),((flipStateHasBadBump(1))?"!":""));
+
+  return buf;
+}

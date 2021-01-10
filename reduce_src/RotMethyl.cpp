@@ -346,3 +346,16 @@ int RotMethyl::findAtom(std::shared_ptr<PDBrec> atom ) const
 	exit(2);
         return 0; // to avoid warnings
 }
+
+std::string RotMethyl::formatComment(std::string prefix) const
+{
+  char buf[200];
+
+  ::sprintf(buf, "USER  MOD %s:%s:%s:sc=%8.3g%c  (180deg=%.3g%s)",
+    prefix.c_str(),
+    descr().c_str(), describeOrientation().c_str(),
+    bestScore(),((bestHasBadBump())?'!':' '),
+    initScore(),((initHasBadBump())?"!":""));
+
+  return buf;
+}

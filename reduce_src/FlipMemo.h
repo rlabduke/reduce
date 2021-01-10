@@ -112,6 +112,8 @@ public:
    
    void insertAtom(std::shared_ptr<PDBrec> r);
 
+   virtual std::string formatComment(std::string prefix) const;
+
    int numScoreAtoms() const {
       return valid() ? _resFlip[_resType].numScore : 0;
    }
