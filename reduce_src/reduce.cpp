@@ -23,9 +23,9 @@
 #endif
 
 const char *versionString =
-     "reduce: version 4.0 1/4/2021, Copyright 1997-2016, J. Michael Word; 2020-2021 ReliaSolve";
+     "reduce: version 4.1 1/10/2021, Copyright 1997-2016, J. Michael Word; 2020-2021 ReliaSolve";
 
-const char *shortVersion    = "reduce.4.0.210104";
+const char *shortVersion    = "reduce.4.1.210110";
 const char *referenceString =
                        "Word, et. al. (1999) J. Mol. Biol. 285, 1735-1747.";
 const char *electronicReference = "http://kinemage.biochem.duke.edu";
@@ -1344,7 +1344,7 @@ bool okToPlaceHydHere(const PDBrec& theHatom, const atomPlacementPlan& pp,
 	//  The sum of the heavy-atom covRad() and that of the tested atom and tested to see if the distance is
 	// between 0.55 below and 0.25 above the sum.  If so, the atom is considered to be covalently bonded.
 	//  If there are 2 or more bonds in a non-NH3 plan, no hydrogen is added.  For NH3, all bonded atoms
-	// are checked against the proposed hydrogen location to see if it is closer than the atom’s explicit
+	// are checked against the proposed hydrogen location to see if it is closer than the atom's explicit
 	// radius plus a global NonMetalBumpBias value; if so, then the hydrogen is not placed.
 	if (pp.hasFeature(ROTATEFLAG) || pp.hasFeature(NH3FLAG)) {
 		const PDBrec& heavyAtom = a1;
