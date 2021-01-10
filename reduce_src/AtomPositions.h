@@ -143,7 +143,7 @@ private:
    //AtomPositions& operator=(const AtomPositions& a); // can't assign
 
    std::multimap<LocBlk, std::shared_ptr<PDBrec> > _xyzBlocks;
-   std::map<std::string,  MoverPtr>       _motionDesc;
+   std::map<std::string, MoverPtr>       _motionDesc;
    std::list< std::shared_ptr<BumperPoint> >          _excludePoints;
 
    const bool                _onlyA;
@@ -197,4 +197,5 @@ public:
    int SearchClique(std::list<MoverPtr> clique, int time_limit);
 
 };
+
 #endif

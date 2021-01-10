@@ -478,7 +478,7 @@ public:
 
 	int addDegreeThreeHyperedge();
 	void setNodesDeg3HypererdgeIncidentUpon( int hyperedge, int first_node, int second_node, int third_node );
-	void setMoverForD3H( int hyperedge, int node_index, Mover * mover );
+	void setMoverForD3H( int hyperedge, int node_index, MoverPtr mover );
 	void setAtomsInThreeWayOverlap( int hyperedge, int node_index, std::list<AtomDescr> & atomlist );
 	void addAtomsToThreeWayOverlap( int hyperedge, int node_index, std::list<AtomDescr> & atomlist );
 	void setAllAtomsForMover( int hyperedge, int node_index, std::list<AtomDescr> & atomlist );

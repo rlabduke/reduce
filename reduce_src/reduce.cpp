@@ -23,9 +23,9 @@
 #endif
 
 const char *versionString =
-     "reduce: version 4.0 1/4/2021, Copyright 1997-2016, J. Michael Word; 2020-2021 ReliaSolve";
+     "reduce: version 4.1 1/10/2021, Copyright 1997-2016, J. Michael Word; 2020-2021 ReliaSolve";
 
-const char *shortVersion    = "reduce.4.0.210104";
+const char *shortVersion    = "reduce.4.1.210110";
 const char *referenceString =
                        "Word, et. al. (1999) J. Mol. Biol. 285, 1735-1747.";
 const char *electronicReference = "http://kinemage.biochem.duke.edu";
@@ -1337,6 +1337,15 @@ bool okToPlaceHydHere(const PDBrec& theHatom, const atomPlacementPlan& pp,
 
 	const Point3d& theHpos = theHatom.loc();
 
+	// For rotatable and NH3 placement plans, the radius of the heavy atom to be attached to is added to the
+	// maximum radius of all known atoms and a nearr_list list is made that includes neighbors between 0.1
+	// over the heavy-atom radius and 0.25 over the summed radius. Atoms in nearr_list are checked against
+	// the heavy atom if they are in the same alternate conformation, not hydrogens, and not waters.
+	//  The sum of the heavy-atom covRad() and that of the tested atom and tested to see if the distance is
+	// between 0.55 below and 0.25 above the sum.  If so, the atom is considered to be covalently bonded.
+	//  If there are 2 or more bonds in a non-NH3 plan, no hydrogen is added.  For NH3, all bonded atoms
+	// are checked against the proposed hydrogen location to see if it is closer than the atom's explicit
+	// radius plus a global NonMetalBumpBias value; if so, then the hydrogen is not placed.
 	if (pp.hasFeature(ROTATEFLAG) || pp.hasFeature(NH3FLAG)) {
 		const PDBrec& heavyAtom = a1;
 		if (heavyAtom.elem().atno() != 6) { // OH, SH and NH3, but not CH3
@@ -1403,7 +1412,13 @@ bool okToPlaceHydHere(const PDBrec& theHatom, const atomPlacementPlan& pp,
 		}
 	}
 
-	// *** special case for N/Q metal coordination ***
+	// As as special-case test for N/Q metal coordination, placement plans with the BONDBUMP flag for
+	// residues asn, gln, asx, or glx the covRad of the N/Q oxygen is added to the maximum radius of
+	// all known atoms and a nearr_list list is made that includes neighbors between 0.1 over the
+	// heavy-atom radius and 0.25 over the summed radius.
+	//  Metallic atoms in the same alternate conformation have their radii added to the heavy atom's
+	// and tested to see if the distance is between 0.65 below and 0.25 above the expected.
+	// If so, the doNotAdjustSC parameter is set and the next BONDBUMP flag check is skipped.
 	if (pp.hasFeature(BONDBUMPFLAG)
 		&& strstr(":ASN:asn:GLN:gln:ASX:asx:GLX:glx:", theHatom.resname())) {
 		const PDBrec& nqoxygen = a2;
@@ -1435,6 +1450,15 @@ bool okToPlaceHydHere(const PDBrec& theHatom, const atomPlacementPlan& pp,
 		}
 	} // *** end of special case code for N/Q metal coord. ***
 
+	// For placement plans with the BONDBUMP flag set and the doNotAdjustSC flag not set,
+	// the radius of the heavy atom to be attached to is added to the maximum radius of all known
+	// atoms and a nearr_list list is made that includes neighbors between 0.1 over the heavy-atom
+	// radius and 0.25 over the summed radius.
+	//  Atoms in nearr_list are checked against the heavy atom if they are in the same alternate
+	// conformation and tested to see if the distance is between 0.65 below and 0.25 above the expected.
+	//  A different (global parameter) bumping bias is added for metallic and non-metallic atoms.
+	//  If the distance to the hydrogen to be placed iis below the explicit radius of the atom plus
+	// the bias, several warnings and hints for adjustment are printed and the hydrogen is not placed.
 	if (pp.hasFeature(BONDBUMPFLAG) && (!doNotAdjustSC)) {
 		const PDBrec& heavyAtom = a1;
 		const double halfbondlen = heavyAtom.elem().covRad();
@@ -1497,6 +1521,10 @@ bool okToPlaceHydHere(const PDBrec& theHatom, const atomPlacementPlan& pp,
 		}
 	}
 
+	// For placement plans with feature IFNOPO4, the radius of the oxygen and that of phosphorus are
+	// added and a nearr_list list is made that includes neighbors of the oxygen between 0.25 below
+	// and 0.25 above the sum.
+	//  If any such atoms are indeed phosphorus, then the hydrogen is not placed.
 	if (pp.hasFeature(IFNOPO4)) {
 		const PDBrec& theoxygen = a1;
 		double pobondlen = theoxygen.elem().covRad() +

@@ -64,8 +64,10 @@ public:
 //		   delete i->second;
    }
 
+   enum MemoType { ROTATE_METHYL, ROTATE_DONOR, FLIP };
    enum SearchStrategy { LOW_RES, HIGH_RES };
 
+   virtual MemoType type() = 0;
    virtual bool isComplete() const = 0;
    virtual bool hasHires() const = 0;
    virtual bool canFlip() const = 0;
@@ -79,23 +81,8 @@ public:
    virtual std::list<AtomDescr> getAtDescOfAllPos(float &maxVDWrad) = 0;
    virtual void setHydAngle(double newAng, AtomPositions &xyz) = 0;
 
-   /// @brief Insert a Hydrogen; return false if not available in a derived class.
-   virtual bool insertHatom(const PDBrec& ha) = 0;
-
-   /// @brief Insert an atom; return false if not available in a derived class.
-   virtual bool insertAtom(std::shared_ptr<PDBrec> r) = 0;
-
    const std::string& descr() const { return _descr; }
    void descr(const std::string& s) { _descr = s;    }
-
-   /// @brief Produce a formatted USER comment string describing the change.
-   /// @param [in] prefix For the case of singleton cliques, this should be
-   ///        "Single " (note the space).  For cliques with multiple elements
-   ///        this should be "Set##.#" where ## is replaced with a space-extended
-   ///        one-indexed two-digit clique identifier and # is replaced with
-   ///        a one-indexed mover index within the clique.
-   /// @return String USER  MOD record for insertion into a PDB file.
-   virtual std::string formatComment(std::string prefix) const = 0;
 
    double   bestScore() const { return _bestScore; }
    double   initScore() const { return _initScore; }
@@ -159,6 +146,8 @@ public:
    void trackFlipMaxScore(int f, double val, bool hasBadBump);
 
    void makeNonAdjustable() { _ok = FALSE; _adj = FALSE; }
+
+   virtual std::string formatComment(std::string prefix) const = 0;
    
    virtual void dropBondedFromBumpingListForPDBrec( std::list< std::shared_ptr<PDBrec> > & bumping, std::shared_ptr<PDBrec> atom, int nBondCutoff ) const = 0;
 protected:

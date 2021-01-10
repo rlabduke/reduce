@@ -3,14 +3,12 @@
 
 #include <list>
 #include <vector>
-#include <memory>
 
-class Mover;
-typedef std::shared_ptr<Mover> MoverPtr;
 class AtomPositions;
 class DotSphManager;
 
 #include "AtomDescr.h"
+#include "Mover.h"
 
 void sort_three(int, int, int, int &, int &, int & );
 
@@ -79,7 +77,7 @@ public:
 	);
 	~Vertex_ths();
 	
-	void setMover( MoverPtr mover );
+	void setMover( MoverPtr mover );		
 	void obtainAtomsFromMover();
 	int getNumStates() const;
 	int getNumAtoms() const;

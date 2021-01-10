@@ -31,6 +31,7 @@ public:
    virtual ~RotMethyl() {
    }
 
+   virtual Mover::MemoType type() { return Mover::ROTATE_METHYL; }
    virtual bool isComplete() const { return TRUE; } // rotates partial methyls
    virtual bool hasHires() const { return TRUE; }
    virtual bool canFlip() const { return FALSE; }
@@ -66,18 +67,16 @@ public:
 
    const PDBrec& heavyAtom() const { return *_heavyAtom; }
 
-   virtual bool insertHatom(const PDBrec& ha) {
+   void insertHatom(const PDBrec& ha) {
        std::shared_ptr<PDBrec> temp = std::make_shared<PDBrec>();
 	   *temp = ha;
 	   _rot.push_front(temp); 
-     return true;
    }
-   virtual bool insertAtom(std::shared_ptr<PDBrec> r) { return false; }
-
-   virtual std::string formatComment(std::string prefix) const;
 
    double orientationAngle(int oi, SearchStrategy ss=Mover::LOW_RES) const;
    double angle() const { return _angle; }
+
+   virtual std::string formatComment(std::string prefix) const;
 
    virtual void setHydAngle(double newAng, AtomPositions &xyz);
    virtual void dropBondedFromBumpingListForPDBrec( std::list< std::shared_ptr<PDBrec> > & bumping, std::shared_ptr<PDBrec> atom, int nBondCutoff  ) const;

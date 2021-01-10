@@ -349,7 +349,7 @@ int RotMethyl::findAtom(std::shared_ptr<PDBrec> atom ) const
 
 std::string RotMethyl::formatComment(std::string prefix) const
 {
-	char buf[200];
+  char buf[200];
 
   ::sprintf(buf, "USER  MOD %s:%s:%s:sc=%8.3g%c  (180deg=%.3g%s)",
     prefix.c_str(),

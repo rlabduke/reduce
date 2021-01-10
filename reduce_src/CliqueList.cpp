@@ -62,11 +62,14 @@ void CliqueList::sortSingletonsByDescr() {
 
 void CliqueList::formatSingles(std::vector<std::string>& cliqueNotes, AtomPositions& xyz) const { // SJ - 09/25/2015  added the last argument as that is need for doing the final flip
 
+   char buf[200];
+
    for(std::list<MoverPtr>::const_iterator s = _singles.begin(); s != _singles.end(); ++s) {
 
+      // SJ - 09/25/2015 - added to do the rot hinge dock flip if the GenerateFinalFlip flag is true
       if ((*s)->canFlip() && GenerateFinalFlip) {
-        int orientation = (*s)->orientation();
-        (*s)->setOrientation(orientation,xyz);
+              int orientation = (*s)->orientation();
+              (*s)->setOrientation(orientation,xyz);
       }
 
       cliqueNotes.push_back( (*s)->formatComment("Single ") );
@@ -89,14 +92,14 @@ void CliqueList::formatClique(std::vector<std::string>& cliqueNotes, int c, Atom
 		i = 0;
 		for(std::list<MoverPtr>::iterator s = s_list.begin(); s != s_list.end(); ++s) {
 
-      if ((*s)->canFlip() && GenerateFinalFlip) {
-        int orientation = (*s)->orientation();
-        (*s)->setOrientation(orientation,xyz);
-      }
+      // SJ - 09/25/2015 - added to do the rot hinge dock flip if the GenerateFinalFlip flag is true
+			if ((*s)->canFlip() && GenerateFinalFlip) {
+            int orientation = (*s)->orientation();
+            (*s)->setOrientation(orientation,xyz);
+			}
 
       ::sprintf(buf, "Set%2d.%d", c+1, i+1);
       cliqueNotes.push_back( (*s)->formatComment(buf) );
-
 			i++;
 		}
 	}
