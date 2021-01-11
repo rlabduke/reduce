@@ -672,6 +672,9 @@ int main(int argc, char **argv) {
       delete ifPtr;
     }
 
+    // Load the HETatom database that we're going to use.
+    CTab hetdatabase(DBfilename);
+
     // Read all models from the file into a list of lists of records.  This gives
     // us one list of PDB records for each model in the file.
     std::vector< std::list< std::shared_ptr<PDBrec> > > models = inputModels(s);
@@ -715,9 +718,6 @@ int main(int argc, char **argv) {
           }
         }
       }
-      /// @todo Only load this if we have one...
-      CTab hetdatabase(DBfilename);
-
       DotSphManager dotBucket(VdwDotDensity);
 
       AtomPositions xyz(2000, DoOnlyAltA, UseXplorNames, UseOldNames, BackBoneModel,
