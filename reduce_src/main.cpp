@@ -736,7 +736,11 @@ int main(int argc, char **argv) {
       std::vector<std::string> adjNotes;
       Tally._num_adj = 0;
 
-      reduceList(hetdatabase, m, xyz, adjNotes);
+      // Skip this step if we aren't going to do any hydrogen additions or optimization
+      // so that we save some time.
+      if (AddOtherHydrogens || AddWaterHydrogens || !StopBeforeOptimizing) {
+        reduceList(hetdatabase, m, xyz, adjNotes);
+      }
       // SJ - All Hydrogens are generated at this time, but no flips and methyl rotations have happened.
 
       //=====================================================================
