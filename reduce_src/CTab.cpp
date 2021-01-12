@@ -311,7 +311,8 @@ std::list<std::shared_ptr<atomPlacementPlan> > ResConn::genHplans(const char* re
 }
 
 
-CTab::CTab(const std::string& dbFileName) {
+CTab::CTab(const std::string& dbFileName)
+{
   const unsigned DBbufsz = 500;
   FILE *                 fp;
 
@@ -324,78 +325,78 @@ CTab::CTab(const std::string& dbFileName) {
 		return;
 	}
 
-  // Parse the entries in the file.  Each residue starts with the
-  // keyword RESIDUE at the start of its line.  There are a number
-  // of CONECT lines associated with a residue and then END, or a
-  // new RESIDUE, or the end of the file finished the residue.
-  // There are other lines (HET HETSYN FORMUL, blank) that should be
-  // ignored.
-  bool inResidue = false;
-  std::shared_ptr<ResConn> curResidue;
-  std::string curName;
+	// Parse the entries in the file.  Each residue starts with the
+	// keyword RESIDUE at the start of its line.  There are a number
+	// of CONECT lines associated with a residue and then END, or a
+	// new RESIDUE, or the end of the file finished the residue.
+	// There are other lines (HET HETSYN FORMUL, blank) that should be
+	// ignored.
+	bool inResidue = false;
+	std::shared_ptr<ResConn> curResidue;
+	std::string curName;
 	while (::fgets(buf, DBbufsz, fp)) {
     
-    // Take action based on the type of line we find.
+		// Take action based on the type of line we find.
 		if (strncasecmp_cp(buf, "RESIDUE", 7) == 0) {
-      // Whenever we find a RESIDUE line, we finish any existing
-      // residue.
-      if (curResidue) {
-        m_rescache.insert(std::make_pair(curName, curResidue));
-        curResidue.reset();
-      }
+			// Whenever we find a RESIDUE line, we finish any existing
+			// residue.
+			if (curResidue) {
+				m_rescache.insert(std::make_pair(curName, curResidue));
+				curResidue.reset();
+			}
 			if (0 > column_sscanf(buf, "%10 %3s %6d", resname, &n)) {
 				cerr << "ERROR CTab(" << dbFileName
-          << ", ): scan error on residue line: " << buf
-          << " (skipping residue)" << endl;
+					<< ", ): scan error on residue line: " << buf
+					<< " (skipping residue)" << endl;
 			} else {
-        // Whenever we find a valid RESIDUE line, we start a new
-        // residue.
-        curName = resname;
-        curResidue = std::make_shared<ResConn>();
+				// Whenever we find a valid RESIDUE line, we start a new
+				// residue.
+				curName = resname;
+				curResidue = std::make_shared<ResConn>();
 			}
 
 		} else if (strncasecmp_cp(buf, "END", 3) == 0) {
-      // Finish any existing residue.
-      if (curResidue) {
-        m_rescache.insert(std::make_pair(curName, curResidue));
-        curResidue.reset();
-      }
+			// Finish any existing residue.
+			if (curResidue) {
+				m_rescache.insert(std::make_pair(curName, curResidue));
+				curResidue.reset();
+			}
 
-    } else if (strncasecmp_cp(buf, "CONECT", 6) == 0) {
-      char an[10][5];     // holds ten strings of length 4
-      int m = 0, n = 0;
+		} else if (strncasecmp_cp(buf, "CONECT", 6) == 0) {
+			char an[10][5];     // holds ten strings of length 4
+			int m = 0, n = 0;
 
-      // Add the line into the current residue
+			// Add the line into the current residue
 			if (0 > column_sscanf(buf, "%11 %4s %4d%4s %4s %4s %4s %4s %4s %4s %4s %4s",
-				an[0], &n,  an[1], an[2], an[3], an[4],
-				an[5], an[6], an[7], an[8], an[9])) {
+					an[0], &n,  an[1], an[2], an[3], an[4],
+					an[5], an[6], an[7], an[8], an[9])) {
 				cerr << "ERROR CTab(" << dbFileName << "): Error in residue " << curName
 					<< ": scan error in line: " << buf << endl;
 			} else {
-        if (curResidue) {
-          std::shared_ptr<AtomConn> connectedAtoms = std::make_shared<AtomConn>(an[0],++m);
-          curResidue->put(connectedAtoms);
-          if (n > 9) { n = 9; } // overflow
-          for (int i=1; i <= n; i++) {
-            connectedAtoms->addConn(an[i]);
-          }
-        } else {
-          cerr << "ERROR CTab(" << dbFileName << "): Error CONECT outide of residue"
-            << ": scan error in line: " << buf << endl;
-        }
+				if (curResidue) {
+					std::shared_ptr<AtomConn> connectedAtoms = std::make_shared<AtomConn>(an[0],++m);
+					curResidue->put(connectedAtoms);
+					if (n > 9) { n = 9; } // overflow
+					for (int i=1; i <= n; i++) {
+						connectedAtoms->addConn(an[i]);
+					}
+				} else {
+					cerr << "ERROR CTab(" << dbFileName << "): Error CONECT outide of residue"
+						<< ": scan error in line: " << buf << endl;
+				}
 			}
 
-    } else {
-      // Ignore all other lines
-    }
+		} else {
+			// Ignore all other lines
+		}
 
 	}
   
-  // Insert the last residue, if there was one.
-  if (curResidue) {
-    m_rescache.insert(std::make_pair(curName, curResidue));
-    curResidue.reset();
-  }
+	// Insert the last residue, if there was one.
+	if (curResidue) {
+		m_rescache.insert(std::make_pair(curName, curResidue));
+		curResidue.reset();
+	}
 
   ::fclose(fp);
 }
