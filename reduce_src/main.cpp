@@ -340,6 +340,7 @@ void reduceChanges(bool showAll) { /*changes*/
    cerr  << "2020/12/18 - rmt       Version 3.10 wraps the library for use in Python" << endl;
    cerr  << "2021/01/04 - rmt       Version 4.0 removes the ability to rotate CH3 groups" << endl;
    cerr  << "2021/01/10 - rmt       Version 4.1 removes -FLIP bug introduced in 3.10" << endl;
+   cerr  << "2021/01/12 - rmt       Version 4.2 speeds up processing of the HET database file" << endl;
    cerr  << endl;
    exit(2);
 }
