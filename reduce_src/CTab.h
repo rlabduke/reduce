@@ -79,17 +79,23 @@ public:
   /// @param [in] dbfile Name of the file to read from
 	CTab(const std::string& dbFileName);
 
-   bool ok() const { return m_rescache.size() != 0; }
+   bool ok() const { return m_reslines.size() != 0; }
 
-   std::shared_ptr<ResConn> findTable(const std::string &resname) const;
+   std::shared_ptr<ResConn> findTable(const std::string &resname);
 
-   int numConn(const std::string &resname, const std::string &atomname) const;
+   int numConn(const std::string &resname, const std::string &atomname);
 
 private:
-   //CTab(const CTab&);            // can't copy
-   //CTab& operator=(const CTab&); // can't assign
+  //CTab(const CTab&);            // can't copy
+  //CTab& operator=(const CTab&); // can't assign
 
-   std::map<std::string, std::shared_ptr<ResConn> >  m_rescache;
+  // Vectors of strings read in from file, holding all CONECT lines associated with
+  // each RESIDUE entry.
+  std::map<std::string, std::vector<std::string> >  m_reslines;
+
+  // Cache of residues that have already been parsed from their vectors of strings
+  std::map<std::string, std::shared_ptr<ResConn> >  m_rescache;
+  std::shared_ptr<ResConn> parseResidue(std::vector<std::string> res, std::string resName);
 };
 
 #endif
