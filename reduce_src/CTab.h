@@ -71,25 +71,49 @@ private:
 };
 
 // -------------------------------------------------------------
-//  find residue connection tables in a connection database file
+///  @brief Find residue connection tables from a connection database file
 // -------------------------------------------------------------
 class CTab {
 public:
-  /// @brief Read residue connection tables from specified file
+  /// @brief Read residue connection tables from specified file.
+  ///
+  /// Note: This will hold off reading the file until one of its methods
+  /// is called that requires the information so that the runtime of a program
+  /// is faster if it never does a lookup.
   /// @param [in] dbfile Name of the file to read from
 	CTab(const std::string& dbFileName);
 
-   bool ok() const { return m_rescache.size() != 0; }
+  /// @brief Find the atom connections for a specified residue
+  /// @param [in] Name of the residue
+  /// @return A shared pointer to the residue connections or nullptr if the
+  ///       residue was not found in the file.
+  std::shared_ptr<ResConn> findTable(const std::string &resname);
 
-   std::shared_ptr<ResConn> findTable(const std::string &resname) const;
-
-   int numConn(const std::string &resname, const std::string &atomname) const;
+   /// @brief Return the number of atoms connected to the specified atom in the specified residue
+   /// @param [in] resname Name of the residue
+   /// @param [in] atomname Atom to look up in the residue
+   /// @return The number of atoms connected to the specified atom if it is found,
+   ///        0 if the atom or residue cannot be found.
+   int numConn(const std::string &resname, const std::string &atomname);
 
 private:
-   //CTab(const CTab&);            // can't copy
-   //CTab& operator=(const CTab&); // can't assign
+  //CTab(const CTab&);            // can't copy
+  //CTab& operator=(const CTab&); // can't assign
 
-   std::map<std::string, std::shared_ptr<ResConn> >  m_rescache;
+  // Command-line arguments stored in case we need to use them.
+  std::string m_dbFileName; ///< Name of the database file to read from.  Set to empty once we have read the file.
+
+  /// @brief Read from the file, if we are able.
+  /// @param [in] dbFilename Name of the file to read.
+  void readFile(const std::string& dbFileName);
+
+  // Vectors of strings read in from file, holding all CONECT lines associated with
+  // each RESIDUE entry.
+  std::map<std::string, std::vector<std::string> >  m_reslines;
+
+  // Cache of residues that have already been parsed from their vectors of strings
+  std::map<std::string, std::shared_ptr<ResConn> >  m_rescache;
+  std::shared_ptr<ResConn> parseResidue(std::vector<std::string> res, std::string resName);
 };
 
 #endif
