@@ -311,6 +311,13 @@ std::list<std::shared_ptr<atomPlacementPlan> > ResConn::genHplans(const char* re
 }
 
 CTab::CTab(const std::string& dbFileName)
+	: m_dbFileName(dbFileName)
+{
+	// We only needed to store the file name.  We will load it lazily later if
+	// we need to.
+}
+
+void CTab::readFile(const std::string& dbFileName)
 {
 	const unsigned DBbufsz = 500;
 	FILE* fp;
@@ -409,6 +416,13 @@ std::shared_ptr<ResConn> CTab::parseResidue(std::vector<std::string> res, std::s
 
 std::shared_ptr<ResConn> CTab::findTable(const std::string &resname)
 {
+	// If we have a stored file name, we need to read it.  Once we have
+	// read it, don't read it again.
+	if (m_dbFileName.size() > 0) {
+		readFile(m_dbFileName);
+		m_dbFileName.clear();
+	}
+
 	// Look up the residue in the cache.  If we find it, return it.
   std::shared_ptr<ResConn> ret;
 	std::map<std::string, std::shared_ptr<ResConn> >::const_iterator iter = m_rescache.find(resname);
