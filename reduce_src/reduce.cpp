@@ -12,7 +12,7 @@
 // also available for free.
 //               ** Absolutely no Warranty **
 // Copyright (C) 1999-2016 J. Michael Word
-// Copyright (C) 2020-2021 ReliaSolve
+// Copyright (C) 2020-2021 Richardson Lab at Duke University
 // **************************************************************
 //
 
@@ -23,7 +23,7 @@
 #endif
 
 const char *versionString =
-     "reduce: version 4.2 1/12/2021, Copyright 1997-2016, J. Michael Word; 2020-2021 ReliaSolve";
+     "reduce: version 4.3 1/14/2021, Copyright 1997-2016, J. Michael Word; 2020-2021 Richardson Lab at Duke University";
 
 const char *shortVersion    = "reduce.4.2.210112";
 const char *referenceString =

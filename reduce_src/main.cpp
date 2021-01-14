@@ -12,7 +12,7 @@
 // also available for free.
 //               ** Absolutely no Warranty **
 // Copyright (C) 1999-2016 J. Michael Word
-// Copyright (C) 2020-2021 ReliaSolve
+// Copyright (C) 2020-2021 Richardson Lab at Duke University
 // **************************************************************
 //
 //  reduceChanges now contains the CHANGELOG or history info
@@ -341,6 +341,7 @@ void reduceChanges(bool showAll) { /*changes*/
    cerr  << "2021/01/04 - rmt       Version 4.0 removes the ability to rotate CH3 groups" << endl;
    cerr  << "2021/01/10 - rmt       Version 4.1 removes -FLIP bug introduced in 3.10" << endl;
    cerr  << "2021/01/12 - rmt       Version 4.2 speeds up processing of the HET database file" << endl;
+   cerr  << "2021/01/14 - rmt       Version 4.3 inserts optimization requests on existing hydrogens when not adding hydrogens" << endl;
    cerr  << endl;
    exit(2);
 }
