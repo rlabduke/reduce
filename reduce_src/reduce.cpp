@@ -907,10 +907,8 @@ void analyzeRes(CTab& hetdatabase, ResBlk* pb, ResBlk* cb, ResBlk* nb,
 	}
 
 	// work through each atom placement plan - S.J. each atom placement plan is a potential H atom that needs to be added. The hydrogens that are already present are not looked at right now.
-	if (AddOtherHydrogens) {
-		for (std::list<std::shared_ptr<atomPlacementPlan> >::const_iterator iter = app.begin(); iter != app.end(); ++iter) {
-			genHydrogens(**iter, *cb, o2prime, xyz, resAlts, fixNotes, rlst);
-		}
+	for (std::list<std::shared_ptr<atomPlacementPlan> >::const_iterator iter = app.begin(); iter != app.end(); ++iter) {
+		genHydrogens(**iter, *cb, o2prime, xyz, resAlts, fixNotes, rlst);
 	}
 }
 
@@ -1006,7 +1004,7 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 				}
 			}
 		}
-		else {
+		else if (AddOtherHydrogens) {
             int i = 0, j = 0, k = 0;
 
 			if (pp.hasFeature(NOO2PRIMEFLAG) && o2prime) {
