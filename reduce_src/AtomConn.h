@@ -64,11 +64,11 @@
 // -----------------------------------------
 class AtomConn {
 public:
-	AtomConn(const std::string& name, int ord) : _name(name), _order(ord) {_emptyString = "";}
+	AtomConn(const std::string& name, int ord) : _name(name), _order(ord) {}
   virtual ~AtomConn() {}
 
    AtomConn(const AtomConn& a)
-	   : _name(a._name), _order(a._order) { _neighbor = a._neighbor; _emptyString = "";}
+	   : _name(a._name), _order(a._order) { _neighbor = a._neighbor; }
    AtomConn& operator=(const AtomConn& a);
 
    const std::string& name() const { return _name; }
@@ -88,7 +88,6 @@ public:
 private:
 
    std::string       _name;      // name of this atom
-   std::string       _emptyString;
    int          _order;     // number used when sorting AtomConns
    std::vector<std::string> _neighbor;  // list of connected atom names
 };
