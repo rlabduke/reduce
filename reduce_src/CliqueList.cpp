@@ -62,8 +62,6 @@ void CliqueList::sortSingletonsByDescr() {
 
 void CliqueList::formatSingles(std::vector<std::string>& cliqueNotes, AtomPositions& xyz) const { // SJ - 09/25/2015  added the last argument as that is need for doing the final flip
 
-   char buf[200];
-
    for(std::list<MoverPtr>::const_iterator s = _singles.begin(); s != _singles.end(); ++s) {
 
       // SJ - 09/25/2015 - added to do the rot hinge dock flip if the GenerateFinalFlip flag is true
