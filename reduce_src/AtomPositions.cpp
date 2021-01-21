@@ -1690,16 +1690,16 @@ double AtomPositions::atomScore(const PDBrec& a, const Point3d& p,
 		if (keepDot) { // remove dots inside a connected atom
 			std::shared_ptr<PDBrec> x;
 			for (std::list< std::shared_ptr<PDBrec> >::const_iterator it = exclude.begin(); it != exclude.end(); ++it) {
-				x = *it;
-				if ( (distanceSquared(q, x->loc()) < x->vdwRad()*x->vdwRad())
-					&& x->valid() && (! x->hasProp(IGNORE))
-					&& interactingConfs(a, *x, _onlyA) ) {
+        const PDBrec &x = **it;
+				if ( (distanceSquared(q, x.loc()) < x.vdwRad()*x.vdwRad())
+					&& x.valid() && (! x.hasProp(IGNORE))
+					&& interactingConfs(a, x, _onlyA) ) {
 					keepDot = FALSE;
 					break;
 				}
 			}
 		}
-    	if (! keepDot ) continue;
+   	if (! keepDot ) continue;
 
 		//if we've gotten this far, then this dot's score gets counted
 
