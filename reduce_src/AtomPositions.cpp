@@ -1603,61 +1603,18 @@ double AtomPositions::atomScore(const PDBrec& a, const Point3d& p,
 	//apl now that AtomPositions has decided to score this atom, collect nearby-list
 	std::list< std::shared_ptr<PDBrec> > nearby = this->neighbors( p, 0.001, nearbyRadius);
     
-    std::list< std::shared_ptr<PDBrec> > bumping_list; // first we collect atoms actually interacting
-	std::shared_ptr<PDBrec> rec;
-	for (std::list< std::shared_ptr<PDBrec> >::const_iterator ni = nearby.begin(); ni != nearby.end(); ++ni) {
-		rec = *ni;
-        if (rec->valid() && (! rec->hasProp(IGNORE))
-			&& (abs(rec->occupancy()) > _occupancyCuttoff)
-			&& (! (a == *rec))
-			&& (interactingConfs(a, *rec, _onlyA))
-			&& ( vdwGap(a, p, *rec, rec->loc()) < pRad)
-			&& (! foundInList(*rec, exclude))) {
-			bumping_list.push_back(rec);
-        }
-	}
-
-
-	std::vector< std::shared_ptr<PDBrec> > bumping( bumping_list.size(), NULL );
-	std::copy( bumping_list.begin(), bumping_list.end(), bumping.begin() );
-	//for (int ii = 0; ii < bumping.size(); ++ii )
-	//{
-	//	if (output) std::cerr << "bumping: " << ii << " " << bumping[ ii ] << std::endl;
-	//}
-
-	//if (false)
-	//int count_atoms_to_score = bumping.size();
-	//if ( scoreAtomsAndDotsInAtomsToScoreVector_ )
-	//{
-	//	count_atoms_to_score = 0;
-	//	int first = 0;
-	//	int last = bumping.size() - 1;
-	//
-	//	for (std::list<  std::shared_ptr<PDBrec> >::iterator iter = bumping_list.begin(); iter != bumping_list.end(); ++iter)
-	//	{
-	//		AtomDescr bumping_descr = (*iter)->getAtomDescr();
-	//		if (std::find(dotsToCount->begin(), dotsToCount->end(), bumping_descr) == dotsToCount->end() )
-	//		{
-	//			bumping[ last ] = *iter;
-	//			accept_bumping[ last ] = false;
-	//			--last;
-	//		}
-	//		else
-	//		{
-	//			bumping[ first ] = *iter;
-	//			++count_atoms_to_score;
-	//			++first;
-	//		}
-	//	}
-	//
-	//	if ( count_atoms_to_score == 0 ) return 0.0;
-	//
-	//}
-	//else
-	//{
-	//std::copy( bumping_list.begin(), bumping_list.end(), bumping.begin() );
-	//}
-
+  std::vector< std::shared_ptr<PDBrec> > bumping; // first we collect atoms actually interacting
+  for (std::list< std::shared_ptr<PDBrec> >::const_iterator ni = nearby.begin(); ni != nearby.end(); ++ni) {
+    const PDBrec &rec = **ni;
+    if (rec.valid() && !rec.hasProp(IGNORE)
+        && (abs(rec.occupancy()) > _occupancyCuttoff)
+        && (! (a == rec))
+        && (interactingConfs(a, rec, _onlyA))
+        && (vdwGap(a, p, rec, rec.loc()) < pRad)
+        && (!foundInList(rec, exclude))) {
+      bumping.push_back(*ni);
+    }
+  }
 
 	int HBmask = 0;
 	if (a.hasProp(   DONOR_ATOM)) { HBmask |= ACCEPTOR_ATOM; }
