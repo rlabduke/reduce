@@ -60,7 +60,7 @@
 #define BACKBONEMODEL	(1<<21)
 
 // -----------------------------------------
-//  an atom and connected atoms
+//  Keep track of the atoms connected to an atom 
 // -----------------------------------------
 class AtomConn {
 public:
@@ -88,7 +88,7 @@ public:
 private:
 
    std::string       _name;      // name of this atom
-   int          _order;     // number used when sorting AtomConns
+   int          _order;     // number used when sorting AtomConns and also used by algorithms as an index
    std::vector<std::string> _neighbor;  // list of connected atom names
 };
 
