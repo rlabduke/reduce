@@ -221,7 +221,7 @@ double RotAromMethyl::scoreThisAngle(AtomPositions &xyz, DotSphManager& dotBucke
 		const  std::shared_ptr<PDBrec> thisAtom = *alst;
 
 		double val = xyz.atomScore(*thisAtom, thisAtom->loc(),
-			thisAtom->vdwRad() + probeRadius + maxVDWrad,
+      static_cast<float>(thisAtom->vdwRad() + probeRadius + maxVDWrad),
 			//apl procrastinate nearby list computation until AtomPositions decides to score
 			*(_bnded[i]), dotBucket.fetch(thisAtom->vdwRad()), probeRadius, FALSE,
 			bumpSubScore, hbSubScore, subBadBump);

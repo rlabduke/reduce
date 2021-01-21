@@ -347,7 +347,7 @@ void reduceChanges(bool showAll) { /*changes*/
 }
 
 void establishHetDictionaryFileName(void) {
-	int i =DBfilename.find_last_of(DIRECTORY_SEP_CHAR);
+	int i = static_cast<int>(DBfilename.find_last_of(DIRECTORY_SEP_CHAR));
 	std::string localfile = DBfilename.substr(i+1, DBfilename.length());
 #ifdef NOSYSSTATS
 	const int rc = 1; // force the name on the MAC
@@ -554,7 +554,7 @@ char* parseCommandLine(int argc, char **argv) {
         OccupancyCutoff = parseReal(p, n+1, 10, OccupancyCutoff);
       }
       else if((n = compArgStr(p+1, "H2OBcutoff", 4))){
-        WaterBcutoff = 1.0 * parseInteger(p, n+1, 10);
+        WaterBcutoff = 1.0f * parseInteger(p, n+1, 10);
       }
       else if((n = compArgStr(p+1, "H2OOCCcutoff", 6))){
         WaterOCCcutoff = parseReal(p, n+1, 10, WaterOCCcutoff);

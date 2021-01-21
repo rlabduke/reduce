@@ -134,7 +134,7 @@ public:
    bool linkExists(const std::string &s) const {
 	   return _links.find(s) != _links.end();
    }
-   int  numLinks() const { return _links.size(); }
+   int  numLinks() const { return static_cast<int>(_links.size()); }
 
    std::map<std::string, MoverPtr> links() const {
 	   return _links;

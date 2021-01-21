@@ -948,7 +948,7 @@ MoveableNode::eliminateThroughS3Reduction()
 
 	//collect info for degree-3 edges
 	count = 0;
-	int const numd3edges = _degree3hyperedges.size();
+	int const numd3edges = static_cast<int>(_degree3hyperedges.size());
 	std::vector< Degree3Hyperedge* > d3hes( numd3edges );
 	std::vector< std::pair< int, int > > d3whichVert( numd3edges );
 	for ( std::list< Degree3Hyperedge* >::iterator iter = _degree3hyperedges.begin();
@@ -1023,11 +1023,11 @@ MoveableNode::eliminateThroughS3Reduction()
 				{
 					stateAssignment[ 3 ] = ll;
 
-					float score = _theNodeScoreVect->getNodeScore( ll ) ;
+					float score = static_cast<float>(_theNodeScoreVect->getNodeScore( ll ));
 					for (int mm = 0; mm < 3; ++mm)
 					{
-						score += edges[ mm ]->getEdgeScore( _index, ll,
-							otherNodeForEdge[ mm ], stateAssignment[ whichOtherNode[ mm ] ] );
+						score += static_cast<float>(edges[ mm ]->getEdgeScore( _index, ll,
+							otherNodeForEdge[ mm ], stateAssignment[ whichOtherNode[ mm ] ] ));
 					}
 					for (int mm = 0; mm < numd3edges; ++mm)
 					{
@@ -1322,7 +1322,7 @@ NodeState			MoveableNode::getNodeStateInOptimalNetworkConf(std::vector<NodeState
 }
 
 
-int					MoveableNode::getNumberOfEdges() {return _edgeList.size();}
+int					MoveableNode::getNumberOfEdges() {return static_cast<int>(_edgeList.size());}
 
 std::list<EdgeBetweenMoveableNodes* >* MoveableNode::getEdgeList() {return &_edgeList;}
 
@@ -2170,9 +2170,9 @@ bool NodeAndEdgeManager::bruteForceIrreducibleSubgraph()
 				runningScore += d2he_scores[ ii ];
 			}
 			else{
-				runningScore += d2he_scores[ ii ] = d2he[ ii ]->getEdgeScore(
+				runningScore += d2he_scores[ ii ] = static_cast<float>(d2he[ ii ]->getEdgeScore(
 					currNetworkState[d2he_verts[ ii ].first],
-					currNetworkState[d2he_verts[ ii ].second]);
+					currNetworkState[d2he_verts[ ii ].second]));
 			}
 		}
 		for ( int ii = 0; ii < d3he.size(); ++ii )

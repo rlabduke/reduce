@@ -160,7 +160,7 @@ void RotDonor::finalize(int nBondCutoff, bool useXplorNames, bool useOldNames, b
 		// -------------------------------------------------------
 		// merge both sets of angles into the orientation angle array
 
-		_nori = angs.size();
+		_nori = static_cast<int>(angs.size());
 		_oang.resize(_nori);
 		int j = 0;
 		angs.sort();
@@ -299,7 +299,7 @@ double RotDonor::scoreThisAngle(AtomPositions &xyz,	DotSphManager& dotBucket,
 		const  std::shared_ptr<PDBrec> thisAtom = *alst;
 
 		double val = xyz.atomScore(*thisAtom, thisAtom->loc(),
-			thisAtom->vdwRad() + probeRadius + maxVDWrad, 
+      static_cast<float>(thisAtom->vdwRad() + probeRadius + maxVDWrad),
 			//apl procrastinate nearby list computation until AtomPositions decides to score
 			*(_bnded[i]), dotBucket.fetch(thisAtom->vdwRad()), probeRadius, FALSE,
 			bumpSubScore, hbSubScore, subBadBump);
@@ -341,7 +341,7 @@ double RotDonor::bumpsThisAngle(AtomPositions &xyz, DotSphManager& dotBucket) {
 		const  std::shared_ptr<PDBrec> thisAtom = *alst;
 
 		double val = xyz.atomScore(*thisAtom, thisAtom->loc(), 
-			thisAtom->vdwRad() + maxVDWrad, 
+      static_cast<float>(thisAtom->vdwRad() + maxVDWrad),
 			//apl procrastinate nearby list computation until AtomPositions decides to score
 			*(_bnded[i]), dotBucket.fetch(thisAtom->vdwRad()), 0.0, TRUE,
 			bumpSubScore, hbSubScore, subBadBump);

@@ -186,7 +186,7 @@ int column_sprintf(char *outbuf, const char *fmt, ...) {
 	}
 	*p = '\0';
 	va_end(argv);
-	return p - outbuf;
+	return static_cast<int>(p - outbuf);
 }
 
 static char *
@@ -218,7 +218,7 @@ outint(int value, int width, int radix, char fill_char, char hex,
 		} while (value);
 	else
 		*s++ = zero;
-	n = s - scratch;
+	n = static_cast<int>(s - scratch);
 	if (width != -1 && n > width)
 		return e_out(width + negative, p);
 
@@ -249,7 +249,7 @@ outunsigned(unsigned int value, int width, char fill_char, int left_justify,
 		*s++ = value % 10 + '0';
 		value /= 10;
 	}
-	n = s - scratch;
+	n = static_cast<int>(s - scratch);
 	if (n == 0)
 		*s++ = '0', n = 1;
 	if (width != -1 && n > width)
@@ -271,7 +271,7 @@ outstr(char *s, int width, int maxstr, char fill_char, int left_justify, char *p
 {
 	int	len;
 
-	len = strlen(s);
+	len = static_cast<int>(strlen(s));
 	if (maxstr >= 0 && len > maxstr)
 		len = maxstr;
 	if (width != -1 && len > width)
@@ -412,7 +412,7 @@ outexp(double value, int width, int nplace, char fill_char, int left_justify,
 		*s++ = n % 10 + '0';
 	else
 		*s++ = '0';
-	n = s - scratch;
+	n = static_cast<int>(s - scratch);
 	if (width != -1 && n > width)
 		return e_out(width + negative, p);
 

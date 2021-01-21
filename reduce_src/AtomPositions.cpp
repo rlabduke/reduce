@@ -94,7 +94,7 @@ int AtomPositions::forceOrientations(const std::string& ofilename, std::vector<s
 			}
 			else if (orient == 'R') {
 				if (*p == '+' || *p == '-' || isdigit(*p)) {
-					angle = atof(p);
+					angle = static_cast<float>(atof(p));
 					while (*p && (p[0] != ':')) { p++; }
 					break;
 				}
@@ -510,7 +510,7 @@ void AtomPositions::finalizeMovers() {
 // ---------------------------------------------------------------
 CliqueList AtomPositions::findCliques() const {
 	const float prRad = 0.0; // we just want to examine bumps here
-	const int mdsz = _motionDesc.size();
+	const int mdsz = static_cast<int>(_motionDesc.size());
 	float maxVDWrad = 1.0;
 
 	std::multimap<LocBlk, std::shared_ptr<BumperPoint> > bumpbins;  //(2*mdsz);
@@ -644,8 +644,8 @@ int AtomPositions::orientSingles(const std::list<MoverPtr>& singles) {
 #else
 	const long laf = _os.setf(     ios::right,      ios::adjustfield);
 #endif
-	const int iw = _os.width(8);
-	const int ip = _os.precision(3);
+	const int iw = static_cast<int>(_os.width(8));
+	const int ip = static_cast<int>(_os.precision(3));
 
 	int i;
 
@@ -798,8 +798,8 @@ int AtomPositions::orientClique(const std::list<MoverPtr>& clique, int limit) {
 #else
 	const long laf = _os.setf(     ios::right,      ios::adjustfield);
 #endif
-	const int iw = _os.width(8);
-	const int ip = _os.precision(3); //ANDREW: 3 originally - sometimes 6 is useful to output more precision
+	const int iw = static_cast<int>(_os.width(8));
+	const int ip = static_cast<int>(_os.precision(3)); //ANDREW: 3 originally - sometimes 6 is useful to output more precision
 
 	double log10ncombo = 0.0;
 	int i = 0, rc = 0;
@@ -812,7 +812,7 @@ int AtomPositions::orientClique(const std::list<MoverPtr>& clique, int limit) {
 		if (_outputNotice) { _os << ":" << (*s)->descr() << "[" << no << "]"; }
 	}
 	const double p10 = floor(log10ncombo);
-	const float 	mantis = pow(double(10.0), log10ncombo - p10);
+	const float 	mantis = static_cast<float>(pow(double(10.0), log10ncombo - p10));
 	const int 		poweroften = int(p10);
 	if(_outputNotice){
 		if (log10ncombo < log10(double(1000000))) { //smallish numbers as integers
@@ -863,7 +863,7 @@ void AtomPositions::CollectBumping(const AtomDescr& ad, std::list< std::shared_p
 
 int AtomPositions::SearchClique(std::list<MoverPtr> clique, int limit)
 {
-	const int numItems = clique.size();
+	const int numItems = static_cast<int>(clique.size());
 	std::vector<MoverPtr>    item (numItems);
 	std::vector<double> currScore;
 	currScore.resize(numItems);
@@ -924,7 +924,7 @@ int AtomPositions::SearchClique(std::list<MoverPtr> clique, int limit)
 	//find out how many possible penalty values there are
 	allPenalties.sort();
 	allPenalties.unique();
-	int numPenaltyValues = allPenalties.size();
+	int numPenaltyValues = static_cast<int>(allPenalties.size());
 
  	//---------- Optimize Based on the Interaction Graph ------------//
  	std::vector< NodeState > optimal_state_enabled( numItems ); //enabled enumeration of states
@@ -1014,7 +1014,7 @@ int AtomPositions::SearchClique(std::list<MoverPtr> clique, int limit)
 				actualPenalty = penalties[ ii ][ optimal_state_original[ ii ]];
 			}
 		}
-		float score_without_penalty = theNaEManager->getScoreOfOptimalNetworkConfiguration();
+		float score_without_penalty = static_cast<float>(theNaEManager->getScoreOfOptimalNetworkConfiguration());
 		float score_including_penalty = score_without_penalty + actualPenalty;
 
 		//std::cerr << "DP Iteration: penalty threshold " << *penalty_iterator << ", best: ";
@@ -1121,7 +1121,7 @@ int AtomPositions::SearchClique(std::list<MoverPtr> clique, int limit)
 				gths.convertEnabledState2OriginalStateEnumerationOnNode(
 				jj, optimal_state_enabled[ jj ] );
 		}
-		float score = theNaEManager->getScoreOfOptimalNetworkConfiguration();
+		float score = static_cast<float>(theNaEManager->getScoreOfOptimalNetworkConfiguration());
 
 		for (int jj = 0; jj < numItems; ++jj)
 		{
@@ -1454,7 +1454,7 @@ void AtomPositions::generateWaterPhantomHs(std::list< std::shared_ptr<PDBrec> >&
 								if (HBoverlap < nearbyA[i]._gap) {
 									nearbyA[i]._nam = resDescr;
 									nearbyA[i]._loc = rec->loc();
-									nearbyA[i]._gap = HBoverlap;
+									nearbyA[i]._gap = static_cast<float>(HBoverlap);
 								}
 								foundMatchingAromAtom = TRUE;
 								break;
@@ -1466,7 +1466,7 @@ void AtomPositions::generateWaterPhantomHs(std::list< std::shared_ptr<PDBrec> >&
 					if (!foundMatchingAromAtom && nAcc < MaxAccDir) {
 						nearbyA[nAcc]._nam = resDescr;
 						nearbyA[nAcc]._loc = rec->loc();
-						nearbyA[nAcc]._gap = HBoverlap;
+						nearbyA[nAcc]._gap = static_cast<float>(HBoverlap);
 						nAcc++;
 					}
 				}
@@ -1489,7 +1489,7 @@ void AtomPositions::generateWaterPhantomHs(std::list< std::shared_ptr<PDBrec> >&
 			pHatom->elem(elemHOd);
 
 			pHatom->atomno(0);
-			pHatom->occupancy(_occupancyCuttoff + 0.01);
+			pHatom->occupancy(_occupancyCuttoff + 0.01f);
 			pHatom->tempFactor(99.99);
 			pHatom->elemLabel(" H");
 			pHatom->chargeLabel("  ");
@@ -1520,10 +1520,10 @@ float AtomPositions::determineScoreForMover(
 	bool tempbool;
 	float bump, hbond;
 
-	float score = mover->determineScore(*this,
+	float score = static_cast<float>(mover->determineScore(*this,
 		_dotBucket, _nBondCutoff, _probeRadius,
 		_pmag, penalty, bump,
-		hbond, tempbool);
+		hbond, tempbool));
 
 	scoreAtomsAndDotsInAtomsToScoreVector_ = false;
 	atoms_to_score_ptr_ = 0;
@@ -1723,7 +1723,7 @@ double AtomPositions::atomScore(const PDBrec& a, const Point3d& p,
       // using scale values from probe program
       if (overlapType == -1) {              // clash
         const double bmp = -BUMPweight*overlap;
-        bumpSubScore += bmp;
+        bumpSubScore += static_cast<float>(bmp);
 		  dotscore = bmp;
         s += bmp;
         if (mingap <= -_bad_bump_gap_cutoff) { hasBadBump = TRUE; }
@@ -1741,13 +1741,13 @@ double AtomPositions::atomScore(const PDBrec& a, const Point3d& p,
       else if (overlapType ==  1) {			    // H-bond
         if (!onlyBumps) {
           const double hbv = HBweight*overlap;
-          hbSubScore += hbv;
+          hbSubScore += static_cast<float>(hbv);
 			 dotscore = hbv;
           s += hbv;
         }
         else {   // in this case treat as a bump
           const double pseudobump = -BUMPweight*overlap;
-          bumpSubScore += pseudobump;
+          bumpSubScore += static_cast<float>(pseudobump);
 			 dotscore = pseudobump;
           s += pseudobump;
         }

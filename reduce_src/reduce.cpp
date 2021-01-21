@@ -1047,7 +1047,7 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 				std::list< std::shared_ptr<PDBrec> > rs;
 				theRes.get(pp.conn(i), rs);
 				if (!rs.empty()) {
-					nconf[i] = rs.size();
+					nconf[i] = static_cast<int>(rs.size());
 					maxalt = std::max(maxalt, nconf[i]);
 					std::vector< std::shared_ptr<PDBrec> > rvv_v;
 					rvv_v.reserve(nconf[i]);
@@ -1075,7 +1075,7 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 			    }
             }*/
             sort (all_confs.begin(), all_confs.end());
-            for(k=all_confs.size()-1; k > 0; k--) {
+            for(k= static_cast<int>(all_confs.size())-1; k > 0; k--) {
                 if ( toupper(all_confs[k])
                     == toupper(all_confs[k-1]) ) {
                     all_confs.erase(all_confs.begin()+k);

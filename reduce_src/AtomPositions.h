@@ -106,7 +106,7 @@ class AtomPositions {
    void describeChanges(std::list< std::shared_ptr<PDBrec> >& records,
 	   std::list< std::shared_ptr<PDBrec> >::iterator& infoPtr, std::vector<std::string>& notes);
 
-   int numChanges() const { return _motionDesc.size(); }
+   int numChanges() const { return static_cast<int>(_motionDesc.size()); }
 
    void manageMetals(const ResBlk& rblk);
 

@@ -195,7 +195,7 @@ std::shared_ptr<atomPlacementPlan> ResConn::planHplacement(const std::string &at
 	    else if (nn == 2) {
 	       if (x1c->num_conn() == 4) {
 		  type = 2;
-		  ang1 = (whichH == 1) ? 126.5 : -126.5;
+		  ang1 = (whichH == 1) ? 126.5f : -126.5f;
 	       }
 	       else if (x1c->num_conn() == 3) { type = 4; }
 	    }
@@ -211,8 +211,8 @@ std::shared_ptr<atomPlacementPlan> ResConn::planHplacement(const std::string &at
 			      if (x1c->num_conn() == 4) {
 				 type = 3;
 				 ang1 = 109.5;
-				 ang2 = (whichH == 1) ? 180.0
-				      : (whichH == 2) ? 60.0 : -60.0;
+				 ang2 = (whichH == 1) ? 180.0f
+				      : (whichH == 2) ? 60.0f : -60.0f;
 				 std::string x2name = names.conn(1);
 				 ElementInfo *x2e = ElementInfo::StdElemTbl().lookupPDBatom(x2name.c_str(), resname);
 				 if (x2e->atno()==16) { // S, so this is like a MET methyl
@@ -228,7 +228,7 @@ std::shared_ptr<atomPlacementPlan> ResConn::planHplacement(const std::string &at
 			      else if (x1c->num_conn() == 3) {
 				 type = 3;
 				 ang1 = 120.0;
-				 ang2 = (whichH == 1) ? 0.0 : 180.0;
+				 ang2 = (whichH == 1) ? 0.0f : 180.0f;
 			      }
 			      else if (x1c->num_conn() == 2) {
 				 if (x1e && (x1e->atno()==6)) {// Carbon

@@ -72,14 +72,14 @@ public:
    AtomConn& operator=(const AtomConn& a);
 
    const std::string& name() const { return _name; }
-   int num_conn() const { return _neighbor.size(); }
+   int num_conn() const { return static_cast<int>(_neighbor.size()); }
    int order() const { return _order; }
 
    void addConn(const std::string& c) { _neighbor.push_back(c); }
 
    void limitConnections(int n);
   
-   // return the "i"th connection [0..num_conn-1] for this atom
+   // return the "i"th connection [0..num_conn-1] for this atom or empty string if out of range
    const std::string& conn(int i) const;
    
    // relational operator allow sequences of AtomConns to be sorted

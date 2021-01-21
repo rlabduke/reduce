@@ -200,7 +200,7 @@ public:
 
    virtual ElementInfo* lookupPDBatom(const char* name, const char* resname) const;
 
-   virtual int size() const { return _index.size(); }
+   virtual int size() const { return static_cast<int>(_index.size()); }
 
    ElementInfo* element(const char *elementName) const;
 
