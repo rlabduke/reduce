@@ -125,6 +125,7 @@ public:
 	   return *this;
    }
 
+   /// @brief Make a clone of myself in the spcified record.
    void clone(std::shared_ptr<PDBrec> p);
 
    bool operator==(const PDBrec& a) const { return _rep->_r == a._rep->_r; }

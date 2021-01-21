@@ -1383,6 +1383,8 @@ void AtomPositions::manageMetals(const ResBlk& rblk) {
 void AtomPositions::generateWaterPhantomHs(std::list< std::shared_ptr<PDBrec> >& waters) {
 	char descrbuf[32];
 	const int MaxAccDir = 25;
+
+	// This structure is reused for each water to fill in information about nearby atoms.
 	struct AccDirection {
 		AccDirection() : _nam(""), _gap(999.9) {}
 		AccDirection(const std::string& s, const Point3d& p, float g)
@@ -1394,6 +1396,8 @@ void AtomPositions::generateWaterPhantomHs(std::list< std::shared_ptr<PDBrec> >&
 
 	const ElementInfo& elemHOd = * ElementInfo::StdElemTbl().element("HOd");
 
+	// Look through all of the waters that were passed in and fill in potential
+	// hydrogen locations based on nearby potential acceptors.
 	std::shared_ptr<PDBrec> a;
 	for(std::list< std::shared_ptr<PDBrec> >::const_iterator it = waters.begin(); it != waters.end(); ++it) {
 		a = *it;
@@ -1417,12 +1421,17 @@ void AtomPositions::generateWaterPhantomHs(std::list< std::shared_ptr<PDBrec> >&
 
 					// Now we make a table of all the locations of each HB
 					// acceptor nearby keeping ONLY one for each aromatic ring
-					// (the one with the most negative gap).
+					// (the one with the most negative gap).  We check that the
+					// atom is in the same residue with other acceptors to know
+					// that it is in the same ring.
 
 					bool foundMatchingAromAtom = FALSE;
 					bool isAromRingAtom = StdResH::ResXtraInfo().atomHasAttrib(
 						rec->resname(), rec->atomname(), AROMATICFLAG);
 
+					// Make a description of the residue that the neighboring atom is in
+					// so that we can use it to compare when looking for other atoms in
+					// the same aromatic ring.
 					if (!UseSEGIDasChain) {
 					  ::sprintf(descrbuf, "%-3.3s%c%-3.3s%4d%c%-2.2s",
 						(isAromRingAtom ? "/R/" : ""), rec->alt(),
@@ -1437,6 +1446,8 @@ void AtomPositions::generateWaterPhantomHs(std::list< std::shared_ptr<PDBrec> >&
 					}
 					std::string resDescr = std::string(descrbuf);
 
+					// If we're closer than an existing aromatic, then
+					// replace its values with our own and skip insertion.
 					if (isAromRingAtom) {
 						for (i=0; i < nAcc; i++) {
 							if (resDescr == nearbyA[i]._nam) {
@@ -1450,6 +1461,8 @@ void AtomPositions::generateWaterPhantomHs(std::list< std::shared_ptr<PDBrec> >&
 							}
 						}
 					}
+
+					// Insert a new candidate into the list.
 					if (!foundMatchingAromAtom && nAcc < MaxAccDir) {
 						nearbyA[nAcc]._nam = resDescr;
 						nearbyA[nAcc]._loc = rec->loc();
