@@ -1645,14 +1645,14 @@ double AtomPositions::atomScore(const PDBrec& a, const Point3d& p,
 			const double vdwb = b->vdwRad();
 
 			const double squaredist = distanceSquared( probeLoc, locb );
-			if ( squaredist > (vdwb + pRad ) * ( pRad + vdwb ) )
-			{
+      const double pRadPlusVdwb = vdwb + pRad;
+			if (squaredist > pRadPlusVdwb * pRadPlusVdwb) {
 				continue;
 			}
 
 			const double dist = sqrt( squaredist );
-			const double probeGap = dist- pRad - vdwb;
-			const double      gap = dist       - vdwb;
+			const double probeGap = dist - pRadPlusVdwb;
+			const double      gap = dist -         vdwb;
 			if (probeGap < 0.0) {
 
 				if (gap < mingap) {
