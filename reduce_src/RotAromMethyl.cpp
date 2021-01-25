@@ -37,11 +37,8 @@ using std::cout;
 #include "RotAromMethyl.h"
 #include "AtomPositions.h"
 
-//#define START_ANGLE 180.0
 #define START_ANGLE 150.0
-//#define ROUGH_STEP   30
 #define ROUGH_STEP  180
-#define FINE_STEP     1
 
 RotAromMethyl::RotAromMethyl(const Point3d& a, const Point3d& b,
                      const double ang, const PDBrec& heavyAtom)
@@ -49,21 +46,15 @@ RotAromMethyl::RotAromMethyl(const Point3d& a, const Point3d& b,
 {
 }
 
-int RotAromMethyl::numOrientations(SearchStrategy ss) const {
-   // Han 060812
-   // return (ss==Mover::LOW_RES) ?
-      // int(120.0/ROUGH_STEP + 0.5) :
-      // int(2.0*(double(ROUGH_STEP)/double(FINE_STEP)) + 0.5);
-	  // cout << "num of orientation: 2" << endl;
+int RotAromMethyl::numOrientations(SearchStrategy ss) const
+{
 	return 2;
 }
 
 bool RotAromMethyl::setOrientation(int oi, float delta, AtomPositions &xyz,
-                                                     SearchStrategy ss) {
-
+                                                     SearchStrategy ss)
+{
 	const double oldTheta = angle();
-	// Han 060812
-	//const double    theta = orientationAngle(oi, ss) + delta;
 	const double    theta = orientationAngle(oi, Mover::LOW_RES) + delta;
 
 	if (abs(theta-oldTheta) > 0.1) {
