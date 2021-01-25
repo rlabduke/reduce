@@ -80,7 +80,7 @@ public:
 
    virtual void setHydAngle(double newAng, AtomPositions &xyz);
    virtual void dropBondedFromBumpingListForPDBrec( std::list< std::shared_ptr<PDBrec> > & bumping, std::shared_ptr<PDBrec> atom, int nBondCutoff  ) const;
-private:
+protected:
    double orientationPenalty(float pmag) const;
    void angle(double val) { _angle = clampAngle(val); }
    void setHydAngle(PDBrec& theAtom, double oldAng, double newAng,
