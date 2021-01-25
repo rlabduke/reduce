@@ -30,7 +30,7 @@ public:
 
    virtual int numOrientations(SearchStrategy ss=Mover::LOW_RES) const;
 
-   bool setOrientation(int oi, float delta, AtomPositions &xyz,
+   virtual bool setOrientation(int oi, float delta, AtomPositions &xyz,
 	 SearchStrategy ss=Mover::LOW_RES);
    
 private:
