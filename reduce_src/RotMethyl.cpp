@@ -11,6 +11,7 @@
 // also available for free.
 //               ** Absolutely no Warranty **
 // Copyright (C) 1999 J. Michael Word
+// Copyright (C) 2021 ReliaSolve LLC
 // **************************************************************
 
 #ifdef OLD_STD_HDRS
@@ -37,7 +38,8 @@ using std::exit;
 
 RotMethyl::RotMethyl(const Point3d& a, const Point3d& b,
                      const double ang, const PDBrec& heavyAtom)
-   : _p1(a), _p2(b), _heavyAtom(std::make_shared<PDBrec>(heavyAtom)), _angle(ang) {
+   : Rot(a, b, ang, heavyAtom)
+{
    strcpy(_grpName, ((heavyAtom.elem().atno() == 7) ?
 			"NH3+   " : "methyl "));
    validateMemo();
@@ -138,102 +140,10 @@ bool RotMethyl::setOrientation(int oi, float delta, AtomPositions &xyz,
    return TRUE;
 }
 
-double RotMethyl::orientationAngle(int oi, SearchStrategy ss) const {
-   double delta = 0.0;
-   if (ss != Mover::LOW_RES) {
-      const int oh = oi;
-      oi = orientation(Mover::LOW_RES);
-      if (oi == 0) {   // centered on START_ANGLE
-	 delta = ((oh+1)>>1) * ((oh&1) ? 1.0 : -1.0) * FINE_STEP;
-      }
-      else {
-	 const int halfRange=int(double(ROUGH_STEP)/double(FINE_STEP) + 0.5);
-
-	 if (oi&1) { // odd  - angles beyond START_ANGLE
-	    delta = (oh * FINE_STEP) - halfRange;
-	 }
-	 else {      // even - angles before START_ANGLE
-	    delta = halfRange - (oh * FINE_STEP);
-	 }
-      }
-   }
-
-   const double a = START_ANGLE + delta +
-	    ((oi+1)>>1) * ((oi&1) ? 1.0 : -1.0) * ROUGH_STEP;
-   return clampAngle(a);
-}
-
 std::string RotMethyl::describeOrientation() const {
    char descrbuf[25];
    ::sprintf(descrbuf,"%s%4.0f",_grpName, _angle);
    return descrbuf;
-}
-
-double RotMethyl::determineScore(AtomPositions &xyz,
-   DotSphManager& dotBucket, int nBondCutoff, float probeRadius,
-   float pmag, double& penalty, float &bumpScore, float &hbScore, bool& hasBadBump) {
-
-   bumpScore  = 0.0;
-   hbScore    = 0.0;
-   hasBadBump = FALSE;
-
-   double bestScore = scoreThisAngle(xyz, dotBucket,
-                         nBondCutoff, probeRadius,
-                         bumpScore, hbScore,
-			 hasBadBump);
-
-   penalty = orientationPenalty(pmag);
-   return bestScore;
-}
-
-double RotMethyl::scoreThisAngle(AtomPositions &xyz, DotSphManager& dotBucket,
-								 int, float probeRadius, float &bumpScore,
-								 float &hbScore, bool &hasBadBump) {
-	const double maxVDWrad = ElementInfo::StdElemTbl().maxExplicitRadius();
-
-	bumpScore  = 0.0;
-	hbScore    = 0.0;
-	hasBadBump = FALSE;
-
-	double scoreThisO = 0.0;
-	int i = 0;
-	_rot.push_front(_heavyAtom);
-	for(std::list< std::shared_ptr<PDBrec> >::const_iterator alst = _rot.begin(); alst != _rot.end(); ++alst) {
-		if (!(*alst)->valid())
-			continue;
-
-		float bumpSubScore = 0.0;
-		float hbSubScore   = 0.0;
-		bool subBadBump    = FALSE;
-		const  std::shared_ptr<PDBrec> thisAtom = *alst;
-
-		double val = xyz.atomScore(*thisAtom, thisAtom->loc(),
-      static_cast<float>(thisAtom->vdwRad() + probeRadius + maxVDWrad),
-			//apl procrastinate nearby list computation until AtomPositions decides to score
-			*(_bnded[i]), dotBucket.fetch(thisAtom->vdwRad()), probeRadius, FALSE,
-			bumpSubScore, hbSubScore, subBadBump);
-
-		bumpScore  += bumpSubScore;
-		hbScore    += hbSubScore;
-		if (subBadBump) { hasBadBump = TRUE; }
-
-#ifdef DEBUGSUBSCORE
-		cerr << "\t:" << PDBrecNAMEout(*thisAtom)
-			<<":"<< describeOrientation()
-			<< ": bump=" << bumpSubScore
-			<< ", HB=" << hbSubScore
-			<< ((subBadBump==TRUE)?", BADBUMP":"")
-			<< "\t"
-			//      << thisAtom.loc()
-			<< endl;
-#endif
-		scoreThisO += val;
-		i++;
-	}
-	_rot.pop_front();
-
-	initializeScoreIfNotSet(scoreThisO, hasBadBump);
-	return scoreThisO;
 }
 
 #ifdef ROTPENALTY
@@ -247,101 +157,6 @@ double RotMethyl::orientationPenalty(float) const {
    return 0.0;
 }
 #endif
-
-void RotMethyl::setHydAngle(double newAng, AtomPositions &xyz) {
-   const double oldAng = angle();
-   for(std::list< std::shared_ptr<PDBrec> >::const_iterator hydlist = _rot.begin(); hydlist != _rot.end(); ++hydlist) {
-      setHydAngle(**hydlist, oldAng, newAng, xyz);
-//cerr  << "RotMethyl::setHydAngle[" << (*hydlist).atomname() << "] "
-//      << oldAng << " deg --> "
-//      << newAng << " deg" << endl;
-   }
-   angle(newAng);
-}
-
-void RotMethyl::setHydAngle(PDBrec& theAtom, double oldAng, double newAng,
-                        AtomPositions &xyz) {
-   if (abs(newAng-oldAng) > 0.0001) {
-      Point3d lastloc = theAtom.loc();
-      theAtom.loc( lastloc.rotate(newAng-oldAng, _p2, _p1) );
-      xyz.reposition(lastloc, theAtom);
-   }
-}
-
-void RotMethyl::dropBondedFromBumpingListForPDBrec(
-	std::list< std::shared_ptr<PDBrec> > & bumping,
-	std::shared_ptr<PDBrec> atom,
-	int //unused nBondCutoff
-) const
-{
-	/*
-	int atom_id = findAtom( atom );
-	for (std::list< std::shared_ptr<PDBrec> >::iterator iter = bumping.begin();
-		iter != bumping.end(); )
-	{
-		std::list< std::shared_ptr<PDBrec> >::iterator iter_next = iter;
-		++iter_next;
-		if ( std::find( _bnded[ atom_id]->begin(), _bnded[ atom_id]->end(), *iter ) != _bnded[ atom_id]->end() )
-		{
-			bumping.erase( iter );
-		}
-		iter = iter_next;
-	}
-	*/
-	//std::cerr << "Attempting to drop bumping for atom " << atom->getAtomDescr() << " in RotMethyl" << std::endl;
-	int atom_id = findAtom( atom );
-	//for (std::list< std::shared_ptr<PDBrec> >::const_iterator iter = _bnded[ atom_id]->begin();
-	//	iter != _bnded[ atom_id]->end(); ++iter)
-	//{
-	//	std::cerr << "Bonded to atom: " << (*iter) << " " << (*iter)->getAtomDescr()  << std::endl;
-	//}
-
-	for (std::list< std::shared_ptr<PDBrec> >::iterator iter = bumping.begin();
-		iter != bumping.end(); )
-	{
-		std::list< std::shared_ptr<PDBrec> >::iterator iter_next = iter;
-		//std::cerr << "Comparing: " << (*iter) << " " << (*iter)->getAtomDescr() << std::endl;
-		++iter_next;
-
-		for (std::list< std::shared_ptr<PDBrec> >::const_iterator constiter = _bnded[ atom_id]->begin();
-			constiter != _bnded[ atom_id]->end(); ++constiter)
-		{
-			if ( (*constiter)->getAtomDescr() == (*iter)->getAtomDescr() )
-			{
-				bumping.erase( iter );
-				//std::cerr << "DROPPED!" << std::endl;
-				break;
-			}
-		}
-		iter = iter_next;
-	}
-
-}
-
-
-int RotMethyl::findAtom(std::shared_ptr<PDBrec> atom ) const
-{
-	if ( atom == _heavyAtom )
-	{
-		return 0;
-	}
-
-	int countAtomsSeen = 1;
-	for (std::list< std::shared_ptr<PDBrec> >::const_iterator iter = _rot.begin(); iter != _rot.end(); ++iter)
-	{
-		if ( atom == *iter )
-			return countAtomsSeen;
-		++countAtomsSeen;
-	}
-	std::cerr << "Critical error in RotMethyl::findAtom( " << atom << ").  Could not find atom. " << std::endl;
-	for (std::list< std::shared_ptr<PDBrec> >::const_iterator iter = _rot.begin(); iter != _rot.end(); ++iter)
-	{
-		std::cerr << "_rot: " << *iter << std::endl;
-	}
-
-	exit(2);
-        return 0; // to avoid warnings
-}
 
 std::string RotMethyl::formatComment(std::string prefix) const
 {
