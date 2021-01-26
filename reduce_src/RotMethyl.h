@@ -28,8 +28,6 @@ public:
    virtual bool hasHires() const { return TRUE; }
    virtual void finalize(int nBondCutoff, bool useXplorNames, bool useOldNames, bool bbModel, 
                          AtomPositions &xyz, DotSphManager& dotBucket);
-   virtual int makebumpers(std::multimap<LocBlk, std::shared_ptr<BumperPoint> >& bbins,
-                           int n, float& maxVDWrad);
    virtual std::list<AtomDescr> getAtDescOfAllPos(float &maxVDWrad);
 
    virtual int numOrientations(SearchStrategy ss=Mover::LOW_RES) const;
@@ -48,5 +46,4 @@ protected:
 
    RotMethyl(const RotMethyl& m); // copy and assign not implemented
    RotMethyl& operator=(const RotMethyl& m);
-
 };

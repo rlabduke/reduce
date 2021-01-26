@@ -43,6 +43,9 @@ public:
     float probeRadius, float pmag, double& penalty,
     float &bumpScore, float &hbScore, bool& hasBadBump);
 
+  virtual int makebumpers(std::multimap<LocBlk, std::shared_ptr<BumperPoint> >& bbins,
+                          int n, float& maxVDWrad);
+
   const PDBrec& heavyAtom() const { return *_heavyAtom; }
 
   virtual void insertHatom(const PDBrec& ha) {
@@ -88,4 +91,9 @@ protected:
   double START_ANGLE = 180;
   double ROUGH_STEP = 30;
   double FINE_STEP = 1;
+
+  // These change the way the makebumbers() method behaves and are
+  // modified in the constructors of derived classes
+	double dtheta;   ///< fineness of rotation angle scan
+	double scanAngle;
 };

@@ -32,7 +32,7 @@ public:
    virtual int numOrientations(SearchStrategy ss=Mover::LOW_RES) const;
 
    virtual bool setOrientation(int oi, float delta, AtomPositions &xyz,
-	 SearchStrategy ss=Mover::LOW_RES);
+	                SearchStrategy ss=Mover::LOW_RES);
    
 private:
    RotAromMethyl(const RotAromMethyl& m); // copy and assign not implemented

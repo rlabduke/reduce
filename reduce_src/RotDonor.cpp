@@ -46,6 +46,8 @@ RotDonor::RotDonor(const Point3d& a, const Point3d& b,
   START_ANGLE = 180;
   ROUGH_STEP = 10;
   FINE_STEP = 1;
+  dtheta = 10;
+  scanAngle = 180;
 }
 
 void RotDonor::finalize(int nBondCutoff, bool useXplorNames, bool useOldNames, bool bbModel, 
@@ -171,24 +173,6 @@ void RotDonor::finalize(int nBondCutoff, bool useXplorNames, bool useOldNames, b
 		_nori = j; // <-- the actual length after the merge operation
 		_oang.resize(_nori);
 	}
-}
-
-int RotDonor::makebumpers(std::multimap<LocBlk, std::shared_ptr<BumperPoint> >& bblks,
-						  int rn, float& maxVDWrad) {
-	int an = 0;
-	const double dtheta = 10.0; // fineness of rotation angle scan
-	const double scanAngle = 180.0;
-	std::shared_ptr<BumperPoint> bp;
-	for(std::list< std::shared_ptr<PDBrec> >::const_iterator it = _rot.begin(); it != _rot.end(); ++it) {
-		std::shared_ptr<PDBrec> a = *it;
-		for (double theta = -scanAngle; theta < scanAngle; theta += dtheta) {
-			Point3d p(a->loc().rotate(theta, _p2, _p1));
-			bp = std::make_shared<BumperPoint>(p, rn, an++, a->vdwRad());
-			bblks.insert(std::make_pair(LocBlk(p), bp));
-			if (a->vdwRad() > maxVDWrad) { maxVDWrad = a->vdwRad(); }
-		}
-	}
-	return an;
 }
 
 std::list<AtomDescr> RotDonor::getAtDescOfAllPos(float &maxVDWrad) {

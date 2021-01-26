@@ -40,9 +40,15 @@ RotMethyl::RotMethyl(const Point3d& a, const Point3d& b,
                      const double ang, const PDBrec& heavyAtom)
    : Rot(a, b, ang, heavyAtom)
 {
-   strcpy(_grpName, ((heavyAtom.elem().atno() == 7) ?
-			"NH3+   " : "methyl "));
-   validateMemo();
+  strcpy(_grpName, ((heavyAtom.elem().atno() == 7) ?
+		"NH3+   " : "methyl "));
+
+  // Specify values for this subclass
+  START_ANGLE = 180;
+  ROUGH_STEP = 30;
+  FINE_STEP = 1;
+  dtheta = 10;
+  scanAngle = 60;
 }
 
 void RotMethyl::finalize(int nBondCutoff, bool useXplorNames, bool useOldNames, bool bbModel,
@@ -67,25 +73,6 @@ void RotMethyl::finalize(int nBondCutoff, bool useXplorNames, bool useOldNames, 
 		}
 		_rot.pop_front();
 	}
-}
-
-int RotMethyl::makebumpers(std::multimap<LocBlk, std::shared_ptr<BumperPoint> >& bblks,
-						   int rn, float& maxVDWrad) {
-	int an = 0;
-	const double dtheta = 10.0; // fineness of rotation angle scan
-	const double scanAngle = 60.0;
-	std::shared_ptr<BumperPoint> bp;
-    for(std::list< std::shared_ptr<PDBrec> >::const_iterator it = _rot.begin(); it != _rot.end(); ++it) {
-		std::shared_ptr<PDBrec> a = *it;
-		for (double theta = -scanAngle; theta < scanAngle; theta += dtheta) {
-			Point3d p(a->loc().rotate(theta, _p2, _p1));
-			bp = std::make_shared<BumperPoint>(p, rn, an++, a->vdwRad());
-			bblks.insert(std::make_pair(LocBlk(p), bp));
-//			bblks.put(LocBlk(p), BumperPoint(p, rn, an++, (*a).vdwRad()));
-			if (a->vdwRad() > maxVDWrad) { maxVDWrad = a->vdwRad(); }
-		}
-	}
-	return an;
 }
 
 std::list<AtomDescr> RotMethyl::getAtDescOfAllPos(float &maxVDWrad) {
