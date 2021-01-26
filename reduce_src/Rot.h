@@ -31,7 +31,6 @@ public:
   virtual ~Rot() {
   }
 
-  virtual Mover::MemoType type() = 0;
   virtual bool isComplete() const { return TRUE; }
   virtual bool canFlip() const { return FALSE; }
   virtual bool canRotate() const { return TRUE; }

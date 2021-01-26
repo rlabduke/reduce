@@ -40,6 +40,7 @@ using std::exit;
 RotDonor::RotDonor(const Point3d& a, const Point3d& b,
                    const double ang, const PDBrec& heavyAtom)
 				   : Rot(a, b, ang, heavyAtom)
+           , _nori(0)
 {
   // Override these to change the class behavior.
   START_ANGLE = 180;
