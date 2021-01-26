@@ -75,30 +75,6 @@ void RotMethyl::finalize(int nBondCutoff, bool useXplorNames, bool useOldNames, 
 	}
 }
 
-std::list<AtomDescr> RotMethyl::getAtDescOfAllPos(float &maxVDWrad) {
-	std::list<AtomDescr> theList;
-	AtomDescr ad_heavy(_heavyAtom->loc(), _heavyAtom->resno(), _heavyAtom->vdwRad());
-	ad_heavy.setOriginalAtomPtr( _heavyAtom.get() );
-	theList.push_back(ad_heavy);  // ANDREW: appending _heavyAtom to the getBumpersOfAllPos function
-
-	std::shared_ptr<PDBrec> hyds;
-	for (std::list< std::shared_ptr<PDBrec> >::const_iterator it = _rot.begin(); it != _rot.end(); ++it) {
-		hyds = *it;
-		Point3d initHydPoint = hyds->loc();
-		for (int i = 0; i < numOrientations(Mover::LOW_RES); i++)
-		{
-			double theta = orientationAngle(i, Mover::LOW_RES);
-			AtomDescr ad_h(initHydPoint.rotate(theta - _angle, _p2, _p1), _heavyAtom->resno(), hyds->vdwRad());
-			ad_h.setOriginalAtomPtr( hyds.get() );
-			theList.push_back(ad_h);
-			//cerr << "TEST ROTMETHYL: " << AtomDescr(initHydPoint.rotate(theta, _p2, _p1), _heavyAtom.resno(), (hyds->data()).vdwRad()) << endl;
-		}
-	}
-	theList.sort();
-	theList.unique();
-	return theList;
-}
-
 int RotMethyl::numOrientations(SearchStrategy ss) const {
    return (ss==Mover::LOW_RES) ?
       int(120.0/ROUGH_STEP + 0.5) :
@@ -109,22 +85,6 @@ bool RotMethyl::isDefaultO(int oi, SearchStrategy ss) const {
    if (ss!=Mover::LOW_RES) { oi = orientation(Mover::LOW_RES); }
    return ((oi == 0) &&
            (abs(clampAngle(START_ANGLE - angle())) < 1.0));
-}
-
-bool RotMethyl::setOrientation(int oi, float delta, AtomPositions &xyz,
-                                                     SearchStrategy ss) {
-
-   const double oldTheta = angle();
-   const double    theta = orientationAngle(oi, ss) + delta;
-
-   if (abs(theta-oldTheta) > 0.1) {
-	   for(std::list< std::shared_ptr<PDBrec> >::const_iterator hydlist = _rot.begin(); hydlist != _rot.end(); ++hydlist) {
-	 setHydAngle(**hydlist, oldTheta, theta, xyz);
-      }
-      angle(theta);
-   }
-   rememberOrientation(oi, ss);
-   return TRUE;
 }
 
 double RotMethyl::orientationAngle(int oi, SearchStrategy ss) const {

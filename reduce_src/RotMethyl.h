@@ -28,18 +28,15 @@ public:
    virtual bool hasHires() const { return TRUE; }
    virtual void finalize(int nBondCutoff, bool useXplorNames, bool useOldNames, bool bbModel, 
                          AtomPositions &xyz, DotSphManager& dotBucket);
-   virtual std::list<AtomDescr> getAtDescOfAllPos(float &maxVDWrad);
 
    virtual int numOrientations(SearchStrategy ss=Mover::LOW_RES) const;
    virtual bool isDefaultO(int oi, SearchStrategy ss=Mover::LOW_RES) const;
-   virtual double orientationAngle(int oi, SearchStrategy ss=Mover::LOW_RES) const;
    virtual std::string describeOrientation() const;
 
    virtual std::string formatComment(std::string prefix) const;
 
 protected:
-   virtual bool setOrientation(int oi, float delta, AtomPositions &xyz,
-	  SearchStrategy ss=Mover::LOW_RES);
+   virtual double orientationAngle(int oi, SearchStrategy ss=Mover::LOW_RES) const;
    virtual double orientationPenalty(float pmag) const;
 
    char        _grpName[20];

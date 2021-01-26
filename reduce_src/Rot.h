@@ -45,6 +45,7 @@ public:
 
   virtual int makebumpers(std::multimap<LocBlk, std::shared_ptr<BumperPoint> >& bbins,
                           int n, float& maxVDWrad);
+  virtual std::list<AtomDescr> getAtDescOfAllPos(float &maxVDWrad);
 
   const PDBrec& heavyAtom() const { return *_heavyAtom; }
 
@@ -64,8 +65,9 @@ public:
   virtual void dropBondedFromBumpingListForPDBrec( std::list< std::shared_ptr<PDBrec> > & bumping, std::shared_ptr<PDBrec> atom, int nBondCutoff  ) const;
 
 protected:
+  virtual double orientationAngle(int oi, SearchStrategy ss=Mover::LOW_RES) const = 0;
   virtual bool setOrientation(int oi, float delta, AtomPositions &xyz,
-	  SearchStrategy ss=Mover::LOW_RES) = 0;
+	  SearchStrategy ss=Mover::LOW_RES);
   void angle(double val) { _angle = clampAngle(val); }
   double scoreThisAngle(AtomPositions &xyz,
      DotSphManager& dotBucket, int nBondCutoff,

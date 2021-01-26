@@ -58,6 +58,44 @@ int Rot::makebumpers(std::multimap<LocBlk, std::shared_ptr<BumperPoint> >& bblks
 	return an;
 }
 
+std::list<AtomDescr> Rot::getAtDescOfAllPos(float &maxVDWrad) {
+	std::list<AtomDescr> theList;
+	AtomDescr ad_heavy(_heavyAtom->loc(), _heavyAtom->resno(), _heavyAtom->vdwRad());
+	ad_heavy.setOriginalAtomPtr( _heavyAtom.get() );
+	theList.push_back(ad_heavy);  // ANDREW: appending _heavyAtom to the getBumpersOfAllPos function
+
+	std::shared_ptr<PDBrec> hyds;
+	for (std::list< std::shared_ptr<PDBrec> >::const_iterator it = _rot.begin(); it != _rot.end(); ++it) {
+		hyds = *it;
+		Point3d initHydPoint = hyds->loc();
+		for (int i = 0; i < numOrientations(Mover::LOW_RES); i++)
+		{
+			double theta = orientationAngle(i, Mover::LOW_RES);
+			AtomDescr ad_h(initHydPoint.rotate(theta - _angle, _p2, _p1), _heavyAtom->resno(), hyds->vdwRad());
+			ad_h.setOriginalAtomPtr( hyds.get() );
+			theList.push_back(ad_h);
+		}
+	}
+	theList.sort();
+	theList.unique();
+	return theList;
+}
+
+bool Rot::setOrientation(int oi, float delta, AtomPositions &xyz,
+                                                       SearchStrategy ss) {
+   const double oldTheta = angle();
+   const double    theta = orientationAngle(oi, ss) + delta;
+
+   if (abs(theta-oldTheta) > 0.1) {
+	   for(std::list< std::shared_ptr<PDBrec> >::const_iterator hydlist = _rot.begin(); hydlist != _rot.end(); ++hydlist) {
+	      setHydAngle(**hydlist, oldTheta, theta, xyz);
+      }
+      angle(theta);
+   }
+   rememberOrientation(oi, ss);
+   return TRUE;
+}
+
 double Rot::determineScore(AtomPositions &xyz,
    DotSphManager& dotBucket, int nBondCutoff, float probeRadius,
    float pmag, double& penalty, float &bumpScore, float &hbScore, bool& hasBadBump) {

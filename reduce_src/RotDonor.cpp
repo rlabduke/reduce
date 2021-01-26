@@ -175,49 +175,10 @@ void RotDonor::finalize(int nBondCutoff, bool useXplorNames, bool useOldNames, b
 	}
 }
 
-std::list<AtomDescr> RotDonor::getAtDescOfAllPos(float &maxVDWrad) {
-	std::list<AtomDescr> theList;
-	
-	AtomDescr ad_heavy(_heavyAtom->loc(), _heavyAtom->resno(), _heavyAtom->vdwRad());
-	ad_heavy.setOriginalAtomPtr( _heavyAtom.get() );
-	theList.push_back(ad_heavy);		//ANDREW adding heavyAtom to the list of bumpers returned
-	
-	std::shared_ptr<PDBrec> hyds;
-	for (std::list< std::shared_ptr<PDBrec> >::const_iterator it = _rot.begin(); it != _rot.end(); ++it) {
-		hyds = *it;
-		Point3d initHydPoint = hyds->loc();
-		for (int i = 0; i < numOrientations(Mover::LOW_RES); i++)
-		{
-			double theta = orientationAngle(i, Mover::LOW_RES);
-			AtomDescr ad_h(initHydPoint.rotate(theta - _angle, _p2, _p1), _heavyAtom->resno(), hyds->vdwRad());
-			ad_h.setOriginalAtomPtr( hyds.get() );
-			theList.push_back(ad_h);
-		}   
-	}
-	theList.sort();
-	theList.unique();
-	return theList;
-}
-
 int RotDonor::numOrientations(SearchStrategy ss) const {
    return (ss==Mover::LOW_RES) ?
       _nori :
       (int)(2 * (double(ROUGH_STEP)/double(FINE_STEP)) + 0.5);
-}
-
-bool RotDonor::setOrientation(int oi, float delta, AtomPositions &xyz,
-                                                       SearchStrategy ss) {
-   const double oldTheta = angle();
-   const double    theta = orientationAngle(oi, ss) + delta;
-
-   if (abs(theta-oldTheta) > 0.1) {
-	   for(std::list< std::shared_ptr<PDBrec> >::const_iterator hydlist = _rot.begin(); hydlist != _rot.end(); ++hydlist) {
-	 setHydAngle(**hydlist, oldTheta, theta, xyz);
-      }
-      angle(theta);
-   }
-   rememberOrientation(oi, ss);
-   return TRUE;
 }
 
 double RotDonor::orientationAngle(int oi, SearchStrategy ss) const {
