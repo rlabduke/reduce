@@ -236,6 +236,20 @@ bool RotDonor::setOrientation(int oi, float delta, AtomPositions &xyz,
    return TRUE;
 }
 
+double RotDonor::orientationAngle(int oi, SearchStrategy ss) const {
+   double delta = 0.0;
+   if (ss != Mover::LOW_RES) {
+      const int oh = oi;
+      oi = orientation(Mover::LOW_RES);
+      delta = ((oh+1)>>1) * ((oh&1) ? 1.0 : -1.0) * FINE_STEP;
+   }
+
+   const double a = ((oi >= 0 && oi < _nori) ? _oang[oi] : START_ANGLE)
+      + delta;
+
+   return clampAngle(a);
+}
+
 std::string RotDonor::describeOrientation() const {
    char descrbuf[25];
    ::sprintf(descrbuf, "   rot %4.0f", _angle);

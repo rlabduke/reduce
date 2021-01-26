@@ -140,6 +140,31 @@ bool RotMethyl::setOrientation(int oi, float delta, AtomPositions &xyz,
    return TRUE;
 }
 
+double RotMethyl::orientationAngle(int oi, SearchStrategy ss) const {
+   double delta = 0.0;
+   if (ss != Mover::LOW_RES) {
+      const int oh = oi;
+      oi = orientation(Mover::LOW_RES);
+      if (oi == 0) {   // centered on START_ANGLE
+	 delta = ((oh+1)>>1) * ((oh&1) ? 1.0 : -1.0) * FINE_STEP;
+      }
+      else {
+	 const int halfRange=int(double(ROUGH_STEP)/double(FINE_STEP) + 0.5);
+
+	 if (oi&1) { // odd  - angles beyond START_ANGLE
+	    delta = (oh * FINE_STEP) - halfRange;
+	 }
+	 else {      // even - angles before START_ANGLE
+	    delta = halfRange - (oh * FINE_STEP);
+	 }
+      }
+   }
+
+   const double a = START_ANGLE + delta +
+	    ((oi+1)>>1) * ((oi&1) ? 1.0 : -1.0) * ROUGH_STEP;
+   return clampAngle(a);
+}
+
 std::string RotMethyl::describeOrientation() const {
    char descrbuf[25];
    ::sprintf(descrbuf,"%s%4.0f",_grpName, _angle);

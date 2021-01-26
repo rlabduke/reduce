@@ -33,6 +33,7 @@ public:
 
    virtual int numOrientations(SearchStrategy ss=Mover::LOW_RES) const;
    virtual bool isDefaultO(int, SearchStrategy ss=Mover::LOW_RES) const { return FALSE; }
+   virtual double orientationAngle(int oi, SearchStrategy ss=Mover::LOW_RES) const;
    virtual std::string describeOrientation() const;
 
    virtual std::string formatComment(std::string prefix) const;

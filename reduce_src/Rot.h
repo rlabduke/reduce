@@ -55,7 +55,6 @@ public:
      return setOrientation(oi, 0.0, xyz, ss);
   }
 
-  virtual double orientationAngle(int oi, SearchStrategy ss=Mover::LOW_RES) const;
   double angle() const { return _angle; }
 
   virtual void setHydAngle(double newAng, AtomPositions &xyz);
