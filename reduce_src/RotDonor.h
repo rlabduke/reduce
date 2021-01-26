@@ -38,11 +38,11 @@ public:
    virtual std::string formatComment(std::string prefix) const;
 
 protected:
-   bool setOrientation(int oi, float delta, AtomPositions &xyz,
+   virtual bool setOrientation(int oi, float delta, AtomPositions &xyz,
       SearchStrategy ss=Mover::LOW_RES);
-   double orientationPenalty(float) const { return 0.0; }
+   virtual double orientationPenalty(float) const { return 0.0; }
 
-   double bumpsThisAngle(AtomPositions &xyz, DotSphManager& dotBucket);
+   virtual double bumpsThisAngle(AtomPositions &xyz, DotSphManager& dotBucket);
 
    int                   _nori;  // number of orientation angles
    std::vector< double >      _oang;  // array of angles
