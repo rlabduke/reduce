@@ -28,10 +28,11 @@ public:
    ///       ROTATE_METHYL so we left it alone here.  Consider this when we
    ///       remove the type() function and have virtual methods do that work.
 
+   virtual bool hasHires() const { return FALSE; }
    virtual int numOrientations(SearchStrategy ss=Mover::LOW_RES) const;
 
-   bool setOrientation(int oi, float delta, AtomPositions &xyz,
-	 SearchStrategy ss=Mover::LOW_RES) override;
+   virtual bool setOrientation(int oi, float delta, AtomPositions &xyz,
+	 SearchStrategy ss=Mover::LOW_RES);
    
 private:
    RotAromMethyl(const RotAromMethyl& m); // copy and assign not implemented

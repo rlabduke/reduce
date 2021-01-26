@@ -47,8 +47,8 @@ public:
 
    virtual int numOrientations(SearchStrategy ss=Mover::LOW_RES) const;
    virtual void limitOrientations(bool f, SearchStrategy ss=Mover::LOW_RES);
-   bool setOrientation(int oi, AtomPositions &xyz,
-	 SearchStrategy ss=Mover::LOW_RES) override {
+   virtual bool setOrientation(int oi, AtomPositions &xyz,
+	 SearchStrategy ss=Mover::LOW_RES) {
       return setOrientation(oi, 0.0, xyz, ss);
    }
    virtual bool isDefaultO(int oi, SearchStrategy ss=Mover::LOW_RES) const;
