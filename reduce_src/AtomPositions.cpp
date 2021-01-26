@@ -293,12 +293,12 @@ void AtomPositions::insertRot(const PDBrec& hr,
 	if (m != NULL) {
 		if (m->type() == Mover::ROTATE_METHYL){
 			if (doNH3) {
-				((RotMethyl*)(m.get()))->insertHatom(hr);
+				dynamic_cast<RotMethyl*>(m.get())->insertHatom(hr);
 			}
 		}
 		else if (m->type() == Mover::ROTATE_DONOR){
 			if (doOHSH) {
-				((RotDonor*)(m.get()))->insertHatom(hr);
+				dynamic_cast<RotDonor*>(m.get())->insertHatom(hr);
 			}
 		}
 		else {
@@ -355,7 +355,7 @@ void AtomPositions::insertRotAromMethyl(const PDBrec& hr,
 	}
 	if (m != NULL) {
 		if (m->type() == Mover::ROTATE_METHYL){
-			((RotMethyl*)(m.get()))->insertHatom(hr);
+			dynamic_cast<RotMethyl*>(m.get())->insertHatom(hr);
 		}
 		else {
 			cerr<<"*error* insertRotAromMethyl(hr, "<< m->type() <<")"<<endl;
