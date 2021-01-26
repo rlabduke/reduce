@@ -35,10 +35,6 @@ using std::exit;
 #include "RotMethyl.h"
 #include "AtomPositions.h"
 
-#define START_ANGLE 180.0
-#define ROUGH_STEP   30
-#define FINE_STEP     1
-
 RotMethyl::RotMethyl(const Point3d& a, const Point3d& b,
                      const double ang, const PDBrec& heavyAtom)
    : _p1(a), _p2(b), _heavyAtom(std::make_shared<PDBrec>(heavyAtom)), _angle(ang) {

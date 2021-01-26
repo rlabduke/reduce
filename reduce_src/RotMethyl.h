@@ -97,6 +97,12 @@ protected:
 
    RotMethyl(const RotMethyl& m); // copy and assign not implemented
    RotMethyl& operator=(const RotMethyl& m);
+
+   // These change the way the orientation methods work.
+   // Derived classes have different values from the base class.
+   double START_ANGLE = 180;
+   double ROUGH_STEP = 30;
+   double FINE_STEP = 1;
 };
 
 inline void RotMethyl::limitOrientations(bool, SearchStrategy) {
