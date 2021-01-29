@@ -90,9 +90,7 @@ std::list<std::string> ResConn::findRingBondedToMethyl(const std::string &atomna
 				stkAtomsDepth.pop();
 
 				if ( x1c && x1c->num_conn() > 1    // Atom exists and has more than 1 connected atoms (other than it's parent)
-					 && x1cDepth < 7               // only report 5 or 6 member rings
-					 && x1cDepth > 4 )  {          // exclude 3 member rings - JJH 130326
-
+					 && x1cDepth < 7) {              // only report 5 or 6 member rings, stop searching if larger
 					// std::cout << std::endl << "here: " << x1c->order() << x1c->name() << "-" << x1cDepth;
 					visited[x1c->order()]=true;
 					if (L.size() > x1cDepth-1)
@@ -103,7 +101,7 @@ std::list<std::string> ResConn::findRingBondedToMethyl(const std::string &atomna
 					for (int i = x1c->num_conn()-1; i >= 0; i--) {
 						std::string xc = x1c->conn(i);
 						if (xparent != xc) {
-							if (xc == x1name) { // Found cycle
+							if (xc == x1name && x1cDepth > 4) { // Found cycle of length 5-6
 								return L;
 							}
 
