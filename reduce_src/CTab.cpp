@@ -58,7 +58,7 @@ std::list<std::string> ResConn::findRingBondedToMethyl(const std::string &atomna
 			int x1cDepth = 0;
 
 			ElementInfo *x1e = ElementInfo::StdElemTbl().lookupPDBatom(x1name.c_str(), resname);
-			if (x1c && x1e->atno()==6) { // Test to see if this hydrogen is in methyl group
+			if (x1c && x1e && x1e->atno()==6) { // Test to see if this hydrogen is in methyl group
 				std::string xc = "";
 				for (int i = x1c->num_conn()-1; i >= 0; i--) {
 					ElementInfo *xe = ElementInfo::StdElemTbl().lookupPDBatom(x1c->conn(i).c_str(), resname);
@@ -218,7 +218,7 @@ std::shared_ptr<atomPlacementPlan> ResConn::planHplacement(const std::string &at
 				 }
 				 else {
 				    flags |= ROTATEONDEMAND;
-				    if (x1e->atno()==7) { // NH3
+				    if (x1e && x1e->atno()==7) { // NH3
 				       flags |= NH3FLAG;
 				    }
 				 }
