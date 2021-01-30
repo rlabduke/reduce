@@ -342,6 +342,7 @@ void reduceChanges(bool showAll) { /*changes*/
    cerr  << "2021/01/10 - rmt       Version 4.1 removes -FLIP bug introduced in 3.10" << endl;
    cerr  << "2021/01/12 - rmt       Version 4.2 speeds up processing of the HET database file" << endl;
    cerr  << "2021/01/14 - rmt       Version 4.3 inserts optimization requests on existing hydrogens when not adding hydrogens" << endl;
+   cerr  << "2021/01/29 - rmt       Version 4.4 fixes a bug that kept aromatic methyl flips from being inserted since 2012" << endl;
    cerr  << endl;
    exit(2);
 }
