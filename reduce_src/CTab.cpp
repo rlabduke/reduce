@@ -347,6 +347,7 @@ void CTab::readFile(const std::string& dbFileName)
 			if (curName.size()) {
 				m_reslines.insert(std::make_pair(curName, curResidue));
 				curResidue.clear();
+        curName.clear();
 			}
 			if (0 > column_sscanf(buf, "%10 %3s %6d", resname, &n)) {
 				cerr << "ERROR CTab(" << dbFileName
@@ -390,9 +391,9 @@ std::shared_ptr<ResConn> CTab::parseResidue(std::vector<std::string> res, std::s
 {
 	std::shared_ptr<ResConn> curResidue = std::make_shared<ResConn>();
 
+  int m = 0, n = 0;
 	for (std::string buf : res) {
 		char an[10][5];     // holds ten strings of length 4
-		int m = 0, n = 0;
 
 		// Add the line into the current residue
 		if (0 > column_sscanf(buf.c_str(), "%11 %4s %4d%4s %4s %4s %4s %4s %4s %4s %4s %4s",
