@@ -49,7 +49,7 @@ public:
 
   const PDBrec& heavyAtom() const { return *_heavyAtom; }
 
-  virtual bool insertHatom(const PDBrec& ha) {
+  virtual bool insertHAtom(const PDBrec& ha) {
       std::shared_ptr<PDBrec> temp = std::make_shared<PDBrec>();
     *temp = ha;
     _rot.push_front(temp);
