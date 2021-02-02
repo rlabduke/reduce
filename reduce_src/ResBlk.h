@@ -33,7 +33,7 @@ public:
 
   bool valid(std::list< std::shared_ptr<PDBrec> >& records) const { return (_insertPt != records.end()) && _resAtoms.size() > 0; }
 
-   unsigned long size() const { return _resAtoms.size(); }
+   unsigned long size() const { return static_cast<unsigned long>(_resAtoms.size()); }
 
    const PDBrec& firstRec() const { return _firstRec; }
 

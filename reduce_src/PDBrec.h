@@ -125,6 +125,7 @@ public:
 	   return *this;
    }
 
+   /// @brief Make a clone of myself in the spcified record.
    void clone(std::shared_ptr<PDBrec> p);
 
    bool operator==(const PDBrec& a) const { return _rep->_r == a._rep->_r; }
@@ -217,8 +218,8 @@ public:
       return n;
       //if (errmsg) throw std::runtime_error(errmsg);
    }
-   float occupancy()      const { return _rep->_r.atom.occupancy;          }
-   float tempFactor()     const { return _rep->_r.atom.tempFactor;         }
+   float occupancy()      const { return static_cast<float>(_rep->_r.atom.occupancy);   }
+   float tempFactor()     const { return static_cast<float>(_rep->_r.atom.tempFactor);  }
    const char*segidLabel() const{ return _rep->_r.atom.segID;              }
    const char*elemLabel()  const{ return _rep->_r.atom.element;            }
    const char*chargeLabel()const{ return _rep->_r.atom.charge;             }

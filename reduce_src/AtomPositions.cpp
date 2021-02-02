@@ -94,7 +94,7 @@ int AtomPositions::forceOrientations(const std::string& ofilename, std::vector<s
 			}
 			else if (orient == 'R') {
 				if (*p == '+' || *p == '-' || isdigit(*p)) {
-					angle = atof(p);
+					angle = static_cast<float>(atof(p));
 					while (*p && (p[0] != ':')) { p++; }
 					break;
 				}
@@ -293,12 +293,12 @@ void AtomPositions::insertRot(const PDBrec& hr,
 	if (m != NULL) {
 		if (m->type() == Mover::ROTATE_METHYL){
 			if (doNH3) {
-				((RotMethyl*)(m.get()))->insertHatom(hr);
+				dynamic_cast<RotMethyl*>(m.get())->insertHatom(hr);
 			}
 		}
 		else if (m->type() == Mover::ROTATE_DONOR){
 			if (doOHSH) {
-				((RotDonor*)(m.get()))->insertHatom(hr);
+				dynamic_cast<RotDonor*>(m.get())->insertHatom(hr);
 			}
 		}
 		else {
@@ -355,7 +355,7 @@ void AtomPositions::insertRotAromMethyl(const PDBrec& hr,
 	}
 	if (m != NULL) {
 		if (m->type() == Mover::ROTATE_METHYL){
-			((RotMethyl*)(m.get()))->insertHatom(hr);
+			dynamic_cast<RotMethyl*>(m.get())->insertHatom(hr);
 		}
 		else {
 			cerr<<"*error* insertRotAromMethyl(hr, "<< m->type() <<")"<<endl;
@@ -510,7 +510,7 @@ void AtomPositions::finalizeMovers() {
 // ---------------------------------------------------------------
 CliqueList AtomPositions::findCliques() const {
 	const float prRad = 0.0; // we just want to examine bumps here
-	const int mdsz = _motionDesc.size();
+	const int mdsz = static_cast<int>(_motionDesc.size());
 	float maxVDWrad = 1.0;
 
 	std::multimap<LocBlk, std::shared_ptr<BumperPoint> > bumpbins;  //(2*mdsz);
@@ -644,8 +644,8 @@ int AtomPositions::orientSingles(const std::list<MoverPtr>& singles) {
 #else
 	const long laf = _os.setf(     ios::right,      ios::adjustfield);
 #endif
-	const int iw = _os.width(8);
-	const int ip = _os.precision(3);
+	const int iw = static_cast<int>(_os.width(8));
+	const int ip = static_cast<int>(_os.precision(3));
 
 	int i;
 
@@ -798,8 +798,8 @@ int AtomPositions::orientClique(const std::list<MoverPtr>& clique, int limit) {
 #else
 	const long laf = _os.setf(     ios::right,      ios::adjustfield);
 #endif
-	const int iw = _os.width(8);
-	const int ip = _os.precision(3); //ANDREW: 3 originally - sometimes 6 is useful to output more precision
+	const int iw = static_cast<int>(_os.width(8));
+	const int ip = static_cast<int>(_os.precision(3)); //ANDREW: 3 originally - sometimes 6 is useful to output more precision
 
 	double log10ncombo = 0.0;
 	int i = 0, rc = 0;
@@ -812,7 +812,7 @@ int AtomPositions::orientClique(const std::list<MoverPtr>& clique, int limit) {
 		if (_outputNotice) { _os << ":" << (*s)->descr() << "[" << no << "]"; }
 	}
 	const double p10 = floor(log10ncombo);
-	const float 	mantis = pow(double(10.0), log10ncombo - p10);
+	const float 	mantis = static_cast<float>(pow(double(10.0), log10ncombo - p10));
 	const int 		poweroften = int(p10);
 	if(_outputNotice){
 		if (log10ncombo < log10(double(1000000))) { //smallish numbers as integers
@@ -863,7 +863,7 @@ void AtomPositions::CollectBumping(const AtomDescr& ad, std::list< std::shared_p
 
 int AtomPositions::SearchClique(std::list<MoverPtr> clique, int limit)
 {
-	const int numItems = clique.size();
+	const int numItems = static_cast<int>(clique.size());
 	std::vector<MoverPtr>    item (numItems);
 	std::vector<double> currScore;
 	currScore.resize(numItems);
@@ -924,7 +924,7 @@ int AtomPositions::SearchClique(std::list<MoverPtr> clique, int limit)
 	//find out how many possible penalty values there are
 	allPenalties.sort();
 	allPenalties.unique();
-	int numPenaltyValues = allPenalties.size();
+	int numPenaltyValues = static_cast<int>(allPenalties.size());
 
  	//---------- Optimize Based on the Interaction Graph ------------//
  	std::vector< NodeState > optimal_state_enabled( numItems ); //enabled enumeration of states
@@ -1014,7 +1014,7 @@ int AtomPositions::SearchClique(std::list<MoverPtr> clique, int limit)
 				actualPenalty = penalties[ ii ][ optimal_state_original[ ii ]];
 			}
 		}
-		float score_without_penalty = theNaEManager->getScoreOfOptimalNetworkConfiguration();
+		float score_without_penalty = static_cast<float>(theNaEManager->getScoreOfOptimalNetworkConfiguration());
 		float score_including_penalty = score_without_penalty + actualPenalty;
 
 		//std::cerr << "DP Iteration: penalty threshold " << *penalty_iterator << ", best: ";
@@ -1121,7 +1121,7 @@ int AtomPositions::SearchClique(std::list<MoverPtr> clique, int limit)
 				gths.convertEnabledState2OriginalStateEnumerationOnNode(
 				jj, optimal_state_enabled[ jj ] );
 		}
-		float score = theNaEManager->getScoreOfOptimalNetworkConfiguration();
+		float score = static_cast<float>(theNaEManager->getScoreOfOptimalNetworkConfiguration());
 
 		for (int jj = 0; jj < numItems; ++jj)
 		{
@@ -1383,6 +1383,8 @@ void AtomPositions::manageMetals(const ResBlk& rblk) {
 void AtomPositions::generateWaterPhantomHs(std::list< std::shared_ptr<PDBrec> >& waters) {
 	char descrbuf[32];
 	const int MaxAccDir = 25;
+
+	// This structure is reused for each water to fill in information about nearby atoms.
 	struct AccDirection {
 		AccDirection() : _nam(""), _gap(999.9) {}
 		AccDirection(const std::string& s, const Point3d& p, float g)
@@ -1394,6 +1396,8 @@ void AtomPositions::generateWaterPhantomHs(std::list< std::shared_ptr<PDBrec> >&
 
 	const ElementInfo& elemHOd = * ElementInfo::StdElemTbl().element("HOd");
 
+	// Look through all of the waters that were passed in and fill in potential
+	// hydrogen locations based on nearby potential acceptors.
 	std::shared_ptr<PDBrec> a;
 	for(std::list< std::shared_ptr<PDBrec> >::const_iterator it = waters.begin(); it != waters.end(); ++it) {
 		a = *it;
@@ -1417,12 +1421,17 @@ void AtomPositions::generateWaterPhantomHs(std::list< std::shared_ptr<PDBrec> >&
 
 					// Now we make a table of all the locations of each HB
 					// acceptor nearby keeping ONLY one for each aromatic ring
-					// (the one with the most negative gap).
+					// (the one with the most negative gap).  We check that the
+					// atom is in the same residue with other acceptors to know
+					// that it is in the same ring.
 
 					bool foundMatchingAromAtom = FALSE;
 					bool isAromRingAtom = StdResH::ResXtraInfo().atomHasAttrib(
 						rec->resname(), rec->atomname(), AROMATICFLAG);
 
+					// Make a description of the residue that the neighboring atom is in
+					// so that we can use it to compare when looking for other atoms in
+					// the same aromatic ring.
 					if (!UseSEGIDasChain) {
 					  ::sprintf(descrbuf, "%-3.3s%c%-3.3s%4d%c%-2.2s",
 						(isAromRingAtom ? "/R/" : ""), rec->alt(),
@@ -1437,23 +1446,27 @@ void AtomPositions::generateWaterPhantomHs(std::list< std::shared_ptr<PDBrec> >&
 					}
 					std::string resDescr = std::string(descrbuf);
 
+					// If we're closer than an existing aromatic, then
+					// replace its values with our own and skip insertion.
 					if (isAromRingAtom) {
 						for (i=0; i < nAcc; i++) {
 							if (resDescr == nearbyA[i]._nam) {
 								if (HBoverlap < nearbyA[i]._gap) {
 									nearbyA[i]._nam = resDescr;
 									nearbyA[i]._loc = rec->loc();
-									nearbyA[i]._gap = HBoverlap;
+									nearbyA[i]._gap = static_cast<float>(HBoverlap);
 								}
 								foundMatchingAromAtom = TRUE;
 								break;
 							}
 						}
 					}
+
+					// Insert a new candidate into the list.
 					if (!foundMatchingAromAtom && nAcc < MaxAccDir) {
 						nearbyA[nAcc]._nam = resDescr;
 						nearbyA[nAcc]._loc = rec->loc();
-						nearbyA[nAcc]._gap = HBoverlap;
+						nearbyA[nAcc]._gap = static_cast<float>(HBoverlap);
 						nAcc++;
 					}
 				}
@@ -1476,7 +1489,7 @@ void AtomPositions::generateWaterPhantomHs(std::list< std::shared_ptr<PDBrec> >&
 			pHatom->elem(elemHOd);
 
 			pHatom->atomno(0);
-			pHatom->occupancy(_occupancyCuttoff + 0.01);
+			pHatom->occupancy(_occupancyCuttoff + 0.01f);
 			pHatom->tempFactor(99.99);
 			pHatom->elemLabel(" H");
 			pHatom->chargeLabel("  ");
@@ -1507,10 +1520,10 @@ float AtomPositions::determineScoreForMover(
 	bool tempbool;
 	float bump, hbond;
 
-	float score = mover->determineScore(*this,
+	float score = static_cast<float>(mover->determineScore(*this,
 		_dotBucket, _nBondCutoff, _probeRadius,
 		_pmag, penalty, bump,
-		hbond, tempbool);
+		hbond, tempbool));
 
 	scoreAtomsAndDotsInAtomsToScoreVector_ = false;
 	atoms_to_score_ptr_ = 0;
@@ -1590,61 +1603,18 @@ double AtomPositions::atomScore(const PDBrec& a, const Point3d& p,
 	//apl now that AtomPositions has decided to score this atom, collect nearby-list
 	std::list< std::shared_ptr<PDBrec> > nearby = this->neighbors( p, 0.001, nearbyRadius);
     
-    std::list< std::shared_ptr<PDBrec> > bumping_list; // first we collect atoms actually interacting
-	std::shared_ptr<PDBrec> rec;
-	for (std::list< std::shared_ptr<PDBrec> >::const_iterator ni = nearby.begin(); ni != nearby.end(); ++ni) {
-		rec = *ni;
-        if (rec->valid() && (! rec->hasProp(IGNORE))
-			&& (abs(rec->occupancy()) > _occupancyCuttoff)
-			&& (! (a == *rec))
-			&& (interactingConfs(a, *rec, _onlyA))
-			&& ( vdwGap(a, p, *rec, rec->loc()) < pRad)
-			&& (! foundInList(*rec, exclude))) {
-			bumping_list.push_back(rec);
-        }
-	}
-
-
-	std::vector< std::shared_ptr<PDBrec> > bumping( bumping_list.size(), NULL );
-	std::copy( bumping_list.begin(), bumping_list.end(), bumping.begin() );
-	//for (int ii = 0; ii < bumping.size(); ++ii )
-	//{
-	//	if (output) std::cerr << "bumping: " << ii << " " << bumping[ ii ] << std::endl;
-	//}
-
-	//if (false)
-	//int count_atoms_to_score = bumping.size();
-	//if ( scoreAtomsAndDotsInAtomsToScoreVector_ )
-	//{
-	//	count_atoms_to_score = 0;
-	//	int first = 0;
-	//	int last = bumping.size() - 1;
-	//
-	//	for (std::list<  std::shared_ptr<PDBrec> >::iterator iter = bumping_list.begin(); iter != bumping_list.end(); ++iter)
-	//	{
-	//		AtomDescr bumping_descr = (*iter)->getAtomDescr();
-	//		if (std::find(dotsToCount->begin(), dotsToCount->end(), bumping_descr) == dotsToCount->end() )
-	//		{
-	//			bumping[ last ] = *iter;
-	//			accept_bumping[ last ] = false;
-	//			--last;
-	//		}
-	//		else
-	//		{
-	//			bumping[ first ] = *iter;
-	//			++count_atoms_to_score;
-	//			++first;
-	//		}
-	//	}
-	//
-	//	if ( count_atoms_to_score == 0 ) return 0.0;
-	//
-	//}
-	//else
-	//{
-	//std::copy( bumping_list.begin(), bumping_list.end(), bumping.begin() );
-	//}
-
+  std::vector< std::shared_ptr<PDBrec> > bumping; // first we collect atoms actually interacting
+  for (std::list< std::shared_ptr<PDBrec> >::const_iterator ni = nearby.begin(); ni != nearby.end(); ++ni) {
+    const PDBrec &rec = **ni;
+    if (rec.valid() && !rec.hasProp(IGNORE)
+        && (abs(rec.occupancy()) > _occupancyCuttoff)
+        && (! (a == rec))
+        && (interactingConfs(a, rec, _onlyA))
+        && (vdwGap(a, p, rec, rec.loc()) < pRad)
+        && (!foundInList(rec, exclude))) {
+      bumping.push_back(*ni);
+    }
+  }
 
 	int HBmask = 0;
 	if (a.hasProp(   DONOR_ATOM)) { HBmask |= ACCEPTOR_ATOM; }
@@ -1675,14 +1645,14 @@ double AtomPositions::atomScore(const PDBrec& a, const Point3d& p,
 			const double vdwb = b->vdwRad();
 
 			const double squaredist = distanceSquared( probeLoc, locb );
-			if ( squaredist > (vdwb + pRad ) * ( pRad + vdwb ) )
-			{
+      const double pRadPlusVdwb = vdwb + pRad;
+			if (squaredist > pRadPlusVdwb * pRadPlusVdwb) {
 				continue;
 			}
 
 			const double dist = sqrt( squaredist );
-			const double probeGap = dist- pRad - vdwb;
-			const double      gap = dist       - vdwb;
+			const double probeGap = dist - pRadPlusVdwb;
+			const double      gap = dist -         vdwb;
 			if (probeGap < 0.0) {
 
 				if (gap < mingap) {
@@ -1720,16 +1690,16 @@ double AtomPositions::atomScore(const PDBrec& a, const Point3d& p,
 		if (keepDot) { // remove dots inside a connected atom
 			std::shared_ptr<PDBrec> x;
 			for (std::list< std::shared_ptr<PDBrec> >::const_iterator it = exclude.begin(); it != exclude.end(); ++it) {
-				x = *it;
-				if ( (distanceSquared(q, x->loc()) < x->vdwRad()*x->vdwRad())
-					&& x->valid() && (! x->hasProp(IGNORE))
-					&& interactingConfs(a, *x, _onlyA) ) {
+        const PDBrec &x = **it;
+				if ( (distanceSquared(q, x.loc()) < x.vdwRad()*x.vdwRad())
+					&& x.valid() && (! x.hasProp(IGNORE))
+					&& interactingConfs(a, x, _onlyA) ) {
 					keepDot = FALSE;
 					break;
 				}
 			}
 		}
-    	if (! keepDot ) continue;
+   	if (! keepDot ) continue;
 
 		//if we've gotten this far, then this dot's score gets counted
 
@@ -1753,7 +1723,7 @@ double AtomPositions::atomScore(const PDBrec& a, const Point3d& p,
       // using scale values from probe program
       if (overlapType == -1) {              // clash
         const double bmp = -BUMPweight*overlap;
-        bumpSubScore += bmp;
+        bumpSubScore += static_cast<float>(bmp);
 		  dotscore = bmp;
         s += bmp;
         if (mingap <= -_bad_bump_gap_cutoff) { hasBadBump = TRUE; }
@@ -1771,13 +1741,13 @@ double AtomPositions::atomScore(const PDBrec& a, const Point3d& p,
       else if (overlapType ==  1) {			    // H-bond
         if (!onlyBumps) {
           const double hbv = HBweight*overlap;
-          hbSubScore += hbv;
+          hbSubScore += static_cast<float>(hbv);
 			 dotscore = hbv;
           s += hbv;
         }
         else {   // in this case treat as a bump
           const double pseudobump = -BUMPweight*overlap;
-          bumpSubScore += pseudobump;
+          bumpSubScore += static_cast<float>(pseudobump);
 			 dotscore = pseudobump;
           s += pseudobump;
         }

@@ -12,7 +12,7 @@
 // also available for free.
 //               ** Absolutely no Warranty **
 // Copyright (C) 1999-2016 J. Michael Word
-// Copyright (C) 2020-2021 ReliaSolve
+// Copyright (C) 2020-2021 Richardson Lab at Duke University
 // **************************************************************
 //
 //  reduceChanges now contains the CHANGELOG or history info
@@ -341,12 +341,14 @@ void reduceChanges(bool showAll) { /*changes*/
    cerr  << "2021/01/04 - rmt       Version 4.0 removes the ability to rotate CH3 groups" << endl;
    cerr  << "2021/01/10 - rmt       Version 4.1 removes -FLIP bug introduced in 3.10" << endl;
    cerr  << "2021/01/12 - rmt       Version 4.2 speeds up processing of the HET database file" << endl;
+   cerr  << "2021/01/14 - rmt       Version 4.3 inserts optimization requests on existing hydrogens when not adding hydrogens" << endl;
+   cerr  << "2021/01/29 - rmt       Version 4.4 fixes a bug that kept aromatic methyl flips from being inserted since 2012" << endl;
    cerr  << endl;
    exit(2);
 }
 
 void establishHetDictionaryFileName(void) {
-	int i =DBfilename.find_last_of(DIRECTORY_SEP_CHAR);
+	int i = static_cast<int>(DBfilename.find_last_of(DIRECTORY_SEP_CHAR));
 	std::string localfile = DBfilename.substr(i+1, DBfilename.length());
 #ifdef NOSYSSTATS
 	const int rc = 1; // force the name on the MAC
@@ -553,7 +555,7 @@ char* parseCommandLine(int argc, char **argv) {
         OccupancyCutoff = parseReal(p, n+1, 10, OccupancyCutoff);
       }
       else if((n = compArgStr(p+1, "H2OBcutoff", 4))){
-        WaterBcutoff = 1.0 * parseInteger(p, n+1, 10);
+        WaterBcutoff = 1.0f * parseInteger(p, n+1, 10);
       }
       else if((n = compArgStr(p+1, "H2OOCCcutoff", 6))){
         WaterOCCcutoff = parseReal(p, n+1, 10, WaterOCCcutoff);

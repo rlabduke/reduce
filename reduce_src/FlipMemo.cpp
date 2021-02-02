@@ -350,7 +350,7 @@ void FlipMemo::finalize(int, bool, bool, bool, AtomPositions &, DotSphManager&) 
 				_protLoc[ppi].type,         _origLoc[_protLoc[ppi].c1],
 				_origLoc[_protLoc[ppi].c2], _origLoc[_protLoc[ppi].c3],
 				_origLoc[0], // *place holder* not referenced for types 3&4
-				cur_dist, _protLoc[ppi].ang, _protLoc[ppi].dh);
+        static_cast<float>(cur_dist), _protLoc[ppi].ang, _protLoc[ppi].dh);
 		}
 	}
 }
@@ -763,7 +763,7 @@ double FlipMemo::determineScore(AtomPositions &xyz,	DotSphManager& dotBucket,
 			//}
             
 			double val = xyz.atomScore(thisAtom, thisAtom.loc(),
-				thisAtom.vdwRad() + probeRadius + maxVDWrad,
+        static_cast<float>(thisAtom.vdwRad() + probeRadius + maxVDWrad),
 				//apl procrastinate nearby list computation until AtomPositions decides to score
 				bnded,
 				dotBucket.fetch(thisAtom.vdwRad()),

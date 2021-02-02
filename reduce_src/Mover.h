@@ -134,7 +134,7 @@ public:
    bool linkExists(const std::string &s) const {
 	   return _links.find(s) != _links.end();
    }
-   int  numLinks() const { return _links.size(); }
+   int  numLinks() const { return static_cast<int>(_links.size()); }
 
    std::map<std::string, MoverPtr> links() const {
 	   return _links;
@@ -194,6 +194,10 @@ void countBonds(const PDBrec& src, const std::list< std::shared_ptr<PDBrec> >& n
 	       int distcount, int maxcnt, std::list< std::shared_ptr<PDBrec> >& atmList);
 void resetMarks(std::list< std::shared_ptr<PDBrec> >& lst);
 bool visableAltConf(const PDBrec& a, bool onlyA);
+/// @brief Are the two atoms in matching alternate conformations so that they can interact with each other?
+/// @param [in] a First atom
+/// @param [in] b Second atom
+/// @param [in] onlyA Are we only using the A conformation (ignoring others)?
 bool interactingConfs(const PDBrec& a, const PDBrec& b, bool onlyA);
 bool diffAltLoc(const PDBrec& a, const PDBrec& b);
 int withinCovalentDist(const PDBrec& p, const PDBrec& q, double offset);

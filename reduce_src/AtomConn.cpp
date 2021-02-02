@@ -24,14 +24,14 @@ AtomConn& AtomConn::operator=(const AtomConn& a) {
       _name     = a._name;
       _order    = a._order;
       _neighbor = a._neighbor;
-	  _emptyString = "";
    }
    return *this;
 }
 
 // return the "i"th connection [0..num_conn-1] for this atom
 const std::string& AtomConn::conn(int i) const {
-	if (i >= num_conn() || i < 0) { return _emptyString; }
+  static std::string empty;
+	if (i >= num_conn() || i < 0) { return empty; }
    return _neighbor[i];
 }
    

@@ -58,7 +58,7 @@ std::list<std::string> ResConn::findRingBondedToMethyl(const std::string &atomna
 			int x1cDepth = 0;
 
 			ElementInfo *x1e = ElementInfo::StdElemTbl().lookupPDBatom(x1name.c_str(), resname);
-			if (x1c && x1e->atno()==6) { // Test to see if this hydrogen is in methyl group
+			if (x1c && x1e && x1e->atno()==6) { // Test to see if this hydrogen is in methyl group
 				std::string xc = "";
 				for (int i = x1c->num_conn()-1; i >= 0; i--) {
 					ElementInfo *xe = ElementInfo::StdElemTbl().lookupPDBatom(x1c->conn(i).c_str(), resname);
@@ -90,9 +90,7 @@ std::list<std::string> ResConn::findRingBondedToMethyl(const std::string &atomna
 				stkAtomsDepth.pop();
 
 				if ( x1c && x1c->num_conn() > 1    // Atom exists and has more than 1 connected atoms (other than it's parent)
-					 && x1cDepth < 7               // only report 5 or 6 member rings
-					 && x1cDepth > 4 )  {          // exclude 3 member rings - JJH 130326
-
+					 && x1cDepth < 7) {              // only report 5 or 6 member rings, stop searching if larger
 					// std::cout << std::endl << "here: " << x1c->order() << x1c->name() << "-" << x1cDepth;
 					visited[x1c->order()]=true;
 					if (L.size() > x1cDepth-1)
@@ -103,7 +101,7 @@ std::list<std::string> ResConn::findRingBondedToMethyl(const std::string &atomna
 					for (int i = x1c->num_conn()-1; i >= 0; i--) {
 						std::string xc = x1c->conn(i);
 						if (xparent != xc) {
-							if (xc == x1name) { // Found cycle
+							if (xc == x1name && x1cDepth > 4) { // Found cycle of length 5-6
 								return L;
 							}
 
@@ -195,7 +193,7 @@ std::shared_ptr<atomPlacementPlan> ResConn::planHplacement(const std::string &at
 	    else if (nn == 2) {
 	       if (x1c->num_conn() == 4) {
 		  type = 2;
-		  ang1 = (whichH == 1) ? 126.5 : -126.5;
+		  ang1 = (whichH == 1) ? 126.5f : -126.5f;
 	       }
 	       else if (x1c->num_conn() == 3) { type = 4; }
 	    }
@@ -211,8 +209,8 @@ std::shared_ptr<atomPlacementPlan> ResConn::planHplacement(const std::string &at
 			      if (x1c->num_conn() == 4) {
 				 type = 3;
 				 ang1 = 109.5;
-				 ang2 = (whichH == 1) ? 180.0
-				      : (whichH == 2) ? 60.0 : -60.0;
+				 ang2 = (whichH == 1) ? 180.0f
+				      : (whichH == 2) ? 60.0f : -60.0f;
 				 std::string x2name = names.conn(1);
 				 ElementInfo *x2e = ElementInfo::StdElemTbl().lookupPDBatom(x2name.c_str(), resname);
 				 if (x2e->atno()==16) { // S, so this is like a MET methyl
@@ -220,7 +218,7 @@ std::shared_ptr<atomPlacementPlan> ResConn::planHplacement(const std::string &at
 				 }
 				 else {
 				    flags |= ROTATEONDEMAND;
-				    if (x1e->atno()==7) { // NH3
+				    if (x1e && x1e->atno()==7) { // NH3
 				       flags |= NH3FLAG;
 				    }
 				 }
@@ -228,7 +226,7 @@ std::shared_ptr<atomPlacementPlan> ResConn::planHplacement(const std::string &at
 			      else if (x1c->num_conn() == 3) {
 				 type = 3;
 				 ang1 = 120.0;
-				 ang2 = (whichH == 1) ? 0.0 : 180.0;
+				 ang2 = (whichH == 1) ? 0.0f : 180.0f;
 			      }
 			      else if (x1c->num_conn() == 2) {
 				 if (x1e && (x1e->atno()==6)) {// Carbon
@@ -349,6 +347,7 @@ void CTab::readFile(const std::string& dbFileName)
 			if (curName.size()) {
 				m_reslines.insert(std::make_pair(curName, curResidue));
 				curResidue.clear();
+        curName.clear();
 			}
 			if (0 > column_sscanf(buf, "%10 %3s %6d", resname, &n)) {
 				cerr << "ERROR CTab(" << dbFileName
@@ -392,9 +391,9 @@ std::shared_ptr<ResConn> CTab::parseResidue(std::vector<std::string> res, std::s
 {
 	std::shared_ptr<ResConn> curResidue = std::make_shared<ResConn>();
 
+  int m = 0, n = 0;
 	for (std::string buf : res) {
 		char an[10][5];     // holds ten strings of length 4
-		int m = 0, n = 0;
 
 		// Add the line into the current residue
 		if (0 > column_sscanf(buf.c_str(), "%11 %4s %4d%4s %4s %4s %4s %4s %4s %4s %4s %4s",
