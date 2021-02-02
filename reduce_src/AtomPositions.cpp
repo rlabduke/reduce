@@ -422,7 +422,7 @@ std::list<char> AtomPositions::insertFlip(const ResBlk& rblk) {
 						_motionDesc.insert(std::make_pair(descriptor, m));
 						//std::cerr << "FlipMemo constructed: " << descriptor << " " << m << std::endl;
 					}
-					else if (!m->insertAtom(atsq)){
+					if (!m->insertAtom(atsq)){
 						cerr<<"*error* insertFlip()"<<endl;
 						return std::list<char>();
 					}
@@ -464,7 +464,7 @@ void AtomPositions::insertFlip(std::shared_ptr<PDBrec> hr, std::list<char> alts_
 				m = std::make_shared<FlipMemo>(hr->resname(), _useXplorNames, _useOldNames, _bbModel);
 				_motionDesc.insert(std::make_pair(descr, m));
 			}
-			else if (!m->insertAtom(hr)){
+			if (!m->insertAtom(hr)){
 				cerr<<"*error* insertFlip()"<<endl;
 				return;
 			}
