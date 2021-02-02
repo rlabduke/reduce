@@ -24,10 +24,6 @@ public:
              const double ang, const PDBrec& heavyAtom);
    virtual ~RotAromMethyl() { }
 
-   /// @todo Consider overriding type(), though the original code returned
-   ///       ROTATE_METHYL so we left it alone here.  Consider this when we
-   ///       remove the type() function and have virtual methods do that work.
-
    virtual bool hasHires() const { return FALSE; }
    virtual int numOrientations(SearchStrategy ss=Mover::LOW_RES) const;
 

@@ -800,11 +800,12 @@ double FlipMemo::determineScore(AtomPositions &xyz,	DotSphManager& dotBucket,
 	return scoreThisO;
 }
 
-void FlipMemo::insertAtom(std::shared_ptr<PDBrec> r) {
+bool FlipMemo::insertAtom(std::shared_ptr<PDBrec> r) {
    if (valid()) {
 	   _resAtoms.insert(std::make_pair(r->atomname(), r));
       fillAtomAndLocVectors(); // try and find required atoms
    }
+   return true;
 }
 
 // externally, we can refer to the atom num in the range [0..numScore)

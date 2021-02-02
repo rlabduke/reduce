@@ -24,7 +24,6 @@ public:
    virtual ~RotMethyl() {
    }
 
-   virtual Mover::MemoType type() { return Mover::ROTATE_METHYL; }
    virtual bool hasHires() const { return TRUE; }
    virtual void finalize(int nBondCutoff, bool useXplorNames, bool useOldNames, bool bbModel, 
                          AtomPositions &xyz, DotSphManager& dotBucket);
