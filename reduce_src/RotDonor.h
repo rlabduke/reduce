@@ -23,7 +23,6 @@ public:
             const double ang, const PDBrec& heavyAtom);
    virtual ~RotDonor() {};
 
-   virtual Mover::MemoType type() { return Mover::ROTATE_DONOR; }
    virtual bool hasHires() const { return TRUE; }
    virtual void finalize(int nBondCutoff, bool useXplorNames, bool useOldNames, bool bbModel, 
                          AtomPositions &xyz, DotSphManager& dotBucket);

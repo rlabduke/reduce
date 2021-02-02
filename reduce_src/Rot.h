@@ -49,10 +49,11 @@ public:
 
   const PDBrec& heavyAtom() const { return *_heavyAtom; }
 
-  virtual void insertHatom(const PDBrec& ha) {
+  virtual bool insertHatom(const PDBrec& ha) {
       std::shared_ptr<PDBrec> temp = std::make_shared<PDBrec>();
     *temp = ha;
-    _rot.push_front(temp); 
+    _rot.push_front(temp);
+    return true;
   }
 
   virtual bool setOrientation(int oi, AtomPositions &xyz, SearchStrategy ss=Mover::LOW_RES) {

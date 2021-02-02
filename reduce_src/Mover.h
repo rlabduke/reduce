@@ -64,10 +64,8 @@ public:
 //		   delete i->second;
    }
 
-   enum MemoType { ROTATE_METHYL, ROTATE_DONOR, FLIP };
    enum SearchStrategy { LOW_RES, HIGH_RES };
 
-   virtual MemoType type() = 0;
    virtual bool isComplete() const = 0;
    virtual bool hasHires() const = 0;
    virtual bool canFlip() const = 0;
@@ -96,6 +94,12 @@ public:
    int bestOrientation(SearchStrategy ss=Mover::LOW_RES) const {
       return _bestOrientation[ss!=Mover::LOW_RES];
    }
+
+   /// @brief Movers of the Rot() subclass use this to insert a Hydrogen.
+   virtual bool insertHAtom(const PDBrec& ha) { return false; }
+
+   /// @brief Movers of the FlipMemo() subclass use this to insert an atom.
+   virtual bool insertAtom(std::shared_ptr<PDBrec> r) { return false; }
 
    void setBestOrientation(int io, double val, bool hasBadBump,
                            SearchStrategy ss=Mover::LOW_RES) {
