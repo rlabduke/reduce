@@ -55,6 +55,7 @@ bool RotAromMethyl::setOrientation(int oi, float delta, AtomPositions &xyz,
                                                      SearchStrategy ss)
 {
 	const double oldTheta = angle();
+  // Always LOW_RES, no matter what the ss parameter says.
 	const double    theta = orientationAngle(oi, Mover::LOW_RES) + delta;
 
 	if (abs(theta-oldTheta) > 0.1) {
