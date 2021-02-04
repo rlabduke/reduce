@@ -12,7 +12,7 @@
 // also available for free.
 //               ** Absolutely no Warranty **
 // Copyright (C) 1999-2016 J. Michael Word
-// Copyright (C) 2020-2021 ReliaSolve
+// Copyright (C) 2020-2021 Richardson Lab at Duke University
 // **************************************************************
 //
 
@@ -23,9 +23,9 @@
 #endif
 
 const char *versionString =
-     "reduce: version 4.2 1/12/2021, Copyright 1997-2016, J. Michael Word; 2020-2021 ReliaSolve";
+     "reduce: version 4.4 1/29/2021, Copyright 1997-2016, J. Michael Word; 2020-2021 Richardson Lab at Duke University";
 
-const char *shortVersion    = "reduce.4.2.210112";
+const char *shortVersion    = "reduce.4.4.210129";
 const char *referenceString =
                        "Word, et. al. (1999) J. Mol. Biol. 285, 1735-1747.";
 const char *electronicReference = "http://kinemage.biochem.duke.edu";
@@ -907,10 +907,8 @@ void analyzeRes(CTab& hetdatabase, ResBlk* pb, ResBlk* cb, ResBlk* nb,
 	}
 
 	// work through each atom placement plan - S.J. each atom placement plan is a potential H atom that needs to be added. The hydrogens that are already present are not looked at right now.
-	if (AddOtherHydrogens) {
-		for (std::list<std::shared_ptr<atomPlacementPlan> >::const_iterator iter = app.begin(); iter != app.end(); ++iter) {
-			genHydrogens(**iter, *cb, o2prime, xyz, resAlts, fixNotes, rlst);
-		}
+	for (std::list<std::shared_ptr<atomPlacementPlan> >::const_iterator iter = app.begin(); iter != app.end(); ++iter) {
+		genHydrogens(**iter, *cb, o2prime, xyz, resAlts, fixNotes, rlst);
 	}
 }
 
@@ -1006,7 +1004,7 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 				}
 			}
 		}
-		else {
+		else if (AddOtherHydrogens) {
             int i = 0, j = 0, k = 0;
 
 			if (pp.hasFeature(NOO2PRIMEFLAG) && o2prime) {
@@ -1049,7 +1047,7 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 				std::list< std::shared_ptr<PDBrec> > rs;
 				theRes.get(pp.conn(i), rs);
 				if (!rs.empty()) {
-					nconf[i] = rs.size();
+					nconf[i] = static_cast<int>(rs.size());
 					maxalt = std::max(maxalt, nconf[i]);
 					std::vector< std::shared_ptr<PDBrec> > rvv_v;
 					rvv_v.reserve(nconf[i]);
@@ -1077,7 +1075,7 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 			    }
             }*/
             sort (all_confs.begin(), all_confs.end());
-            for(k=all_confs.size()-1; k > 0; k--) {
+            for(k= static_cast<int>(all_confs.size())-1; k > 0; k--) {
                 if ( toupper(all_confs[k])
                     == toupper(all_confs[k-1]) ) {
                     all_confs.erase(all_confs.begin()+k);

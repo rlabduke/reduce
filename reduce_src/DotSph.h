@@ -115,7 +115,7 @@ public:
    DotSphManager& operator=(const DotSphManager& m);
 
    DotSph& fetch(float rad);
-   int count() const { return _list.size(); } // how many spheres?
+   int count() const { return static_cast<int>(_list.size()); } // how many spheres?
 
    float density(float); // set the default dot density
 

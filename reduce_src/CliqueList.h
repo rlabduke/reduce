@@ -48,8 +48,8 @@ public:
    const std::list< std::list<MoverPtr> >& cliques() { return _cliques; }
    const std::list<MoverPtr>& singles() { return _singles; }
 
-   int numCliques()    { return _cliques.size(); }
-   int numSingletons() { return _singles.size(); }
+   int numCliques()    { return static_cast<int>(_cliques.size()); }
+   int numSingletons() { return static_cast<int>(_singles.size()); }
 
    void describe(std::ostream& os) const;
    void formatSingles(std::vector<std::string>& cliqueNotes, AtomPositions& xyz) const; // SJ - 09/25/2015  added the last argument as that is need for doing the final flip

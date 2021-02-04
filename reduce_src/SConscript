@@ -32,6 +32,7 @@ env.StaticLibrary(
     "AtomPositions.cpp",
     "DotSph.cpp",
     "Mover.cpp",
+    "Rot.cpp",
     "RotMethyl.cpp",
     "RotDonor.cpp",
     "FlipMemo.cpp",

@@ -66,6 +66,7 @@ set(reduce_SOURCES
   AtomPositions.cpp
   DotSph.cpp
   Mover.cpp
+  Rot.cpp
   RotMethyl.cpp
   RotAromMethyl.cpp
   RotDonor.cpp
@@ -87,6 +88,7 @@ set(reduce_HEADERS
   AtomPositions.h
   DotSph.h
   Mover.h
+  Rot.h
   RotMethyl.h
   RotAromMethyl.h
   RotDonor.h

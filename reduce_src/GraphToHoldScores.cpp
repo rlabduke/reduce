@@ -559,7 +559,7 @@ int Vertex_ths::getNumStates() const
 
 int Vertex_ths::getNumAtoms() const
 {
-	return atoms_.size();
+	return static_cast<int>(atoms_.size());
 }
 
 void Vertex_ths::getAtoms( std::vector< AtomDescr > & atoms ) const
@@ -787,7 +787,7 @@ Vertex_ths::score()
 	for( int ii = 0; ii < num_states_; ++ii )
 	{
 		scores_[ ii ] = xyz_->determineScoreForMover( mover_, dotsToScoreOnAtoms_, penalty );
-		penalties_[ ii ] = penalty;
+		penalties_[ ii ] = static_cast<float>(penalty);
 		//std::cerr << ii << " " << scores_[ ii ]<< std::endl;
 		mover_->nextOrientation( *xyz_ );
 	}
@@ -2049,7 +2049,7 @@ GraphToHoldScores::GraphToHoldScores(
 :
 	xyz_( xyz ),
 	dotSphereManager_( dotSphereManager ),
-	num_vertices_( movers.size() ),
+	num_vertices_(static_cast<int>(movers.size()) ),
 	num_deg2edges_( 0 ),
 	num_deg3edges_( 0 ),
 	vertices_( num_vertices_, static_cast< Vertex_ths * > ( 0 ) )

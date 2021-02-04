@@ -64,10 +64,8 @@ public:
 //		   delete i->second;
    }
 
-   enum MemoType { ROTATE_METHYL, ROTATE_DONOR, FLIP };
    enum SearchStrategy { LOW_RES, HIGH_RES };
 
-   virtual MemoType type() = 0;
    virtual bool isComplete() const = 0;
    virtual bool hasHires() const = 0;
    virtual bool canFlip() const = 0;
@@ -96,6 +94,12 @@ public:
    int bestOrientation(SearchStrategy ss=Mover::LOW_RES) const {
       return _bestOrientation[ss!=Mover::LOW_RES];
    }
+
+   /// @brief Movers of the Rot() subclass use this to insert a Hydrogen.
+   virtual bool insertHAtom(const PDBrec& ha) { return false; }
+
+   /// @brief Movers of the FlipMemo() subclass use this to insert an atom.
+   virtual bool insertAtom(std::shared_ptr<PDBrec> r) { return false; }
 
    void setBestOrientation(int io, double val, bool hasBadBump,
                            SearchStrategy ss=Mover::LOW_RES) {
@@ -134,7 +138,7 @@ public:
    bool linkExists(const std::string &s) const {
 	   return _links.find(s) != _links.end();
    }
-   int  numLinks() const { return _links.size(); }
+   int  numLinks() const { return static_cast<int>(_links.size()); }
 
    std::map<std::string, MoverPtr> links() const {
 	   return _links;
@@ -194,6 +198,10 @@ void countBonds(const PDBrec& src, const std::list< std::shared_ptr<PDBrec> >& n
 	       int distcount, int maxcnt, std::list< std::shared_ptr<PDBrec> >& atmList);
 void resetMarks(std::list< std::shared_ptr<PDBrec> >& lst);
 bool visableAltConf(const PDBrec& a, bool onlyA);
+/// @brief Are the two atoms in matching alternate conformations so that they can interact with each other?
+/// @param [in] a First atom
+/// @param [in] b Second atom
+/// @param [in] onlyA Are we only using the A conformation (ignoring others)?
 bool interactingConfs(const PDBrec& a, const PDBrec& b, bool onlyA);
 bool diffAltLoc(const PDBrec& a, const PDBrec& b);
 int withinCovalentDist(const PDBrec& p, const PDBrec& q, double offset);

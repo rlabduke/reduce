@@ -40,7 +40,7 @@ void halt(const char *message) {
 int trimStr(char *s) {
    int nrem = 0;
 
-   for (int i = strlen(s); i > 0 && isspace(s[i-1]); i--) {
+   for (int i = static_cast<int>(strlen(s)); i > 0 && isspace(s[i-1]); i--) {
       s[i-1] = '\0'; nrem++;
    }
    return nrem;
@@ -74,7 +74,7 @@ double clampAngle(double a, int min) {
 }
 
 int compArgStr(const char *str, const char *arg, int min) {
-	int i, max;
+	size_t i, max;
 	char s, a;
 
 	if (!str || !arg) return 0;
@@ -94,7 +94,7 @@ int compArgStr(const char *str, const char *arg, int min) {
 		}
 	}
 
-	return i;
+	return static_cast<int>(i);
 }
 
 int parseInteger(const char *str, int start, int len) {
@@ -124,7 +124,7 @@ int parseInteger(const char *str, int start, int len) {
 	return (neg?-value:value);
 }
 
-double parseReal(const char *str, int start, int len, double initialValue) {
+float parseReal(const char *str, int start, int len, double initialValue) {
    double value = 0.0, scale = 1.0, expscale = 1.0, expfact = 10.0;
    int expval = 0;
    register char ch;
@@ -177,10 +177,10 @@ double parseReal(const char *str, int start, int len, double initialValue) {
       for(;expval; expval--) { expscale *= expfact; }
    }
    if(hasnum==0){
-     return initialValue;
+     return static_cast<float>(initialValue);
    }
    else{
-     return value*scale*expscale;
+     return static_cast<float>(value*scale*expscale);
    }
 }
 

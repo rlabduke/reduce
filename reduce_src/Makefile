@@ -21,7 +21,7 @@ CXXFLAGS = $(OPT) $(DEBUG) $(PROG_FLGS) $(DICT_LOC) $(DICT_LOCOLD)\
 LFLAGS = -L$(PDBHOME) -lpdb++ -L$(TOOLHOME) -ltoolclasses -lm
 
 OBJLIST = main.o GraphToHoldScores.o reduce.o CTab.o ElementInfo.o StdResH.o ResBlk.o AtomConn.o \
-            AtomPositions.o DotSph.o Mover.o RotMethyl.o RotAromMethyl.o RotDonor.o \
+            AtomPositions.o DotSph.o Mover.o Rot.o RotMethyl.o RotAromMethyl.o RotDonor.o \
             FlipMemo.o CliqueList.o AtomDescr.o PDBrec.o MoveableNode.o hybrid_36_c.o\
             
 
@@ -55,7 +55,7 @@ AtomPositions.o: $(PDBHOME)/pdb++.h $(TOOLHOME)/DisjointSets.h \
 	 $(TOOLHOME)/utility.h AtomConn.h AtomPositions.cpp \
 	 AtomPositions.h BumperPoint.h CliqueList.h DotSph.h \
 	 ElementInfo.h FlipMemo.h LocBlk.h Mover.h PDBrec.h ResBlk.h \
-	 RotDonor.h RotMethyl.h StdResH.h neighbors.cpp neighbors.h \
+	 Rot.h RotDonor.h RotMethyl.h StdResH.h neighbors.cpp neighbors.h \
 	 AtomDescr.h MoveableNode.h GraphToHoldScores.h
 CTab.o: $(TOOLHOME)/Point3d.h \
 	 $(TOOLHOME)/utility.cpp $(TOOLHOME)/utility.h AtomConn.h \
@@ -91,6 +91,11 @@ PDBrec.o: $(PDBHOME)/pdb++.h \
 ResBlk.o: $(PDBHOME)/pdb++.h $(TOOLHOME)/Point3d.h \
 	 $(TOOLHOME)/utility.cpp $(TOOLHOME)/utility.h \
 	 ElementInfo.h PDBrec.h ResBlk.cpp ResBlk.h
+Rot.o: $(PDBHOME)/pdb++.h $(TOOLHOME)/Point3d.h \
+	 $(TOOLHOME)/utility.cpp $(TOOLHOME)/utility.h \
+	 AtomPositions.h BumperPoint.h CliqueList.h DotSph.h \
+	 ElementInfo.h FlipMemo.h LocBlk.h Mover.h PDBrec.h ResBlk.h \
+	 Rot.cpp Rot.h neighbors.cpp neighbors.h
 RotDonor.o: $(PDBHOME)/pdb++.h $(TOOLHOME)/Point3d.h \
 	 $(TOOLHOME)/utility.cpp $(TOOLHOME)/utility.h \
 	 AtomPositions.h BumperPoint.h CliqueList.h DotSph.h \
