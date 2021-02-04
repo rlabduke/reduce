@@ -1,7 +1,7 @@
-// name: RotMethyl.C
+// name: Rot3Fold.C
 // author: J. Michael Word
 // date written: 2/7/98
-// purpose: Implementation for RotMethyl
+// purpose: Implementation for Rot3Fold
 
 // **************************************************************
 // NOTICE: This is free software and the source code is freely
@@ -33,10 +33,10 @@ using std::strcpy;
 using std::exit;
 #endif
 
-#include "RotMethyl.h"
+#include "Rot3Fold.h"
 #include "AtomPositions.h"
 
-RotMethyl::RotMethyl(const Point3d& a, const Point3d& b,
+Rot3Fold::Rot3Fold(const Point3d& a, const Point3d& b,
                      const double ang, const PDBrec& heavyAtom)
    : Rot(a, b, ang, heavyAtom)
 {
@@ -51,7 +51,7 @@ RotMethyl::RotMethyl(const Point3d& a, const Point3d& b,
   scanAngle = 60;
 }
 
-void RotMethyl::finalize(int nBondCutoff, bool useXplorNames, bool useOldNames, bool bbModel,
+void Rot3Fold::finalize(int nBondCutoff, bool useXplorNames, bool useOldNames, bool bbModel,
 						 AtomPositions &xyz, DotSphManager& dotBucket) {
 
 	if (isComplete()) {
@@ -75,19 +75,19 @@ void RotMethyl::finalize(int nBondCutoff, bool useXplorNames, bool useOldNames, 
 	}
 }
 
-int RotMethyl::numOrientations(SearchStrategy ss) const {
+int Rot3Fold::numOrientations(SearchStrategy ss) const {
    return (ss==Mover::LOW_RES) ?
       int(120.0/ROUGH_STEP + 0.5) :
       int(2.0*(double(ROUGH_STEP)/double(FINE_STEP)) + 0.5);
 }
 
-bool RotMethyl::isDefaultO(int oi, SearchStrategy ss) const {
+bool Rot3Fold::isDefaultO(int oi, SearchStrategy ss) const {
    if (ss!=Mover::LOW_RES) { oi = orientation(Mover::LOW_RES); }
    return ((oi == 0) &&
            (abs(clampAngle(START_ANGLE - angle())) < 1.0));
 }
 
-double RotMethyl::orientationAngle(int oi, SearchStrategy ss) const {
+double Rot3Fold::orientationAngle(int oi, SearchStrategy ss) const {
    double delta = 0.0;
    if (ss != Mover::LOW_RES) {
       const int oh = oi;
@@ -112,25 +112,25 @@ double RotMethyl::orientationAngle(int oi, SearchStrategy ss) const {
    return clampAngle(a);
 }
 
-std::string RotMethyl::describeOrientation() const {
+std::string Rot3Fold::describeOrientation() const {
    char descrbuf[25];
    ::sprintf(descrbuf,"%s%4.0f",_grpName, _angle);
    return descrbuf;
 }
 
 #ifdef ROTPENALTY
-double RotMethyl::orientationPenalty(float pmag) const {
+double Rot3Fold::orientationPenalty(float pmag) const {
    const double freq = 1.5*(PI/180.0);
    // relatively small penalty
    return -pmag * 0.1 * abs(sin( freq*(angle()-START_ANGLE) ));
 }
 #else
-double RotMethyl::orientationPenalty(float) const {
+double Rot3Fold::orientationPenalty(float) const {
    return 0.0;
 }
 #endif
 
-std::string RotMethyl::formatComment(std::string prefix) const
+std::string Rot3Fold::formatComment(std::string prefix) const
 {
   char buf[200];
 

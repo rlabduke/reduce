@@ -22,7 +22,7 @@ Some of the classes in the Reduce Code:
 
 11. FlipMemo - Inherited from Mover. Contains all the information and functions about how to do NQH flips. This class contains the hard coded arrays that tell reduce what atoms are moved, what atoms are exhanged with what during flips. 
 
-12. RotAromMethyl, RotDonor, RotMethyl - these classes are also inherited from Mover. Have all functions to do the respective rotations.
+12. RotAromMethyl, RotDonor, Rot3Fold - these classes are also inherited from Mover. Have all functions to do the respective rotations.
 
 13. PDBRec - class that contains information for each PDB record. (Header, MODEL, USER, ATOM etc). Each line in the PDB file is treated as a record. 
 

@@ -39,7 +39,7 @@ using std::cout;
 
 RotAromMethyl::RotAromMethyl(const Point3d& a, const Point3d& b,
                      const double ang, const PDBrec& heavyAtom)
-   : RotMethyl(a, b, ang, heavyAtom)
+   : Rot3Fold(a, b, ang, heavyAtom)
 {
   // Override these to change the class behavior.
   START_ANGLE = 150;
