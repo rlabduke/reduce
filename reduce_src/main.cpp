@@ -405,20 +405,20 @@ char* parseCommandLine(int argc, char **argv) {
       else if(compArgStr(p+1, "FLIP", 4)){
         BuildHisHydrogens  = TRUE;
         SaveOHetcHydrogens = TRUE;
-        //RotExistingOH      = TRUE;
+        RotExistingOH      = TRUE;
         DemandFlipAllHNQs  = TRUE;
       }
       else if(compArgStr(p+1, "NOFLIP", 6)){
         PenaltyMagnitude=9999;
         BuildHisHydrogens  = TRUE;
         SaveOHetcHydrogens = TRUE;
-        //RotExistingOH      = TRUE;
+        RotExistingOH      = TRUE;
         DemandFlipAllHNQs  = TRUE;
       }
       else if(compArgStr(p+1, "BUILD", 5)){
         BuildHisHydrogens  = TRUE;
         SaveOHetcHydrogens = TRUE;
-        //RotExistingOH      = TRUE;
+        RotExistingOH      = TRUE;
         DemandFlipAllHNQs  = TRUE;
       }
       else if((n = compArgStr(p+1, "NOBUILD", 7))){
@@ -431,7 +431,7 @@ char* parseCommandLine(int argc, char **argv) {
         // PenaltyMagnitude = 200;      9999 in molprobity
         BuildHisHydrogens  = TRUE;
         SaveOHetcHydrogens = TRUE;
-        //RotExistingOH      = TRUE;  //  not used in molprobity
+        RotExistingOH      = TRUE;  //  not used in molprobity
         DemandFlipAllHNQs  = TRUE;
       }
       else if ((n = compArgStr(p+1,"RENAMEFLIP",10))){ // SJ - 09/25/2015 added to set the RenameFlip flag to TRUE. See top of the file for intended behavior of the flag
