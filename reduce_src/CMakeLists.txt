@@ -67,7 +67,7 @@ set(reduce_SOURCES
   DotSph.cpp
   Mover.cpp
   Rot.cpp
-  RotMethyl.cpp
+  Rot3Fold.cpp
   RotAromMethyl.cpp
   RotDonor.cpp
   FlipMemo.cpp
@@ -89,7 +89,7 @@ set(reduce_HEADERS
   DotSph.h
   Mover.h
   Rot.h
-  RotMethyl.h
+  Rot3Fold.h
   RotAromMethyl.h
   RotDonor.h
   FlipMemo.h

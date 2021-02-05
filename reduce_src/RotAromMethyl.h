@@ -16,9 +16,9 @@
 #ifndef ROTAROMMETHYL_H
 #define ROTAROMMETHYL_H 1
 
-#include "RotMethyl.h"
+#include "Rot3Fold.h"
 
-class RotAromMethyl: public RotMethyl {
+class RotAromMethyl: public Rot3Fold {
 public:
    RotAromMethyl(const Point3d& a, const Point3d& b,
              const double ang, const PDBrec& heavyAtom);

@@ -33,7 +33,7 @@ env.StaticLibrary(
     "DotSph.cpp",
     "Mover.cpp",
     "Rot.cpp",
-    "RotMethyl.cpp",
+    "Rot3Fold.cpp",
     "RotDonor.cpp",
     "FlipMemo.cpp",
     "CliqueList.cpp",

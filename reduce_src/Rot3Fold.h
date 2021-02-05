@@ -1,7 +1,7 @@
-// name: RotMethyl.h
+// name: Rot3Fold.h
 // author: J. Michael Word
 // date written: 2/7/98
-// purpose: Interface for RotMethyl
+// purpose: Interface for Rot3Fold
 
 // **************************************************************
 // NOTICE: This is free software and the source code is freely
@@ -17,11 +17,20 @@
 #pragma once
 #include "Rot.h"
 
-class RotMethyl: public Rot {
+/// @brief Insert and optimize a 3-fold Hydrogen set.
+///
+/// This includes methyl (CH3) groups and NH3 groups.  There is code to
+/// fully optimize Methyl rotations, but it was found to be ineffective for
+/// structures at the resolutions available up through 2020 and it seems like
+/// much higher resolution structures would use something other than Reduce
+/// to optimize these.  As a result, the Methyl optimization was removed from
+/// Reduce and is not called.  The exception is Aromatic Methyl rotations, which
+/// have 2 possible orientations.  They remain as a subclass of this method.
+class Rot3Fold: public Rot {
 public:
-   RotMethyl(const Point3d& a, const Point3d& b,
+   Rot3Fold(const Point3d& a, const Point3d& b,
              const double ang, const PDBrec& heavyAtom);
-   virtual ~RotMethyl() {
+   virtual ~Rot3Fold() {
    }
 
    virtual bool hasHires() const { return TRUE; }
@@ -40,6 +49,6 @@ protected:
 
    char        _grpName[20];
 
-   RotMethyl(const RotMethyl& m); // copy and assign not implemented
-   RotMethyl& operator=(const RotMethyl& m);
+   Rot3Fold(const Rot3Fold& m); // copy and assign not implemented
+   Rot3Fold& operator=(const Rot3Fold& m);
 };

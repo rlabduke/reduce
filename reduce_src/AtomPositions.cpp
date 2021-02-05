@@ -51,7 +51,7 @@ using std::exp;
 #include "AtomPositions.h"
 #include "DisjointSets.h"
 #include "StdResH.h"
-#include "RotMethyl.h"
+#include "Rot3Fold.h"
 #include "RotAromMethyl.h" // for Arom methyls - Aram 08/13/12
 #include "RotDonor.h"
 #include "FlipMemo.h"
@@ -275,7 +275,7 @@ void AtomPositions::insertRot(const PDBrec& hr,
 		}
 		else if (c1.elem().atno() == 7) {
 			if (doNH3) {
-				m = std::make_shared<RotMethyl>(c1.loc(), c2.loc(), dang, c1);
+				m = std::make_shared<Rot3Fold>(c1.loc(), c2.loc(), dang, c1);
 				_motionDesc.insert(std::make_pair(descr, m));
 			}
 		}
