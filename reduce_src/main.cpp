@@ -83,8 +83,10 @@ void reduceHelp(bool showAll) { /*help*/
 //   cerr << "-GAPERROR#.#       sets the half width for allowed peptide bond lengths variations around 1.4 Angstroms: default 0.3" << endl;
    cerr << "-ROTNH3           allow lysine NH3 to rotate (default)" << endl;
    cerr << "-NOROTNH3         do not allow lysine NH3 to rotate" << endl;
-   cerr << "-ROTEXist         allow existing rotatable groups (OH, SH, Met-CH3) to rotate" << endl;
-   cerr << "-ROTEXOH          allow existing OH & SH groups to rotate" << endl;
+   cerr << "-ROTEXist         allow existing rotatable groups (OH, SH, Met-CH3) to rotate (default)" << endl;
+   cerr << "-NOROTEXist       do not allow existing rotatable groups (OH, SH, Met-CH3) to rotate" << endl;
+   cerr << "-ROTEXOH          allow existing OH & SH groups to rotate (default)" << endl;
+   cerr << "-NOROTEXOH        do not allow existing OH & SH groups to rotate" << endl;
    cerr << "-ALLALT           process adjustments for all conformations (default)" << endl;
    cerr << "-ONLYA            only adjust 'A' conformations" << endl;
    cerr << "-CHARGEs          output charge state for appropriate hydrogen records" << endl;
@@ -497,6 +499,9 @@ char* parseCommandLine(int argc, char **argv) {
       else if((n = compArgStr(p+1, "ROTEXist", 5))){
         DemandRotExisting = TRUE;
       }
+      else if((n = compArgStr(p+1, "NOROTEXist", 7))){
+        DemandRotExisting = FALSE;
+      }
       else if((n = compArgStr(p+1, "ADDNHATGAP", 10))){
         NeutralTermini = TRUE;
       }
@@ -508,6 +513,9 @@ char* parseCommandLine(int argc, char **argv) {
       }
       else if((n = compArgStr(p+1, "ROTEXOH", 7))){
         RotExistingOH = TRUE;
+      }
+      else if((n = compArgStr(p+1, "NOROTEXOH", 9))){
+        RotExistingOH = FALSE;
       }
       /*else if((n = compArgStr(p+1, "FLIPs", 4))){
         DemandFlipAllHNQs = TRUE;
