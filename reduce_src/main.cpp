@@ -83,8 +83,10 @@ void reduceHelp(bool showAll) { /*help*/
 //   cerr << "-GAPERROR#.#       sets the half width for allowed peptide bond lengths variations around 1.4 Angstroms: default 0.3" << endl;
    cerr << "-ROTNH3           allow lysine NH3 to rotate (default)" << endl;
    cerr << "-NOROTNH3         do not allow lysine NH3 to rotate" << endl;
-   cerr << "-ROTEXist         allow existing rotatable groups (OH, SH, Met-CH3) to rotate" << endl;
-   cerr << "-ROTEXOH          allow existing OH & SH groups to rotate" << endl;
+   cerr << "-ROTEXist         allow existing rotatable groups (OH, SH, Met-CH3) to rotate (default)" << endl;
+   cerr << "-NOROTEXist       do not allow existing rotatable groups (OH, SH, Met-CH3) to rotate" << endl;
+   cerr << "-ROTEXOH          allow existing OH & SH groups to rotate (default)" << endl;
+   cerr << "-NOROTEXOH        do not allow existing OH & SH groups to rotate" << endl;
    cerr << "-ALLALT           process adjustments for all conformations (default)" << endl;
    cerr << "-ONLYA            only adjust 'A' conformations" << endl;
    cerr << "-CHARGEs          output charge state for appropriate hydrogen records" << endl;
@@ -403,20 +405,20 @@ char* parseCommandLine(int argc, char **argv) {
       else if(compArgStr(p+1, "FLIP", 4)){
         BuildHisHydrogens  = TRUE;
         SaveOHetcHydrogens = TRUE;
-        RotExistingOH      = TRUE;
+        //RotExistingOH      = TRUE;
         DemandFlipAllHNQs  = TRUE;
       }
       else if(compArgStr(p+1, "NOFLIP", 6)){
         PenaltyMagnitude=9999;
         BuildHisHydrogens  = TRUE;
         SaveOHetcHydrogens = TRUE;
-        RotExistingOH      = TRUE;
+        //RotExistingOH      = TRUE;
         DemandFlipAllHNQs  = TRUE;
       }
       else if(compArgStr(p+1, "BUILD", 5)){
         BuildHisHydrogens  = TRUE;
         SaveOHetcHydrogens = TRUE;
-        RotExistingOH      = TRUE;
+        //RotExistingOH      = TRUE;
         DemandFlipAllHNQs  = TRUE;
       }
       else if((n = compArgStr(p+1, "NOBUILD", 7))){
@@ -429,7 +431,7 @@ char* parseCommandLine(int argc, char **argv) {
         // PenaltyMagnitude = 200;      9999 in molprobity
         BuildHisHydrogens  = TRUE;
         SaveOHetcHydrogens = TRUE;
-        RotExistingOH      = TRUE;  //  not used in molprobity
+        //RotExistingOH      = TRUE;  //  not used in molprobity
         DemandFlipAllHNQs  = TRUE;
       }
       else if ((n = compArgStr(p+1,"RENAMEFLIP",10))){ // SJ - 09/25/2015 added to set the RenameFlip flag to TRUE. See top of the file for intended behavior of the flag
@@ -497,6 +499,9 @@ char* parseCommandLine(int argc, char **argv) {
       else if((n = compArgStr(p+1, "ROTEXist", 5))){
         DemandRotExisting = TRUE;
       }
+      else if((n = compArgStr(p+1, "NOROTEXist", 7))){
+        DemandRotExisting = FALSE;
+      }
       else if((n = compArgStr(p+1, "ADDNHATGAP", 10))){
         NeutralTermini = TRUE;
       }
@@ -508,6 +513,9 @@ char* parseCommandLine(int argc, char **argv) {
       }
       else if((n = compArgStr(p+1, "ROTEXOH", 7))){
         RotExistingOH = TRUE;
+      }
+      else if((n = compArgStr(p+1, "NOROTEXOH", 9))){
+        RotExistingOH = FALSE;
       }
       /*else if((n = compArgStr(p+1, "FLIPs", 4))){
         DemandFlipAllHNQs = TRUE;
