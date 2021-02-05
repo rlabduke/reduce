@@ -46,7 +46,7 @@
 /* SHEET */	"%6 %4d %3s%2d %3s%2s%4s%c %3s%2s%4s%c%2d %4s%3s%2s%4s%c %4s%3s%2s%4s%c%10s",
 /* SIGATM */	"%6 %5s %4s%c%3s%2s%4s%c%3 %8f%8f%8f%6f%6f%6 %4s%2s%2s %10s",	/* ATOM */   /**non-standard**/
 /* SIGUIJ */	"%6 %5s %4s%c%3s%2s%4s%c %7d%7d%7d%7d%7d%7d%2 %4s%2s%2s %10s", /* ANISOU */   /**non-standard**/
-/* SITE */	"%7 %3d %3s %2d %3s%2s%4s%c %3s%2s%4s%c %3s%2s%4s%c %3s%2s%4s%c%9 %10s",
+/* SITE */	"%7 %3s %3s %2d %3s%2s%4s%c %3s%2s%4s%c %3s%2s%4s%c %3s%2s%4s%c%9 %10s",
 /* SOURCE */	"%9 %c%60s%10s",			/* AUTHOR */
 /* SPRSDE */	"%8 %2d %9s %4s%6 %4s %4s %4s %4s %4s %4s %4s %4s%10s",
 /* SSBOND */	"%7 %3d %3s%2s %4s%c   %3s%2s %4s%c%4 %30s%10s",
