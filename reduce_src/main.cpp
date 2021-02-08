@@ -348,7 +348,7 @@ void reduceChanges(bool showAll) { /*changes*/
    cerr  << "2021/01/12 - rmt       Version 4.2 speeds up processing of the HET database file" << endl;
    cerr  << "2021/01/14 - rmt       Version 4.3 inserts optimization requests on existing hydrogens when not adding hydrogens" << endl;
    cerr  << "2021/01/29 - rmt       Version 4.4 fixes a bug that kept aromatic methyl flips from being inserted since 2012" << endl;
-   cerr  << "2021/02/05 -           Version 4.5 adds -NOROTEXist and -NOROTEXOH command-line options" << endl;
+   cerr  << "2021/02/05 -           Version 4.5 adds -NOROTEXist and -NOROTEXOH command-line options and fixes SITE record numbers." << endl;
    cerr  << endl;
    exit(2);
 }
