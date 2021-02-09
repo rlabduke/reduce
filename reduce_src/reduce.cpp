@@ -804,14 +804,17 @@ void analyzeRes(CTab& hetdatabase, ResBlk* pb, ResBlk* cb, ResBlk* nb,
 		xyz.manageMetals(*cb);
 	}
 
-	// create plans
+	// create hydrogen placement plans
 	std::list<std::shared_ptr<atomPlacementPlan> > app;
 
 	// apl 2007/03/07 -- Bug fix: do not add hydrogens to "N" on non-amino acids
 	// prev: 	if (ProcessConnHydOnHets || StdResH::ResXtraInfo().match(resname, "AminoAcid")) {
-	//
-	if ( StdResH::ResXtraInfo().match(resname, "AminoAcid")) { // S.J. this if statement gets the plan for H atoms for the N atom and the Calpha atom given in the StdResH.cpp
-        StdResH *hn = NULL;
+
+  // S.J. this if statement gets the plan for H atoms for the N atom and the Calpha atom given in the StdResH.cpp
+	if (StdResH::ResXtraInfo().match(resname, "AminoAcid")) {
+    // Figure out which set of hydrogen placement plans to use for the Nitrogen
+    // based on the connectivity of the residue.
+    StdResH *hn = NULL;
 		if (ctype == CONNECTED_RES) {
 			hn = StdResH::HydPlanTbl().get("amide");
 		}
@@ -827,9 +830,9 @@ void analyzeRes(CTab& hetdatabase, ResBlk* pb, ResBlk* cb, ResBlk* nb,
 		    }
 		}
 		else if (ctype == FRAGMENT_RES) { // don't create NH
-                        if (NeutralTermini) {
-                           hn = StdResH::HydPlanTbl().get("break-amide"); // rmi 070925
-                        }
+      if (NeutralTermini) {
+          hn = StdResH::HydPlanTbl().get("break-amide"); // rmi 070925
+      }
 			if (StandardizeRHBondLengths) {
 				// case A - really is a N terminal
 				bool ispro = resname.find("PRO") != std::string::npos;
@@ -846,10 +849,15 @@ void analyzeRes(CTab& hetdatabase, ResBlk* pb, ResBlk* cb, ResBlk* nb,
 				(*nfr)->elem(* ElementInfo::StdElemTbl().element("Nacc"));
 			}
 		}
+
+    // Insert the Nitrogen placement plans unless the residue is marked excluded.
 		if (hn && hn->exclude().find(resname.c_str()) == std::string::npos) {
 			std::list<std::shared_ptr<atomPlacementPlan> > temp = hn->plans();
 			app.splice(app.end(), temp);
 		}
+
+    // Look up any alpha placement plans for this amino acid.
+    /// @todo This if() is redundant with the one above so can be removed.
 		if (StdResH::ResXtraInfo().match(resname, "AminoAcid")) {
 			StdResH *ha = StdResH::HydPlanTbl().get("alpha");
 			if (ha && ha->exclude().find(resname.c_str()) == std::string::npos) {
@@ -859,7 +867,8 @@ void analyzeRes(CTab& hetdatabase, ResBlk* pb, ResBlk* cb, ResBlk* nb,
 		}
 	}
 
-	if (StdResH::ResXtraInfo().match(resname, "NucleicAcid")) { // S.J. this does the same thing as above, but just for Nucleotc acids backbone atoms
+  // S.J. this does the same thing as above, but just for Nucleic acids backbone atoms
+  if (StdResH::ResXtraInfo().match(resname, "NucleicAcid")) {
 		StdResH *rpbb = StdResH::HydPlanTbl().get("ribose phosphate backbone");
 		if (rpbb && rpbb->exclude().find(resname.c_str()) == std::string::npos) {
 			std::list<std::shared_ptr<atomPlacementPlan> > temp = rpbb->plans();
@@ -869,22 +878,20 @@ void analyzeRes(CTab& hetdatabase, ResBlk* pb, ResBlk* cb, ResBlk* nb,
 	bool o2prime = cb->contains(" O2*") || cb->contains(" O2'"); // distinguish RNA and DNA
 
 	// first look in the standard H table...
-
-    StdResH *srh = StdResH::HydPlanTbl().get(resname);
+  StdResH *srh = StdResH::HydPlanTbl().get(resname);
 	if (srh) {
-        std::list<std::shared_ptr<atomPlacementPlan> > temp = srh->plans(); // S.J. this has the hydrogen atom plans for this specific residue given in StdResH.cpp
+    // S.J. this has the hydrogen atom plans for this specific residue given in StdResH.cpp
+    std::list<std::shared_ptr<atomPlacementPlan> > temp = srh->plans();
 
 		// for aromatic methyls - Aram 07/23/12
-		for(std::list<std::shared_ptr<atomPlacementPlan> >::const_iterator iter = temp.begin(); iter != temp.end(); ++iter) {
-            
-            std::string conn2atom = (*iter)->conn(1);
+		for(std::list<std::shared_ptr<atomPlacementPlan> >::const_iterator iter = temp.begin(); iter != temp.end(); ++iter) {            
+      std::string conn2atom = (*iter)->conn(1);
 			bool Arom = StdResH::ResXtraInfo().atomHasAttrib(resname, conn2atom, AROMATICFLAG);
 			if (Arom) (*iter)->addFeature(AROMATICFLAG);
 		}
 
 		app.splice(app.end(), temp);
 	}
-
 	else if (ProcessConnHydOnHets) { // if not in the std table we look in the het database...
 
 		std::shared_ptr<ResConn> ct = hetdatabase.findTable(resname);
@@ -906,7 +913,8 @@ void analyzeRes(CTab& hetdatabase, ResBlk* pb, ResBlk* cb, ResBlk* nb,
 		}
 	}
 
-	// work through each atom placement plan - S.J. each atom placement plan is a potential H atom that needs to be added. The hydrogens that are already present are not looked at right now.
+	// work through each atom placement plan - S.J. each atom placement plan is a potential H atom that needs to be added.
+  // The hydrogens that are already present are treated differently.
 	for (std::list<std::shared_ptr<atomPlacementPlan> >::const_iterator iter = app.begin(); iter != app.end(); ++iter) {
 		genHydrogens(**iter, *cb, o2prime, xyz, resAlts, fixNotes, rlst);
 	}
@@ -1005,7 +1013,7 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 			}
 		}
 		else if (AddOtherHydrogens) {
-            int i = 0, j = 0, k = 0;
+      int i = 0, j = 0, k = 0;
 
 			if (pp.hasFeature(NOO2PRIMEFLAG) && o2prime) {
 				return; // if o2* atom then we have RNA not DNA
@@ -1021,17 +1029,15 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 				return; // keep our naming conventions straight
 			}
 			if ( (pp.hasFeature(USENEWNAMES) &&   (UseOldNames || UseXplorNames) )
-                                ||   (( pp.hasFeature(USEOLDNAMES) && ! pp.hasFeature(   XPLORNAME)) && ! UseOldNames)
-				||   (( pp.hasFeature(USEOLDNAMES) &&   pp.hasFeature(   XPLORNAME))
-				&&   (! UseOldNames && ! UseXplorNames)) ) {
-                return; // keep our naming conventions straight
-            }
-            if ( (pp.hasFeature(BACKBONEMODEL) &&   ! BackBoneModel)
-                ||   (pp.hasFeature(   NOTBBMODEL) && ! BackBoneModel) ) {
-                return; // keep our naming conventions straight
-            }
-
-
+          || (( pp.hasFeature(USEOLDNAMES) && ! pp.hasFeature(XPLORNAME)) && ! UseOldNames)
+				  || (( pp.hasFeature(USEOLDNAMES) &&   pp.hasFeature(XPLORNAME))
+				  &&   (! UseOldNames && ! UseXplorNames)) ) {
+        return; // keep our naming conventions straight
+      }
+      if ( (pp.hasFeature(BACKBONEMODEL) &&   ! BackBoneModel)
+          ||   (pp.hasFeature(   NOTBBMODEL) && ! BackBoneModel) ) {
+          return; // keep our naming conventions straight
+      }
 
 			int numConnAtoms = pp.num_conn();
 			int maxalt = 0;
@@ -1067,23 +1073,23 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 				else { success = FALSE; }
 			}
 
-            // only keep unique chains
-            /*(for(k=all_confs.size()-1; k > 0; k--){
-                if ( toupper(all_confs[k])
-				    < toupper(all_confs[k-1]) ) {
-					swap2(all_confs[k], all_confs[k-1]);
-			    }
-            }*/
-            sort (all_confs.begin(), all_confs.end());
-            for(k= static_cast<int>(all_confs.size())-1; k > 0; k--) {
-                if ( toupper(all_confs[k])
-                    == toupper(all_confs[k-1]) ) {
-                    all_confs.erase(all_confs.begin()+k);
-                }
-            }
-            if ( (all_confs.size() > 1) && (all_confs[0] == ' ') ) {
-                all_confs.erase(all_confs.begin());
-            }
+      // only keep unique chains
+      /*(for(k=all_confs.size()-1; k > 0; k--){
+          if ( toupper(all_confs[k])
+			        < toupper(all_confs[k-1]) ) {
+  	  	    swap2(all_confs[k], all_confs[k-1]);
+	  	    }
+      }*/
+      sort (all_confs.begin(), all_confs.end());
+      for(k= static_cast<int>(all_confs.size())-1; k > 0; k--) {
+          if ( toupper(all_confs[k])
+              == toupper(all_confs[k-1]) ) {
+              all_confs.erase(all_confs.begin()+k);
+          }
+      }
+      if ( (all_confs.size() > 1) && (all_confs[0] == ' ') ) {
+          all_confs.erase(all_confs.begin());
+      }
 
 			bool considerNonAlt = FALSE;
 
@@ -1106,7 +1112,7 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 			for(j=0; success && j < maxalt; j++) { // for each alternate conformation...
 				char altId = ' ', foundId = ' ';
 				float occ = (*(firstAtoms.begin()))->occupancy();
-                alt_success = TRUE;
+        alt_success = TRUE;
 				if (considerNonAlt) {
 				    const  std::shared_ptr<PDBrec> cnr = rvv[3][j];
 				    char abc = cnr->alt();
@@ -1127,33 +1133,33 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 					    }
 					}
 					else {
-			            alt_success = FALSE;
-			            for(k=maxalt-1; k>=0; k--) { //comprehensive search
-			                const std::shared_ptr<PDBrec> cnr_v = rvv[i][std::min(k, nconf[i]-1)];
-			                char abc = cnr_v->alt();
-			                if (abc == altId || abc == ' ') {
-				                loc[i] = cnr_v->loc();
-				                if ( (abc != ' ') && (foundId == ' ') ) {
-				                    foundId = altId;
-				                    occ = cnr_v->occupancy();
-				                }
-				                counter[i] = std::min(k, nconf[i]-1);
-				                alt_success = TRUE;
-				                break;
-			                }
-			            }
-			            if (!alt_success) {
-			                if ( (i>0) && (nconf[i]==1) ) {
-			                    const std::shared_ptr<PDBrec> cnr_v = rvv[i][0];
-			                    loc[i] = cnr_v->loc();
-			                    counter[i] = 0;
-				                alt_success = TRUE;
-			                }
-			                else {
-			                    //cerr << "FAILED " << pp.name().substr(0,4).c_str() << " " << altId << endl;
-			                    break;
-			                }
-			            }
+			      alt_success = FALSE;
+			      for(k=maxalt-1; k>=0; k--) { //comprehensive search
+			          const std::shared_ptr<PDBrec> cnr_v = rvv[i][std::min(k, nconf[i]-1)];
+			          char abc = cnr_v->alt();
+			          if (abc == altId || abc == ' ') {
+				          loc[i] = cnr_v->loc();
+				          if ( (abc != ' ') && (foundId == ' ') ) {
+				              foundId = altId;
+				              occ = cnr_v->occupancy();
+				          }
+				          counter[i] = std::min(k, nconf[i]-1);
+				          alt_success = TRUE;
+				          break;
+			          }
+			      }
+			      if (!alt_success) {
+			          if ( (i>0) && (nconf[i]==1) ) {
+			              const std::shared_ptr<PDBrec> cnr_v = rvv[i][0];
+			              loc[i] = cnr_v->loc();
+			              counter[i] = 0;
+				          alt_success = TRUE;
+			          }
+			          else {
+			              //cerr << "FAILED " << pp.name().substr(0,4).c_str() << " " << altId << endl;
+			              break;
+			          }
+			      }
 					}
 				}
 				if (considerNonAlt) { altId = (*(firstAtoms.begin()))->alt(); occ = (*(firstAtoms.begin()))->occupancy(); }
@@ -1182,8 +1188,8 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 					newHatom->elemLabel(" H");
 					newHatom->chargeLabel("  "); // blank since we don't know
 
-                    //if charges desired, determine and output
-                    if(ShowCharges){
+          //if charges desired, determine and output
+          if(ShowCharges){
 					    int chrgflgs = basicChargeState(newHatom->atomname(),
 						    newHatom->resname(),
 						    PositiveChargeFlag,
@@ -1199,7 +1205,7 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 							    newHatom->chargeLabel(" -");
 						    }
 					    }
-                    }
+          }
 
 					if (visableAltConf(*newHatom, DoOnlyAltA)){ // add hyd. only if visible
 						// look for cyclization or other modifications to rot. groups

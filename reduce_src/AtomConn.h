@@ -153,26 +153,32 @@ public:
                     float len, float ang, float xtra);
 
 private:
+  // 1: HXR3 - requires just 4 atom centers
   static Point3d type1position(
                     const Point3d& a1pos, const Point3d& a2pos,
                     const Point3d& a3pos, const Point3d& a4pos,
                     float bondlen);
+  // 2: H2XR2- three atoms and an angle
   static Point3d type2position(
                     const Point3d& a1pos, const Point3d& a2pos,
                     const Point3d& a3pos,
                     float bondlen, float angle, float fudge);
+  // 3: H3XR - three atoms an angle and dihedral
   static Point3d type3position(
                     const Point3d& a1pos, const Point3d& a2pos,
                     const Point3d& a3pos,
                     float bondlen, float theta, float phi);
+  // 4: HXR2 - three atoms and a fudge factor
   static Point3d type4position(
                     const Point3d& a1pos, const Point3d& a2pos,
                     const Point3d& a3pos,
                     float bondlen, float fudge);
+  // 5: HXR2 - three atoms and a fraction
   static Point3d type5position(
                     const Point3d& a1pos, const Point3d& a2pos,
                     const Point3d& a3pos,
                     float bondlen, float fract);
+  // 6: HXY  - (linear) just two atoms
   static Point3d type6position(
                     const Point3d& a1pos, const Point3d& a2pos,
                     float bondlen);
