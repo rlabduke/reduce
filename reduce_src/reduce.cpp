@@ -798,7 +798,7 @@ void analyzeRes(CTab& hetdatabase, ResBlk* pb, ResBlk* cb, ResBlk* nb,
 	std::list<char> resAlts;
 	if (DemandFlipAllHNQs) { // resAlts will be non-empty for flipped residues
 		resAlts = xyz.insertFlip(*cb);
-    }
+  }
 
 	if (rec.hasProp(METALIC_ATOM)) { // save info from metals for analysis of flips&rots
 		xyz.manageMetals(*cb);
@@ -945,15 +945,12 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 				else if (pp.hasFeature(O2PRIMEFLAG) && !o2prime) {
 					// skip pp record (should find another with the same name)
 				}
-				else if (pp.hasFeature(UNSUREDROPFLAG)
-	                   && ! SaveOHetcHydrogens) {
+				else if (pp.hasFeature(UNSUREDROPFLAG) && ! SaveOHetcHydrogens) {
 					noteRemovedInTally(*o);
 					o->invalidateRecord();
 				}
-				else if ( (pp.hasFeature(ROTATEFLAG) &&
-					(DemandRotExisting || RotExistingOH))
-					|| (pp.hasFeature(ROTATEONDEMAND) &&
-					(DemandRotExisting || DemandRotNH3 || pp.hasFeature(AROMATICFLAG))) ) {
+				else if ( (pp.hasFeature(ROTATEFLAG) && (DemandRotExisting || RotExistingOH))
+					|| (pp.hasFeature(ROTATEONDEMAND) && (DemandRotExisting || DemandRotNH3 || pp.hasFeature(AROMATICFLAG))) ) {
 
 					char hac = o->alt();
 					PDBrec r0atom, r1atom, r2atom;        // find connecting atoms
@@ -962,8 +959,7 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 
 					if (connatomcount == 3) {
 						// for heme methyls - Aram 05/31/12
-						if ((DemandRotExisting && pp.hasFeature(ROTATEONDEMAND)
-							&& pp.hasFeature(AROMATICFLAG))) {
+						if ((DemandRotExisting && pp.hasFeature(ROTATEONDEMAND) && pp.hasFeature(AROMATICFLAG))) {
 							xyz.insertRotAromMethyl(*o, r0atom, r1atom, r2atom);
 							//std::cout << " in genHydrogens " << o->resname() << pp.name() << std::endl;
 						} else {
@@ -1104,7 +1100,7 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 			}
 
 			// LIMITATION:
-			// the logic to determine alt conf codes does not handle the case were the chain
+			// the logic to determine alt conf codes does not handle the case where the chain
 			// of atoms switches codes
 
 			std::vector<Point3d> loc(numConnAtoms);
@@ -1227,8 +1223,7 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 						if (doNotAdjustSC) { continue; } // do not add to the adjustable info
 
 						if ( pp.hasFeature(ROTATEFLAG)
-							||  (pp.hasFeature(ROTATEONDEMAND)
-							&& (DemandRotNH3 || pp.hasFeature(AROMATICFLAG)) )     ) {
+							||  (pp.hasFeature(ROTATEONDEMAND) && (DemandRotNH3 || pp.hasFeature(AROMATICFLAG)) )     ) {
 							// for heme methyls - Aram 05/31/12
 							if ((pp.hasFeature(ROTATEONDEMAND) && pp.hasFeature(AROMATICFLAG))) {
 								//std::cout << " in genHydrogens_noHyd " << newHatom->resname() << pp.name() << std::endl;
