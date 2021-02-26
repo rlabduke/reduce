@@ -1139,13 +1139,10 @@ float DegreeTwoEdge_ths::getScoreForAssignedState() const
 }
 
 
-int
-DegreeTwoEdge_ths::whichVertex( int vertex_index ) const
+int DegreeTwoEdge_ths::whichVertex( int vertex_index ) const
 {
-	for (int ii = 0; ii < 2; ++ii )
-	{
-		if (vertex_indices_[ ii ] == vertex_index )
-		{
+	for (int ii = 0; ii < 2; ++ii ) {
+		if (vertex_indices_[ ii ] == vertex_index ) {
 			return ii;
 		}
 	}
@@ -1153,7 +1150,7 @@ DegreeTwoEdge_ths::whichVertex( int vertex_index ) const
 		  << vertex_indices_[ 0 ] << ", " << vertex_indices_[ 1 ] << "]" << std::endl;
 	assert(false);
 	exit(2);
-        return 0; // to avoid warnings
+  return 0; // to avoid warnings
 }
 
 bool DegreeTwoEdge_ths::nothingToScore() const

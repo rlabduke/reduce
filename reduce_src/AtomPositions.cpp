@@ -865,9 +865,8 @@ int AtomPositions::SearchClique(std::list<MoverPtr> clique, int limit)
 	double scoreThisO       = 0.0;
 	double penalty          = 0.0;
 	double worstPenalty     = 0.0;
-	//  double prevWorstPenalty = 0.0;
 	int i = 0, best = 0, j=0;
-   _maxVDWFound = ElementInfo::StdElemTbl().maxExplicitRadius();
+  _maxVDWFound = ElementInfo::StdElemTbl().maxExplicitRadius();
 
 	// ---------------------------------------------------------------
 	// initialize
@@ -881,8 +880,6 @@ int AtomPositions::SearchClique(std::list<MoverPtr> clique, int limit)
 	//		std::cerr << "ITEM DESCR: " << item[i]->descr();
 	//	}
 	//}
-
-   //int  countCliqAtoms = 0;
 
 	setNumStatesForNodes( item, numItems, num_states, penalties );
 
@@ -1187,11 +1184,9 @@ int AtomPositions::SearchClique(std::list<MoverPtr> clique, int limit)
             }
           }
 
-//          if ((ho == 0) || (scoreThisO+worstPenalty > bestOScore+prevWorstPenalty)) {
            if ((ho == 0) || (scoreThisO > bestOScore)) {
 
             bestOScore = scoreThisO;
-//            prevWorstPenalty = worstPenalty;
             for (i = 0; i < numItems; i++) {
               item[i]->setBestOrientation(
                 item[i]->orientation(Mover::HIGH_RES),

@@ -65,6 +65,7 @@ private:
 
 std::ostream & operator << (std::ostream & os, DotsForAtom const & );
 
+/// @brief Vertex to hold score (ths)
 class Vertex_ths
 {
 public:
@@ -123,8 +124,6 @@ public:
 	float getScoreForAssignedState() const;
 	int getAssignedState() const;
 private:
-	//void noteBackgroundAtomInPsuedo3WOForAtom( int mover_atom, AtomDescr bgatom );
-	//void noteBackgroundAtomInPsuedo4WOForAtom( int mover_atom, AtomDescr bgatom );
 
 	GraphToHoldScores * owner_;
 	AtomPositions * xyz_;
