@@ -222,21 +222,21 @@ int optimize(AtomPositions& xyz, std::vector<std::string>& adjNotes) {
 
 	 if (Verbose) { clst.describe(cerr); }
          
- // adjust singletons
+   // adjust singletons
 
 	 Tally._num_adj += xyz.orientSingles(clst.singles());
          
    // adjust cliques
 
 	 std::list< std::list<MoverPtr> > cc_list = clst.cliques();
-	//cerr << "start: " << cc_list.size() << endl;
+	 //cerr << "start: " << cc_list.size() << endl;
 	 for (std::list< std::list<MoverPtr> >::iterator cc = cc_list.begin(); cc != cc_list.end(); ++cc) {
 		//cerr << "start2" << endl;
-	    int nscnt = xyz.orientClique(*cc, ExhaustiveLimit);
-		if (nscnt >= 0) { Tally._num_adj += nscnt; }
-	    else { // failed to initialize or too many permutations, make note
-	      ret = ABANDONED_RC;
-	    }
+    int nscnt = xyz.orientClique(*cc, ExhaustiveLimit);
+		if (nscnt > 0) { Tally._num_adj += nscnt; }
+	  else { // failed to initialize or too many permutations, make note
+	    ret = ABANDONED_RC;
+	  }
 	 }
 
 // record clique and singleton adjustments
@@ -726,7 +726,7 @@ bool isAromMethyl(ResConn& ct, const atomPlacementPlan& pp, ResBlk& theRes, cons
 		  return FALSE;
 		}
 		theRes.get(*it, r_list);
-		std::shared_ptr<PDBrec> rec = *r_list.begin(); // Do not consider alt configulation for now
+		std::shared_ptr<PDBrec> rec = *r_list.begin(); // Do not consider alt configuration for now
 		r_vec.push_back(rec);
 		// std::cout << " " << *it << "(" << r_vec[r_vec.size()-1]->loc() << ")";
 		++it;
