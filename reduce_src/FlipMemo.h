@@ -127,7 +127,7 @@ public:
 
    virtual void dropBondedFromBumpingListForPDBrec( std::list< std::shared_ptr<PDBrec> > & bumping, std::shared_ptr<PDBrec> atom, int nBondCutoff  ) const;
 private:
-   double orientationPenalty(float pmag) const;
+   double orientationPenalty(float pmag) const override;
    void fillAtomAndLocVectors(); // utility routines
    int findAtom(std::shared_ptr<PDBrec>  atom ) const; // which atom in the list is a particular PDBrec?
 
