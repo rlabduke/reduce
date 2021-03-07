@@ -130,8 +130,10 @@ if (USE_PYTHON)
   message(STATUS "PYTHON_INCLUDE_DIRS = ${PYTHON_INCLUDE_DIRS}")
   message(STATUS "Boost_LIBRARIES = ${Boost_LIBRARIES}")
   include_directories(../libpdb ../toolclasses ${Boost_INCLUDE_DIRS} ${PYTHON_INCLUDE_DIRS})
+  # Note: To make this work on Windows, you need to copy the boost_python*.dll file into the
+  # executable directory to avoid an error about "DLL load failed: The specified module could not be found"
   PYTHON_ADD_MODULE(mmtbx_reduce_ext reduce_bpl.cpp)
-  target_link_libraries(mmtbx_reduce_ext reducelib ${Boost_LIBRARIES} ${PYTHON_LIBRARIES})
+  target_link_libraries(mmtbx_reduce_ext PRIVATE reducelib ${Boost_LIBRARIES} ${PYTHON_LIBRARIES})
 
   add_custom_command(
     TARGET mmtbx_reduce_ext POST_BUILD
