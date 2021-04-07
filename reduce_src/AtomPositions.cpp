@@ -51,7 +51,7 @@ using std::exp;
 #include "AtomPositions.h"
 #include "DisjointSets.h"
 #include "StdResH.h"
-#include "RotMethyl.h"
+#include "Rot3Fold.h"
 #include "RotAromMethyl.h" // for Arom methyls - Aram 08/13/12
 #include "RotDonor.h"
 #include "FlipMemo.h"
@@ -107,14 +107,12 @@ int AtomPositions::forceOrientations(const std::string& ofilename, std::vector<s
 			p[0] = '\0';
 			descr = q;
 		}
-		MoverPtr mx;
+		MoverPtr mx = NULL;
 		if (descr.empty()) { continue; } // incomplete line or comment
 		else {
 			std::map<std::string, MoverPtr>::const_iterator iter = _motionDesc.find(descr);
 			if (iter != _motionDesc.end())
 				mx = iter->second;
-			else
-				mx = NULL;
 		}
 		if (mx != NULL && mx->valid() /* && mx->isComplete() */ ) {
 			if (orient == 'O' && (mx->canRotate()
@@ -263,11 +261,9 @@ void AtomPositions::insertRot(const PDBrec& hr,
 //      << " " << hr.resname() << " " << hr.atomname() <<  hr.alt() << endl;
 
 	std::map<std::string, MoverPtr>::const_iterator iter = _motionDesc.find(descr);
-	MoverPtr m;
+	MoverPtr m = NULL;
 	if (iter != _motionDesc.end())
 		m = iter->second;
-	else
-		m = NULL;
 
 	if (m == NULL) {
 		if (c1.elem().atno() == 6) {
@@ -275,7 +271,7 @@ void AtomPositions::insertRot(const PDBrec& hr,
 		}
 		else if (c1.elem().atno() == 7) {
 			if (doNH3) {
-				m = std::make_shared<RotMethyl>(c1.loc(), c2.loc(), dang, c1);
+				m = std::make_shared<Rot3Fold>(c1.loc(), c2.loc(), dang, c1);
 				_motionDesc.insert(std::make_pair(descr, m));
 			}
 		}
@@ -327,11 +323,9 @@ void AtomPositions::insertRotAromMethyl(const PDBrec& hr,
 //      << " " << hr.resname() << " " << hr.atomname() <<  hr.alt() << endl;
 
 	std::map<std::string, MoverPtr>::const_iterator iter = _motionDesc.find(descr);
-	MoverPtr m;
+	MoverPtr m = NULL;
 	if (iter != _motionDesc.end())
 		m = iter->second;
-	else
-		m = NULL;
 
 	if (m == NULL) {
 		if (c1.elem().atno() == 6) {
@@ -367,7 +361,7 @@ void AtomPositions::doNotAdjust(const PDBrec& a) {
 	const std::string descr = descrbuf;
 
 	std::map<std::string, MoverPtr>::const_iterator iter = _motionDesc.find(descr);
-	MoverPtr m;
+	MoverPtr m = NULL;
 	if (iter != _motionDesc.end())
 		m = iter->second;
 
@@ -412,7 +406,7 @@ std::list<char> AtomPositions::insertFlip(const ResBlk& rblk) {
 					descriptor = descrbuf;
                     
           std::map<std::string, MoverPtr>::const_iterator iter = _motionDesc.find(descriptor);
-					MoverPtr m;
+					MoverPtr m = NULL;
 					if (iter != _motionDesc.end())
 						m = iter->second;
 
@@ -871,9 +865,8 @@ int AtomPositions::SearchClique(std::list<MoverPtr> clique, int limit)
 	double scoreThisO       = 0.0;
 	double penalty          = 0.0;
 	double worstPenalty     = 0.0;
-	//  double prevWorstPenalty = 0.0;
 	int i = 0, best = 0, j=0;
-   _maxVDWFound = ElementInfo::StdElemTbl().maxExplicitRadius();
+  _maxVDWFound = ElementInfo::StdElemTbl().maxExplicitRadius();
 
 	// ---------------------------------------------------------------
 	// initialize
@@ -887,8 +880,6 @@ int AtomPositions::SearchClique(std::list<MoverPtr> clique, int limit)
 	//		std::cerr << "ITEM DESCR: " << item[i]->descr();
 	//	}
 	//}
-
-   //int  countCliqAtoms = 0;
 
 	setNumStatesForNodes( item, numItems, num_states, penalties );
 
@@ -1193,11 +1184,9 @@ int AtomPositions::SearchClique(std::list<MoverPtr> clique, int limit)
             }
           }
 
-//          if ((ho == 0) || (scoreThisO+worstPenalty > bestOScore+prevWorstPenalty)) {
            if ((ho == 0) || (scoreThisO > bestOScore)) {
 
             bestOScore = scoreThisO;
-//            prevWorstPenalty = worstPenalty;
             for (i = 0; i < numItems; i++) {
               item[i]->setBestOrientation(
                 item[i]->orientation(Mover::HIGH_RES),

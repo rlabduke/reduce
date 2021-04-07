@@ -48,10 +48,6 @@ public:
    StdResH(const char* rn, const char* ex) : _name(rn), _exclude(ex) {}
    ~StdResH() {}
 
-   void addPlan(int type, const char* elem, const char *hname,
-                const char *c1, const char *c2, const char *c3, const char *c4,
-                double dist, double ang1, double ang2, int flags);
-
    const std::string& name() const { return _name; }
    const std::string& exclude() const { return _exclude; }
 
@@ -60,6 +56,12 @@ public:
 
    static const HydrogenPlanTable& HydPlanTbl();
    static const StdResXtraInfo&    ResXtraInfo();
+
+protected:
+  void addPlan(int type, const char* elem, const char* hname,
+    const char* c1, const char* c2, const char* c3, const char* c4,
+    double dist, double ang1, double ang2, int flags);
+  friend class HydrogenPlanTable;
 
 private:
    static const HydrogenPlanTable *TheHydPlanTbl;    // class shared resource

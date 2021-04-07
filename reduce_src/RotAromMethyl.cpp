@@ -39,7 +39,7 @@ using std::cout;
 
 RotAromMethyl::RotAromMethyl(const Point3d& a, const Point3d& b,
                      const double ang, const PDBrec& heavyAtom)
-   : RotMethyl(a, b, ang, heavyAtom)
+   : Rot3Fold(a, b, ang, heavyAtom)
 {
   // Override these to change the class behavior.
   START_ANGLE = 150;
@@ -55,6 +55,7 @@ bool RotAromMethyl::setOrientation(int oi, float delta, AtomPositions &xyz,
                                                      SearchStrategy ss)
 {
 	const double oldTheta = angle();
+  // Always LOW_RES, no matter what the ss parameter says.
 	const double    theta = orientationAngle(oi, Mover::LOW_RES) + delta;
 
 	if (abs(theta-oldTheta) > 0.1) {

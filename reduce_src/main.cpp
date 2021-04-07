@@ -70,6 +70,9 @@ void reduceHelp(bool showAll) { /*help*/
 
   if (showAll) {
    cerr << endl;
+   cerr << "-FLIP             Same as -HIS -OH -ROTEXOH plus demand flipping all HNQs" << endl;
+   cerr << "                  Use other -NO* flags later to turn off individual behaviors if needed" << endl;
+   cerr << "-BUILD            Same as -FLIP" << endl;
    cerr << "-NUClear          use nuclear X-H distances rather than default" << endl;
    cerr << "                  electron cloud distances" << endl;
    cerr << "-NOOH             remove hydrogens on OH and SH groups" << endl;
@@ -345,6 +348,8 @@ void reduceChanges(bool showAll) { /*changes*/
    cerr  << "2021/01/12 - rmt       Version 4.2 speeds up processing of the HET database file" << endl;
    cerr  << "2021/01/14 - rmt       Version 4.3 inserts optimization requests on existing hydrogens when not adding hydrogens" << endl;
    cerr  << "2021/01/29 - rmt       Version 4.4 fixes a bug that kept aromatic methyl flips from being inserted since 2012" << endl;
+   cerr  << "2021/02/05 -           Version 4.5 adds -NOROTEXist and -NOROTEXOH command-line options and fixes SITE record numbers." << endl;
+   cerr  << "2021/04/07 -           Version 4.6 makes the default Probe radius 0.25 rather than 0." << endl;
    cerr  << endl;
    exit(2);
 }

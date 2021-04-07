@@ -98,7 +98,7 @@ private:
 class atomPlacementPlan : public AtomConn {
 public:
   /// @brief Construct an atom placement plan
-  /// @param [in] Connection type (wish we had some definitions for these...)
+  /// @param [in] Connection type (See StdRedH.h: 1=HXR3, 2=H2XR2, 3=H3XR, 4-5=HXR2, 6=HXY)
   /// @param [in] e ElementInfo description of the type of atom to be placed (Hydrogen).
   /// @param [in] c Atom connection structure to base the plan on
   /// @param [in] d Proton to heavy atom distance
@@ -122,7 +122,7 @@ public:
   int hasFeature(int f) const { return _flags & f; }
   int addFeature(int f)       { _flags = _flags | f; return _flags; } // add feature for aromatic ring - Aram 07/18/12
 
-  /// @brief Used by genHydrogens attempt to place the hydrogen according to the plan
+  /// @brief Used by genHydrogens to attempt to place the hydrogen according to the plan
   /// @param [in] loc Locations of the heavy atoms to attempt placement with respect to.
   ///         The number of atoms required depends on the type of placement that is
   ///         being done.
@@ -130,7 +130,7 @@ public:
   /// @return true on success, false on failure
   bool placeH(const std::vector<Point3d>& loc, Point3d& hpos) const;
 
-  /// @brief Used by FlipMemo to generate alternate positions for flipped H atoms.
+  /// @brief Used by FlipMemo::finalize() to generate alternate positions for flipped H atoms.
   ///
   /// This method calls one of the private placement methods based on the locType,
   /// passing in a subset of the arguments and returning the results.  Not all of
@@ -138,7 +138,7 @@ public:
   ///   Note that this is a static method and does not require a constructed atomPlacementPlan.
   ///   There is a lot of magic going on here in terms of knowing which parameters to
   /// pass based on locType.
-  /// @param [in] locType Connection type (wish we had some definitions for these...)
+  /// @param [in] locType Connection type (See StdRedH.h: 1=HXR3, 2=H2XR2, 3=H3XR, 4-5=HXR2, 6=HXY)
   /// @param [in] a1 Position of the first atom to take into account during placement
   /// @param [in] a2 Position of the second atom to take into account during placement
   /// @param [in] a3 Position of the third atom to take into account during placement
@@ -146,32 +146,39 @@ public:
   /// @param [in] len Distance from the heavy atom to the proton
   /// @param [in] ang Angle to take into account during placement
   /// @param [in] xtra Another parameter, whose meaning depends on locType
+  /// @return Location of the hydrogen on success, (-999.9,-999.9,-999.9) on invalid type failure.
   static Point3d calcLoc(int locType,
                     const Point3d& a1, const Point3d& a2,
                     const Point3d& a3, const Point3d& a4,
                     float len, float ang, float xtra);
 
 private:
+  // 1: HXR3 - requires just 4 atom centers
   static Point3d type1position(
                     const Point3d& a1pos, const Point3d& a2pos,
                     const Point3d& a3pos, const Point3d& a4pos,
                     float bondlen);
+  // 2: H2XR2- three atoms and an angle
   static Point3d type2position(
                     const Point3d& a1pos, const Point3d& a2pos,
                     const Point3d& a3pos,
                     float bondlen, float angle, float fudge);
+  // 3: H3XR - three atoms an angle and dihedral
   static Point3d type3position(
                     const Point3d& a1pos, const Point3d& a2pos,
                     const Point3d& a3pos,
                     float bondlen, float theta, float phi);
+  // 4: HXR2 - three atoms and a fudge factor
   static Point3d type4position(
                     const Point3d& a1pos, const Point3d& a2pos,
                     const Point3d& a3pos,
                     float bondlen, float fudge);
+  // 5: HXR2 - three atoms and a fraction
   static Point3d type5position(
                     const Point3d& a1pos, const Point3d& a2pos,
                     const Point3d& a3pos,
                     float bondlen, float fract);
+  // 6: HXY  - (linear) just two atoms
   static Point3d type6position(
                     const Point3d& a1pos, const Point3d& a2pos,
                     float bondlen);

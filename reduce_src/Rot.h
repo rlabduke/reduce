@@ -75,7 +75,6 @@ protected:
      float probeRadius, float &bumpScore,
      float &hbScore, bool &hasBadBump);
   int findAtom(std::shared_ptr<PDBrec> atom ) const;
-  virtual double orientationPenalty(float) const = 0;
   virtual void setHydAngle(PDBrec& theAtom, double oldAng, double newAng,
                         AtomPositions &xyz);
 

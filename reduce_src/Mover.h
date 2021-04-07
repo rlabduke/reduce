@@ -155,6 +155,8 @@ public:
    
    virtual void dropBondedFromBumpingListForPDBrec( std::list< std::shared_ptr<PDBrec> > & bumping, std::shared_ptr<PDBrec> atom, int nBondCutoff ) const = 0;
 protected:
+   virtual double orientationPenalty(float) const = 0;
+
    void initializeScoreIfNotSet(double val, bool hasBadBump) {
       if (!_initIsSet) {
 	 _initScore      = val;
