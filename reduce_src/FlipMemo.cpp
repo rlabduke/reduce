@@ -763,7 +763,7 @@ double FlipMemo::determineScore(AtomPositions &xyz,	DotSphManager& dotBucket,
 			//}
             
 			double val = xyz.atomScore(thisAtom, thisAtom.loc(),
-        static_cast<float>(thisAtom.vdwRad() + probeRadius + maxVDWrad),
+        static_cast<float>(thisAtom.vdwRad() + maxVDWrad),
 				//apl procrastinate nearby list computation until AtomPositions decides to score
 				bnded,
 				dotBucket.fetch(thisAtom.vdwRad()),

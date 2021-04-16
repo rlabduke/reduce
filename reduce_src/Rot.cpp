@@ -135,7 +135,7 @@ double Rot::scoreThisAngle(AtomPositions &xyz, DotSphManager& dotBucket,
 		const  std::shared_ptr<PDBrec> thisAtom = *alst;
 
 		double val = xyz.atomScore(*thisAtom, thisAtom->loc(),
-      static_cast<float>(thisAtom->vdwRad() + probeRadius + maxVDWrad),
+      static_cast<float>(thisAtom->vdwRad() + maxVDWrad),
 			//apl procrastinate nearby list computation until AtomPositions decides to score
 			*(_bnded[i]), dotBucket.fetch(thisAtom->vdwRad()), probeRadius, FALSE,
 			bumpSubScore, hbSubScore, subBadBump);
