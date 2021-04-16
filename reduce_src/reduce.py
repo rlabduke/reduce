@@ -56,7 +56,7 @@ if __name__ == '__main__':
 
   #==============================================================
   # Parse command-line arguments.  The 0th argument is the name
-  # of the script. There can be -TRIM or -FLIP as an optional argument and
+  # of the script. There can be -TRIM or -FLIP or -rad0.0 as optional arguments and
   # then the name of a PDB file to read.
   realParams = 0
   fileName = ""
@@ -72,6 +72,8 @@ if __name__ == '__main__':
       reduce.setSaveOHetcHydrogens(True)
       reduce.setRotExistingOH(True)
       reduce.setDemandFlipAllHNQs(True)
+    elif sys.argv[i] == "-rad0.0":
+      reduce.setProbeRadius(0.0)
     else:
       fileName = sys.argv[i]
 
