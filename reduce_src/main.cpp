@@ -349,7 +349,8 @@ void reduceChanges(bool showAll) { /*changes*/
    cerr  << "2021/01/14 - rmt       Version 4.3 inserts optimization requests on existing hydrogens when not adding hydrogens" << endl;
    cerr  << "2021/01/29 - rmt       Version 4.4 fixes a bug that kept aromatic methyl flips from being inserted since 2012" << endl;
    cerr  << "2021/02/05 -           Version 4.5 adds -NOROTEXist and -NOROTEXOH command-line options and fixes SITE record numbers." << endl;
-   cerr  << "2021/04/07 -           Version 4.6 makes the default Probe radius 0.25 rather than 0." << endl;
+   cerr  << "2021/04/07 - rmt       Version 4.6 makes the default Probe radius 0.25 rather than 0." << endl;
+   cerr  << "2021/04/16 - rmt       Version 4.7 fixes the distance calculation and neighborhood sizing when the probe radius is nonzero." << endl;
    cerr  << endl;
    exit(2);
 }

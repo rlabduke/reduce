@@ -1508,7 +1508,14 @@ float AtomPositions::determineScoreForMover(
 double AtomPositions::atomScore(const PDBrec& a, const Point3d& p,
 								float nearbyRadius, const std::list< std::shared_ptr<PDBrec> >& exclude,
 								const DotSph& dots, float pRad,	bool onlyBumps,
-								float &bumpSubScore, float &hbSubScore,	bool &hasBadBump) {
+								float &bumpSubScore, float &hbSubScore,	bool &hasBadBump)
+{
+  // If we're looking for contacts other than bumps, add twice the probe radius to
+  // the neighbor calculation so that we catch cases where the probe contacts another
+  // atom that the source atom does not.
+  if (!onlyBumps) {
+    nearbyRadius += 2 * _probeRadius;
+  }
 
 	bumpSubScore = 0.0;
 	hbSubScore   = 0.0;
@@ -1621,40 +1628,43 @@ double AtomPositions::atomScore(const PDBrec& a, const Point3d& p,
 				continue;
 			}
 
-			const double dist = sqrt( squaredist );
-			const double probeGap = dist - pRadPlusVdwb;
-			const double      gap = dist -         vdwb;
-			if (probeGap < 0.0) {
+      // At this point, we know that we are within the probe radius past the edge of the target
+      // atom so this atom should be considered as a potential to be the closest.
 
-				if (gap < mingap) {
+      // Compute the distance between the dot position offset from the atom center to
+      // the target atom to see if they are touching.  The gap is positive if they are
+      // not and negative if they are.
+			const double dist = distance2(q, locb);
+			const double  gap = dist - vdwb;
 
-					const bool bothCharged = a.isCharged() && b->isCharged();
+			if (gap < mingap) {
 
-					const bool chargeComplement = bothCharged
-						?  ( (a.isPositive() && b->isNegative()) ||
-						(a.isNegative() && b->isPositive()) )
-						: FALSE;
+				const bool bothCharged = a.isCharged() && b->isCharged();
 
-					if( b->hasProp(HBmask) &&
-						((! bothCharged) || chargeComplement)) { // H-bond
-						isaHB = TRUE;
+				const bool chargeComplement = bothCharged
+					?  ( (a.isPositive() && b->isNegative()) ||
+					(a.isNegative() && b->isPositive()) )
+					: FALSE;
 
-						HBmindist = bothCharged ?
-					_min_charged_hb_cutoff : _min_regular_hb_cutoff;
+				if( b->hasProp(HBmask) &&
+					((! bothCharged) || chargeComplement)) { // H-bond
+					isaHB = TRUE;
 
-						tooCloseHB = (gap < -HBmindist);
-					}
-					else { // clash or contact
-						if( b->hasProp(HB_ONLY_DUMMY) ) {
-							continue; // *** dummy only counts as an HBond partner
-						}
-						isaHB = tooCloseHB = FALSE;
-					}
-					cause = b;
-					keepDot = TRUE;
-					//closest_bumping = ii;
-					mingap = gap;
+					HBmindist = bothCharged ?
+				_min_charged_hb_cutoff : _min_regular_hb_cutoff;
+
+					tooCloseHB = (gap < -HBmindist);
 				}
+				else { // clash or contact
+					if( b->hasProp(HB_ONLY_DUMMY) ) {
+						continue; // *** dummy only counts as an HBond partner
+					}
+					isaHB = tooCloseHB = FALSE;
+				}
+				cause = b;
+				keepDot = TRUE;
+				//closest_bumping = ii;
+				mingap = gap;
 			}
 		}
 
