@@ -198,7 +198,7 @@ insert( 1, "Ha+p","hydrogen(aromatic&polar)", 1.05, 1.00, 0.00, 0.30, "grey",   
 insert( 1, "HOd","hydrogen(omnidirectional)", 1.05, 1.00, 0.00, 0.30, "grey",   DONOR_ATOM|HB_ONLY_DUMMY);
 insert( 6, "C",  "carbon",             1.70, 1.70, 1.90, 0.77, "white",  0);
 insert( 6, "Car","carbon(aromatic)",   1.75, 1.75, 1.90, 0.77, "white",  ACCEPTOR_ATOM);
-insert( 6, "C=O","carbon(carbonyl)",   1.70, 1.70, 1.80, 0.77, "white",  0); //** seems to help
+insert( 6, "C=O","carbon(carbonyl)",   1.65, 1.65, 1.80, 0.77, "white",  0);
 insert( 7, "N",  "nitrogen",           1.55, 1.55, 1.70, 0.70, "sky",    0);
 insert( 7, "Nacc","nitrogen(acceptor)",1.55, 1.55, 1.70, 0.70, "sky",    ACCEPTOR_ATOM);
 insert( 8, "O",  "oxygen",             1.40, 1.40, 1.50, 0.66, "red",    ACCEPTOR_ATOM);
@@ -375,23 +375,23 @@ ElementInfo* StandardElementTable::lookupPDBatom(const char* name, const char* r
    case '5': case '6': case '7': case '8': case '9':
       switch(buf[1]) {
       case 'A':
-	 switch(buf[3]) {
-	 case '1': elementName = "O"; emitWarning = TRUE; break;
-	 case '2': elementName = "N"; emitWarning = TRUE; break;
-	 } break;
+	       switch(buf[3]) {
+	       case '1': elementName = "O"; emitWarning = TRUE; break;
+	       case '2': elementName = "N"; emitWarning = TRUE; break;
+	       } break;
       case 'B': elementName = "B"; break;
       case 'C': elementName = "C"; break;
       case 'D': elementName = "H"; break;
       case 'F': elementName = "F"; break;
       case 'H': elementName = "H"; break;
-	switch(buf[2]) {
-     	case 'E': elementName = fixAtomName(name,resname,2) ? "He" : "H"; break;
-     	case 'F': elementName = fixAtomName(name,resname,2) ? "Hf" : "H"; break;
-	case 'G': elementName = fixAtomName(name,resname,2) ? "Hg" : "H"; break;
-     	case 'O': elementName = fixAtomName(name,resname,2) ? "Ho" : "H"; break;
-     	case 'S': elementName = fixAtomName(name,resname,2) ? "Hs" : "H"; break;
-	default :elementName = "H"; break;
-	} break;
+	      switch(buf[2]) {
+     	      case 'E': elementName = fixAtomName(name,resname,2) ? "He" : "H"; break;
+     	      case 'F': elementName = fixAtomName(name,resname,2) ? "Hf" : "H"; break;
+	      case 'G': elementName = fixAtomName(name,resname,2) ? "Hg" : "H"; break;
+     	      case 'O': elementName = fixAtomName(name,resname,2) ? "Ho" : "H"; break;
+     	      case 'S': elementName = fixAtomName(name,resname,2) ? "Hs" : "H"; break;
+	      default :elementName = "H"; break;
+	      } break;
       case 'I': elementName = "I"; break;
       case 'K': elementName = "K"; break;
       case 'N': elementName = "N"; break;
@@ -618,26 +618,26 @@ ElementInfo* StandardElementTable::lookupPDBatom(const char* name, const char* r
       case 'U': elementName = "U"; break;
 
       case 'A':
-	 switch(buf[2]) {
-	 case 'G': elementName = "Ag"; break;
-	 case 'L': elementName = "Al"; break;
-	 case 'S': elementName = "As"; break;
-	 case 'U': elementName = "Au"; break;
-	 } break;
+        switch(buf[2]) {
+        case 'G': elementName = "Ag"; break;
+        case 'L': elementName = "Al"; break;
+        case 'S': elementName = "As"; break;
+        case 'U': elementName = "Au"; break;
+        } break;
       case 'F':
-	 if (buf[2] == 'E') elementName = "Fe"; break;
+	      if (buf[2] == 'E') elementName = "Fe"; break;
       case 'G':
-	 if (buf[2] == 'D') elementName = "Gd"; break;
+        if (buf[2] == 'D') elementName = "Gd"; break;
       case 'L':
-	 if (buf[2] == 'I') elementName = "Li"; break;
+        if (buf[2] == 'I') elementName = "Li"; break;
       case 'M':
-	 switch(buf[2]) {
-	 case 'G': elementName = "Mg"; break;
-	 case 'N': elementName = "Mn"; break;
-	 case 'O': elementName = "Mo"; break;
-	 } break;
+        switch(buf[2]) {
+        case 'G': elementName = "Mg"; break;
+        case 'N': elementName = "Mn"; break;
+        case 'O': elementName = "Mo"; break;
+        } break;
       case 'Z':
-	 if (buf[2] == 'N') elementName = "Zn"; break;
+        if (buf[2] == 'N') elementName = "Zn"; break;
 /* --------- default if we fall through... ---------------------*/
       default: elementName = "C"; break;
       }
