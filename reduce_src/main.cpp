@@ -139,6 +139,7 @@ void reduceHelp(bool showAll) { /*help*/
   }
    cerr << endl;
    cerr << "-STRING           pass reduce a string object from a script, must be quoted" << endl;
+   cerr << "-DUMPATOMS FILE   dump the atoms, along with extra information about them, to FILE" << endl;
    cerr << "usage: from within a script, reduce -STRING \"_name_of_string_variable_\"" << endl << endl;
    cerr << "-Quiet            do not write extra info to the console" << endl;
    cerr << "-REFerence        display citation reference" << endl;
@@ -623,6 +624,14 @@ char* parseCommandLine(int argc, char **argv) {
       }
       else if((n = compArgStr(p+1, "NUClear", 3))){
         UseNuclearDistances = TRUE;
+      }
+      else if ((n = compArgStr(p + 1, "DUMPatoms", 4))) {
+        if (++i < argc) {
+          DumpFile = argv[i];
+        }
+        else {
+          cerr << "no file name after -DUMPatoms flag" << endl;
+        }
       }
       else if(compArgStr(p+1, "Help", 1)){ // has to be after all the other -HXXXs
         reduceHelp(TRUE);

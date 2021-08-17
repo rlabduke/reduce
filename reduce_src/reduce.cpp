@@ -124,6 +124,8 @@ bool AddOtherHydrogens = TRUE;	  // If true, add hydrogens to non-water atoms
 bool RemoveATOMHydrogens = FALSE; // If true, remove hydrogens from ATOM records
 bool RemoveOtherHydrogens = FALSE;// If true, remove hydrogens from non-ATOM records
 
+std::string DumpFile;    // Name of a file to dump all atoms and extra info to
+
 enum ConnType {NTERM_RES, CONNECTED_RES, FRAGMENT_RES};
 
 SummaryStats Tally;
@@ -260,15 +262,28 @@ int optimize(AtomPositions& xyz, std::vector<std::string>& adjNotes) {
 }
 
 // SJ 08/03/2015 for printing all records together
-void outputRecords_all(const std::vector <std::list< std::shared_ptr<PDBrec> > >& l, std::ostream& os) {
-    
+static FILE* dumpFile = nullptr;
+void outputRecords_all(const std::vector <std::list< std::shared_ptr<PDBrec> > >& l, std::ostream& os)
+{    
+    // If we've been asked to dump all of our ATOM records to a file along with their flags and
+    // radii, do so here.
+    if (DumpFile.size() > 0) {
+      dumpFile = fopen(DumpFile.c_str(), "w");
+    }
+
     int model=0; // keeping track of how many models are printed
     for (std::vector<std::list< std::shared_ptr<PDBrec> > >::const_iterator ptr = l.begin(); ptr != l.end(); ++ptr) {
         model++;
         outputRecords(os,(const std::list< std::shared_ptr<PDBrec> > &)*ptr, model); // print
     }
     outputRecords(os,(const std::list< std::shared_ptr<PDBrec> > &)l.back(), 0); // SJ - so that all records after the last ENDMDL are printed. model will be equal to 0, which means all models are printed and only the left over information needs to be printed. model = 0 is a little counterintuitive, but that is the only number I can think of that will work.
-    
+
+    // Close dumpFile when we're done with it
+    if (dumpFile) {
+      fclose(dumpFile);
+      dumpFile = nullptr;
+    }
+
     return;
 }
 
@@ -319,13 +334,31 @@ std::ostream& outputRecords(std::ostream& os, const std::list< std::shared_ptr<P
     
     for (std::list< std::shared_ptr<PDBrec> >::const_iterator ptr = l.begin(); ptr != l.end(); ++ptr) {
         
-        if((*ptr)->type() == PDB::MODEL){
+        std::shared_ptr<PDBrec> const rec = *ptr;
+        PDB::RecordType t = rec->type();
+        if(t == PDB::MODEL){
             if(model != 0) // to make sure the last model is not printed again when the function is called to print the leftover stuff.
                flag=true; // start printing (if not model == 1, in which case flag is already true)
         }
         
-		if ((*ptr)->valid() && flag) //print only if flag=true
-			os << (const PDBrec&)(**ptr) << endl;
+        if ((*ptr)->valid() && flag) {
+          //print only if flag=true
+          os << (const PDBrec&)(**ptr) << endl;
+
+          // Dump atoms and hetatoms to file if requested, along with their status information
+          if (dumpFile && (t == PDB::ATOM) || (t == PDB::HETATM)) {
+            std::string type = "ATOM  ";
+            if (t == PDB::HETATM) { type = "HETATM"; }
+            // Chain, Record Type, Residue name, Residue number, atom name, atom number, x,y,z, vdw_radius,
+            // is acceptor, is donor, is metallic
+            fprintf(dumpFile, "%s %s %s %3d %-4s %5d %7.3f %7.3f %7.3f %5.2f %s %s %s\n",
+              rec->chain(), type.c_str(), rec->resname(), rec->resno(), rec->atomname(), rec->atomno(),
+              rec->x(), rec->y(), rec->z(), rec->vdwRad(),
+              rec->hasProp(ACCEPTOR_ATOM) ? "isAcceptor" : "noAcceptor",
+              rec->hasProp(DONOR_ATOM) ? "isDonor" : "noDonor",
+              rec->hasProp(METALIC_ATOM) ? "isMetallic" : "noMetallic");
+          }
+        }
         
         if ((*ptr)->type() == PDB::ENDMDL) {
             if(model != 0)
@@ -1232,11 +1265,11 @@ void genHydrogens(const atomPlacementPlan& pp, ResBlk& theRes, bool o2prime,
 									*(rvv[1][std::min(j, nconf[1]-1)]),
 									*(rvv[2][std::min(j, nconf[2]-1)]));*/
 								// 130122 - JJH, tracking alternates fix
-								xyz.insertRotAromMethyl(*newHatom,
+                xyz.insertRotAromMethyl(*newHatom,
 									*(rvv[0][counter[0]]),
 									*(rvv[1][counter[1]]),
 									*(rvv[2][counter[2]]));
-							} else {
+              } else {
 								xyz.insertRot(*newHatom,
 									/**(rvv[0][std::min(j, nconf[0]-1)]),
 									*(rvv[1][std::min(j, nconf[1]-1)]),

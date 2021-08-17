@@ -124,7 +124,7 @@ double Rot::scoreThisAngle(AtomPositions &xyz, DotSphManager& dotBucket,
 
 	double scoreThisO = 0.0;
 	int i = 0;
-	_rot.push_front(_heavyAtom);
+  _rot.push_front(_heavyAtom);
 	for(std::list< std::shared_ptr<PDBrec> >::const_iterator alst = _rot.begin(); alst != _rot.end(); ++alst) {
 		if (!(*alst)->valid())
 			continue;

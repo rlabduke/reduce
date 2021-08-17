@@ -88,6 +88,7 @@ class AtomPositions {
                   const PDBrec& c2, const PDBrec& c3,
 		  bool doOHSH, bool doNH3);
 
+   /// @brief Insert a single hydrogen into an aromatic methyl rotation Mover, creating the Mover if it does not exist.
    void insertRotAromMethyl(const PDBrec& hr, const PDBrec& c1,
                   const PDBrec& c2, const PDBrec& c3); // for Arom methyls - Aram 08/13/12
    std::list<char> insertFlip(const ResBlk& rblk);

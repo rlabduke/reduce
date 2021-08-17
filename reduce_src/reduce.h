@@ -144,3 +144,5 @@ extern bool AddWaterHydrogens;	  // If true, add phantom hydrogens to waters
 extern bool AddOtherHydrogens;	  // If true, add hydrogens to non-water atoms
 extern bool RemoveATOMHydrogens; // If true, remove hydrogens from ATOM records
 extern bool RemoveOtherHydrogens;// If true, remove hydrogens from non-ATOM records
+
+extern std::string DumpFile;    // Name of a file to dump all atoms and extra info to
