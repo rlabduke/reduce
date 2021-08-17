@@ -347,10 +347,14 @@ std::ostream& outputRecords(std::ostream& os, const std::list< std::shared_ptr<P
 
           // Dump atoms and hetatoms to file if requested, along with their status information
           if (dumpFile && (t == PDB::ATOM) || (t == PDB::HETATM)) {
-            // Chain, Residue name, Residue number, atom name, x,y,z, vdw_radius,
+            // Alternate is dash unless there is a non-blank value
+            char alt = rec->alt();
+            if (alt == ' ') { alt = '-'; }
+
+            // Chain, Residue name, Residue number, atom name, alt, x,y,z, vdw_radius,
             // is acceptor, is donor, is metallic
-            fprintf(dumpFile, "%s %s %3d %-4s %7.3f %7.3f %7.3f %5.2f %s %s %s\n",
-              rec->chain(), rec->resname(), rec->resno(), rec->atomname(),
+            fprintf(dumpFile, "%s %s %3d %-4s %c %7.3f %7.3f %7.3f %5.2f %s %s %s\n",
+              rec->chain(), rec->resname(), rec->resno(), rec->atomname(), alt,
               rec->x(), rec->y(), rec->z(), rec->vdwRad(),
               rec->hasProp(ACCEPTOR_ATOM) ? "isAcceptor" : "noAcceptor",
               rec->hasProp(DONOR_ATOM) ? "isDonor" : "noDonor",
