@@ -139,6 +139,7 @@ void reduceHelp(bool showAll) { /*help*/
   }
    cerr << endl;
    cerr << "-STRING           pass reduce a string object from a script, must be quoted" << endl;
+   cerr << "-DUMPATOMS FILE   dump the atoms, along with extra information about them, to FILE" << endl;
    cerr << "usage: from within a script, reduce -STRING \"_name_of_string_variable_\"" << endl << endl;
    cerr << "-Quiet            do not write extra info to the console" << endl;
    cerr << "-REFerence        display citation reference" << endl;
@@ -351,6 +352,8 @@ void reduceChanges(bool showAll) { /*changes*/
    cerr  << "2021/02/05 -           Version 4.5 adds -NOROTEXist and -NOROTEXOH command-line options and fixes SITE record numbers." << endl;
    cerr  << "2021/04/07 - rmt       Version 4.6 makes the default Probe radius 0.25 rather than 0." << endl;
    cerr  << "2021/04/16 - rmt       Version 4.7 fixes the distance calculation and neighborhood sizing when the probe radius is nonzero." << endl;
+   cerr  << "2021/06/07 - rmt       Version 4.8 makes C=O carbonyl radius 1.65 rather than 1.70, reverting the change made Oct 17 2012." << endl;
+   cerr  << "2021/08/17 - rmt       Version 4.9 adds a command-line argument to dump atom info (radius and flags) for debugging." << endl;
    cerr  << endl;
    exit(2);
 }
@@ -622,6 +625,14 @@ char* parseCommandLine(int argc, char **argv) {
       }
       else if((n = compArgStr(p+1, "NUClear", 3))){
         UseNuclearDistances = TRUE;
+      }
+      else if ((n = compArgStr(p + 1, "DUMPatoms", 4))) {
+        if (++i < argc) {
+          DumpFile = argv[i];
+        }
+        else {
+          cerr << "no file name after -DUMPatoms flag" << endl;
+        }
       }
       else if(compArgStr(p+1, "Help", 1)){ // has to be after all the other -HXXXs
         reduceHelp(TRUE);

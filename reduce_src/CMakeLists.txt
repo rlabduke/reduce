@@ -148,7 +148,7 @@ target_include_directories(reduce PUBLIC ./)
 target_link_libraries(reduce reducelib)
 
 install(TARGETS reduce DESTINATION bin)
-install(TARGETS reduce DESTINATION bin)
+install(FILES ../reduce_wwPDB_het_dict.txt DESTINATION .)
 
 # @todo Add configuration information to installed output so those who use
 # the library will have things configured correctly based on the target.
