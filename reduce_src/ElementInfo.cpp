@@ -204,7 +204,7 @@ insert( 7, "Nacc","nitrogen(acceptor)",1.55, 1.55, 1.70, 0.70, "sky",    ACCEPTO
 insert( 8, "O",  "oxygen",             1.40, 1.40, 1.50, 0.66, "red",    ACCEPTOR_ATOM);
 insert(15, "P",  "phosphorus",         1.80, 1.80, 1.80, 1.10, "pink",   0);
 insert(16, "S",  "sulfur",             1.80, 1.80, 1.90, 1.04, "yellow", ACCEPTOR_ATOM);
-insert(33, "As", "arsnic",             2.00, 2.00, 2.10, 1.21, "grey",   0);
+insert(33, "As", "arsenic",            2.00, 2.00, 2.10, 1.21, "grey",   0);
 insert(34, "Se", "selenium",           1.90, 1.90, 2.00, 1.17, "green",  0);
 insert( 9, "F",  "fluorine",           1.30, 1.30, 1.30, 0.58, "green",  ACCEPTOR_ATOM);
 insert(17, "Cl", "chlorine",           1.77, 1.77, 1.77, 0.99, "green",  ACCEPTOR_ATOM);

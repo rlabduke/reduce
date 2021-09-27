@@ -346,7 +346,7 @@ std::ostream& outputRecords(std::ostream& os, const std::list< std::shared_ptr<P
           os << (const PDBrec&)(**ptr) << endl;
 
           // Dump atoms and hetatoms to file if requested, along with their status information
-          if (dumpFile && (t == PDB::ATOM) || (t == PDB::HETATM)) {
+          if (dumpFile && ((t == PDB::ATOM) || (t == PDB::HETATM))) {
             // Alternate is dash unless there is a non-blank value
             char alt = rec->alt();
             if (alt == ' ') { alt = '-'; }
