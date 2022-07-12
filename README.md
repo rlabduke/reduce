@@ -30,7 +30,10 @@ a CMake-based build:
     make
     sudo make install
 
-This will install the executable in /usr/local/bin and the required files in /usr/local.
+This will install the executable by default in /usr/local/bin and the required files in /usr/local.
+As with other CMake projects, the you can set the **CMAKE_INSTALL_PREFIX** variable and it will put the
+executable there under the bin/ directory and the HET dictionary in the prefix directory,
+telling the program where to find it.
 
 ### Running
 
