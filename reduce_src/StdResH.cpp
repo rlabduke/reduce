@@ -1467,10 +1467,13 @@ StdResXtraInfo::StdResXtraInfo() {
     {"TRP", " CZ2", HBACCEPTORFLAG|AROMATICFLAG},
     {"TRP", " CE3", HBACCEPTORFLAG|AROMATICFLAG},
     {"TRP", " CE2", HBACCEPTORFLAG|AROMATICFLAG},
-    {"TRP", " NE1", HBACCEPTORFLAG|AROMATICFLAG},
     {"TRP", " CD2", HBACCEPTORFLAG|AROMATICFLAG},
-    {"TRP", " CD1", HBACCEPTORFLAG|AROMATICFLAG},
-    {"TRP", " CG",  HBACCEPTORFLAG|AROMATICFLAG},
+    {"TRP", " CD1", AROMATICFLAG},  // 5-membered rings are not acceptors
+    {"TRP", " CG",  AROMATICFLAG},  // 5-membered rings are not acceptors
+    {"TRP", " NE1", AROMATICFLAG},  // 5-membered rings are not acceptors
+    //{"TRP", " NE1", HBACCEPTORFLAG|AROMATICFLAG},
+    //{"TRP", " CD1", HBACCEPTORFLAG|AROMATICFLAG},
+    //{"TRP", " CG",  HBACCEPTORFLAG|AROMATICFLAG},
 
 // -----------------------------------------------------------
 // pick up the parts of the bases not included above
