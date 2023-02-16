@@ -354,6 +354,7 @@ void reduceChanges(bool showAll) { /*changes*/
    cerr  << "2021/04/16 - rmt       Version 4.7 fixes the distance calculation and neighborhood sizing when the probe radius is nonzero." << endl;
    cerr  << "2021/06/07 - rmt       Version 4.8 makes C=O carbonyl radius 1.65 rather than 1.70, reverting the change made Oct 17 2012." << endl;
    cerr  << "2021/08/17 - rmt       Version 4.9 adds a command-line argument to dump atom info (radius and flags) for debugging." << endl;
+   cerr  << "2023/02/11 - rmt       Version 4.10 makes the atoms in the 5-membered ring in TRP not acceptors." << endl;
    cerr  << endl;
    exit(2);
 }
