@@ -1634,7 +1634,7 @@ double AtomPositions::atomScore(const PDBrec& a, const Point3d& p,
       // Compute the distance between the dot position offset from the atom center to
       // the target atom to see if they are touching.  The gap is positive if they are
       // not and negative if they are.
-			const double dist = distance2(q, locb);
+			const double dist = sqrt( squaredist );
 			const double  gap = dist - vdwb;
 
 			if (gap < mingap) {
