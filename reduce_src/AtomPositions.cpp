@@ -20,6 +20,7 @@
 #include <iostream>
 #include <fstream>
 #include <iomanip>
+#include <memory>
 using std::cerr;
 using std::endl;
 using std::flush;
