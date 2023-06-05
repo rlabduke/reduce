@@ -43,7 +43,7 @@ std::list<std::string> ResConn::findRingBondedToMethyl(const std::string &atomna
 
 		std::stack<std::shared_ptr<AtomConn> > stkAtoms;
 		std::stack<int> stkAtomsDepth;
-		std::vector<bool> visited(_atomConn.size());
+		std::vector<bool> visited(_atomConn.size()+1);	// This is a 1-indexed value, so we need one more
 		std::list<std::string> L;
 
 		// initialize all nodes to false
