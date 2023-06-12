@@ -1601,7 +1601,7 @@ double AtomPositions::atomScore(const PDBrec& a, const Point3d& p,
 
 	const int ndots = dots.count();
 	double s = 0.0;
-	for (int i=0; i < ndots; i++) // then we inspect each dots interactions
+	for (int i=0; i < ndots; i++) // then we inspect each dot's interactions
 	{
 		if ( dotsToCount && ! dotsToCount->dotOn( i ) ) { continue; }
 		const Point3d q = p + dots[i];
@@ -1635,7 +1635,12 @@ double AtomPositions::atomScore(const PDBrec& a, const Point3d& p,
       // Compute the distance between the dot position offset from the atom center to
       // the target atom to see if they are touching.  The gap is positive if they are
       // not and negative if they are.
-			const double dist = sqrt( squaredist );
+			// Note: The 2018 version of Reduce used the square root of squaredist here,
+			// which was okay when the radius was 0.0 (the default back then), but this did
+			// not match probe's behavior.  Version 4.7 changed this to be correct in the
+			// general case.  That was later incorrectly reverted because it made the new version
+			// not match the old once the default radius was changed to 0.25.
+			const double dist = distance2(q, locb);
 			const double  gap = dist - vdwb;
 
 			if (gap < mingap) {

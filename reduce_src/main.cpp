@@ -357,6 +357,7 @@ void reduceChanges(bool showAll) { /*changes*/
    cerr  << "2023/02/11 - rmt       Version 4.10 makes the atoms in the 5-membered ring in TRP not acceptors." << endl;
    cerr  << "2023/03/18 - rmt       Version 4.11 fixes a gap bug introduced in version 4.7." << endl;
    cerr <<  "2023/06/05 - rmt       Version 4.12 adds an array element to avoid out-of-bounds use." << endl;
+   cerr <<  "2023/06/12 - rmt       Version 4.13 reverts the gap bug 'fix' from 4.11, going back to 4.7." << endl;
    cerr  << endl;
    exit(2);
 }
