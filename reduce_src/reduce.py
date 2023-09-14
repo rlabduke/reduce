@@ -5,7 +5,7 @@
 #
 
 import sys
-import mmtbx_reduce_ext as reduce
+import mmtbx_reduceOrig_ext as reduce
 
 def RunReduce(input, hetdatabase):
   ret = 0
