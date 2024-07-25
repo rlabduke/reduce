@@ -3,8 +3,9 @@ FROM alpine:latest
 ARG REDUCE_VERSION
 
 WORKDIR /app
-RUN apk add --no-cache git cmake build-base && \
-    git clone https://github.com/rlabduke/reduce.git src/reduce
+RUN apk add --no-cache git cmake build-base
+
+COPY . /app/src/reduce
 
 WORKDIR /app/src/reduce
 RUN git checkout ${REDUCE_VERSION}
