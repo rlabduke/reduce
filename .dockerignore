@@ -1,0 +1,11 @@
+build/
+dist/
+out/
+target/
+
+.DS_Store
+Thumbs.db
+
+.dockerignore
+Dockerfile
+
