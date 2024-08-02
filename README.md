@@ -40,3 +40,20 @@ telling the program where to find it.
 Once installed, if /usr/local/bin is on your PATH, reduce can be run using `reduce`.
 Use `reduce -help` for more information about the arguments and behavior of the program.
 
+## Installation using package manager
+
+### Conda
+
+You can install reduce using conda package manager.
+
+```shell
+conda install reduce -c bioconda
+```
+
+### Homebrew/Linuxbrew
+You can also install reduce using homebrew (or linuxbrew).
+
+```shell
+brew tap brewsci/bio
+brew install reduce
+```
