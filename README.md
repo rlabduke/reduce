@@ -1,6 +1,15 @@
 # reduce
 Reduce - tool for adding and correcting hydrogens in PDB files
 
+## Deprecation notice
+
+This version of reduce is being replaced by reduce2, which is integrated into the CCTBX
+project as described at https://github.com/cctbx/cctbx_project/tree/master/mmtbx/reduce
+with additional development being done there.  The reduce2 program handle native CIF file
+input and is being maintained with ongoing file-format and other changes.  Reduce2 is
+slower than reduce and there are a few corner-case files where it does not work, but it
+produces more accurate results in most cases.
+
 ## Building
 
 ### Makefile
@@ -41,6 +50,9 @@ Once installed, if /usr/local/bin is on your PATH, reduce can be run using `redu
 Use `reduce -help` for more information about the arguments and behavior of the program.
 
 ## Installation using package manager
+
+Ueno, M. (github ID eunos-1128) has graciously made reduce available through standard
+installation channels as described below.
 
 ### Conda
 
