@@ -16,7 +16,7 @@ import time
 
 print("Downloading most recent het dict", file=sys.stderr)
 #Download the lasted version of the het_dictionary from the PDB
-urllib.urlretrieve('ftp://ftp.wwpdb.org/pub/pdb/data/monomers/het_dictionary.txt', 'reduce_wwPDB_het_dict_download.txt')
+urllib.urlretrieve('https://files.wwpdb.org/pub/pdb/data/monomers/het_dictionary.txt', 'reduce_wwPDB_het_dict_download.txt')
 #Store time of download for versioning
 fetchtime = time.strftime("%Y%m%d_%H%M%S")
 #----- End download -----
