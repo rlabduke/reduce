@@ -51,8 +51,8 @@ Use `reduce -help` for more information about the arguments and behavior of the 
 
 ## Installation using package manager
 
-Ueno, M. (github ID eunos-1128) has graciously made reduce available through standard
-installation channels as described below.
+Ueno, M. (github ID eunos-1128) has graciously made the original (now deprecated) version of
+reduce available through standard installation channels as described below.
 
 ### Conda
 
