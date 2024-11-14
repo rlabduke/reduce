@@ -98,8 +98,8 @@ int compArgStr(const char *str, const char *arg, int min) {
 }
 
 int parseInteger(const char *str, int start, int len) {
-	register int value = 0;
-	register char ch;
+	int value = 0;
+	char ch;
 	int neg = 0, inside = 0;
 
 	if (!str || start < 0) { return 0; }
@@ -127,7 +127,7 @@ int parseInteger(const char *str, int start, int len) {
 float parseReal(const char *str, int start, int len, double initialValue) {
    double value = 0.0, scale = 1.0, expscale = 1.0, expfact = 10.0;
    int expval = 0;
-   register char ch;
+   char ch;
    int inside = 0, infract = 0, inexp = 0, insn = 0, esn = 0, hasnum=0;
 
    if (!str || start < 0) { return 0; }
