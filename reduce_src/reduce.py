@@ -4,8 +4,12 @@
 # It is a test program to validate that the Python wrapping worked.
 #
 
+import os
+import shutil
 import sys
+
 import mmtbx_reduceOrig_ext as reduce
+
 
 def RunReduce(input, hetdatabase):
   ret = 0
@@ -84,7 +88,12 @@ if __name__ == '__main__':
   with open(fileName) as f:
     input = f.read()
 
-  # @todo Point this at the general location.
-  hetdatabase = reduce.CTab("/usr/local/reduce_wwPDB_het_dict.txt")
+  reduce_path = shutil.which("reduce")
+
+  if reduce_path:
+    reduce_root_dir = os.path.realpath(os.path.dirname(os.path.dirname(reduce_path)))
+    hetdatabase = reduce.CTab(os.path.join(reduce_root_dir, "reduce_wwPDB_het_dict.txt"))
+  else:
+    raise FileNotFoundError("The 'reduce' command was not found in the PATH.")
 
   sys.exit(RunReduce(input, hetdatabase))
