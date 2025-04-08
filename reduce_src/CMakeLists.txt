@@ -38,24 +38,6 @@ endif()
 
 if (WIN32)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS)
-else ()
-  # Override the dictionary settings if they were specified on the command line
-  if (DEFINED HET_DICTIONARY)
-    message(STATUS "HET_DICTIONARY = ${HET_DICTIONARY}")
-    add_definitions(-DHET_DICTIONARY="${HET_DICTIONARY}")
-  else ()
-    add_definitions(
-      -DHET_DICTIONARY="/usr/local/reduce_wwPDB_het_dict.txt"
-    )
-  endif ()
-  if (DEFINED HET_DICTOLD)
-    message(STATUS "HET_DICTOLD = ${HET_DICTOLD}")
-    add_definitions(-DHET_DICTOLD="${HET_DICTOLD}")
-  else()
-    add_definitions(
-      -DHET_DICTOLD="/usr/local/reduce_het_dict.txt"
-    )
-  endif ()
 endif ()
 
 
@@ -123,6 +105,16 @@ else ()
 	set(DICT_HOME "/usr/local/reduce_wwPDB_het_dict.txt")
 	set(DICT_OLD "/usr/local/reduce_het_dict.txt")
 endif ()
+
+if (DEFINED HET_DICTIONARY)
+  set(DICT_HOME "${HET_DICTIONARY}")
+endif()
+if (DEFINED HET_DICTOLD)
+  set(DICT_OLD "${HET_DICTOLD}")
+endif()
+
+message(STATUS "HET_DICTIONARY = ${DICT_HOME}")
+message(STATUS "HET_DICTOLD = ${DICT_OLD}")
 
 add_library(reducelib ${reduce_SOURCES} ${reduce_HEADERS})
 # In 2020, all current C++ compilers will surely define the bool type.
