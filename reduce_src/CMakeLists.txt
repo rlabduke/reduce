@@ -39,11 +39,25 @@ endif()
 if (WIN32)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 else ()
-  add_definitions(
-    -DHET_DICTIONARY="/usr/local/reduce_wwPDB_het_dict.txt"
-    -DHET_DICTOLD="/usr/local/reduce_het_dict.txt"
-  )
+  # Override the dictionary settings if they were specified on the command line
+  if (DEFINED HET_DICTIONARY)
+    message(STATUS "HET_DICTIONARY = ${HET_DICTIONARY}")
+    add_definitions(-DHET_DICTIONARY="${HET_DICTIONARY}")
+  else ()
+    add_definitions(
+      -DHET_DICTIONARY="/usr/local/reduce_wwPDB_het_dict.txt"
+    )
+  endif ()
+  if (DEFINED HET_DICTOLD)
+    message(STATUS "HET_DICTOLD = ${HET_DICTOLD}")
+    add_definitions(-DHET_DICTOLD="${HET_DICTOLD}")
+  else()
+    add_definitions(
+      -DHET_DICTOLD="/usr/local/reduce_het_dict.txt"
+    )
+  endif ()
 endif ()
+
 
 add_definitions(
   -DAROMATICS_ACCEPT_HBONDS
