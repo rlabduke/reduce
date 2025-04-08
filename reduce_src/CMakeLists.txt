@@ -38,12 +38,8 @@ endif()
 
 if (WIN32)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS)
-else ()
-  add_definitions(
-    -DHET_DICTIONARY="/usr/local/reduce_wwPDB_het_dict.txt"
-    -DHET_DICTOLD="/usr/local/reduce_het_dict.txt"
-  )
 endif ()
+
 
 add_definitions(
   -DAROMATICS_ACCEPT_HBONDS
@@ -109,6 +105,16 @@ else ()
 	set(DICT_HOME "/usr/local/reduce_wwPDB_het_dict.txt")
 	set(DICT_OLD "/usr/local/reduce_het_dict.txt")
 endif ()
+
+if (DEFINED HET_DICTIONARY)
+  set(DICT_HOME "${HET_DICTIONARY}")
+endif()
+if (DEFINED HET_DICTOLD)
+  set(DICT_OLD "${HET_DICTOLD}")
+endif()
+
+message(STATUS "HET_DICTIONARY = ${DICT_HOME}")
+message(STATUS "HET_DICTOLD = ${DICT_OLD}")
 
 add_library(reducelib ${reduce_SOURCES} ${reduce_HEADERS})
 # In 2020, all current C++ compilers will surely define the bool type.
