@@ -23,9 +23,9 @@
 #endif
 
 const char *versionString =
-     "reduce: version 4.15 4/8/2025, Copyright 1997-2016, J. Michael Word; 2020-2025 Richardson Lab at Duke University";
+     "reduce: version 4.16 5/20/2025, Copyright 1997-2016, J. Michael Word; 2020-2025 Richardson Lab at Duke University";
 
-const char *shortVersion    = "reduce.4.15.250408";
+const char *shortVersion    = "reduce.4.16.250520";
 const char *referenceString =
                        "Word, et. al. (1999) J. Mol. Biol. 285, 1735-1747.";
 const char *electronicReference = "http://kinemage.biochem.duke.edu";
@@ -101,8 +101,8 @@ int MaxAromRingDih    = 10;   // max dihedral angle in planarity check for aroma
 
 int MinNTermResNo     = 1;   // how high can a resno be for n-term?
 int NBondCutoff       = 3;   // how many bonds away do we drop?
-int ExhaustiveLimit   = 600;  //time limit, in seconds, to spend in brute force enumeration for a single clique
-float ProbeRadius     = 0.25; // how big is the probe in VDW calculations?
+int ExhaustiveLimit   = 600; //time limit, in seconds, to spend in brute force enumeration for a single clique
+float ProbeRadius     = 0.0; // how big is the probe in VDW calculations?
 float VdwDotDensity   =16.0; // how many dots per sq Angstroms in VDW calculations?
 float OccupancyCutoff = 0.01;// lowest occupancy considered when determining score
 float WaterBcutoff    =40.0; // limit for water B values

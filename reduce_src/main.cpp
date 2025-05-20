@@ -360,6 +360,7 @@ void reduceChanges(bool showAll) { /*changes*/
    cerr  << "2023/06/12 - rmt       Version 4.13 reverts the gap bug 'fix' from 4.11, going back to 4.7." << endl;
    cerr  << "2023/09/14 - rmt       Version 4.14 builds alongside the native CCTBX reduce2 library." << endl;
    cerr  << "2025/04/08 - rmt       Version 4.15 has CMAKE command-line arguments to set the HET dictionaries." << endl;
+   cerr  << "2025/05/20 - rmt       Version 4.16 switches back to a default probe radius of 0 (undoing version 4.6 change)." << endl;
    cerr  << endl;
    exit(2);
 }
