@@ -56,7 +56,8 @@ reduce available through standard installation channels as described below.
 
 ### Conda
 
-You can install reduce using conda package manager.
+You can install reduce on Linux and Mac using the conda package manager.  On Windows, you can
+use the Windows Subsystem for Linux and install reduce using conda in the WSL environment.
 
 ```shell
 conda install reduce -c bioconda
