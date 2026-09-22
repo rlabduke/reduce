@@ -1,0 +1,14 @@
+Reduce
+Copyright (c) 1997-2016 J. Michael Word
+Copyright (c) 1997-2026 David C. Richardson, Jane S. Richardson, and contributors
+
+This product includes software developed in the Richardson Lab at
+Duke University (http://kinemage.biochem.duke.edu).
+
+Licensed under the Apache License, Version 2.0; see the LICENSE file.
+The free-software notice that appears in individual source files is the
+original 1999 notice by J. Michael Word; with the authors' agreement it is
+superseded by the LICENSE file for this distribution.
+
+The libpdb/ directory is derived from code copyright The Regents of the
+University of California and carries its own terms; see libpdb/LICENSE.txt.

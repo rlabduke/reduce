@@ -70,3 +70,7 @@ You can also install reduce using homebrew (or linuxbrew).
 brew tap brewsci/bio
 brew install reduce
 ```
+
+## License
+
+Apache License 2.0; see [LICENSE](LICENSE) and [NOTICE](NOTICE). The libpdb/ directory carries the University of California's own terms (libpdb/LICENSE.txt). The original free-software notice in individual source files is superseded by the LICENSE file with the authors' agreement.
