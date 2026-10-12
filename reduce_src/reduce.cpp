@@ -23,9 +23,9 @@
 #endif
 
 const char *versionString =
-     "reduce: version 4.16 5/20/2025, Copyright 1997-2016, J. Michael Word; 2020-2025 Richardson Lab at Duke University";
+     "reduce: version 4.17 10/12/2026, Copyright 1997-2016, J. Michael Word; 2020-2025 Richardson Lab at Duke University";
 
-const char *shortVersion    = "reduce.4.16.250520";
+const char *shortVersion    = "reduce.4.17.261012";
 const char *referenceString =
                        "Word, et. al. (1999) J. Mol. Biol. 285, 1735-1747.";
 const char *electronicReference = "http://kinemage.biochem.duke.edu";
@@ -235,7 +235,7 @@ int optimize(AtomPositions& xyz, std::vector<std::string>& adjNotes) {
 	 for (std::list< std::list<MoverPtr> >::iterator cc = cc_list.begin(); cc != cc_list.end(); ++cc) {
 		//cerr << "start2" << endl;
     int nscnt = xyz.orientClique(*cc, ExhaustiveLimit);
-		if (nscnt > 0) { Tally._num_adj += nscnt; }
+		if (nscnt >= 0) { Tally._num_adj += nscnt; }
 	  else { // failed to initialize or too many permutations, make note
 	    ret = ABANDONED_RC;
 	  }

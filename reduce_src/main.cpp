@@ -361,6 +361,8 @@ void reduceChanges(bool showAll) { /*changes*/
    cerr  << "2023/09/14 - rmt       Version 4.14 builds alongside the native CCTBX reduce2 library." << endl;
    cerr  << "2025/04/08 - rmt       Version 4.15 has CMAKE command-line arguments to set the HET dictionaries." << endl;
    cerr  << "2025/05/20 - rmt       Version 4.16 switches back to a default probe radius of 0 (undoing version 4.6 change)." << endl;
+   cerr  << "2026/10/12 - rmt       Version 4.17 fixes a return-code check when orienting cliques to avoid reporting failure and" << endl;
+   cerr  << "                       applies a patch from @aozalevsky that ensures consistent clique ordering." << endl;
    cerr  << endl;
    exit(2);
 }

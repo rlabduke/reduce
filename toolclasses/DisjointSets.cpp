@@ -210,13 +210,20 @@ void DisjointSets::siftdownFlat(int vec[], int l, int u) const {
 //  pre-condition: maximal heap(l+1, u)
 // post-condition: maximal heap(l,   u)
 
+   // Order by root, then by index: heapsort is not stable, so with the
+   // root alone a subset's members would come out in an order that depends
+   // on all the other subsets
+   auto less = [this](int a, int b) {
+      const int ra = flatRoot(a), rb = flatRoot(b);
+      return ra < rb || (ra == rb && a < b);
+   };
    int i = l;
    for(;;) { // maxheap(l, u) except between i and its children
       int c = i << 1; // double
       if (c > u) { break; }
       if (c+1 <= u
-       && flatRoot(vec[c-1]) < flatRoot(vec[c])) { c++; }
-      if (! (flatRoot(vec[i-1]) < flatRoot(vec[c-1]))) {
+       && less(vec[c-1], vec[c])) { c++; }
+      if (! less(vec[i-1], vec[c-1])) {
 	 break;
       }
       swapInts(vec[c-1], vec[i-1]);
